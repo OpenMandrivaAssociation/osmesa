@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			6.5.2
-%define release			%mkrel 7
+%define release			%mkrel 8
 %define priority		500
 
 %define eglname			mesaegl
@@ -84,6 +84,8 @@ Patch13:	Mesa-6.5.1-linux-dri-config.patch
 Patch14:	mesa-6.5.1-google_earth_support.patch
 # Fix moving DRI windows on the screen by updating the drawable info
 Patch15:	mesa-6.5.2-mga_fix_dri_window_move.patch
+# Fix some texture data corruption
+Patch16:	mesa-6.5.2-texdata_corruption_fix.patch 
 # remove unfinished GLX_ARB_render_texture
 Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
 # fix some crashs when a mesa context could not be found
@@ -286,6 +288,7 @@ This package contains some demo programs for the Mesa library.
 %patch13 -p1 -b .linux-dri-config
 %patch14 -p1 -b .google_earth_r300
 %patch15 -p1 -b .mga_window_move
+%patch16 -p1 -b .tex_data_corrupt
 
 %patch44 -p1 -b .context
 
