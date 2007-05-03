@@ -1,6 +1,6 @@
 %define	name			mesa
-%define version			6.5.2
-%define release			%mkrel 8
+%define version			6.5.3
+%define release			%mkrel 1
 %define priority		500
 
 %define eglname			mesaegl
@@ -76,20 +76,12 @@ Patch6:		mesa-6.5-drop-static-inline.patch
 Patch7:		mesa-radeon-0depthbits.patch
 # Fix compilation on x86_64 
 Patch9:		mesa-6.5-x86_64-fix-build.patch
-# Disable compilation of broken demos
-Patch10:	mesa-6.5-xdemos_remove_broken.patch
 # Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
-Patch13:	Mesa-6.5.1-linux-dri-config.patch
+Patch13:	Mesa-6.5.3-linux-dri-config.patch
 # Disable some checks making Google Earth work on r300
 Patch14:	mesa-6.5.1-google_earth_support.patch
-# Fix moving DRI windows on the screen by updating the drawable info
-Patch15:	mesa-6.5.2-mga_fix_dri_window_move.patch
-# Fix some texture data corruption
-Patch16:	mesa-6.5.2-texdata_corruption_fix.patch 
 # remove unfinished GLX_ARB_render_texture
 Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
-# fix some crashs when a mesa context could not be found
-Patch44:	mesa-6.5.2-check_context.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -284,13 +276,8 @@ This package contains some demo programs for the Mesa library.
 %if "%{_lib}" != "lib"
 %patch9 -p0 -b .staticinline
 %endif
-%patch10 -p1 -b .removebroken
 %patch13 -p1 -b .linux-dri-config
 %patch14 -p1 -b .google_earth_r300
-%patch15 -p1 -b .mga_window_move
-%patch16 -p1 -b .tex_data_corrupt
-
-%patch44 -p1 -b .context
 
 pushd progs/demos && {
 	for i in *.c; do 
