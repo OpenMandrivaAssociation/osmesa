@@ -57,6 +57,8 @@ BuildRequires:	libxext-devel >= 1.0.0
 BuildRequires:	libxxf86vm-devel >= 1.0.0
 BuildRequires:	libxmu-devel >= 1.0.0
 BuildRequires:	libxi-devel >= 1.0.0
+BuildRequires:  libxfixes-devel
+BuildRequires:  libxdamage-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}.tar.bz2
