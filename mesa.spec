@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			6.5.3
-%define release			%mkrel 1
+%define release			%mkrel 2
 %define priority		500
 
 %define eglname			mesaegl
@@ -49,7 +49,7 @@ Group:		System/Libraries
 BuildRequires:	tcl
 BuildRequires:	texinfo
 BuildRequires:	makedepend
-BuildRequires:	libexpat-devel
+BuildRequires:	libexpat-devel >= 2.0.1
 BuildRequires:	x11-proto-devel >= 1.0.0
 BuildRequires:	libx11-devel >= 1.0.0
 BuildRequires:	libdrm-devel >= 2.0.1
@@ -530,6 +530,3 @@ fi
 %{_miconsdir}/*demos*.png
 %{_iconsdir}/*demos*.png
 %{_liconsdir}/*demos*.png
-
-
-
