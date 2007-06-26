@@ -1,6 +1,6 @@
 %define	name			mesa
-%define version			6.5.3
-%define release			%mkrel 2
+%define version			7.0
+%define release			%mkrel 1
 %define priority		500
 
 %define eglname			mesaegl
@@ -79,9 +79,7 @@ Patch7:		mesa-radeon-0depthbits.patch
 # Fix compilation on x86_64 
 Patch9:		mesa-6.5-x86_64-fix-build.patch
 # Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
-Patch13:	Mesa-6.5.3-linux-dri-config.patch
-# Disable some checks making Google Earth work on r300
-Patch14:	mesa-6.5.1-google_earth_support.patch
+Patch13:	Mesa-7.0-linux-dri-config.patch
 # remove unfinished GLX_ARB_render_texture
 Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
 
@@ -274,12 +272,11 @@ This package contains some demo programs for the Mesa library.
 %endif
 
 %patch6 -p0 -b .static_inline
-%patch7 -p0 -b .0depth
+%patch7 -p1 -b .0depth
 %if "%{_lib}" != "lib"
 %patch9 -p0 -b .staticinline
 %endif
 %patch13 -p1 -b .linux-dri-config
-%patch14 -p1 -b .google_earth_r300
 
 pushd progs/demos && {
 	for i in *.c; do 
