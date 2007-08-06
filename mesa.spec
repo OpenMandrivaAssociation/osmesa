@@ -1,5 +1,5 @@
 %define	name			mesa
-%define version			7.0
+%define version			7.0.1
 %define release			%mkrel 1
 %define priority		500
 
