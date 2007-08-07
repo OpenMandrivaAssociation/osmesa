@@ -85,6 +85,7 @@ Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
 
 # Intel chipsets support from upstream git
 Patch100:	mesa-7.0.1-945GME.patch
+Patch101:	mesa-7.0.1-945GME-tex.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -282,6 +283,7 @@ This package contains some demo programs for the Mesa library.
 %patch13 -p1 -b .linux-dri-config
 
 %patch100 -p1 -b .945GME
+%patch101 -p1 -b .945GME-tex
 
 pushd progs/demos && {
 	for i in *.c; do 
