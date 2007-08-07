@@ -83,6 +83,9 @@ Patch13:	Mesa-7.0-linux-dri-config.patch
 # remove unfinished GLX_ARB_render_texture
 Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
 
+# Intel chipsets support from upstream git
+Patch100:	mesa-7.0.1-945GME.patch
+
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
 Provides:	hackMesa = %{version}
@@ -277,6 +280,8 @@ This package contains some demo programs for the Mesa library.
 %patch9 -p0 -b .staticinline
 %endif
 %patch13 -p1 -b .linux-dri-config
+
+%patch100 -p1 -b .945GME
 
 pushd progs/demos && {
 	for i in *.c; do 
