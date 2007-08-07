@@ -301,7 +301,11 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 # (blino) -fno-strict-aliasing is known to break some Mesa code
 #   https://bugs.freedesktop.org/show_bug.cgi?id=6046
 #   https://bugs.freedesktop.org/show_bug.cgi?id=9456
-ARCH_FLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing -DNDEBUG -DDEFAULT_DRIVER_DIR=\\\"%{driver_dir}\\\""
+# (blino) tree VRP in gcc-4.2.1 triggers misrendering in Blender,
+#         and hard lock with compiz (in r300_state.c)
+#   https://bugs.freedesktop.org/show_bug.cgi?id=11380
+#   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=32544
+ARCH_FLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing -fno-tree-vrp -DNDEBUG -DDEFAULT_DRIVER_DIR=\\\"%{driver_dir}\\\""
 export ARCH_FLAGS
 
 %make 	MKDEP=/usr/bin/makedepend \
