@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.1
-%define release			%mkrel 1
+%define release			%mkrel 2
 %define priority		500
 
 %define eglname			mesaegl
@@ -87,6 +87,7 @@ Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
 Patch100:	mesa-7.0.1-945GME.patch
 Patch101:	mesa-7.0.1-945GME-tex.patch
 Patch102:	mesa-7.0.1-G33-Q33-Q35.patch
+Patch103:	mesa-7.0.1-965GME-GLE.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -286,6 +287,7 @@ This package contains some demo programs for the Mesa library.
 %patch100 -p1 -b .945GME
 %patch101 -p1 -b .945GME-tex
 %patch102 -p1 -b .G33-Q33-Q35
+%patch103 -p1 -b .965GME-GLE
 
 pushd progs/demos && {
 	for i in *.c; do 
