@@ -298,7 +298,7 @@ INCLUDE_DIR=$RPM_BUILD_ROOT%{_includedir}
 DRI_DRIVER_DIR="%{driver_dir}"
 export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 
-# (blino) -fno-strict-aliasing is known to break some Mesa code
+# (blino) strict aliasing is known to break some Mesa code
 #   https://bugs.freedesktop.org/show_bug.cgi?id=6046
 #   https://bugs.freedesktop.org/show_bug.cgi?id=9456
 # (blino) tree VRP in gcc-4.2.1 triggers misrendering in Blender,
