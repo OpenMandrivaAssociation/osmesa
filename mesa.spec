@@ -301,8 +301,7 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 ARCH_FLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing -DNDEBUG -DDEFAULT_DRIVER_DIR=\\\"%{driver_dir}\\\""
 export ARCH_FLAGS
 
-# (tv) parallel build is broken:
-make 	MKDEP=/usr/bin/makedepend \
+%make 	MKDEP=/usr/bin/makedepend \
 	USING_EGL=%{enable_egl} \
 	DRI_DIRS=%{dri_drivers} \
 	DRI_DRIVER_SEARCH_DIR=%{driver_dir} \
