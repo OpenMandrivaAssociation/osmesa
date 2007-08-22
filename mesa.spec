@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.1
-%define release			%mkrel 2
+%define release			%mkrel 3
 %define priority		500
 
 %define eglname			mesaegl
@@ -84,6 +84,8 @@ Patch13:	Mesa-7.0-linux-dri-config.patch
 Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
 # git commit 90cc31f31bbc9039fcd9acab7d6e72f2c9a186bb, upstream bug 11879
 Patch44:	mesa-7.0.1-via_null_deref.patch
+# reported as upstream bug 12097
+Patch45:	mesa-7.0.1-via_null_deref2.patch
 
 # Intel chipsets support from upstream git
 Patch100:	mesa-7.0.1-945GME.patch
@@ -286,6 +288,7 @@ This package contains some demo programs for the Mesa library.
 %endif
 %patch13 -p1 -b .linux-dri-config
 %patch44 -p1 -b .via_null_deref
+%patch45 -p1 -b .via_null_deref2
 
 %patch100 -p1 -b .945GME
 %patch101 -p1 -b .945GME-tex
