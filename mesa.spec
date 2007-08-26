@@ -1,7 +1,6 @@
 %define	name			mesa
 %define version			7.0.1
-%define release			%mkrel 3
-%define priority		500
+%define release			%mkrel 4
 
 %define eglname			mesaegl
 %define glname			mesagl
@@ -122,6 +121,9 @@ Summary:	Files for Mesa (GL and GLX libs)
 Group:		System/Libraries
 Obsoletes:	%{oldlibglname} < 6.4 
 Provides:	%{oldlibglname} = %{version}-%{release}
+# (anssi) Forces the upgrade of x11-server-common to happen before
+# alternatives removal, which allows x11-server-common to grab the symlink.
+Conflicts:	x11-server-common < 1.3.0.0-17
 
 %package -n	%{libglname}-devel
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
@@ -380,13 +382,6 @@ pushd $RPM_BUILD_ROOT%{_libdir}/mesa
 for l in ../libGL.so.*; do cp -a $l .; done
 popd
 
-# (gb) use update-alternatives to manage several GL libraries/drivers
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/GL/
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/GL/%{libglname}.conf << EOF
-# This file is knowingly empty since %{_libdir} is a standard search path
-EOF
-touch $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/GL.conf
-
 # icons for three demos examples [we lack a frontend
 # to launch the demos obviously]
 install -m 755 -d $RPM_BUILD_ROOT%{_miconsdir}
@@ -409,18 +404,9 @@ rm -fr $RPM_BUILD_ROOT
 %postun -n %{libeglname} -p /sbin/ldconfig
 %endif
 
-%post -n %{libglname}
-/usr/sbin/update-alternatives --install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{_sysconfdir}/ld.so.conf.d/GL/%{libglname}.conf %{priority}
-if [ ! -L %{_sysconfdir}/ld.so.conf.d/GL.conf ]; then
-  /usr/sbin/update-alternatives --auto gl_conf
-fi
-/sbin/ldconfig
+%post -n %{libglname} -p /sbin/ldconfig
 
-%postun -n %{libglname}
-if [ ! -f %{_sysconfdir}/ld.so.conf.d/GL/%{libglname}.conf ]; then
-  /usr/sbin/update-alternatives --remove gl_conf %{_sysconfdir}/ld.so.conf.d/GL/%{libglname}.conf
-fi
-/sbin/ldconfig
+%postun -n %{libglname} -p /sbin/ldconfig
 
 %post -n %{libgluname} -p /sbin/ldconfig 
 
@@ -455,8 +441,6 @@ fi
 %files -n %{libglname}
 %defattr(-,root,root)
 %doc docs/COPYING
-%ghost %{_sysconfdir}/ld.so.conf.d/GL.conf
-%config %{_sysconfdir}/ld.so.conf.d/GL/%{libglname}.conf
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.*
