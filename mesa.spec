@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.1
-%define release			%mkrel 5
+%define release			%mkrel 6
 
 %define eglname			mesaegl
 %define glname			mesagl
@@ -43,7 +43,7 @@
 Name:		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Summary:	OpenGL 1.4 compatible 3D graphics library
+Summary:	OpenGL 2.1 compatible 3D graphics library
 Group:		System/Libraries
 BuildRequires:	tcl
 BuildRequires:	texinfo
@@ -209,10 +209,10 @@ Obsoletes: 	Mesa-demos < 6.4
 Provides:	Mesa-demos = %{version}-%{release}
 
 %description
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
 %description	source
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
 Source files required by the Xorg to enable glx support.
 
@@ -221,20 +221,20 @@ Mesa common metapackage devel
 
 %if %{enable_egl}
 %description -n	%{libeglname}
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 EGL parts.
 
 %description -n	%{libeglname}-devel
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 EGL development parts.
 %endif
 
 %description -n	%{libglname}
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 GL and GLX parts.
 
 %description -n	%{libglname}-devel
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
 This package contains the headers needed to compile Mesa programs.
 
@@ -254,7 +254,7 @@ and the mouse, drawing some geometric primitives (cubes, spheres, ...).
 GLUT can even create pop-up windows.
 
 %description -n	%{libglutname}-devel
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 glut parts.
 
 This package contains the headers needed to compile Mesa programs.
@@ -263,13 +263,13 @@ This package contains the headers needed to compile Mesa programs.
 GLw adds Motif bindings to the OpenGL "canvas" (Xt/Motif/OpenGL widget code).
 
 %description -n	%{libglwname}-devel
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 GLw parts.
 
 This package contains the headers needed to compile Mesa programs.
 
 %description	demos
-Mesa is an OpenGL 1.4 compatible 3D graphics library.
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
 This package contains some demo programs for the Mesa library.
 
