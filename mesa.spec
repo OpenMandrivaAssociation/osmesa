@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.1
-%define release			%mkrel 10
+%define release			%mkrel 11
 
 %define eglname			mesaegl
 %define glname			mesagl
@@ -328,7 +328,8 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 #         and hard lock with compiz (in r300_state.c)
 #   https://bugs.freedesktop.org/show_bug.cgi?id=11380
 #   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=32544
-ARCH_FLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing -fno-tree-vrp -DNDEBUG -DDEFAULT_DRIVER_DIR=\\\"%{driver_dir}\\\""
+# (tv) -O1 fixe some freeze on r200 (http://bugs.freedesktop.org/show_bug.cgi?id=10224)
+ARCH_FLAGS="$RPM_OPT_FLAGS -O1 -fno-strict-aliasing -fno-tree-vrp -DNDEBUG -DDEFAULT_DRIVER_DIR=\\\"%{driver_dir}\\\""
 export ARCH_FLAGS
 
 %make 	MKDEP=/usr/bin/makedepend \
