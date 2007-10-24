@@ -540,6 +540,3 @@ rm -fr $RPM_BUILD_ROOT
 %{_iconsdir}/*demos*.png
 %{_liconsdir}/*demos*.png
 
-%changelog
-* Tue Oct 23 2007 Thierry Vignaud <tvignaud@mandriva.com> 7.0.1-11.1mdv2008.1
-- disable patch 7
