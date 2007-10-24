@@ -71,8 +71,6 @@ Source5:	mesa-driver-install
 Patch2:		mesa-6.5.1-default_dri_dir.patch
 # Install EGL header files and fixes other minor compilations problems when enabling EGL
 Patch3:		mesa-egl_support.patch
-# static inline functions are broken on some architetures
-Patch6:		mesa-6.5-drop-static-inline.patch
 # Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
 Patch13:	Mesa-7.0-linux-dri-config.patch
 # remove unfinished GLX_ARB_render_texture
@@ -284,7 +282,6 @@ This package contains some demo programs for the Mesa library.
 %patch3 -p1 -b .egl_support
 %endif
 
-%patch6 -p0 -b .static_inline
 %patch13 -p1 -b .linux-dri-config
 %patch44 -p1 -b .via_null_deref
 %patch45 -p1 -b .via_null_deref2
