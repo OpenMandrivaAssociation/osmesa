@@ -73,8 +73,6 @@ Patch2:		mesa-6.5.1-default_dri_dir.patch
 Patch3:		mesa-egl_support.patch
 # static inline functions are broken on some architetures
 Patch6:		mesa-6.5-drop-static-inline.patch
-# In some cases radeon may have 0 bits depth
-Patch7:		mesa-radeon-0depthbits.patch
 # Fix compilation on x86_64 
 Patch9:		mesa-6.5-x86_64-fix-build.patch
 # Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
@@ -289,7 +287,6 @@ This package contains some demo programs for the Mesa library.
 %endif
 
 %patch6 -p0 -b .static_inline
-%patch7 -p1 -b .0depth
 %if "%{_lib}" != "lib"
 %patch9 -p0 -b .staticinline
 %endif
@@ -541,3 +538,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_miconsdir}/*demos*.png
 %{_iconsdir}/*demos*.png
 %{_liconsdir}/*demos*.png
+
+%changelog
+* Tue Oct 23 2007 Thierry Vignaud <tvignaud@mandriva.com> 7.0.1-11.1mdv2008.1
+- disable patch 7
