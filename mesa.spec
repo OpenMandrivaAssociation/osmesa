@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.1
-%define release			%mkrel 11
+%define release			%mkrel 12
 
 %define eglname			mesaegl
 %define glname			mesagl
@@ -73,8 +73,6 @@ Patch2:		mesa-6.5.1-default_dri_dir.patch
 Patch3:		mesa-egl_support.patch
 # static inline functions are broken on some architetures
 Patch6:		mesa-6.5-drop-static-inline.patch
-# Fix compilation on x86_64 
-Patch9:		mesa-6.5-x86_64-fix-build.patch
 # Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
 Patch13:	Mesa-7.0-linux-dri-config.patch
 # remove unfinished GLX_ARB_render_texture
@@ -287,9 +285,6 @@ This package contains some demo programs for the Mesa library.
 %endif
 
 %patch6 -p0 -b .static_inline
-%if "%{_lib}" != "lib"
-%patch9 -p0 -b .staticinline
-%endif
 %patch13 -p1 -b .linux-dri-config
 %patch44 -p1 -b .via_null_deref
 %patch45 -p1 -b .via_null_deref2
