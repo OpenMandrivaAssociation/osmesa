@@ -305,7 +305,7 @@ pushd progs/xdemos && {
 	done 
 } && popd
 
-chmod +x %{SOURCE3} %{SOURCE5}
+chmod +x %{SOURCE5}
 
 %build
 LIB_DIR=%{_lib}
@@ -390,6 +390,7 @@ tar jxvf %{SOURCE4} -C $RPM_BUILD_ROOT%{_iconsdir}
 perl -pi -e "s|\S+$RPM_BUILD_DIR\S*||g" $RPM_BUILD_ROOT/%{_libdir}/*.la
 
 # generate mesa source files
+chmod +x %{SOURCE3}
 %{SOURCE3} $RPM_BUILD_ROOT %{mesasrcdir}
 
 
