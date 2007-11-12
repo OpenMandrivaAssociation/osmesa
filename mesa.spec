@@ -449,7 +449,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/xmesa_x.h
 %{_includedir}/GL/xmesa_xf86.h
 %{_libdir}/libGL.so
-/usr/lib/pkgconfig/*.pc
+%_libdir/pkgconfig/*.pc
 
 #FIXME: check those headers
 %{_includedir}/GL/mglmesa.h
