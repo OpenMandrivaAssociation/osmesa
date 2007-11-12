@@ -1,6 +1,6 @@
 %define	name			mesa
-%define version			7.0.1
-%define release			%mkrel 12
+%define version			7.0.2
+%define release			%mkrel 1
 
 %define eglname			mesaegl
 %define glname			mesagl
@@ -75,21 +75,8 @@ Patch3:		mesa-egl_support.patch
 Patch13:	Mesa-7.0-linux-dri-config.patch
 # remove unfinished GLX_ARB_render_texture
 Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
-# git commit 90cc31f31bbc9039fcd9acab7d6e72f2c9a186bb, upstream bug 11879
-Patch44:	mesa-7.0.1-via_null_deref.patch
 # reported as upstream bug 12097
 Patch45:	mesa-7.0.1-via_null_deref2.patch
-
-# workaround + partial fix for mdv bug #34090, reported upstream
-# as bug #12614
-Patch46:	mesa-7.0.1-quadfunc_unfilled_rgba.patch
-Patch47:	mesa-7.0.1-read_rgba_span_rgb565_mmx.patch
-
-# Intel chipsets support from upstream git
-Patch100:	mesa-7.0.1-945GME.patch
-Patch101:	mesa-7.0.1-945GME-tex.patch
-Patch102:	mesa-7.0.1-G33-Q33-Q35.patch
-Patch103:	mesa-7.0.1-965GME-GLE.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -283,15 +270,7 @@ This package contains some demo programs for the Mesa library.
 %endif
 
 %patch13 -p1 -b .linux-dri-config
-%patch44 -p1 -b .via_null_deref
 %patch45 -p1 -b .via_null_deref2
-%patch46 -p1 -b .bug34090
-%patch47 -p1 -b .bug34090
-
-%patch100 -p1 -b .945GME
-%patch101 -p1 -b .945GME-tex
-%patch102 -p1 -b .G33-Q33-Q35
-%patch103 -p1 -b .965GME-GLE
 
 pushd progs/demos && {
 	for i in *.c; do 
@@ -467,6 +446,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/xmesa_x.h
 %{_includedir}/GL/xmesa_xf86.h
 %{_libdir}/libGL.so
+/usr/lib/pkgconfig/*.pc
 
 #FIXME: check those headers
 %{_includedir}/GL/mglmesa.h
