@@ -77,6 +77,8 @@ Patch13:	Mesa-7.0-linux-dri-config.patch
 Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
 # reported as upstream bug 12097
 Patch45:	mesa-7.0.1-via_null_deref2.patch
+# (tv) fix build:
+Patch60: mesa-7.0.2-build-config.patch 
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -271,6 +273,7 @@ This package contains some demo programs for the Mesa library.
 
 %patch13 -p1 -b .linux-dri-config
 %patch45 -p1 -b .via_null_deref2
+%patch60 -p1 -b .fix_build
 
 pushd progs/demos && {
 	for i in *.c; do 
