@@ -399,7 +399,6 @@ rm -fr $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %doc docs/COPYING docs/README.*
-%doc docs/RELNOTES-3* docs/RELNOTES-4.* 
 
 %files source -f mesa-source-rpm-filelist.lst
 %defattr(-,root,root)
