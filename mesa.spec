@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.2
-%define release			%mkrel 2
+%define release			%mkrel 3
 
 %define eglname			mesaegl
 %define glname			mesagl
