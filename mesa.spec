@@ -32,7 +32,7 @@
 #       SSE seems to have problem on some apps (gtulpas) for probing.
 %define	dri_drivers_i386	"i810 i915tex i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx"
 
-%define	dri_drivers_x86_64	"mach64 i810 i915tex i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx"
+%define	dri_drivers_x86_64	"i810 i915tex i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx"
 %define	dri_drivers_ppc		"mach64 r128 r200 r300 radeon tdfx"
 %define	dri_drivers_ppc64	""
 %define	dri_drivers_ia64	"i810 i915 i965 mga r128 r200 radeon"
@@ -45,19 +45,22 @@ Version: 	%{version}
 Release: 	%{release}
 Summary:	OpenGL 2.1 compatible 3D graphics library
 Group:		System/Libraries
+
 BuildRequires:	tcl
 BuildRequires:	texinfo
+BuildRequires:	libxfixes-devel		>= 4.0.3
+BuildRequires:	libxt-devel		>= 1.0.5
+BuildRequires:	libxmu-devel		>= 1.0.3
+BuildRequires:	libx11-devel		>= 1.1.3
+BuildRequires:	libxdamage-devel	>= 1.1.1
+BuildRequires:	libexpat-devel		>= 2.0.1
 BuildRequires:	makedepend
-BuildRequires:	libexpat-devel >= 2.0.1
-BuildRequires:	x11-proto-devel >= 1.0.0
-BuildRequires:	libx11-devel >= 1.0.0
-BuildRequires:	libdrm-devel >= 2.0.1
-BuildRequires:	libxext-devel >= 1.0.0
-BuildRequires:	libxxf86vm-devel >= 1.0.0
-BuildRequires:	libxmu-devel >= 1.0.0
-BuildRequires:	libxi-devel >= 1.0.0
-BuildRequires:  libxfixes-devel
-BuildRequires:  libxdamage-devel
+BuildRequires:	x11-proto-devel		>= 7.3
+BuildRequires:	libdrm-devel		>= 2.3.0
+
+BuildRequires:	libxext-devel		>= 1.0.3
+BuildRequires:	libxxf86vm-devel	>= 1.0.1
+BuildRequires:	libxi-devel		>= 1.1.3
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}.tar.bz2
