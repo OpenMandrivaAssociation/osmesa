@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.2
-%define release			%mkrel 3
+%define release			%mkrel 4
 
 %define eglname			mesaegl
 %define glname			mesagl
@@ -70,18 +70,110 @@ Source3:	mesa-source-file-generator
 Source4:	Mesa-icons.tar.bz2
 Source5:	mesa-driver-install
 
+# git format-patch mesa_7_0_2..origin/mesa_7_0_branch
+Patch2:   0002-remove-dependency-on-libGLU.patch
+Patch5:   0005-fix-bogus-assumption-if-ddx-has-set-up-surface-reg-f.patch
+Patch6:   0006-fix-position-invariant-vertex-programs-for-sw-tnl.patch
+Patch7:   0007-added-gl_dispatch_stub_772.patch
+Patch8:   0008-fix-out-of-bounds-array-index-ix-1.patch
+Patch9:   0009-fix-some-texture-format-assertions-etc.patch
+Patch10:  0010-clamp-lambda-to-Min-MaxLod.patch
+Patch11:  0011-Rename-glut_fbc.c-glut_fcb.c-cb-callback.patch
+Patch12:  0012-Obsolete.patch
+Patch13:  0013-bring-over-Fortran-fixes-from-master.patch
+Patch14:  0014-Initial-7.0.3-relnotes.patch
+Patch15:  0015-fix-z-buffer-read-write-issue-with-rv100-like-chips.patch
+Patch16:  0016-Recompute-ctx-Point._Size-if-GL_POINT_SIZE_MIN-MAX.patch
+Patch18:  0018-need-to-check-border-width-in-sample_linear_2d-f.patch
+Patch19:  0019-Fix-parsing-of-gl_FrontLightModelProduct.sceneColor.patch
+Patch21:  0021-Consolidate-texture-fetch-code-and-use-partial-deriv.patch
+Patch22:  0022-i915tex-Actually-wait-for-previous-commands-to-comp.patch
+Patch23:  0023-i915tex-Some-additional-blit-fixes-and-assertions.patch
+Patch24:  0024-i915tex-Catch-cases-where-not-all-state-is-emitted.patch
+Patch25:  0025-i915tex-Fix-some-minor-batchbuffer-errors.patch
+Patch26:  0026-improve-24-bit-Z-to-32-bit-Z-conversion.patch
+Patch27:  0027-set-fp-UsesKill-when-emitting-OPCODE_KIL.patch
+Patch30:  0030-use-DEFAULT_SOFTWARE_DEPTH_BITS.patch
+Patch31:  0031-r200-Fix-texture-format-regression-on-big-endian-sy.patch
+Patch32:  0032-make-sure-state-token-values-are-fully-initialized.patch
+Patch33:  0033-Move-_mesa_load_tracked_matrices-from-TNL-module-t.patch
+Patch34:  0034-cleanups-comments.patch
+Patch35:  0035-New-ctx-Driver.Map-UnmapTexture-functions-for-acc.patch
+Patch36:  0036-i965-use-uncompressed-instruction-to-ensure-only.patch
+Patch38:  0038-fix-broken-two-sided-stencil.patch
+Patch39:  0039-fix-build-remove-ctx-_Facing-assignment.patch
+Patch40:  0040-i915tex-Fix-up-state-changes-for-i8xx.patch
+Patch41:  0041-added-missing-quote-char.patch
+Patch44:  0044-fix-DD_TRI_LIGHT_TWOSIDE-bug-13368.patch
+Patch46:  0046-Use-Bsymbolic-for-linking-all-shared-objects.patch
+Patch47:  0047-Fix-gl_FrontFacing-compilation-problem.patch
+Patch48:  0048-fix-span-facing-computation-and-gl_FrontFacing-init.patch
+Patch50:  0050-configs-Fix-linking-with-static-libGL-and-as-need.patch
+Patch51:  0051-fix-polygon-cull-regression.patch
+Patch52:  0052-i915tex-Fix-issues-with-glDrawBuffer-GL_NONE.patch
+Patch53:  0053-fix-NEED_SECONDARY_COLOR-for-vert-frag-progs.patch
+Patch54:  0054-simplify-update-two-side-lighting-test-follow-on-to.patch
+Patch55:  0055-Remove-I-TOP-src-mesa-transform.patch
+Patch56:  0056-i965-restore-the-flag-after-building-the-subroutine.patch
+Patch57:  0057-i965-allocate-GRF-registers-before-building-subrout.patch
+Patch58:  0058-return-correct-size-from-glGetActiveUniform-bug-137.patch
+Patch60:  0060-fix-GL_LINE_LOOP-with-drivers-using-own-render-pipel.patch
+Patch64:  0064-Fix-several-bugs-relating-to-uniforms-and-attributes.patch
+Patch65:  0065-More-fixes-to-shader_api.patch
+Patch67:  0067-Make-use-of-count-in-_mesa_uniform_matrix.patch
+Patch70:  0070-additional-GL_COLOR_ATTACHMENTx_EXT-cases-bug-13767.patch
+Patch71:  0071-fix-vbo-display-list-memleak-upon-context-destructio.patch
+Patch72:  0072-additional-GL_COLOR_ATTACHMENTx_EXT-cases-bug-13767.patch
+Patch73:  0073-additional-stub-functions.patch
+Patch74:  0074-fix-depth-1-typo-in-glTexImage3D-proxy-code.patch
+Patch76:  0076-i915tex-Centralize-mipmap-pitch-computations.patch
+Patch77:  0077-i965-Fix-unresolved-symbol-intel_miptree_pitch_alig.patch
+Patch78:  0078-i965-Fix-byte-vs.-pixel-unit-mixup-for-aligned-text.patch
+Patch80:  0080-define-M_PI-if-needed.patch
+Patch81:  0081-remove-unused-var.patch
+Patch82:  0082-Don-t-build-yuvrect_client-by-default.patch
+Patch83:  0083-fix-pc-vs.-gc-ps-usage-bug-14197.patch
+Patch85:  0085-glxinfo-Fix-multisample-visual-reporting.patch
+Patch87:  0087-i965-re-define-the-type-of-reg.loopcount.patch
+Patch88:  0088-i965-valid-message-length-includes-message-header.patch
+Patch89:  0089-fix-some-pbo-path-problems.patch
+Patch90:  0090-pull-some-more-fixes-for-pbo-access-from-trunk.patch
+Patch91:  0091-R300-RV410-SE-chips-have-half-the-pipes-of-regular.patch
+Patch92:  0092-Add-new-RV380-pci-id.patch
+Patch93:  0093-check-if-fb-Delete-is-null-bugs-13507-14293.patch
+Patch95:  0095-fix-w-component-of-glsl-vec4-asin.patch
+Patch96:  0096-regenerate-glsl-library-functions.patch
+Patch97:  0097-965-Fix-memory-leak-when-deleting-buffers-with-bac.patch
+Patch98:  0098-Fix-bug-9871-enable-user-defined-clip-planes-for-R3.patch
+Patch101: 0101-_mesa_swizzle_ubyt_image-Don-t-use-single-swizzle_c.patch
+Patch103: 0103-fix-bug-with-generated-fragment-programs-if-vertex-s.patch
+
+# Patches 104 and 105 have been modified to not modify documentation files,
+# as several patches are not applied
+Patch104: 0104-Fix-glBindTexture-crash-bug-14514.patch
+Patch105: 0105-Fix-potential-glDrawPixels-GL_DEPTH_COMPONENT-crash.patch
+
+Patch106: 0106-i965-new-integrated-graphics-chipset-support.patch
+Patch109: 0109-Fix-glBegin-time-test-for-invalid-programs-shaders.patch
+Patch110: 0110-raise-GL_INVALID_OPERATION-if-glProgramString-compil.patch
+Patch111: 0111-Fix-point-rasterization-regression-caused-by-commit.patch
+Patch115: 0115-Replace-glut_fbc.c-with-glut_fcb.c-cb-callback.patch
+Patch116: 0116-Don-t-Swap-buffer-if-a-DRIDrawable-is-entirely-obscu.patch
+Patch117: 0117-state.depth.range-alpha-value-should-be-1-not-0-bu.patch
+
+
 # DRI modules are not under /usr/X11R6 anymore
-Patch2:		mesa-6.5.1-default_dri_dir.patch
+Patch1000:	mesa-6.5.1-default_dri_dir.patch
 # Install EGL header files and fixes other minor compilations problems when enabling EGL
-Patch3:		mesa-egl_support.patch
+Patch1001:	mesa-egl_support.patch
 # Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
-Patch13:	Mesa-7.0-linux-dri-config.patch
+Patch1002:	Mesa-7.0-linux-dri-config.patch
 # remove unfinished GLX_ARB_render_texture
-Patch43:	mesa-6.5.2-no-ARB_render_texture.patch
+Patch1003:	mesa-6.5.2-no-ARB_render_texture.patch
 # reported as upstream bug 12097
-Patch45:	mesa-7.0.1-via_null_deref2.patch
+Patch1004:	mesa-7.0.1-via_null_deref2.patch
 # (tv) fix build:
-Patch60: mesa-7.0.2-build-config.patch 
+Patch1005:	mesa-7.0.2-build-config.patch 
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -267,16 +359,102 @@ This package contains some demo programs for the Mesa library.
 %prep
 %setup -q -n Mesa-%{version} -b1 -b2
 
-%patch43 -p1 -b .no-ARB_render_texture
-%patch2 -p1 -b .default_dri_dir
+%patch2 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch18 -p1
+%patch19 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
+%patch41 -p1
+%patch44 -p1
+%patch46 -p1
+%patch47 -p1
+%patch48 -p1
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
+%patch58 -p1
+%patch60 -p1
+%patch64 -p1
+%patch65 -p1
+%patch67 -p1
+%patch70 -p1
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
+%patch74 -p1
+%patch76 -p1
+%patch77 -p1
+%patch78 -p1
+%patch80 -p1
+%patch81 -p1
+%patch82 -p1
+%patch83 -p1
+%patch85 -p1
+%patch87 -p1
+%patch88 -p1
+%patch89 -p1
+%patch90 -p1
+%patch91 -p1
+%patch92 -p1
+%patch93 -p1
+%patch95 -p1
+%patch96 -p1
+%patch97 -p1
+%patch98 -p1
+%patch101 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch115 -p1
+%patch116 -p1
+%patch117 -p1
+
+%patch1003 -p1 -b .no-ARB_render_texture
+%patch1000 -p1 -b .default_dri_dir
 
 %if %{enable_egl}
-%patch3 -p1 -b .egl_support
+%patch1001 -p1 -b .egl_support
 %endif
 
-%patch13 -p1 -b .linux-dri-config
-%patch45 -p1 -b .via_null_deref2
-%patch60 -p1 -b .fix_build
+%patch1002 -p1 -b .linux-dri-config
+%patch1004 -p1 -b .via_null_deref2
+%patch1005 -p1 -b .fix_build
 
 pushd progs/demos && {
 	for i in *.c; do 
@@ -341,21 +519,13 @@ make INSTALL_DIR=/$RPM_BUILD_ROOT%{_prefix} \
      LIB_DIR=$LIB_DIR \
      install
 
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
-for i in bounce clearspd drawpix engine gamma gears glinfo glutfx isosurf morph3d \
-         multiarb paltex pointblast reflect renormal \
-         spectex stex3d tessdemo texcyl texobj trispd winpos; do
-  cp -v progs/demos/$i $RPM_BUILD_ROOT%{_bindir}
+mkdir -p %{buildroot}/%{_bindir}
+for demo in `find progs/demos -type f -perm /a+x` `find progs/xdemos -type f -perm /a+x`; do
+    cp -v $demo %{buildroot}/%{_bindir}
 done
-
-for i in glthreads glxdemo glxgears glxgears_fbconfig glxcontexts glxheads \
-        glxinfo glxpixmap glxpbdemo glxswapcontrol manywin offset overlay \
-        pbinfo pbdemo wincopy xfont xrotfontdemo yuvrect_client; do
-  cp -v progs/xdemos/$i $RPM_BUILD_ROOT%{_bindir} 
-done
-
 # (fg) So that demos at least work :)
-cp -v progs/images/*rgb progs/demos/isosurf.dat $RPM_BUILD_ROOT%{_libdir}/mesa-demos-data
+cp -v progs/images/*rgb progs/demos/isosurf.dat %{buildroot}/%{_libdir}/mesa-demos-data
+
 
 # (blino) hardlink libGL files in %{_libdir}/mesa
 # to prevent proprietary driver installers from removing them
