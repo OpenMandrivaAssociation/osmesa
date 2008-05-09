@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.3
-%define release			%mkrel 1
+%define release			%mkrel 2
 
 %define makedepend		%{_bindir}/gccmakedep
 
@@ -19,6 +19,13 @@
 %define libgluname		%mklibname %{gluname} %{glumajor}
 %define libglutname		%mklibname %{glutname} %{glutmajor}
 %define libglwname		%mklibname %{glwname} %{glwmajor}
+
+# Architecture-independent Virtual provides:
+%define libeglname_virt		lib%{eglname}
+%define libglname_virt		lib%{glname}
+%define libgluname_virt		lib%{gluname}
+%define libglutname_virt	lib%{glutname}
+%define libglwname_virt		lib%{glwname}
 
 %define oldlibglname		%mklibname MesaGL 1
 %define oldlibgluname		%mklibname MesaGLU 1
@@ -101,6 +108,7 @@ Requires:	%{libglname}-devel >= %{version}
 %package -n	%{libeglname}
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
+Provides:	%{libeglname_virt} = %{version}-%{release}
 
 %package -n	%{libeglname}-devel
 Summary:	Development files for Mesa (EGL libs)
@@ -114,6 +122,8 @@ Summary:	Files for Mesa (GL and GLX libs)
 Group:		System/Libraries
 Obsoletes:	%{oldlibglname} < 6.4 
 Provides:	%{oldlibglname} = %{version}-%{release}
+Provides:	%{libglname_virt} = %{version}-%{release}
+
 # (anssi) Forces the upgrade of x11-server-common to happen before
 # alternatives removal, which allows x11-server-common to grab the symlink.
 Conflicts:	x11-server-common < 1.3.0.0-17
@@ -135,6 +145,7 @@ Summary:	Files for Mesa (GLU libs)
 Group:		System/Libraries
 Obsoletes:	%{oldlibgluname} < 6.4
 Provides:	%{oldlibgluname} = %{version}-%{release}
+Provides:	%{libgluname_virt} = %{version}-%{release}
 
 %package -n	%{libgluname}-devel
 Summary:	Development files for GLU libs
@@ -155,6 +166,7 @@ Provides:	Mesa-common = %{version}-%{release} hackMesa-common = %{version}
 Obsoletes:	Mesa-common <= %{version} hackMesa-common <= %{version}
 Obsoletes:	%{oldlibglutname} < 6.4
 Provides:	%{oldlibglutname} = %{version}-%{release}
+Provides:	%{libglutname_virt} = %{version}-%{release}
 
 %package -n	%{libglutname}-devel
 Summary:	Development files for glut libs
@@ -172,6 +184,7 @@ Summary:	Files for Mesa (glw libs)
 Group:		System/Libraries
 Provides:	Mesa-common = %{version}-%{release} hackMesa-common = %{version}
 Obsoletes:	Mesa-common <= %{version} hackMesa-common <= %{version}
+Provides:	%{libglwname_virt} = %{version}-%{release}
 
 %package -n	%{libglwname}-devel
 Summary:	Development files for glw libs
