@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.3
-%define release			%mkrel 2
+%define release			%mkrel 3
 
 %define makedepend		%{_bindir}/gccmakedep
 
@@ -385,6 +385,10 @@ perl -pi -e "s|\S+$RPM_BUILD_DIR\S*||g" $RPM_BUILD_ROOT/%{_libdir}/*.la
 chmod +x %{SOURCE3}
 %{SOURCE3} $RPM_BUILD_ROOT %{mesasrcdir}
 
+%ifarch %{x86_64}
+mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
+%endif
+
 
 %clean
 rm -fr $RPM_BUILD_ROOT
@@ -437,8 +441,8 @@ rm -fr $RPM_BUILD_ROOT
 %dir %{_libdir}/dri
 %{_libdir}/dri/*
 %endif
-%ifarch %{ix86}
-#%{_libdir}/modules/*
+%ifarch %{x86_64}
+%{_prefix}/lib/dri
 %endif
 
 %files -n %{libglname}-devel
