@@ -394,21 +394,37 @@ mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 rm -fr $RPM_BUILD_ROOT
 
 %if %{enable_egl}
+%if %mdkversion < 200900
 %post -n %{libeglname} -p /sbin/ldconfig
+%endif
+%if %mdkversion < 200900
 %postun -n %{libeglname} -p /sbin/ldconfig
 %endif
+%endif
 
+%if %mdkversion < 200900
 %post -n %{libglname} -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %postun -n %{libglname} -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %post -n %{libgluname} -p /sbin/ldconfig 
+%endif
 
+%if %mdkversion < 200900
 %postun -n %{libgluname} -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %post -n %{libglutname} -p /sbin/ldconfig 
+%endif
 
+%if %mdkversion < 200900
 %postun -n %{libglutname} -p /sbin/ldconfig
+%endif
 
 %files
 %defattr(-,root,root)
