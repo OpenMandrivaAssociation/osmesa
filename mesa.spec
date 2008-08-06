@@ -1,6 +1,6 @@
 %define	name			mesa
 %define version			7.0.3
-%define release			%mkrel 3
+%define release			%mkrel 4
 
 %define makedepend		%{_bindir}/gccmakedep
 
