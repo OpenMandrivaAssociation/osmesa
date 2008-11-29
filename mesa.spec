@@ -1,6 +1,14 @@
+%define git 20081001
 %define	name			mesa
-%define version			7.0.4
+%define version			7.2
+%if %{git}
+# (cg) Normally git snapshots are prefixed 0. but this is a post-release snapshot..
+# I could pre-increment but I want the preserve the ability to go to an official build
+# should this cause problems ;)
+%define release			%mkrel 1.%{git}.1
+%else
 %define release			%mkrel 1
+%endif
 
 %define makedepend		%{_bindir}/gccmakedep
 
@@ -72,15 +80,20 @@ BuildRequires:	libxxf86vm-devel	>= 1.0.1
 BuildRequires:	libxi-devel		>= 1.1.3
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
+%if %{git}
+# (cg) Current commit ref: 08b9e29c1d4d28fee13658b0421b4522d9c36b3a
+Source0:	%{name}-%{git}.tar.bz2
+%else
 Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}.tar.bz2
 Source1:	http://prdownloads.sourceforge.net/mesa3d/MesaDemos-%{version}.tar.bz2
 Source2:	http://prdownloads.sourceforge.net/mesa3d/MesaGLUT-%{version}.tar.bz2
+%endif
 Source3:	mesa-source-file-generator
 Source4:	Mesa-icons.tar.bz2
 Source5:	mesa-driver-install
 
 # DRI modules are not under /usr/X11R6 anymore
-Patch1000:	mesa-6.5.1-default_dri_dir.patch
+Patch1000:	mesa-7.2-default_dri_dir.patch
 # Install EGL header files and fixes other minor compilations problems when enabling EGL
 Patch1001:	mesa-egl_support.patch
 # Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
@@ -90,7 +103,19 @@ Patch1003:	mesa-6.5.2-no-ARB_render_texture.patch
 # reported as upstream bug 12097
 Patch1004:	mesa-7.0.1-via_null_deref2.patch
 # (tv) fix build:
-Patch1005:	mesa-7.0.2-build-config.patch 
+Patch1005:	mesa-7.2-build-config.patch
+# (cg) Revert this as causes loops on intel
+Patch1006: mesa-7.2-intel-revert-vbl.patch
+# (cg) Disable warning on non-gem mode
+Patch1007: mesa-7.1-disable-intel-classic-warn.patch
+# (cg) Patch from fedora/upstream - compiz black borders
+Patch1008: mesa-7.2-depth-override-fix.patch
+# (cg) Patch from fedora - r300 update (currently disabled as it requires a custom libdrm)
+Patch1009: mesa-7.2-r300-bufmgr.patch
+# (cg) Patch from fedora - save ~20Megs on build
+Patch1010: mesa-7.1-link-shared.patch
+# (cg) Shudduppa ya face (patch from Fedora)
+Patch1011: mesa-7.1-nukeglthread-debug.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -280,7 +305,11 @@ Mesa is an OpenGL 2.1 compatible 3D graphics library.
 This package contains some demo programs for the Mesa library.
 
 %prep
+%if %{git}
+%setup -q -n mesa-%{git}
+%else
 %setup -q -n Mesa-%{version} -b1 -b2
+%endif
 
 %patch1003 -p1 -b .no-ARB_render_texture
 %patch1000 -p1 -b .default_dri_dir
@@ -292,6 +321,12 @@ This package contains some demo programs for the Mesa library.
 %patch1002 -p1 -b .linux-dri-config
 %patch1004 -p1 -b .via_null_deref2
 %patch1005 -p1 -b .fix_build
+%patch1006 -p1 -b .intel-vbl
+%patch1007 -p1 -b .intel-nogem
+%patch1008 -p1 -b .black-borders
+#patch1009 -p1 -b .r300
+%patch1010 -p1 -b .link-shared
+%patch1011 -p1 -b .glthread-dbg
 
 pushd progs/demos && {
 	for i in *.c; do 
@@ -356,6 +391,8 @@ make INSTALL_DIR=/$RPM_BUILD_ROOT%{_prefix} \
      LIB_DIR=$LIB_DIR \
      install
 
+# (cg) Needed for the link-shared patch
+install -m 0755 -t $RPM_BUILD_ROOT%{_libdir} %{_lib}/libdricore.so >& /dev/null
 mkdir -p %{buildroot}/%{_bindir}
 for demo in `find progs/demos -type f -perm /a+x` `find progs/xdemos -type f -perm /a+x`; do
     cp -v $demo %{buildroot}/%{_bindir}
@@ -456,6 +493,7 @@ rm -fr $RPM_BUILD_ROOT
 %ifnarch ppc64
 %dir %{_libdir}/dri
 %{_libdir}/dri/*
+%{_libdir}/libdricore.so
 %endif
 %ifarch %{x86_64}
 %{_prefix}/lib/dri
@@ -491,6 +529,10 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/uglmesa.h
 %{_includedir}/GL/vms_x_fix.h
 %{_includedir}/GL/wmesa.h
+%dir %{_includedir}/GL/internal
+%{_includedir}/GL/internal/dri_interface.h
+%{_includedir}/GL/directfbgl.h
+%{_includedir}/GL/miniglx.h
 
 %files -n %{libgluname}
 %defattr(-,root,root)
