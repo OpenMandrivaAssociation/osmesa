@@ -5,7 +5,7 @@
 # (cg) Normally git snapshots are prefixed 0. but this is a post-release snapshot..
 # I could pre-increment but I want the preserve the ability to go to an official build
 # should this cause problems ;)
-%define release			%mkrel 1.%{git}.1
+%define release			%mkrel 1.%{git}.2
 %else
 %define release			%mkrel 1
 %endif
@@ -47,14 +47,13 @@
 #FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
-%define	dri_drivers_i386	"i810 i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx"
-
-%define	dri_drivers_x86_64	"i810 i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx"
-%define	dri_drivers_ppc		"mach64 r128 r200 r300 radeon tdfx"
-%define	dri_drivers_ppc64	""
-%define	dri_drivers_ia64	"i810 i915 i965 mga r128 r200 radeon"
-%define	dri_drivers_alpha	"mga r128 r200 radeon"
-%define	dri_drivers_sparc	"ffb mach64 mga radeon savage"
+%define	dri_drivers_i386	"swrast i810 i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx"
+%define	dri_drivers_x86_64	"swrast i810 i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx"
+%define	dri_drivers_ppc		"swrast mach64 r128 r200 r300 radeon tdfx"
+%define	dri_drivers_ppc64	"swrast"
+%define	dri_drivers_ia64	"swrast i810 i915 i965 mga r128 r200 radeon"
+%define	dri_drivers_alpha	"swrast mga r128 r200 radeon"
+%define	dri_drivers_sparc	"swrast ffb mach64 mga radeon savage"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
 Name:		%{name}
