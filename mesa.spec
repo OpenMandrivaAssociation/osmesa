@@ -1,11 +1,11 @@
-%define git 20081001
+# (cg) Cheater...
+%define Werror_cflags %nil
+
+%define git 20081220
 %define	name			mesa
-%define version			7.2
+%define version			7.3
 %if %{git}
-# (cg) Normally git snapshots are prefixed 0. but this is a post-release snapshot..
-# I could pre-increment but I want the preserve the ability to go to an official build
-# should this cause problems ;)
-%define release			%mkrel 1.%{git}.2
+%define release			%mkrel 0.%{git}.1
 %else
 %define release			%mkrel 1
 %endif
@@ -80,7 +80,7 @@ BuildRequires:	libxi-devel		>= 1.1.3
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 %if %{git}
-# (cg) Current commit ref: 08b9e29c1d4d28fee13658b0421b4522d9c36b3a
+# (cg) Current commit ref: f83f5ec8f5f1159cfd0ec2596ceab725c073266e
 Source0:	%{name}-%{git}.tar.bz2
 %else
 Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}.tar.bz2
@@ -91,30 +91,34 @@ Source3:	mesa-source-file-generator
 Source4:	Mesa-icons.tar.bz2
 Source5:	mesa-driver-install
 
-# DRI modules are not under /usr/X11R6 anymore
-Patch1000:	mesa-7.2-default_dri_dir.patch
-# Install EGL header files and fixes other minor compilations problems when enabling EGL
-Patch1001:	mesa-egl_support.patch
-# Fix linux-dri so it can be used for all archs (thanks Christiaan Welvaart)
-Patch1002:	Mesa-7.0-linux-dri-config.patch
-# remove unfinished GLX_ARB_render_texture
-Patch1003:	mesa-6.5.2-no-ARB_render_texture.patch
-# reported as upstream bug 12097
-Patch1004:	mesa-7.0.1-via_null_deref2.patch
-# (tv) fix build:
-Patch1005:	mesa-7.2-build-config.patch
-# (cg) Revert this as causes loops on intel
-Patch1006: mesa-7.2-intel-revert-vbl.patch
-# (cg) Disable warning on non-gem mode
-Patch1007: mesa-7.1-disable-intel-classic-warn.patch
-# (cg) Patch from fedora/upstream - compiz black borders
-Patch1008: mesa-7.2-depth-override-fix.patch
-# (cg) Patch from fedora - r300 update (currently disabled as it requires a custom libdrm)
-Patch1009: mesa-7.2-r300-bufmgr.patch
-# (cg) Patch from fedora - save ~20Megs on build
-Patch1010: mesa-7.1-link-shared.patch
-# (cg) Shudduppa ya face (patch from Fedora)
-Patch1011: mesa-7.1-nukeglthread-debug.patch
+
+# Instructions to setup your repository clone
+# git://git.freedesktop.org/git/mesa/mesa
+# git checkout master
+# git branch -b mdv-7.3-pre20081220-redhat
+# git am ../03??-*.patch
+# git branch -b mdv-7.3-pre20081220-patches
+# git am ../09??-*.patch
+
+# Patches "liberated" from Fedora: 
+# http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
+# git format-patch --start-number 300 master..mdv-7.3-pre20081220-redhat
+Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
+Patch301: 0301-RH-r300-bufmgr-v1.11.patch
+Patch302: 0302-RH-mesa-7.1-link-shared-v1.3.patch
+Patch303: 0303-RH-intel-revert-vbl-v1.1.patch
+Patch304: 0304-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
+Patch305: 0305-RH-intel-triple-remove-v1.1.patch
+Patch306: 0306-RH-intel-fix-sarea-define-v1.2.patch
+
+# Mandriva patches
+# git format-patch --start-number 900 mdv-7.3-pre20081220-redhat..mdv-7.3-pre20081220-patches
+Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
+Patch901: 0901-Install-EGL-header-files-and-fixes-other-minor-compi.patch
+Patch902: 0902-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
+Patch903: 0903-remove-unfinished-GLX_ARB_render_texture.patch
+Patch904: 0904-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
+
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -310,22 +314,21 @@ This package contains some demo programs for the Mesa library.
 %setup -q -n Mesa-%{version} -b1 -b2
 %endif
 
-%patch1003 -p1 -b .no-ARB_render_texture
-%patch1000 -p1 -b .default_dri_dir
+%patch300 -p1
+%patch301 -p1
+%patch302 -p1
+%patch303 -p1
+%patch304 -p1
+%patch305 -p1
+#patch306 -p1
 
+%patch900 -p1
 %if %{enable_egl}
-%patch1001 -p1 -b .egl_support
+%patch901 -p1
 %endif
-
-%patch1002 -p1 -b .linux-dri-config
-%patch1004 -p1 -b .via_null_deref2
-%patch1005 -p1 -b .fix_build
-%patch1006 -p1 -b .intel-vbl
-%patch1007 -p1 -b .intel-nogem
-%patch1008 -p1 -b .black-borders
-#patch1009 -p1 -b .r300
-%patch1010 -p1 -b .link-shared
-%patch1011 -p1 -b .glthread-dbg
+%patch902 -p1
+%patch903 -p1
+%patch904 -p1
 
 pushd progs/demos && {
 	for i in *.c; do 
