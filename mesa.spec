@@ -4,10 +4,11 @@
 %define git 20081220
 %define	name			mesa
 %define version			7.3
+%define rel			2
 %if %{git}
-%define release			%mkrel 0.%{git}.1
+%define release			%mkrel 0.%{git}.%{rel}
 %else
-%define release			%mkrel 1
+%define release			%mkrel %{rel}
 %endif
 
 %define makedepend		%{_bindir}/gccmakedep
@@ -315,7 +316,7 @@ This package contains some demo programs for the Mesa library.
 %endif
 
 %patch300 -p1
-%patch301 -p1
+#patch301 -p1
 %patch302 -p1
 %patch303 -p1
 %patch304 -p1
