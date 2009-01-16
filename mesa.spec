@@ -1,10 +1,10 @@
 # (cg) Cheater...
 %define Werror_cflags %nil
 
-%define git 20081220
+%define git 20090116
 %define	name			mesa
 %define version			7.3
-%define rel			2
+%define rel			1
 %if %{git}
 %define release			%mkrel 0.%{git}.%{rel}
 %else
@@ -81,7 +81,7 @@ BuildRequires:	libxi-devel		>= 1.1.3
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 %if %{git}
-# (cg) Current commit ref: f83f5ec8f5f1159cfd0ec2596ceab725c073266e
+# (ander) Current commit ref: mesa_7_3_rc2
 Source0:	%{name}-%{git}.tar.bz2
 %else
 Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}.tar.bz2
@@ -109,7 +109,7 @@ Patch301: 0301-RH-r300-bufmgr-v1.11.patch
 Patch302: 0302-RH-mesa-7.1-link-shared-v1.3.patch
 Patch303: 0303-RH-intel-revert-vbl-v1.1.patch
 Patch304: 0304-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
-Patch305: 0305-RH-intel-triple-remove-v1.1.patch
+# (ander) patch 305 was applied upstream
 Patch306: 0306-RH-intel-fix-sarea-define-v1.2.patch
 
 # Mandriva patches
@@ -320,7 +320,6 @@ This package contains some demo programs for the Mesa library.
 %patch302 -p1
 %patch303 -p1
 %patch304 -p1
-%patch305 -p1
 #patch306 -p1
 
 %patch900 -p1
@@ -515,21 +514,14 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
-%{_includedir}/GL/xmesa.h
-%{_includedir}/GL/xmesa_x.h
-%{_includedir}/GL/xmesa_xf86.h
 %{_libdir}/libGL.so
 %_libdir/pkgconfig/*.pc
 
 #FIXME: check those headers
 %{_includedir}/GL/mglmesa.h
-%{_includedir}/GL/amesa.h
 %{_includedir}/GL/dmesa.h
-%{_includedir}/GL/fxmesa.h
 %{_includedir}/GL/ggimesa.h
 %{_includedir}/GL/glfbdev.h
-%{_includedir}/GL/uglglutshapes.h
-%{_includedir}/GL/uglmesa.h
 %{_includedir}/GL/vms_x_fix.h
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
