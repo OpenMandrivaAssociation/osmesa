@@ -1,7 +1,7 @@
 # (cg) Cheater...
 %define Werror_cflags %nil
 
-%define git 20090116
+%define git 0
 %define	name			mesa
 %define version			7.3
 %define rel			1
@@ -526,8 +526,6 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
-%{_includedir}/GL/directfbgl.h
-%{_includedir}/GL/miniglx.h
 
 %files -n %{libgluname}
 %defattr(-,root,root)
