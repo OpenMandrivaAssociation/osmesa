@@ -3,7 +3,7 @@
 
 %define git 0
 %define	name			mesa
-%define version			7.3
+%define version			7.4.1
 %define rel			1
 %if %{git}
 %define release			%mkrel 0.%{git}.%{rel}
@@ -101,24 +101,24 @@ Source5:	mesa-driver-install
 # git branch -b mdv-7.3-pre20081220-patches
 # git am ../09??-*.patch
 
+# Cherry picks
+# git format-patch --start-number 100 mesa_7_4_1..mdv-7.4.1-cherry-picks
+Patch100: 0100-intel-added-null-screen-dri2.loader-pointer-check.patch
+
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
-# git format-patch --start-number 300 master..mdv-7.3-pre20081220-redhat
+# git format-patch --start-number 300 mdv-7.4.1-cherry-picks..mdv-7.4.1-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
-Patch301: 0301-RH-r300-bufmgr-v1.11.patch
-Patch302: 0302-RH-mesa-7.1-link-shared-v1.3.patch
-Patch303: 0303-RH-intel-revert-vbl-v1.1.patch
-Patch304: 0304-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
-# (ander) patch 305 was applied upstream
-Patch306: 0306-RH-intel-fix-sarea-define-v1.2.patch
+Patch301: 0301-RH-mesa-7.1-link-shared-v1.3.patch
+Patch302: 0302-RH-intel-revert-vbl-v1.1.patch
+Patch303: 0303-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
 
 # Mandriva patches
-# git format-patch --start-number 900 mdv-7.3-pre20081220-redhat..mdv-7.3-pre20081220-patches
+# git format-patch --start-number 900 mdv-7.4.1-redhat..mdv-7.4.1-patches
 Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
-Patch901: 0901-Install-EGL-header-files-and-fixes-other-minor-compi.patch
-Patch902: 0902-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
-Patch903: 0903-remove-unfinished-GLX_ARB_render_texture.patch
-Patch904: 0904-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
+Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
+Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
+Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
 
 
 License:	MIT
@@ -315,20 +315,23 @@ This package contains some demo programs for the Mesa library.
 %setup -q -n Mesa-%{version} -b1 -b2
 %endif
 
+%patch100 -p1
+
 %patch300 -p1
-#patch301 -p1
+%patch301 -p1
 %patch302 -p1
 %patch303 -p1
-%patch304 -p1
-#patch306 -p1
 
 %patch900 -p1
-%if %{enable_egl}
 %patch901 -p1
-%endif
 %patch902 -p1
 %patch903 -p1
-%patch904 -p1
+
+
+%if %{enable_egl}
+# (cg) Need to fix this post 7.4.1 - patch not yet migrated
+#patch1001 -p1
+%endif
 
 pushd progs/demos && {
 	for i in *.c; do 
