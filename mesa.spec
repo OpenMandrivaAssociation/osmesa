@@ -1,14 +1,26 @@
 # (cg) Cheater...
 %define Werror_cflags %nil
 
+# (aco) Needed for the dri drivers
+%define _disable_ld_no_undefined 1
+
 %define git 0
+%define relc 1
 %define	name			mesa
-%define version			7.4.1
+%define version			7.5
 %define rel			1
-%if %{git}
-%define release			%mkrel 0.%{git}.%{rel}
-%else
+
 %define release			%mkrel %{rel}
+%define src_type tar.bz2
+
+%if %{relc}
+%define release			%mkrel 0.rc%{relc}.%{rel}
+%define vsuffix -rc%{relc}
+%define src_type tar.gz
+%endif
+
+%if %{git}
+%define release			%mkrel 0.git%{git}.%{rel}
 %endif
 
 %define makedepend		%{_bindir}/gccmakedep
@@ -48,13 +60,13 @@
 #FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
-%define	dri_drivers_i386	"i810 i915 i965 mga mach64 r128 r200 r300 radeon savage sis unichrome tdfx swrast"
+%define	dri_drivers_i386	"i810,i915,i965,mga,mach64,r128,r200,r300,radeon,savage,sis,unichrome,tdfx,swrast"
 %define	dri_drivers_x86_64	%{dri_drivers_i386}
-%define	dri_drivers_ppc		"mach64 r128 r200 r300 radeon tdfx swrast"
+%define	dri_drivers_ppc		"mach64,r128,r200,r300,radeon,tdfx,swrast"
 %define	dri_drivers_ppc64	""
-%define	dri_drivers_ia64	"i810 i915 i965 mga r128 r200 radeon swrast"
-%define	dri_drivers_alpha	"mga r128 r200 radeon swrast"
-%define	dri_drivers_sparc	"ffb mach64 mga radeon savage swrast"
+%define	dri_drivers_ia64	"i810,i915,i965,mga,r128,r200,radeon,swrast"
+%define	dri_drivers_alpha	"mga,r128,r200,radeon,swrast"
+%define	dri_drivers_sparc	"ffb,mach64,mga,radeon,savage,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
 Name:		%{name}
@@ -84,11 +96,11 @@ URL:		http://www.mesa3d.org
 # (ander) Current commit ref: mesa_7_3_rc2
 Source0:	%{name}-%{git}.tar.bz2
 %else
-Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}.tar.bz2
-Source1:	http://prdownloads.sourceforge.net/mesa3d/MesaDemos-%{version}.tar.bz2
-Source2:	http://prdownloads.sourceforge.net/mesa3d/MesaGLUT-%{version}.tar.bz2
+Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}%{vsuffix}.%{src_type}
+Source1:	http://prdownloads.sourceforge.net/mesa3d/MesaDemos-%{version}%{vsuffix}.%{src_type}
+Source2:	http://prdownloads.sourceforge.net/mesa3d/MesaGLUT-%{version}%{vsuffix}.%{src_type}
 %endif
-Source3:	mesa-source-file-generator
+Source3:	make-git-snapshot.sh
 Source4:	Mesa-icons.tar.bz2
 Source5:	mesa-driver-install
 
@@ -103,7 +115,6 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 100 mesa_7_4_1..mdv-7.4.1-cherry-picks
-Patch100: 0100-intel-added-null-screen-dri2.loader-pointer-check.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -127,11 +138,6 @@ Provides:	hackMesa = %{version}
 Obsoletes:	hackMesa <= %{version}
 Provides:	Mesa = %{version}
 Obsoletes:	Mesa < %{version}
-
-%package	source
-Summary:	Source files required for the Xorg 7.0 to enable glx support
-Group:		Development/C
-Requires:	%{libglname}-devel >= %{version}
 
 %if %{enable_egl}
 %package -n	%{libeglname}
@@ -246,11 +252,6 @@ Provides:	Mesa-demos = %{version}-%{release}
 %description
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
-%description	source
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
-
-Source files required by the Xorg to enable glx support.
-
 %description common-devel
 Mesa common metapackage devel
 
@@ -312,10 +313,8 @@ This package contains some demo programs for the Mesa library.
 %if %{git}
 %setup -q -n mesa-%{git}
 %else
-%setup -q -n Mesa-%{version} -b1 -b2
+%setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
-
-%patch100 -p1
 
 %patch300 -p1
 %patch301 -p1
@@ -361,48 +360,35 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 #   https://bugs.freedesktop.org/show_bug.cgi?id=11380
 #   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=32544
 # (tv) -O1 fixe some freeze on r200 (http://bugs.freedesktop.org/show_bug.cgi?id=10224)
-ARCH_FLAGS="$RPM_OPT_FLAGS -O1 -fno-strict-aliasing -fno-tree-vrp -DNDEBUG -DDEFAULT_DRIVER_DIR=\\\"%{driver_dir}\\\""
+ARCH_FLAGS="$RPM_OPT_FLAGS -O1 -fno-strict-aliasing -fno-tree-vrp"
 export ARCH_FLAGS
 
-%make 	MKDEP=%{makedepend} \
-	USING_EGL=%{enable_egl} \
-	DRI_DIRS=%{dri_drivers} \
-	DRI_DRIVER_SEARCH_DIR=%{driver_dir} \
-	LIB_DIR=$LIB_DIR \
-	linux-dri
+%configure2_5x	--with-driver=dri \
+		--with-dri-driverdir=%{driver_dir} \
+		--with-dri-drivers="%{dri_drivers}" \
+		--disable-gallium \
+%if %{enable_egl}
+		--enable-egl \
+%else
+		--disable-egl \
+%endif
+		--with-demos
 
-pushd progs/demos
-%make LIB_DIR=$LIB_DIR
-popd
-pushd progs/xdemos
-%make LIB_DIR=$LIB_DIR
-popd
+%make
 
 %install
-LIB_DIR=%{_lib}
-INCLUDE_DIR=$RPM_BUILD_ROOT%{_includedir}
-DRI_DRIVER_DIR="%{_libdir}/dri"
-export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR DRIMODULE_SRCDIR DRIMODULE_DESTDIR
-
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa-demos-data
-mkdir -p $RPM_BUILD_ROOT%{_includedir}
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}
-make INSTALL_DIR=/$RPM_BUILD_ROOT%{_prefix} \
-     DRI_DRIVER_INSTALL_DIR=$RPM_BUILD_ROOT$DRI_DRIVER_DIR \
-     MKDEP=%{makedepend} \
-     USING_EGL=%{enable_egl} \
-     DRI_DIRS=%{dri_drivers} \
-     LIB_DIR=$LIB_DIR \
-     install
+make DESTDIR=$RPM_BUILD_ROOT install
 
 # (cg) Needed for the link-shared patch
 install -m 0755 -t $RPM_BUILD_ROOT%{_libdir} %{_lib}/libdricore.so >& /dev/null
-mkdir -p %{buildroot}/%{_bindir}
+
+mkdir -p $RPM_BUILD_ROOT%{_bindir}
 for demo in `find progs/demos -type f -perm /a+x` `find progs/xdemos -type f -perm /a+x`; do
     cp -v $demo %{buildroot}/%{_bindir}
 done
+
 # (fg) So that demos at least work :)
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa-demos-data
 cp -v progs/images/*rgb progs/demos/isosurf.dat %{buildroot}/%{_libdir}/mesa-demos-data
 
 
@@ -422,10 +408,6 @@ tar jxvf %{SOURCE4} -C $RPM_BUILD_ROOT%{_iconsdir}
 
 # clean any .la file with still reference to tmppath.
 perl -pi -e "s|\S+$RPM_BUILD_DIR\S*||g" $RPM_BUILD_ROOT/%{_libdir}/*.la
-
-# generate mesa source files
-chmod +x %{SOURCE3}
-%{SOURCE3} $RPM_BUILD_ROOT %{mesasrcdir}
 
 %ifarch %{x86_64}
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
@@ -472,10 +454,6 @@ rm -fr $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc docs/COPYING docs/README.*
 
-%files source -f mesa-source-rpm-filelist.lst
-%defattr(-,root,root)
-%doc docs/COPYING
-
 %if %{enable_egl}
 %files -n %{libeglname}
 %defattr(-,root,root)
@@ -511,6 +489,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/osmesa.h
+%{_includedir}/GL/wglext.h
 %ifnarch ia64 alpha
 %{_includedir}/GL/svgamesa.h
 %endif
