@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc 1
+%define relc 2
 %define	name			mesa
 %define version			7.5
 %define rel			1
@@ -90,6 +90,8 @@ BuildRequires:	libdrm-devel		>= 2.3.0
 BuildRequires:	libxext-devel		>= 1.0.3
 BuildRequires:	libxxf86vm-devel	>= 1.0.1
 BuildRequires:	libxi-devel		>= 1.1.3
+
+BuildRequires:	libglew-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 %if %{git}
