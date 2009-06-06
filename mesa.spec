@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc 2
+%define relc 3
 %define	name			mesa
 %define version			7.5
 %define rel			1
@@ -95,7 +95,7 @@ BuildRequires:	libglew-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 %if %{git}
-# (ander) Current commit ref: mesa_7_3_rc2
+# (ander) Current commit ref: mesa_7_3_rc3
 Source0:	%{name}-%{git}.tar.bz2
 %else
 Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}%{vsuffix}.%{src_type}
@@ -116,18 +116,19 @@ Source5:	mesa-driver-install
 # git am ../09??-*.patch
 
 # Cherry picks
-# git format-patch --start-number 100 mesa_7_4_1..mdv-7.4.1-cherry-picks
+# git format-patch --start-number 100 mesa_7_5_rc3..mdv-7.5-cherry-picks
+Patch100: 0100-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
-# git format-patch --start-number 300 mdv-7.4.1-cherry-picks..mdv-7.4.1-redhat
+# git format-patch --start-number 300 mdv-7.5-cherry-picks..mdv-7.5-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 Patch301: 0301-RH-mesa-7.1-link-shared-v1.3.patch
 Patch302: 0302-RH-intel-revert-vbl-v1.1.patch
 Patch303: 0303-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
 
 # Mandriva patches
-# git format-patch --start-number 900 mdv-7.4.1-redhat..mdv-7.4.1-patches
+# git format-patch --start-number 900 mdv-7.5-redhat..mdv-7.5-patches
 Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
 Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
