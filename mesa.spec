@@ -8,7 +8,7 @@
 %define relc 3
 %define	name			mesa
 %define version			7.5
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -133,7 +133,7 @@ Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
 Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
-
+Patch904: 0904-glXReleaseTexImageEXT-should-release-reference-to-st.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
@@ -319,16 +319,7 @@ This package contains some demo programs for the Mesa library.
 %setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
 
-%patch300 -p1
-%patch301 -p1
-%patch302 -p1
-%patch303 -p1
-
-%patch900 -p1
-%patch901 -p1
-%patch902 -p1
-%patch903 -p1
-
+%apply_patches
 
 %if %{enable_egl}
 # (cg) Need to fix this post 7.4.1 - patch not yet migrated
