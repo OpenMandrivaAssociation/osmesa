@@ -8,7 +8,7 @@
 %define relc 3
 %define	name			mesa
 %define version			7.5
-%define rel			2
+%define rel			3
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -118,6 +118,7 @@ Source5:	mesa-driver-install
 # Cherry picks
 # git format-patch --start-number 100 mesa_7_5_rc3..mdv-7.5-cherry-picks
 Patch100: 0100-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
+Patch101: 0101-intel-Release-fb-backing-regions-in-intelDestroyBuff.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -133,7 +134,6 @@ Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
 Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
-Patch904: 0904-glXReleaseTexImageEXT-should-release-reference-to-st.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
