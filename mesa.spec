@@ -5,10 +5,10 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc 3
+%define relc 4
 %define	name			mesa
 %define version			7.5
-%define rel			3
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -118,7 +118,6 @@ Source5:	mesa-driver-install
 # Cherry picks
 # git format-patch --start-number 100 mesa_7_5_rc3..mdv-7.5-cherry-picks
 Patch100: 0100-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
-Patch101: 0101-intel-Release-fb-backing-regions-in-intelDestroyBuff.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
