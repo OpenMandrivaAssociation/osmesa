@@ -4,7 +4,7 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-%define git 0
+%define git 20090705
 %define relc 4
 %define	name			mesa
 %define version			7.5
@@ -20,7 +20,11 @@
 %endif
 
 %if %{git}
+%if %{relc}
+%define release			%mkrel 0.rc%{relc}.2.git%{git}.%{rel}
+%else
 %define release			%mkrel 0.git%{git}.%{rel}
+%endif
 %endif
 
 %define makedepend		%{_bindir}/gccmakedep
@@ -95,7 +99,7 @@ BuildRequires:	libglew-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 %if %{git}
-# (ander) Current commit ref: mesa_7_3_rc3
+# (cg) Current commit ref: origin/mesa_7_5_branch
 Source0:	%{name}-%{git}.tar.bz2
 %else
 Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}%{vsuffix}.%{src_type}
@@ -115,9 +119,14 @@ Source5:	mesa-driver-install
 # git branch -b mdv-7.3-pre20081220-patches
 # git am ../09??-*.patch
 
+# git format-patch --start-number 100 mesa_7_5_rc4..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
+# (cg) I was giong to update to 7.5 branch via individual patches, but some stuff not shipped in tarballs
+#      made this rather difficult, hense why the git snapshot. I've left the tarballs in place for easier
+#      svn mv'ing come a 7.5 rc5 or final release.
+
 # Cherry picks
-# git format-patch --start-number 100 mesa_7_5_rc3..mdv-7.5-cherry-picks
-Patch100: 0100-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
+# git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5-cherry-picks
+Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -340,6 +349,9 @@ pushd progs/xdemos && {
 chmod +x %{SOURCE5}
 
 %build
+%if %{git}
+./autogen.sh -v
+%endif
 LIB_DIR=%{_lib}
 INCLUDE_DIR=$RPM_BUILD_ROOT%{_includedir}
 DRI_DRIVER_DIR="%{driver_dir}"
@@ -406,6 +418,11 @@ perl -pi -e "s|\S+$RPM_BUILD_DIR\S*||g" $RPM_BUILD_ROOT/%{_libdir}/*.la
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 %endif
 
+%if %{git}
+# (cg) I'm not really sure about these files, but they do conflict in some capacity so I'll
+#      just trash them for now.
+rm -f $RPM_BUILD_ROOT%{_includedir}/GL/{directfbgl,glew,glxew,miniglx,wglew}.h
+%endif
 
 %clean
 rm -fr $RPM_BUILD_ROOT
