@@ -379,7 +379,8 @@ export ARCH_FLAGS
 %endif
 		--with-demos
 
-%make
+# (cg) Parallel build breaks the dricore shared stuff.
+make -j 1
 
 %install
 make DESTDIR=$RPM_BUILD_ROOT install
