@@ -4,14 +4,15 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-%define git 20090705
-%define relc 4
+%define git 0
+%define relc 0
 %define	name			mesa
 %define version			7.5
 %define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
+%define vsuffix			%{expand:}
 
 %if %{relc}
 %define release			%mkrel 0.rc%{relc}.%{rel}
