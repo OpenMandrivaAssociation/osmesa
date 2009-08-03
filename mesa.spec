@@ -8,7 +8,7 @@
 %define relc 0
 %define	name			mesa
 %define version			7.5
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -128,6 +128,8 @@ Source5:	mesa-driver-install
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5-cherry-picks
 Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
+# fix black screen with mplayer -vo gl:
+Patch201: 5ed440400573631f540701f3efd479d8c1592007.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
