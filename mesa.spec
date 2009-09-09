@@ -7,8 +7,8 @@
 %define git 0
 %define relc 0
 %define	name			mesa
-%define version			7.5
-%define rel			2
+%define version			7.5.1
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -114,33 +114,32 @@ Source5:	mesa-driver-install
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
-# git checkout master
-# git branch -b mdv-7.3-pre20081220-redhat
+# git checkout mesa_7_5_branch
+# git branch -b mdv-7.5.1-cherry-picks
+# git am ../02??-*.patch
+# git branch -b mdv-7.5.1-redhat
 # git am ../03??-*.patch
-# git branch -b mdv-7.3-pre20081220-patches
+# git branch -b mdv-7.5.1-patches
 # git am ../09??-*.patch
 
-# git format-patch --start-number 100 mesa_7_5_rc4..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
-# (cg) I was giong to update to 7.5 branch via individual patches, but some stuff not shipped in tarballs
-#      made this rather difficult, hense why the git snapshot. I've left the tarballs in place for easier
-#      svn mv'ing come a 7.5 rc5 or final release.
+# In order to update to the branch via patches, issue this command:
+# git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-# git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5-cherry-picks
-Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
-# fix black screen with mplayer -vo gl:
-Patch201: 0201-radeon-With-DRI1-if-we-have-HW-stencil-only-expose-f.patch
+# git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5.1-cherry-picks
+## (cg) This patch is disabled for now - need to investigate how this is fixed in master/7.5.1
+#Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
-# git format-patch --start-number 300 mdv-7.5-cherry-picks..mdv-7.5-redhat
+# git format-patch --start-number 300 mdv-7.5.1-cherry-picks..mdv-7.5.1-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 Patch301: 0301-RH-mesa-7.1-link-shared-v1.3.patch
 Patch302: 0302-RH-intel-revert-vbl-v1.1.patch
 Patch303: 0303-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
 
 # Mandriva patches
-# git format-patch --start-number 900 mdv-7.5-redhat..mdv-7.5-patches
+# git format-patch --start-number 900 mdv-7.5.1-redhat..mdv-7.5.1-patches
 Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
 Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
@@ -422,11 +421,9 @@ perl -pi -e "s|\S+$RPM_BUILD_DIR\S*||g" $RPM_BUILD_ROOT/%{_libdir}/*.la
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 %endif
 
-%if %{git}
 # (cg) I'm not really sure about these files, but they do conflict in some capacity so I'll
 #      just trash them for now.
-rm -f $RPM_BUILD_ROOT%{_includedir}/GL/{directfbgl,glew,glxew,miniglx,wglew}.h
-%endif
+rm -f $RPM_BUILD_ROOT%{_includedir}/GL/{glew,glxew,wglew}.h
 
 %clean
 rm -fr $RPM_BUILD_ROOT
