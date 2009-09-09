@@ -471,12 +471,12 @@ rm -fr $RPM_BUILD_ROOT
 %if %{enable_egl}
 %files -n %{libeglname}
 %defattr(-,root,root)
-%{_libdir}/libegl.so.1*
+%{_libdir}/libEGL.so.1*
 %{_libdir}/libegldri.so.1*
 
 %files -n %{libeglname}-devel
 %defattr(-,root,root)
-%{_libdir}/libegl.so
+%{_libdir}/libEGL.so
 %{_libdir}/libegldri.so
 %{_includedir}/gles/egl*.h
 %endif
