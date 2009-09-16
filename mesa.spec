@@ -180,6 +180,9 @@ Conflicts:	x11-server-common < 1.3.0.0-17
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
 Group:		Development/C
 Requires:	%{name} = %{version}
+# (gc) /usr/lib/pkgconfig/glut.pc depends on /usr/lib/pkgconfig/{x11,xmu,xi}.pc (Requires.private) and pkg-config --list-all
+# goes wild without these deps
+Requires:	libx11-devel libxmu-devel libxi-devel
 Provides:	lib%{glname}-devel = %{version}-%{release}
 Provides:	%{glname}-devel = %{version}-%{release}
 Provides:	GL-devel
