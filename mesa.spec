@@ -8,7 +8,7 @@
 %define relc 0
 %define	name			mesa
 %define version			7.5.1
-%define rel			2
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -129,6 +129,7 @@ Source5:	mesa-driver-install
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5.1-cherry-picks
 ## (cg) This patch is disabled for now - need to investigate how this is fixed in master/7.5.1
 #Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
+Patch200: 0200-prog-glsl-fix-Makefile-for-samplers_array.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
