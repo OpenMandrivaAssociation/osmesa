@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc 1
+%define relc 0
 %define	name			mesa
 %define version			7.5.1
 %define rel			3
