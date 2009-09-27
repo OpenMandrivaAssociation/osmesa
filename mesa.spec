@@ -8,7 +8,7 @@
 %define relc 0
 %define	name			mesa
 %define version			7.5.1
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -72,6 +72,7 @@
 %define	dri_drivers_ia64	"i810,i915,i965,mga,r128,r200,radeon,swrast"
 %define	dri_drivers_alpha	"mga,r128,r200,radeon,swrast"
 %define	dri_drivers_sparc	"ffb,mach64,mga,radeon,savage,swrast"
+%define dri_drivers_mipsel	"mach64,mga,r128,r200,radeon,savage,tdfx"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
 Name:		%{name}
@@ -145,6 +146,8 @@ Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
 Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
+
+Patch2004:     mesa_652_mips.patch
 
 License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
