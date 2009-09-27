@@ -394,9 +394,6 @@ make -j 1
 %install
 make DESTDIR=$RPM_BUILD_ROOT install
 
-# (cg) Needed for the link-shared patch
-install -m 0755 -t $RPM_BUILD_ROOT%{_libdir} %{_lib}/libdricore.so >& /dev/null
-
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
 for demo in `find progs/demos -type f -perm /a+x` `find progs/xdemos -type f -perm /a+x`; do
     cp -v $demo %{buildroot}/%{_bindir}
@@ -494,7 +491,6 @@ rm -fr $RPM_BUILD_ROOT
 %ifnarch ppc64
 %dir %{_libdir}/dri
 %{_libdir}/dri/*
-%{_libdir}/libdricore.so
 %endif
 %ifarch %{x86_64}
 %{_prefix}/lib/dri
