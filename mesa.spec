@@ -104,9 +104,9 @@ URL:		http://www.mesa3d.org
 # (cg) Current commit ref: origin/mesa_7_5_branch
 Source0:	%{name}-%{git}.tar.bz2
 %else
-Source0:	http://prdownloads.sourceforge.net/mesa3d/MesaLib-%{version}%{vsuffix}.%{src_type}
-Source1:	http://prdownloads.sourceforge.net/mesa3d/MesaDemos-%{version}%{vsuffix}.%{src_type}
-Source2:	http://prdownloads.sourceforge.net/mesa3d/MesaGLUT-%{version}%{vsuffix}.%{src_type}
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaLib-%{version}%{vsuffix}.%{src_type}
+Source1:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaDemos-%{version}%{vsuffix}.%{src_type}
+Source2:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaGLUT-%{version}%{vsuffix}.%{src_type}
 %endif
 Source3:	make-git-snapshot.sh
 Source4:	Mesa-icons.tar.bz2
