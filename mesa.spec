@@ -265,7 +265,6 @@ Requires:	%{libglutname}-devel = %{version}
 %package	demos
 Summary:	Demos for Mesa (OpenGL compatible 3D lib)
 Group:		Graphics
-Requires:	%{name} >= %{version}
 Provides:	hackMesa-demos = %{version}
 Obsoletes:	hackMesa-demos <= %{version}
 Obsoletes: 	Mesa-demos < 6.4
