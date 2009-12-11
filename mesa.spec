@@ -5,10 +5,10 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc 0
+%define relc			3
 %define	name			mesa
-%define version			7.5.2
-%define rel			2
+%define version			7.6.1
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -17,7 +17,7 @@
 %if %{relc}
 %define release			%mkrel 0.rc%{relc}.%{rel}
 %define vsuffix -rc%{relc}
-%define src_type tar.gz
+%define src_type tar.bz2
 %endif
 
 %if %{git}
@@ -144,9 +144,6 @@ Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
 Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
-# 904 and 905 were committed upstream (fd.o bug #20340)
-Patch904: 0904-r200-fuzzy-textures.patch
-Patch905: 0905-r300-fuzzy-textures.patch
 
 Patch2004:     mesa_652_mips.patch
 
@@ -333,7 +330,7 @@ This package contains some demo programs for the Mesa library.
 %if %{git}
 %setup -q -n mesa-%{git}
 %else
-%setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
+%setup -q -n Mesa-%{version} -b1 -b2
 %endif
 
 # (cg) This patch is disabled for now - need to investigate how this is fixed
@@ -349,8 +346,6 @@ This package contains some demo programs for the Mesa library.
 %patch901 -p1
 %patch902 -p1
 %patch903 -p1
-%patch904 -p1
-%patch905 -p1
 
 %patch2004 -p1
 
