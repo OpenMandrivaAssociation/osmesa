@@ -128,8 +128,7 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5.1-cherry-picks
-## (cg) This patch is disabled for now - need to investigate how this is fixed in master/7.5.1
-#Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
+Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -337,7 +336,23 @@ This package contains some demo programs for the Mesa library.
 %setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
 
-%apply_patches
+# (cg) This patch is disabled for now - need to investigate how this is fixed
+# in master/7.5.1
+#%patch200 -p1
+
+%patch300 -p1
+%patch301 -p1
+%patch302 -p1
+%patch303 -p1
+
+%patch900 -p1
+%patch901 -p1
+%patch902 -p1
+%patch903 -p1
+%patch904 -p1
+%patch905 -p1
+
+%patch2004 -p1
 
 %if %{enable_egl}
 # (cg) Need to fix this post 7.4.1 - patch not yet migrated
