@@ -8,7 +8,7 @@
 %define relc			3
 %define	name			mesa
 %define version			7.6.1
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -65,7 +65,7 @@
 #FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
-%define	dri_drivers_i386	"i810,i915,i965,mga,mach64,r128,r200,r300,radeon,savage,sis,unichrome,tdfx,swrast"
+%define	dri_drivers_i386	"i810,i915,i965,mga,mach64,r128,r200,r300,r600,radeon,savage,sis,unichrome,tdfx,swrast"
 %define	dri_drivers_x86_64	%{dri_drivers_i386}
 %define	dri_drivers_ppc		"mach64,r128,r200,r300,radeon,tdfx,swrast"
 %define	dri_drivers_ppc64	""
