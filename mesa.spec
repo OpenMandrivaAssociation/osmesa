@@ -5,9 +5,9 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc			4
+%define relc			0
 %define	name			mesa
-%define version			7.6.1
+%define version			7.7
 %define rel			1
 
 %define release			%mkrel %{rel}
@@ -134,7 +134,7 @@ Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
 # git format-patch --start-number 300 mdv-7.5.1-cherry-picks..mdv-7.5.1-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
-Patch301: 0301-RH-mesa-7.1-link-shared-v1.3.patch
+Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
 Patch302: 0302-RH-intel-revert-vbl-v1.1.patch
 Patch303: 0303-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
 
