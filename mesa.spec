@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.7
-%define rel			2
+%define rel			3
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -265,6 +265,12 @@ Provides:	hackMesa-demos = %{version}
 Obsoletes:	hackMesa-demos <= %{version}
 Obsoletes: 	Mesa-demos < 6.4
 Provides:	Mesa-demos = %{version}-%{release}
+Requires:	glxinfo = %{version}-%{release}
+
+%package -n	glxinfo
+Summary:	Commandline GLX information tool
+Group:		Graphics
+Conflicts:	mesa-demos < 7.7-3
 
 %description
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
@@ -325,6 +331,11 @@ This package contains the headers needed to compile Mesa programs.
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
 This package contains some demo programs for the Mesa library.
+
+%description -n	glxinfo
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
+
+This package contains the glxinfo GLX information utility.
 
 %prep
 %if %{git}
@@ -581,9 +592,15 @@ rm -fr $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc docs/COPYING
 %{_bindir}/*
+%exclude %{_bindir}/glxinfo
 %dir %{_libdir}/mesa-demos-data
 %{_libdir}/mesa-demos-data/*
 %{_miconsdir}/*demos*.png
 %{_iconsdir}/*demos*.png
 %{_liconsdir}/*demos*.png
+
+%files -n glxinfo
+%defattr(-,root,root)
+%doc docs/COPYING
+%{_bindir}/glxinfo
 
