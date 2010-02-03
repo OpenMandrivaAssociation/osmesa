@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.7
-%define rel			3
+%define rel			4
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -270,7 +270,7 @@ Requires:	glxinfo = %{version}-%{release}
 %package -n	glxinfo
 Summary:	Commandline GLX information tool
 Group:		Graphics
-Conflicts:	mesa-demos < 7.7-3
+Conflicts:	mesa-demos < 7.7-4
 
 %description
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
@@ -335,7 +335,7 @@ This package contains some demo programs for the Mesa library.
 %description -n	glxinfo
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
-This package contains the glxinfo GLX information utility.
+This package contains the glinfo & glxinfo GLX information utility.
 
 %prep
 %if %{git}
@@ -593,6 +593,7 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/COPYING
 %{_bindir}/*
 %exclude %{_bindir}/glxinfo
+%exclude %{_bindir}/glinfo
 %dir %{_libdir}/mesa-demos-data
 %{_libdir}/mesa-demos-data/*
 %{_miconsdir}/*demos*.png
@@ -603,4 +604,5 @@ rm -fr $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc docs/COPYING
 %{_bindir}/glxinfo
+%{_bindir}/glinfo
 
