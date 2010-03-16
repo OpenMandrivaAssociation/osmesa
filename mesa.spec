@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.7
-%define rel			4
+%define rel			5
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -45,6 +45,8 @@
 %define libgluname		%mklibname %{gluname} %{glumajor}
 %define libglutname		%mklibname %{glutname} %{glutmajor}
 %define libglwname		%mklibname %{glwname} %{glwmajor}
+
+%define dridrivers		%mklibname dri-drivers
 
 # Architecture-independent Virtual provides:
 %define libeglname_virt		lib%{eglname}
@@ -173,10 +175,20 @@ Group:		System/Libraries
 Obsoletes:	%{oldlibglname} < 6.4 
 Provides:	%{oldlibglname} = %{version}-%{release}
 Provides:	%{libglname_virt} = %{version}-%{release}
+Requires:	%{dridrivers} >= %{version}-%{release}
 
 # (anssi) Forces the upgrade of x11-server-common to happen before
 # alternatives removal, which allows x11-server-common to grab the symlink.
 Conflicts:	x11-server-common < 1.3.0.0-17
+
+%package -n	%{dridrivers}
+Summary:	Mesa DRI drivers
+Group:		System/Libraries
+Conflicts:	%{_lib}MesaGL1 < 7.7-5
+
+#%package -n	%{dridrivers}-experimental
+#Summary:	Mesa DRI - unstable experimental drivers
+#Group:		System/Libraries
 
 %package -n	%{libglname}-devel
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
@@ -292,6 +304,19 @@ EGL development parts.
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 GL and GLX parts.
 
+%description -n %{dridrivers}
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
+DRI drivers.
+
+#%description -n %{dridrivers}-experimental
+#Mesa is an OpenGL 2.1 compatible 3D graphics library.
+#Experimental unstable DRI drivers.
+#
+#This package contains experimental DRI drivers for NVIDIA cards, for
+#OpenGL acceleration with nouveau driver. These drivers are not stable
+#and may crash your system. Please do not report bugs encountered with
+#these drivers.
+
 %description -n	%{libglname}-devel
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
@@ -379,6 +404,14 @@ pushd progs/xdemos && {
 
 chmod +x %{SOURCE5}
 
+# for dri-drivers-experimental
+#cat > README.install.urpmi <<EOF
+#This package contains experimental DRI drivers for NVIDIA cards, for
+#OpenGL acceleration with nouveau driver. These drivers are not stable
+#and may crash your system. Please do not report bugs encountered with
+#these drivers.
+#EOF
+
 %build
 %if %{git}
 ./autogen.sh -v
@@ -387,17 +420,6 @@ LIB_DIR=%{_lib}
 INCLUDE_DIR=$RPM_BUILD_ROOT%{_includedir}
 DRI_DRIVER_DIR="%{driver_dir}"
 export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
-
-# (blino) strict aliasing is known to break some Mesa code
-#   https://bugs.freedesktop.org/show_bug.cgi?id=6046
-#   https://bugs.freedesktop.org/show_bug.cgi?id=9456
-# (blino) tree VRP in gcc-4.2.1 triggers misrendering in Blender,
-#         and hard lock with compiz (in r300_state.c)
-#   https://bugs.freedesktop.org/show_bug.cgi?id=11380
-#   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=32544
-# (tv) -O1 fixe some freeze on r200 (http://bugs.freedesktop.org/show_bug.cgi?id=10224)
-ARCH_FLAGS="$RPM_OPT_FLAGS -O1 -fno-strict-aliasing -fno-tree-vrp"
-export ARCH_FLAGS
 
 %configure2_5x	--with-driver=dri \
 		--with-dri-driverdir=%{driver_dir} \
@@ -510,13 +532,21 @@ rm -fr $RPM_BUILD_ROOT
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.*
+
+%files -n %{dridrivers}
+%defattr(-,root,root)
+%doc docs/COPYING
 %ifnarch ppc64
 %dir %{_libdir}/dri
-%{_libdir}/dri/*
+%{_libdir}/dri/libdricore.so
+%{_libdir}/dri/*_dri.so
 %endif
-%ifarch %{x86_64}
-%{_prefix}/lib/dri
-%endif
+
+#%files -n %{dridrivers}-experimental
+#%defattr(-,root,root)
+#%doc docs/COPYING
+#%doc README.install.urpmi
+#%{_libdir}/dri
 
 %files -n %{libglname}-devel
 %defattr(-,root,root)
