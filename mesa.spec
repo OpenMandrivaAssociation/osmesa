@@ -413,6 +413,7 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 %configure2_5x	--with-driver=dri \
 		--with-dri-driverdir=%{driver_dir} \
 		--with-dri-drivers="%{dri_drivers}" \
+                --with-state-trackers=dri \
                 --enable-gallium-nouveau \
 %if %{enable_egl}
 		--enable-egl \
@@ -462,9 +463,6 @@ mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 # (cg) I'm not really sure about these files, but they do conflict in some capacity so I'll
 #      just trash them for now.
 rm -f $RPM_BUILD_ROOT%{_includedir}/GL/{glew,glxew,wglew}.h
-
-# (Anssi 03/2010) nouveau stuff, looks like of no use, fedora removes it as well:
-rm %{buildroot}%{_libdir}/xorg/modules/drivers/modesetting_drv.so
 
 %clean
 rm -fr $RPM_BUILD_ROOT
