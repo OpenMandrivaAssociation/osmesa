@@ -5,10 +5,10 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc			0
+%define relc			1
 %define	name			mesa
-%define version			7.7
-%define rel			5
+%define version			7.8
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -67,7 +67,7 @@
 #FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
-%define	dri_drivers_i386	"i810,i915,i965,mga,mach64,r128,r200,r300,r600,radeon,savage,sis,unichrome,tdfx,swrast"
+%define	dri_drivers_i386	"i810,i915,i965,mga,mach64,nouveau,r128,r200,r300,r600,radeon,savage,sis,unichrome,tdfx,swrast"
 %define	dri_drivers_x86_64	%{dri_drivers_i386}
 %define	dri_drivers_ppc		"mach64,r128,r200,r300,radeon,tdfx,swrast"
 %define	dri_drivers_ppc64	""
@@ -130,20 +130,15 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5.1-cherry-picks
-Patch200: 0200-i965-fix-memory-leak-in-context-renderbuffer-region-.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
 # git format-patch --start-number 300 mdv-7.5.1-cherry-picks..mdv-7.5.1-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
-Patch302: 0302-RH-intel-revert-vbl-v1.1.patch
-Patch303: 0303-RH-mesa-7.1-disable-intel-classic-warn-v1.3.patch
 
 # Mandriva patches
 # git format-patch --start-number 900 mdv-7.5.1-redhat..mdv-7.5.1-patches
-Patch900: 0900-DRI-modules-are-not-under-usr-X11R6-anymore.patch
-Patch901: 0901-Fix-linux-dri-so-it-can-be-used-for-all-archs-thank.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
 
@@ -186,9 +181,11 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 
-#%package -n	%{dridrivers}-experimental
-#Summary:	Mesa DRI - unstable experimental drivers
-#Group:		System/Libraries
+%package -n	%{dridrivers}-experimental
+Summary:	Mesa DRI - unstable experimental drivers
+Group:		System/Libraries
+# for dri driver directory
+Requires:       %{dridrivers}
 
 %package -n	%{libglname}-devel
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
@@ -308,14 +305,14 @@ GL and GLX parts.
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 DRI drivers.
 
-#%description -n %{dridrivers}-experimental
-#Mesa is an OpenGL 2.1 compatible 3D graphics library.
-#Experimental unstable DRI drivers.
-#
-#This package contains experimental DRI drivers for NVIDIA cards, for
-#OpenGL acceleration with nouveau driver. These drivers are not stable
-#and may crash your system. Please do not report bugs encountered with
-#these drivers.
+%description -n %{dridrivers}-experimental
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
+Experimental unstable DRI drivers.
+
+This package contains experimental DRI drivers for NVIDIA cards, for
+OpenGL acceleration with nouveau driver. These drivers are not stable
+and may crash your system. Please do not report bugs encountered with
+these drivers.
 
 %description -n	%{libglname}-devel
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
@@ -366,20 +363,12 @@ This package contains the glinfo & glxinfo GLX information utility.
 %if %{git}
 %setup -q -n mesa-%{git}
 %else
-%setup -q -n Mesa-%{version} -b1 -b2
+%setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
-
-# (cg) This patch is disabled for now - need to investigate how this is fixed
-# in master/7.5.1
-#%patch200 -p1
 
 %patch300 -p1
 %patch301 -p1
-%patch302 -p1
-%patch303 -p1
 
-%patch900 -p1
-%patch901 -p1
 %patch902 -p1
 %patch903 -p1
 
@@ -405,12 +394,12 @@ pushd progs/xdemos && {
 chmod +x %{SOURCE5}
 
 # for dri-drivers-experimental
-#cat > README.install.urpmi <<EOF
-#This package contains experimental DRI drivers for NVIDIA cards, for
-#OpenGL acceleration with nouveau driver. These drivers are not stable
-#and may crash your system. Please do not report bugs encountered with
-#these drivers.
-#EOF
+cat > README.install.urpmi <<EOF
+This package contains experimental DRI drivers for NVIDIA cards, for
+OpenGL acceleration with nouveau driver. These drivers are not stable
+and may crash your system. Please do not report bugs encountered with
+these drivers.
+EOF
 
 %build
 %if %{git}
@@ -424,7 +413,7 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 %configure2_5x	--with-driver=dri \
 		--with-dri-driverdir=%{driver_dir} \
 		--with-dri-drivers="%{dri_drivers}" \
-		--disable-gallium \
+                --enable-gallium-nouveau \
 %if %{enable_egl}
 		--enable-egl \
 %else
@@ -436,6 +425,7 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 make -j 1
 
 %install
+rm -rf %{buildroot}
 make DESTDIR=$RPM_BUILD_ROOT install
 
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
@@ -472,6 +462,9 @@ mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 # (cg) I'm not really sure about these files, but they do conflict in some capacity so I'll
 #      just trash them for now.
 rm -f $RPM_BUILD_ROOT%{_includedir}/GL/{glew,glxew,wglew}.h
+
+# (Anssi 03/2010) nouveau stuff, looks like of no use, fedora removes it as well:
+rm %{buildroot}%{_libdir}/xorg/modules/drivers/modesetting_drv.so
 
 %clean
 rm -fr $RPM_BUILD_ROOT
@@ -540,13 +533,16 @@ rm -fr $RPM_BUILD_ROOT
 %dir %{_libdir}/dri
 %{_libdir}/dri/libdricore.so
 %{_libdir}/dri/*_dri.so
+%exclude %{_libdir}/dri/nouveau_dri.so
+%exclude %{_libdir}/dri/nouveau_vieux_dri.so
 %endif
 
-#%files -n %{dridrivers}-experimental
-#%defattr(-,root,root)
-#%doc docs/COPYING
-#%doc README.install.urpmi
-#%{_libdir}/dri
+%files -n %{dridrivers}-experimental
+%defattr(-,root,root)
+%doc docs/COPYING
+%doc README.install.urpmi
+%{_libdir}/dri/nouveau_dri.so
+%{_libdir}/dri/nouveau_vieux_dri.so
 
 %files -n %{libglname}-devel
 %defattr(-,root,root)
@@ -556,9 +552,6 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/osmesa.h
 %{_includedir}/GL/wglext.h
-%ifnarch ia64 alpha
-%{_includedir}/GL/svgamesa.h
-%endif
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
@@ -567,8 +560,6 @@ rm -fr $RPM_BUILD_ROOT
 
 #FIXME: check those headers
 %{_includedir}/GL/mglmesa.h
-%{_includedir}/GL/dmesa.h
-%{_includedir}/GL/ggimesa.h
 %{_includedir}/GL/glfbdev.h
 %{_includedir}/GL/vms_x_fix.h
 %{_includedir}/GL/wmesa.h
