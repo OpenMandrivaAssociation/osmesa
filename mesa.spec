@@ -367,7 +367,10 @@ This package contains the glinfo & glxinfo GLX information utility.
 %endif
 
 %patch300 -p1
-%patch301 -p1
+## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
+## NEEDED tag with '../../../../../lib/libdricore.so', while NEEDED tag of libdricore.so
+## is wanted.
+#%patch301 -p1
 
 %patch902 -p1
 %patch903 -p1
@@ -529,7 +532,7 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/COPYING
 %ifnarch ppc64
 %dir %{_libdir}/dri
-%{_libdir}/dri/libdricore.so
+#%{_libdir}/dri/libdricore.so
 %{_libdir}/dri/*_dri.so
 %exclude %{_libdir}/dri/nouveau_dri.so
 %exclude %{_libdir}/dri/nouveau_vieux_dri.so
