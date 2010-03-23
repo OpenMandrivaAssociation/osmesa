@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc			1
+%define relc			2
 %define	name			mesa
 %define version			7.8
 %define rel			1
@@ -88,16 +88,16 @@ BuildRequires:	texinfo
 BuildRequires:	libxfixes-devel		>= 4.0.3
 BuildRequires:	libxt-devel		>= 1.0.5
 BuildRequires:	libxmu-devel		>= 1.0.3
-BuildRequires:	libx11-devel		>= 1.1.3
+BuildRequires:	libx11-devel		>= 1.3.3
 BuildRequires:	libxdamage-devel	>= 1.1.1
 BuildRequires:	libexpat-devel		>= 2.0.1
 BuildRequires:	gccmakedep
 BuildRequires:	x11-proto-devel		>= 7.3
-BuildRequires:	libdrm-devel		>= 2.3.0
+BuildRequires:	libdrm-devel		>= 2.4.19-3
 
-BuildRequires:	libxext-devel		>= 1.0.3
-BuildRequires:	libxxf86vm-devel	>= 1.0.1
-BuildRequires:	libxi-devel		>= 1.1.3
+BuildRequires:	libxext-devel		>= 1.1.1
+BuildRequires:	libxxf86vm-devel	>= 1.1.0
+BuildRequires:	libxi-devel		>= 1.3
 
 BuildRequires:	libglew-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -118,29 +118,31 @@ Source5:	mesa-driver-install
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
 # git checkout mesa_7_5_branch
-# git branch -b mdv-7.5.1-cherry-picks
+# git branch mdv-cherry-picks
 # git am ../02??-*.patch
-# git branch -b mdv-7.5.1-redhat
+# git branch mdv-redhat
 # git am ../03??-*.patch
-# git branch -b mdv-7.5.1-patches
+# git branch mdv-patches
 # git am ../09??-*.patch
 
 # In order to update to the branch via patches, issue this command:
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-# git format-patch --start-number 200 mesa_7_5_branch..mdv-7.5.1-cherry-picks
+# git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
+Patch200: 0200-i965-Stop-abusing-ctx-NewState-flags-for-storing-dri.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
-# git format-patch --start-number 300 mdv-7.5.1-cherry-picks..mdv-7.5.1-redhat
+# git format-patch --start-number 300 mdv-cherry-picks..mdv-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
 
 # Mandriva patches
-# git format-patch --start-number 900 mdv-7.5.1-redhat..mdv-7.5.1-patches
+# git format-patch --start-number 900 mdv-redhat..mdv-patches
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
+Patch904: 0904-nouveau-adapt-for-renamed-NVxxTCL_TX_GEN-definitions.patch
 
 Patch2004:     mesa_652_mips.patch
 
@@ -366,6 +368,8 @@ This package contains the glinfo & glxinfo GLX information utility.
 %setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
 
+%patch200 -p1
+
 %patch300 -p1
 ## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
 ## NEEDED tag with '../../../../../lib/libdricore.so', while NEEDED tag of libdricore.so
@@ -374,6 +378,7 @@ This package contains the glinfo & glxinfo GLX information utility.
 
 %patch902 -p1
 %patch903 -p1
+%patch904 -p1
 
 %patch2004 -p1
 
