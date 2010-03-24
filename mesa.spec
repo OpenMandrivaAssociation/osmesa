@@ -8,7 +8,7 @@
 %define relc			2
 %define	name			mesa
 %define version			7.8
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -131,6 +131,7 @@ Source5:	mesa-driver-install
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
 Patch200: 0200-i965-Stop-abusing-ctx-NewState-flags-for-storing-dri.patch
+Patch201: 0201-intel-Rely-on-allocated-region-pitch-for-the-miptree.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
