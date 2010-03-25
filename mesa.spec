@@ -370,6 +370,7 @@ This package contains the glinfo & glxinfo GLX information utility.
 %endif
 
 %patch200 -p1
+%patch201 -p1
 
 %patch300 -p1
 ## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
