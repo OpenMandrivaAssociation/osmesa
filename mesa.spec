@@ -5,10 +5,10 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define relc			2
+%define relc			0
 %define	name			mesa
 %define version			7.8
-%define rel			3
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -130,8 +130,6 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
-Patch200: 0200-i965-Stop-abusing-ctx-NewState-flags-for-storing-dri.patch
-Patch201: 0201-intel-Rely-on-allocated-region-pitch-for-the-miptree.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -368,9 +366,6 @@ This package contains the glinfo & glxinfo GLX information utility.
 %else
 %setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
-
-%patch200 -p1
-%patch201 -p1
 
 %patch300 -p1
 ## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
