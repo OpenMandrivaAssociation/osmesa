@@ -7,7 +7,7 @@
 %define git 0
 %define relc			0
 %define	name			mesa
-%define version			7.8
+%define version			7.8.1
 %define rel			1
 
 %define release			%mkrel %{rel}
