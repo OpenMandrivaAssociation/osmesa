@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.8.1
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -136,6 +136,7 @@ Source5:	mesa-driver-install
 # git format-patch --start-number 300 mdv-cherry-picks..mdv-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
+Patch302: 0302-RH-mesa-7.8.1-intel-dri2-damage.patch
 
 # Mandriva patches
 # git format-patch --start-number 900 mdv-redhat..mdv-patches
@@ -372,6 +373,7 @@ This package contains the glinfo & glxinfo GLX information utility.
 ## NEEDED tag with '../../../../../lib/libdricore.so', while NEEDED tag of libdricore.so
 ## is wanted.
 #%patch301 -p1
+%patch302 -p1
 
 %patch902 -p1
 %patch903 -p1
