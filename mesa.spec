@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.8.1
-%define rel			2
+%define rel			3
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -130,6 +130,7 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
+Patch200: 0200-7.8-branch-20100510.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -143,6 +144,7 @@ Patch302: 0302-RH-mesa-7.8.1-intel-dri2-damage.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
 Patch904: 0904-nouveau-adapt-for-renamed-NVxxTCL_TX_GEN-definitions.patch
+Patch905: 0905-work-around-intel-crash.patch
 
 Patch2004:     mesa_652_mips.patch
 
@@ -368,6 +370,8 @@ This package contains the glinfo & glxinfo GLX information utility.
 %setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
 
+%patch200 -p1
+
 %patch300 -p1
 ## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
 ## NEEDED tag with '../../../../../lib/libdricore.so', while NEEDED tag of libdricore.so
@@ -378,6 +382,7 @@ This package contains the glinfo & glxinfo GLX information utility.
 %patch902 -p1
 %patch903 -p1
 %patch904 -p1
+%patch905 -p1
 
 %patch2004 -p1
 
@@ -409,9 +414,13 @@ these drivers.
 EOF
 
 %build
-%if %{git}
-./autogen.sh -v
-%endif
+#%if %{git}
+#./autogen.sh -v
+#%endif
+
+# Required by patch200:
+autoreconf -vfi
+
 LIB_DIR=%{_lib}
 INCLUDE_DIR=$RPM_BUILD_ROOT%{_includedir}
 DRI_DRIVER_DIR="%{driver_dir}"
