@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.8.1
-%define rel			3
+%define rel			4
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
