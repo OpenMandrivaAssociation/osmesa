@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.8.1
-%define rel			5
+%define rel			6
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -132,6 +132,7 @@ Source5:	mesa-driver-install
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
 Patch200: 0200-7.8-branch-20100510.patch
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
+Patch202: 0202-intel-initialize-batch-reserved-space-on-allocation.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -373,6 +374,7 @@ This package contains the glinfo & glxinfo GLX information utility.
 
 %patch200 -p1
 %patch201 -p1
+%patch202 -p1
 
 %patch300 -p1
 ## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
