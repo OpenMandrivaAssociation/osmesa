@@ -7,8 +7,8 @@
 %define git 0
 %define relc			0
 %define	name			mesa
-%define version			7.8.1
-%define rel			6
+%define version			7.8.2
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -130,7 +130,6 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
-Patch200: 0200-7.8-branch-20100510.patch
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 Patch202: 0202-intel-initialize-batch-reserved-space-on-allocation.patch
 
@@ -372,7 +371,6 @@ This package contains the glinfo & glxinfo GLX information utility.
 %setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
 %endif
 
-%patch200 -p1
 %patch201 -p1
 %patch202 -p1
 
