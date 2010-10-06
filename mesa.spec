@@ -98,6 +98,7 @@ BuildRequires:	libdrm-devel		>= 2.4.21
 BuildRequires:	libxext-devel		>= 1.1.1
 BuildRequires:	libxxf86vm-devel	>= 1.1.0
 BuildRequires:	libxi-devel		>= 1.3
+BuildRequires:	talloc-devel
 
 BuildRequires:	libglew-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
