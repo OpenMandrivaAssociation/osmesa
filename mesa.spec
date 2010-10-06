@@ -7,7 +7,7 @@
 %define git 0
 %define relc			0
 %define	name			mesa
-%define version			7.8.2
+%define version			7.9
 %define rel			1
 
 %define release			%mkrel %{rel}
@@ -93,7 +93,7 @@ BuildRequires:	libxdamage-devel	>= 1.1.1
 BuildRequires:	libexpat-devel		>= 2.0.1
 BuildRequires:	gccmakedep
 BuildRequires:	x11-proto-devel		>= 7.3
-BuildRequires:	libdrm-devel		>= 2.4.19-3
+BuildRequires:	libdrm-devel		>= 2.4.21
 
 BuildRequires:	libxext-devel		>= 1.1.1
 BuildRequires:	libxxf86vm-devel	>= 1.1.0
@@ -107,11 +107,9 @@ URL:		http://www.mesa3d.org
 Source0:	%{name}-%{git}.tar.bz2
 %else
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaLib-%{version}%{vsuffix}.%{src_type}
-Source1:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaDemos-%{version}%{vsuffix}.%{src_type}
 Source2:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaGLUT-%{version}%{vsuffix}.%{src_type}
 %endif
 Source3:	make-git-snapshot.sh
-Source4:	Mesa-icons.tar.bz2
 Source5:	mesa-driver-install
 
 
@@ -131,21 +129,17 @@ Source5:	mesa-driver-install
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
-Patch202: 0202-intel-initialize-batch-reserved-space-on-allocation.patch
 
 # Patches "liberated" from Fedora: 
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
 # git format-patch --start-number 300 mdv-cherry-picks..mdv-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
-Patch302: 0302-RH-mesa-7.8.1-intel-dri2-damage.patch
 
 # Mandriva patches
 # git format-patch --start-number 900 mdv-redhat..mdv-patches
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
-Patch904: 0904-nouveau-adapt-for-renamed-NVxxTCL_TX_GEN-definitions.patch
-Patch905: 0905-work-around-intel-crash.patch
 
 Patch2004:     mesa_652_mips.patch
 
@@ -272,19 +266,6 @@ Requires:	%{libglwname}-devel = %{version}
 Requires:	%{libgluname}-devel = %{version}
 Requires:	%{libglutname}-devel = %{version}
 
-%package	demos
-Summary:	Demos for Mesa (OpenGL compatible 3D lib)
-Group:		Graphics
-Provides:	hackMesa-demos = %{version}
-Obsoletes:	hackMesa-demos <= %{version}
-Obsoletes: 	Mesa-demos < 6.4
-Provides:	Mesa-demos = %{version}-%{release}
-Requires:	glxinfo = %{version}-%{release}
-
-%package -n	glxinfo
-Summary:	Commandline GLX information tool
-Group:		Graphics
-Conflicts:	mesa-demos < 7.7-4
 
 %description
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
@@ -354,37 +335,23 @@ GLw parts.
 
 This package contains the headers needed to compile Mesa programs.
 
-%description	demos
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
-
-This package contains some demo programs for the Mesa library.
-
-%description -n	glxinfo
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
-
-This package contains the glinfo & glxinfo GLX information utility.
-
 %prep
 %if %{git}
 %setup -q -n mesa-%{git}
 %else
-%setup -q -n Mesa-%{version}%{vsuffix} -b1 -b2
+%setup -q -n Mesa-%{version}%{vsuffix} -b2
 %endif
 
 %patch201 -p1
-%patch202 -p1
 
 %patch300 -p1
 ## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
 ## NEEDED tag with '../../../../../lib/libdricore.so', while NEEDED tag of libdricore.so
 ## is wanted.
 #%patch301 -p1
-%patch302 -p1
 
 %patch902 -p1
 %patch903 -p1
-%patch904 -p1
-%patch905 -p1
 
 %patch2004 -p1
 
@@ -392,18 +359,6 @@ This package contains the glinfo & glxinfo GLX information utility.
 # (cg) Need to fix this post 7.4.1 - patch not yet migrated
 #patch1001 -p1
 %endif
-
-pushd progs/demos && {
-	for i in *.c; do 
-	perl -pi -e "s|\.\./images/|%{_libdir}/mesa-demos-data/|" $i ; 
-	done 
-	perl -pi -e "s|isosurf.dat|%{_libdir}/mesa-demos-data/isosurf.dat|" isosurf.c 
-} && popd
-pushd progs/xdemos && {
-	for i in *.c; do 
-	perl -pi -e "s|\.\./images/|%{_libdir}/mesa-demos-data/|" $i ; 
-	done 
-} && popd
 
 chmod +x %{SOURCE5}
 
@@ -448,13 +403,6 @@ rm -rf %{buildroot}
 make DESTDIR=$RPM_BUILD_ROOT install
 
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
-for demo in `find progs/demos -type f -perm /a+x` `find progs/xdemos -type f -perm /a+x`; do
-    cp -v $demo %{buildroot}/%{_bindir}
-done
-
-# (fg) So that demos at least work :)
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa-demos-data
-cp -v progs/images/*rgb progs/demos/isosurf.dat %{buildroot}/%{_libdir}/mesa-demos-data
 
 
 # (blino) hardlink libGL files in %{_libdir}/mesa
@@ -463,13 +411,6 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa
 pushd $RPM_BUILD_ROOT%{_libdir}/mesa
 for l in ../libGL.so.*; do cp -a $l .; done
 popd
-
-# icons for three demos examples [we lack a frontend
-# to launch the demos obviously]
-install -m 755 -d $RPM_BUILD_ROOT%{_miconsdir}
-install -m 755 -d $RPM_BUILD_ROOT%{_iconsdir}
-install -m 755 -d $RPM_BUILD_ROOT%{_liconsdir}
-tar jxvf %{SOURCE4} -C $RPM_BUILD_ROOT%{_iconsdir}
 
 # clean any .la file with still reference to tmppath.
 perl -pi -e "s|\S+$RPM_BUILD_DIR\S*||g" $RPM_BUILD_ROOT/%{_libdir}/*.la
@@ -575,7 +516,6 @@ rm -fr $RPM_BUILD_ROOT
 %_libdir/pkgconfig/*.pc
 
 #FIXME: check those headers
-%{_includedir}/GL/mglmesa.h
 %{_includedir}/GL/glfbdev.h
 %{_includedir}/GL/vms_x_fix.h
 %{_includedir}/GL/wmesa.h
@@ -624,22 +564,4 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwMDrawA.h
 %{_includedir}/GL/GLwMDrawAP.h
 %{_libdir}/libGLw.so
-
-%files demos
-%defattr(-,root,root)
-%doc docs/COPYING
-%{_bindir}/*
-%exclude %{_bindir}/glxinfo
-%exclude %{_bindir}/glinfo
-%dir %{_libdir}/mesa-demos-data
-%{_libdir}/mesa-demos-data/*
-%{_miconsdir}/*demos*.png
-%{_iconsdir}/*demos*.png
-%{_liconsdir}/*demos*.png
-
-%files -n glxinfo
-%defattr(-,root,root)
-%doc docs/COPYING
-%{_bindir}/glxinfo
-%{_bindir}/glinfo
 
