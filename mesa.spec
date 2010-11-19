@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.9
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -141,6 +141,7 @@ Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
 # git format-patch --start-number 900 mdv-redhat..mdv-patches
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
+Patch904:	Mesa-7.9-salome.patch
 
 Patch2004:     mesa_652_mips.patch
 
@@ -353,6 +354,7 @@ This package contains the headers needed to compile Mesa programs.
 
 %patch902 -p1
 %patch903 -p1
+%patch904 -p1
 
 %patch2004 -p1
 
