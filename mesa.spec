@@ -131,7 +131,7 @@ Source5:	mesa-driver-install
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 
-# Patches "liberated" from Fedora: 
+# Patches "liberated" from Fedora:
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
 # git format-patch --start-number 300 mdv-cherry-picks..mdv-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
@@ -142,7 +142,7 @@ Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
 Patch904: 0904-Fix-nouveau-for-new-libdrm.patch
-Patch905:	Mesa-7.9-salome.patch
+Patch905: 0905-Prevent-a-segfault-in-X-when-running-Salome.patch
 
 Patch2004:     mesa_652_mips.patch
 
@@ -169,7 +169,7 @@ Provides:	EGL-devel
 %package -n	%{libglname}
 Summary:	Files for Mesa (GL and GLX libs)
 Group:		System/Libraries
-Obsoletes:	%{oldlibglname} < 6.4 
+Obsoletes:	%{oldlibglname} < 6.4
 Provides:	%{oldlibglname} = %{version}-%{release}
 Provides:	%{libglname_virt} = %{version}-%{release}
 Requires:	%{dridrivers} >= %{version}-%{release}
@@ -220,7 +220,7 @@ Provides:	%{gluname}-devel = %{version}-%{release}
 Obsoletes:	%{oldlibgluname}-devel < 6.4
 Provides:	%{oldlibgluname}-devel = %{version}-%{release}
 Provides:	libMesaGLU-devel = %{version}-%{release}
-Provides:	MesaGLU-devel = %{version}-%{release} 
+Provides:	MesaGLU-devel = %{version}-%{release}
 
 %package -n	%{libglutname}
 Summary:	Files for Mesa (glut libs)
@@ -236,8 +236,8 @@ Provides:	%{libglutname_virt} = %{version}-%{release}
 Summary:	Development files for glut libs
 Group:		Development/C
 Requires:	%{libglutname} = %{version}-%{release} %{libgluname}-devel = %{version}-%{release}
-Provides:	lib%{glutname}-devel = %{version}-%{release} 
-Provides:	%{glutname}-devel = %{version}-%{release} 
+Provides:	lib%{glutname}-devel = %{version}-%{release}
+Provides:	%{glutname}-devel = %{version}-%{release}
 Obsoletes:	%{oldlibglutname}-devel < 6.4
 Provides:	%{oldlibglutname}-devel = %{version}-%{release}
 Provides:	libMesaGLUT-devel = %{version}-%{release}
@@ -254,15 +254,15 @@ Provides:	%{libglwname_virt} = %{version}-%{release}
 Summary:	Development files for glw libs
 Group:		Development/C
 Requires:	%{libglwname} = %{version}-%{release}
-Provides:	lib%{glwname}-devel = %{version}-%{release} 
-Provides:	%{glwname}-devel = %{version}-%{release} 
+Provides:	lib%{glwname}-devel = %{version}-%{release}
+Provides:	%{glwname}-devel = %{version}-%{release}
 
 %package	common-devel
 Summary:	Meta package for mesa devel
 Group:		Development/C
-Provides:	Mesa-common-devel = %{version}-%{release} 
+Provides:	Mesa-common-devel = %{version}-%{release}
 Provides:	hackMesa-common-devel = %{version}
-Obsoletes:	Mesa-common-devel < %{version} 
+Obsoletes:	Mesa-common-devel < %{version}
 Obsoletes:	hackMesa-common-devel < %{version}
 Requires:	%{libglname}-devel = %{version}
 Requires:	%{libglwname}-devel = %{version}
@@ -398,14 +398,13 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 %else
 		--disable-egl \
 %endif
-		--with-demos
 
 # (cg) Parallel build breaks the dricore shared stuff.
 make -j 1
 
 %install
 rm -rf %{buildroot}
-make DESTDIR=$RPM_BUILD_ROOT install
+%makeinstall_std
 
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
 
@@ -449,7 +448,7 @@ rm -fr $RPM_BUILD_ROOT
 %endif
 
 %if %mdkversion < 200900
-%post -n %{libgluname} -p /sbin/ldconfig 
+%post -n %{libgluname} -p /sbin/ldconfig
 %endif
 
 %if %mdkversion < 200900
@@ -457,7 +456,7 @@ rm -fr $RPM_BUILD_ROOT
 %endif
 
 %if %mdkversion < 200900
-%post -n %{libglutname} -p /sbin/ldconfig 
+%post -n %{libglutname} -p /sbin/ldconfig
 %endif
 
 %if %mdkversion < 200900
