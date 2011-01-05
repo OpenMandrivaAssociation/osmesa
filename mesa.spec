@@ -143,7 +143,6 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
 # git format-patch --start-number 300 mdv-cherry-picks..mdv-redhat
 Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
-Patch301: 0301-RH-mesa-7.1-link-shared-v1.7.patch
 
 # Mandriva patches
 # git format-patch --start-number 900 mdv-redhat..mdv-patches
@@ -163,17 +162,6 @@ Provides:	hackMesa = %{version}
 Obsoletes:	hackMesa <= %{version}
 Provides:	Mesa = %{version}
 Obsoletes:	Mesa < %{version}
-
-%package -n	%{libeglname}
-Summary:	Files for Mesa (EGL libs)
-Group:		System/Libraries
-Provides:	%{libeglname_virt} = %{version}-%{release}
-
-%package -n	%{libeglname}-devel
-Summary:	Development files for Mesa (EGL libs)
-Group:		Development/C
-Requires:	%{name} = %{version}
-Provides:	EGL-devel
 
 %package -n	%{libglname}
 Summary:	Files for Mesa (GL and GLX libs)
@@ -271,6 +259,19 @@ Provides:	lib%{glwname}-devel = %{version}-%{release}
 Provides:	%{glwname}-devel = %{version}-%{release}
 # pkgconfig files moved from libgl-devel:
 Conflicts:	%{libglname}-devel <= 7.9-2mdv2011.0
+
+%package -n	%{libeglname}
+Summary:	Files for Mesa (EGL libs)
+Group:		System/Libraries
+Provides:	%{libeglname_virt} = %{version}-%{release}
+
+%package -n	%{libeglname}-devel
+Summary:	Development files for Mesa (EGL libs)
+Group:		Development/C
+Requires:	%{libeglname} = %{version}-%{release}
+Provides:	EGL-devel
+Provides:	lib%{eglname}-devel
+Provides:	%{eglname}-devel
 
 %package -n %{libglesv1name}
 Summary:	Files for Mesa (glesv1 libs)
@@ -409,10 +410,6 @@ This package contains the headers needed to compile OpenGL ES 2 programs.
 %patch201 -p1
 
 %patch300 -p1
-## (Anssi 03/2010) FIXME: Currently results in either missing NEEDED tag or
-## NEEDED tag with '../../../../../lib/libdricore.so', while NEEDED tag of libdricore.so
-## is wanted.
-#%patch301 -p1
 
 %patch902 -p1
 %patch903 -p1
