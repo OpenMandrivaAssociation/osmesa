@@ -28,8 +28,6 @@
 %endif
 %endif
 
-%define makedepend		%{_bindir}/gccmakedep
-
 %define eglname			mesaegl
 %define glname			mesagl
 %define gluname			mesaglu
@@ -91,24 +89,22 @@ Release: 	%{release}
 Summary:	OpenGL 2.1 compatible 3D graphics library
 Group:		System/Libraries
 
-BuildRequires:	tcl
-BuildRequires:	texinfo
 BuildRequires:	libxfixes-devel		>= 4.0.3
 BuildRequires:	libxt-devel		>= 1.0.5
 BuildRequires:	libxmu-devel		>= 1.0.3
 BuildRequires:	libx11-devel		>= 1.3.3
 BuildRequires:	libxdamage-devel	>= 1.1.1
 BuildRequires:	libexpat-devel		>= 2.0.1
-BuildRequires:	gccmakedep
+BuildRequires:	makedepend
 BuildRequires:	x11-proto-devel		>= 7.3
 BuildRequires:	libdrm-devel		>= 2.4.21
 
 BuildRequires:	libxext-devel		>= 1.1.1
 BuildRequires:	libxxf86vm-devel	>= 1.1.0
 BuildRequires:	libxi-devel		>= 1.3
-BuildRequires:	talloc-devel libxml2-python
+BuildRequires:	talloc-devel
+BuildRequires:	libxml2-python
 
-BuildRequires:	libglew-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://www.mesa3d.org
 %if %{git}
@@ -146,12 +142,11 @@ Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 
 # Mandriva patches
 # git format-patch --start-number 900 mdv-redhat..mdv-patches
+Patch900: 0900-Mips-support.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
 Patch904: 0904-Fix-nouveau-for-new-libdrm.patch
 Patch905: 0905-Prevent-a-segfault-in-X-when-running-Salome.patch
-
-Patch2004:     mesa_652_mips.patch
 
 #------------------------------------------------------------------------------
 
@@ -411,12 +406,11 @@ This package contains the headers needed to compile OpenGL ES 2 programs.
 
 %patch300 -p1
 
+%patch900 -p1
 %patch902 -p1
 %patch903 -p1
 %patch904 -p1
 %patch905 -p1
-
-%patch2004 -p1
 
 chmod +x %{SOURCE5}
 
@@ -433,14 +427,6 @@ EOF
 #./autogen.sh -v
 #%endif
 
-# Required by patch200:
-autoreconf -vfi
-
-LIB_DIR=%{_lib}
-INCLUDE_DIR=$RPM_BUILD_ROOT%{_includedir}
-DRI_DRIVER_DIR="%{driver_dir}"
-export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
-
 %configure2_5x	--with-driver=dri \
 		--with-dri-driverdir=%{driver_dir} \
 		--with-dri-drivers="%{dri_drivers}" \
@@ -451,14 +437,11 @@ export LIB_DIR INCLUDE_DIR DRI_DRIVER_DIR
 		--enable-gles2
 
 # (cg) Parallel build breaks the dricore shared stuff.
-make -j 1
+%make
 
 %install
 rm -rf %{buildroot}
 %makeinstall_std
-
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
-
 
 # (blino) hardlink libGL files in %{_libdir}/mesa
 # to prevent proprietary driver installers from removing them
@@ -466,9 +449,6 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa
 pushd $RPM_BUILD_ROOT%{_libdir}/mesa
 for l in ../libGL.so.*; do cp -a $l .; done
 popd
-
-# clean any .la file with still reference to tmppath.
-perl -pi -e "s|\S+$RPM_BUILD_DIR\S*||g" $RPM_BUILD_ROOT/%{_libdir}/*.la
 
 %ifarch %{x86_64}
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
