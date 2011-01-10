@@ -35,6 +35,7 @@
 %define glwname			mesaglw
 %define glesv1name		mesaglesv1
 %define glesv2name		mesaglesv2
+%define openvgname		mesaopenvg
 
 %define eglmajor		1
 %define glmajor			1
@@ -43,6 +44,7 @@
 %define glwmajor		1
 %define glesv1major		1
 %define glesv2major		2
+%define openvgmajor		1
 
 %define libeglname		%mklibname %{eglname} %{eglmajor}
 %define libglname		%mklibname %{glname} %{glmajor}
@@ -51,6 +53,7 @@
 %define libglwname		%mklibname %{glwname} %{glwmajor}
 %define libglesv1name		%mklibname %{glesv1name}_ %{glesv1major}
 %define libglesv2name		%mklibname %{glesv2name}_ %{glesv2major}
+%define libopenvgname		%mklibname %{openvgname} %{openvgmajor}
 
 %define dridrivers		%mklibname dri-drivers
 
@@ -62,6 +65,7 @@
 %define libglwname_virt		lib%{glwname}
 %define libglesv1name_virt	lib%{glesv1name}
 %define libglesv2name_virt	lib%{glesv2name}
+%define libopenvgname_virt	lib%{openvgname}
 
 %define oldlibglname		%mklibname MesaGL 1
 %define oldlibgluname		%mklibname MesaGLU 1
@@ -291,6 +295,18 @@ Requires:	%{libglesv2name} = %{version}-%{release}
 Provides:	lib%{glesv2name}-devel
 Provides:	%{glesv2name}-devel
 
+%package -n %{libopenvgname}
+Summary:	Files for MESA (OpenVG libs)
+Group:		System/Libraries
+Provides:	%{libopenvgname_virt} = %{version}-%{release}
+
+%package -n %{libopenvgname}-devel
+Summary:	Development files vor OpenVG libs
+Group:		Development/C
+Requires:	%{libopenvgname} = %{version}-%{release}
+Provides:	lib%{openvgname}-devel
+Provides:	%{openvgname}-devel
+
 %package	common-devel
 Summary:	Meta package for mesa devel
 Group:		Development/C
@@ -392,6 +408,13 @@ This package provides the OpenGL ES library version 2.
 %description -n %{libglesv2name}-devel
 This package contains the headers needed to compile OpenGL ES 2 programs.
 
+%description -n %{libopenvgname}
+OpenVG is a royalty-free, cross-platform API that provides a low-level hardware
+acceleration interface for vector graphics libraries such as Flash and SVG.
+
+%description -n %{libopenvgname}-devel
+Development files for OpenVG library.
+
 #------------------------------------------------------------------------------
 
 %prep
@@ -434,9 +457,9 @@ EOF
 		--enable-gallium-nouveau \
 		--enable-egl \
 		--enable-gles1 \
-		--enable-gles2
+		--enable-gles2 \
+		--enable-openvg
 
-# (cg) Parallel build breaks the dricore shared stuff.
 %make
 
 %install
@@ -525,6 +548,11 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/COPYING
 %{_libdir}/libGLESv2.so.%{glesv2major}*
 
+%files -n %{libopenvgname}
+%defattr(-,root,root)
+%doc docs/COPYING
+%{_libdir}/libOpenVG.so.%{openvgmajor}*
+
 
 %files -n %{libglname}-devel
 %defattr(-,root,root)
@@ -597,4 +625,10 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GLES2
 %{_libdir}/libGLESv2.so
 %{_libdir}/pkgconfig/glesv2.pc
+
+%files -n %{libopenvgname}-devel
+%defattr(-,root,root)
+%{_includedir}/VG
+%{_libdir}/libOpenVG.so
+%{_libdir}/pkgconfig/vg.pc
 
