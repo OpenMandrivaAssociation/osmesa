@@ -7,8 +7,8 @@
 %define git 0
 %define relc			0
 %define	name			mesa
-%define version			7.9
-%define rel			3
+%define version			7.10
+%define rel			1
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -145,7 +145,6 @@ Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 Patch900: 0900-Mips-support.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
-Patch904: 0904-Fix-nouveau-for-new-libdrm.patch
 Patch905: 0905-Prevent-a-segfault-in-X-when-running-Salome.patch
 
 #------------------------------------------------------------------------------
@@ -402,15 +401,16 @@ This package contains the headers needed to compile OpenGL ES 2 programs.
 %setup -q -n Mesa-%{version}%{vsuffix} -b2
 %endif
 
-%patch201 -p1
+# For invesalius. Temporarily disabled so pcpa can test a clean 7.10
+#%patch201 -p1
 
 %patch300 -p1
 
 %patch900 -p1
 %patch902 -p1
 %patch903 -p1
-%patch904 -p1
-%patch905 -p1
+# For salome. Temporarily disabled so pcpa can test a clean 7.10
+#%patch905 -p1
 
 chmod +x %{SOURCE5}
 
