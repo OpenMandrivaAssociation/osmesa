@@ -477,10 +477,6 @@ popd
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 %endif
 
-# (cg) I'm not really sure about these files, but they do conflict in some capacity so I'll
-#      just trash them for now.
-rm -f $RPM_BUILD_ROOT%{_includedir}/GL/{glew,glxew,wglew}.h
-
 %clean
 rm -fr $RPM_BUILD_ROOT
 
