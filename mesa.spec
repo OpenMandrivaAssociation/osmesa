@@ -187,10 +187,7 @@ Requires:       %{dridrivers}
 %package -n	%{libglname}-devel
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
 Group:		Development/C
-Requires:	%{name} = %{version}
-# (gc) /usr/lib/pkgconfig/glut.pc depends on /usr/lib/pkgconfig/{x11,xmu,xi}.pc (Requires.private) and pkg-config --list-all
-# goes wild without these deps
-Requires:	libx11-devel libxmu-devel libxi-devel
+Requires:	%{libglname} = %{version}-%{release}
 Provides:	lib%{glname}-devel = %{version}-%{release}
 Provides:	%{glname}-devel = %{version}-%{release}
 Provides:	GL-devel
@@ -233,6 +230,9 @@ Provides:	%{libglutname_virt} = %{version}-%{release}
 Summary:	Development files for glut libs
 Group:		Development/C
 Requires:	%{libglutname} = %{version}-%{release} %{libgluname}-devel = %{version}-%{release}
+# (gc) /usr/lib/pkgconfig/glut.pc depends on /usr/lib/pkgconfig/{x11,xmu,xi}.pc (Requires.private) and pkg-config --list-all
+# goes wild without these deps
+Requires:	libx11-devel libxmu-devel libxi-devel
 Provides:	lib%{glutname}-devel = %{version}-%{release}
 Provides:	%{glutname}-devel = %{version}-%{release}
 Obsoletes:	%{oldlibglutname}-devel < 6.4
