@@ -1,8 +1,8 @@
-# (cg) Cheater...
-%define Werror_cflags %nil
-
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
+
+# freeglut should replace mesaglut soon
+%define with_mesaglut 1
 
 %define git 0
 %define relc			0
@@ -137,7 +137,7 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
-Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
+Patch200: 0200-dri_util-fail-driCreateNewScreen-if-InitScreen-is-NU.patch
 
 # Patches "liberated" from Fedora:
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -195,6 +195,7 @@ Obsoletes:	%{oldlibglname}-devel < 6.4
 Provides:	%{oldlibglname}-devel = %{version}-%{release}
 Provides:	libMesaGL-devel = %{version}-%{release}
 Provides:	MesaGL-devel = %{version}-%{release}
+Provides:	libgl-devel
 
 %package -n	%{libgluname}
 Summary:	Files for Mesa (GLU libs)
@@ -213,9 +214,11 @@ Obsoletes:	%{oldlibgluname}-devel < 6.4
 Provides:	%{oldlibgluname}-devel = %{version}-%{release}
 Provides:	libMesaGLU-devel = %{version}-%{release}
 Provides:	MesaGLU-devel = %{version}-%{release}
+Provides:	libglu-devel
 # pkgconfig files moved from libgl-devel:
 Conflicts:	%{libglname}-devel <= 7.9-2mdv2011.0
 
+%if %{with_mesaglut}
 %package -n	%{libglutname}
 Summary:	Files for Mesa (glut libs)
 Group:		System/Libraries
@@ -239,8 +242,10 @@ Obsoletes:	%{oldlibglutname}-devel < 6.4
 Provides:	%{oldlibglutname}-devel = %{version}-%{release}
 Provides:	libMesaGLUT-devel = %{version}-%{release}
 Provides:	MesaGLUT-devel = %{version}-%{release}
+Provides:	libglut-devel
 # pkgconfig files moved from libgl-devel:
 Conflicts:	%{libglname}-devel <= 7.9-2mdv2011.0
+%endif
 
 %package -n	%{libglwname}
 Summary:	Files for Mesa (glw libs)
@@ -255,6 +260,7 @@ Group:		Development/C
 Requires:	%{libglwname} = %{version}-%{release}
 Provides:	lib%{glwname}-devel = %{version}-%{release}
 Provides:	%{glwname}-devel = %{version}-%{release}
+Provides:	libglw-devel
 # pkgconfig files moved from libgl-devel:
 Conflicts:	%{libglname}-devel <= 7.9-2mdv2011.0
 
@@ -270,6 +276,7 @@ Requires:	%{libeglname} = %{version}-%{release}
 Provides:	EGL-devel
 Provides:	lib%{eglname}-devel
 Provides:	%{eglname}-devel
+Provides:	libegl-devel
 
 %package -n %{libglesv1name}
 Summary:	Files for Mesa (glesv1 libs)
@@ -282,6 +289,7 @@ Group:		Development/C
 Requires:	%{libglesv1name} = %{version}-%{release}
 Provides:	lib%{glesv1name}-devel
 Provides:	%{glesv1name}-devel
+Provides:	libglesv1-devel
 
 %package -n %{libglesv2name}
 Summary:	Files for Mesa (glesv2 libs)
@@ -294,6 +302,7 @@ Group:		Development/C
 Requires:	%{libglesv2name} = %{version}-%{release}
 Provides:	lib%{glesv2name}-devel
 Provides:	%{glesv2name}-devel
+Provides:	libglesv2-devel
 
 %package -n %{libopenvgname}
 Summary:	Files for MESA (OpenVG libs)
@@ -306,6 +315,7 @@ Group:		Development/C
 Requires:	%{libopenvgname} = %{version}-%{release}
 Provides:	lib%{openvgname}-devel
 Provides:	%{openvgname}-devel
+Provides:	libopenvg-devel
 
 %package	common-devel
 Summary:	Meta package for mesa devel
@@ -317,7 +327,11 @@ Obsoletes:	hackMesa-common-devel < %{version}
 Requires:	%{libglname}-devel = %{version}
 Requires:	%{libglwname}-devel = %{version}
 Requires:	%{libgluname}-devel = %{version}
+%if %{with_mesaglut}
 Requires:	%{libglutname}-devel = %{version}
+%else
+Requires:	libglut-devel
+%endif
 Requires:	%{libeglname}-devel = %{version}
 Requires:	%{libglesv1name}-devel = %{version}
 Requires:	%{libglesv2name}-devel = %{version}
@@ -369,6 +383,7 @@ OpenGL.
 %description -n %{libgluname}-devel
 This package contains the headers needed to compile programs with GLU.
 
+%if %{with_mesaglut}
 %description -n %{libglutname}
 GLUT (OpenGL Utility Toolkit) is a addon library for OpenGL programs. It
 provides them utilities to define and control windows, input from the keyboard
@@ -378,6 +393,7 @@ GLUT can even create pop-up windows.
 %description -n %{libglutname}-devel
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 glut parts.
+%endif
 
 This package contains the headers needed to compile Mesa programs.
 
@@ -424,8 +440,7 @@ Development files for OpenVG library.
 %setup -q -n Mesa-%{version}%{vsuffix} -b2
 %endif
 
-# For invesalius. Temporarily disabled so pcpa can test a clean 7.10
-#%patch201 -p1
+%patch200 -p1
 
 %patch300 -p1
 
@@ -458,7 +473,12 @@ EOF
 		--enable-egl \
 		--enable-gles1 \
 		--enable-gles2 \
-		--enable-openvg
+		--enable-openvg \
+%if %{with_mesaglut}
+		--enable-glut
+%else
+		--disable-glut
+%endif
 
 %make
 
@@ -475,6 +495,11 @@ popd
 
 %ifarch %{x86_64}
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
+%endif
+
+%if !%{with_mesaglut}
+rm -f %{buildroot}/%{_includedir}/GL/glut.h
+rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %endif
 
 %clean
@@ -516,10 +541,12 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/COPYING
 %{_libdir}/libGLU.so.%{glumajor}*
 
+%if %{with_mesaglut}
 %files -n %{libglutname}
 %defattr(-,root,root)
 %doc docs/COPYING
 %{_libdir}/libglut.so.%{glutmajor}*
+%endif
 
 %files -n %{libglwname}
 %defattr(-,root,root)
@@ -581,6 +608,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_libdir}/libGLU.so
 %{_libdir}/pkgconfig/glu.pc
 
+%if %{with_mesaglut}
 %files -n %{libglutname}-devel
 %defattr(-,root,root)
 %doc docs/COPYING
@@ -588,6 +616,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/glutf90.h
 %{_libdir}/libglut.so
 %{_libdir}/pkgconfig/glut.pc
+%endif
 
 %files common-devel
 %defattr(-,root,root)
