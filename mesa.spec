@@ -393,9 +393,9 @@ GLUT can even create pop-up windows.
 %description -n %{libglutname}-devel
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 glut parts.
-%endif
 
 This package contains the headers needed to compile Mesa programs.
+%endif
 
 %description -n %{libglwname}
 GLw adds Motif bindings to the OpenGL "canvas" (Xt/Motif/OpenGL widget code).
@@ -410,7 +410,7 @@ This package contains the headers needed to compile Mesa programs.
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
 well-defined subset profiles of OpenGL.
 
-This package provides the OpenGL ES library version 2.
+This package provides the OpenGL ES library version 1.
 
 %description -n %{libglesv1name}-devel
 This package contains the headers needed to compile OpenGL ES 1 programs.
