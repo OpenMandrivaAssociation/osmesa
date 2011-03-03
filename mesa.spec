@@ -7,7 +7,7 @@
 %define git 0
 %define relc			0
 %define	name			mesa
-%define version			7.10
+%define version			7.10.1
 %define rel			1
 
 %define release			%mkrel %{rel}
@@ -137,7 +137,6 @@ Source5:	mesa-driver-install
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
-Patch200: 0200-dri_util-fail-driCreateNewScreen-if-InitScreen-is-NU.patch
 
 # Patches "liberated" from Fedora:
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
@@ -439,8 +438,6 @@ Development files for OpenVG library.
 %else
 %setup -q -n Mesa-%{version}%{vsuffix} -b2
 %endif
-
-%patch200 -p1
 
 %patch300 -p1
 
