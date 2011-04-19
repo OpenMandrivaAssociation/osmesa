@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.10.1
-%define rel			1
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -149,6 +149,11 @@ Patch900: 0900-Mips-support.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
 Patch905: 0905-Prevent-a-segfault-in-X-when-running-Salome.patch
+
+# From Fedora, allows Mesa to build with nouveau as of 20110117
+Patch001: mesa-7.10-nouveau-updates.patch
+Patch002: mesa-7.10-nouveau-revert.patch
+Patch003: mesa-7.10-nouveau-classic-libdrm.patch
 
 #------------------------------------------------------------------------------
 
@@ -446,6 +451,9 @@ Development files for OpenVG library.
 %patch903 -p1
 # For salome. Temporarily disabled so pcpa can test a clean 7.10
 #%patch905 -p1
+%patch1 -p1 -b .nouveau-updates
+%patch2 -p1 -b .nouveau-revert
+%patch3 -p1 -b .nouveau-classic-libdrm
 
 chmod +x %{SOURCE5}
 
@@ -462,10 +470,14 @@ EOF
 #./autogen.sh -v
 #%endif
 
+# need autoreconf since nouveau-updates patches configure.ac
+autoreconf
 %configure2_5x	--with-driver=dri \
 		--with-dri-driverdir=%{driver_dir} \
 		--with-dri-drivers="%{dri_drivers}" \
 		--with-state-trackers=dri \
+		--enable-gallium-radeon \
+		--enable-gallium-r600 \
 		--enable-gallium-nouveau \
 		--enable-egl \
 		--enable-gles1 \
