@@ -8,7 +8,7 @@
 %define relc			0
 %define	name			mesa
 %define version			7.10.1
-%define rel			2
+%define rel			3
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -476,8 +476,6 @@ autoreconf
 		--with-dri-driverdir=%{driver_dir} \
 		--with-dri-drivers="%{dri_drivers}" \
 		--with-state-trackers=dri \
-		--enable-gallium-radeon \
-		--enable-gallium-r600 \
 		--enable-gallium-nouveau \
 		--enable-egl \
 		--enable-gles1 \
