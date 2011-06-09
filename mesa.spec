@@ -7,8 +7,8 @@
 %define git 0
 %define relc			0
 %define	name			mesa
-%define version			7.10.1
-%define rel			3
+%define version			7.10.2
+%define rel			2
 
 %define release			%mkrel %{rel}
 %define src_type tar.bz2
@@ -101,7 +101,7 @@ BuildRequires:	libxdamage-devel	>= 1.1.1
 BuildRequires:	libexpat-devel		>= 2.0.1
 BuildRequires:	makedepend
 BuildRequires:	x11-proto-devel		>= 7.3
-BuildRequires:	libdrm-devel		>= 2.4.21
+BuildRequires:	libdrm-devel		>= 2.4.25
 
 BuildRequires:	libxext-devel		>= 1.1.1
 BuildRequires:	libxxf86vm-devel	>= 1.1.0
@@ -149,6 +149,7 @@ Patch900: 0900-Mips-support.patch
 Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
 Patch905: 0905-Prevent-a-segfault-in-X-when-running-Salome.patch
+Patch906: 0906-Prevent-crash-with-empty-buffer.patch
 
 # From Fedora, allows Mesa to build with nouveau as of 20110117
 Patch001: mesa-7.10-nouveau-updates.patch
@@ -451,6 +452,7 @@ Development files for OpenVG library.
 %patch903 -p1
 # For salome. Temporarily disabled so pcpa can test a clean 7.10
 #%patch905 -p1
+%patch906 -p1
 %patch1 -p1 -b .nouveau-updates
 %patch2 -p1 -b .nouveau-revert
 %patch3 -p1 -b .nouveau-classic-libdrm
