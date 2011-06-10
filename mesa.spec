@@ -450,8 +450,7 @@ Development files for OpenVG library.
 %patch900 -p1
 %patch902 -p1
 %patch903 -p1
-# For salome. Temporarily disabled so pcpa can test a clean 7.10
-#%patch905 -p1
+%patch905 -p1
 %patch906 -p1
 %patch1 -p1 -b .nouveau-updates
 %patch2 -p1 -b .nouveau-revert
