@@ -85,7 +85,12 @@
 %define	dri_drivers_alpha	"mga,r128,r200,radeon,swrast"
 %define	dri_drivers_sparc	"ffb,mach64,mga,radeon,savage,swrast"
 %define dri_drivers_mipsel	"mach64,mga,r128,r200,radeon,savage,tdfx"
+%define dri_drivers_arm		"swrast"
+%ifarch	%{arm}
+%define	dri_drivers		%{expand:%{dri_drivers_arm}}
+%else
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
+%endif
 
 Name:		%{name}
 Version: 	%{version}
@@ -529,7 +534,9 @@ rm -fr $RPM_BUILD_ROOT
 #%{_libdir}/dri/libdricore.so
 %{_libdir}/dri/*_dri.so
 %exclude %{_libdir}/dri/nouveau_dri.so
+%ifnarch %arm
 %exclude %{_libdir}/dri/nouveau_vieux_dri.so
+%endif
 %endif
 
 %files -n %{dridrivers}-experimental
@@ -537,7 +544,9 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/COPYING
 %doc README.install.urpmi
 %{_libdir}/dri/nouveau_dri.so
+%ifnarch %arm
 %{_libdir}/dri/nouveau_vieux_dri.so
+%endif
 
 %files -n %{libglname}
 %defattr(-,root,root)
