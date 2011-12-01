@@ -503,13 +503,13 @@ rm -rf %{buildroot}
 
 # (blino) hardlink libGL files in %{_libdir}/mesa
 # to prevent proprietary driver installers from removing them
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa
-pushd $RPM_BUILD_ROOT%{_libdir}/mesa
+mkdir -p %{buildroot}%{_libdir}/mesa
+pushd %{buildroot}%{_libdir}/mesa
 for l in ../libGL.so.*; do cp -a $l .; done
 popd
 
 %ifarch %{x86_64}
-mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
+mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
 
 %if !%{with_mesaglut}
@@ -518,7 +518,7 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %endif
 
 %clean
-rm -fr $RPM_BUILD_ROOT
+rm -fr %{buildroot}
 
 #------------------------------------------------------------------------------
 
