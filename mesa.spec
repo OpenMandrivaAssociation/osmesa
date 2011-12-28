@@ -1,10 +1,12 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
+%define build_plf 0
 # freeglut should replace mesaglut soon
 %define with_mesaglut 1
 
 %define git		0
+%define with_hardware 1
 %define relc	0
 %define release	1
 
@@ -33,6 +35,7 @@
 %define glesv1name		mesaglesv1
 %define glesv2name		mesaglesv2
 %define openvgname		mesaopenvg
+%define glapiname		glapi
 
 %define eglmajor		1
 %define glmajor			1
@@ -42,6 +45,7 @@
 %define glesv1major		1
 %define glesv2major		2
 %define openvgmajor		1
+%define glapimajor		0
 
 %define libeglname		%mklibname %{eglname} %{eglmajor}
 %define libglname		%mklibname %{glname} %{glmajor}
@@ -51,6 +55,7 @@
 %define libglesv1name	%mklibname %{glesv1name}_ %{glesv1major}
 %define libglesv2name	%mklibname %{glesv2name}_ %{glesv2major}
 %define libopenvgname	%mklibname %{openvgname} %{openvgmajor}
+%define libglapiname	%mklibname %{glapiname} %{glapimajor}
 
 %define dridrivers		%mklibname dri-drivers
 
@@ -63,6 +68,7 @@
 %define libglesv1name_virt	lib%{glesv1name}
 %define libglesv2name_virt	lib%{glesv2name}
 %define libopenvgname_virt	lib%{openvgname}
+%define libglapiname_virt	lib%{glapiname}
 
 %define oldlibglname		%mklibname MesaGL 1
 %define oldlibgluname		%mklibname MesaGLU 1
@@ -107,7 +113,6 @@ Source2:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaGLUT-%{version}%{vsuffi
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
 
-
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
 # git checkout mesa_7_5_branch
@@ -127,37 +132,33 @@ Source5:	mesa-driver-install
 # Patches "liberated" from Fedora:
 # http://cvs.fedoraproject.org/viewvc/rpms/mesa/devel/
 # git format-patch --start-number 300 mdv-cherry-picks..mdv-redhat
-Patch300: 0300-RH-mesa-7.1-nukeglthread-debug-v1.1.patch
 
-# Mandriva patches
-# git format-patch --start-number 900 mdv-redhat..mdv-patches
+# Mandriva & Mageia patches
 Patch900: 0900-Mips-support.patch
-Patch902: 0902-remove-unfinished-GLX_ARB_render_texture.patch
 Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
-Patch905: 0905-Prevent-a-segfault-in-X-when-running-Salome.patch
-Patch906: 0906-Prevent-crash-with-empty-buffer.patch
-
-# From Fedora, allows Mesa to build with nouveau as of 20110117
-Patch001: mesa-7.10-nouveau-updates.patch
-Patch002: mesa-7.10-nouveau-revert.patch
-Patch003: mesa-7.10-nouveau-classic-libdrm.patch
+# (anssi) fixes gwenview segfault, from git master:
+Patch203: nv50-nvc0-use-screen-instead-of-context-for-flush-notifier.patch
+Patch205: MesaLib-7.11.2-llvm3.0.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
-BuildRequires:	libxfixes-devel		>= 4.0.3
-BuildRequires:	libxt-devel		>= 1.0.5
-BuildRequires:	libxmu-devel		>= 1.0.3
-BuildRequires:	libx11-devel		>= 1.3.3
-BuildRequires:	libxdamage-devel	>= 1.1.1
-BuildRequires:	libexpat-devel		>= 2.0.1
+BuildRequires:  llvm
+BuildRequires:	expat-devel		>= 2.0.1
+BuildRequires:	gccmakedep
 BuildRequires:	makedepend
 BuildRequires:	x11-proto-devel		>= 7.3
-BuildRequires:	libdrm-devel		>= 2.4.25
-BuildRequires:	libxext-devel		>= 1.1.1
-BuildRequires:	libxxf86vm-devel	>= 1.1.0
-BuildRequires:	libxi-devel		>= 1.3
-BuildRequires:	talloc-devel
 BuildRequires:	libxml2-python
+BuildRequires:	pkgconfig(libdrm)	>= 2.4.21
+BuildRequires:  pkgconfig(libudev)
+BuildRequires:	pkgconfig(talloc)
+BuildRequires:	pkgconfig(xfixes)	>= 4.0.3
+BuildRequires:	pkgconfig(xt)		>= 1.0.5
+BuildRequires:	pkgconfig(xmu)		>= 1.0.3
+BuildRequires:	pkgconfig(x11)		>= 1.3.3
+BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
+BuildRequires:	pkgconfig(xext)		>= 1.1.1
+BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
+BuildRequires:	pkgconfig(xi)		>= 1.3
 
 # package mesa
 Requires:	%{libglname} = %{version}-%{release}
@@ -173,6 +174,9 @@ Obsoletes:	%{oldlibglname} < 6.4
 Provides:	%{oldlibglname} = %{version}-%{release}
 Provides:	%{libglname_virt} = %{version}-%{release}
 Requires:	%{dridrivers} >= %{version}-%{release}
+%if %{build_plf}
+Requires:	%mklibname txc-dxtn
+%endif
 # (anssi) Forces the upgrade of x11-server-common to happen before
 # alternatives removal, which allows x11-server-common to grab the symlink.
 Conflicts:	x11-server-common < 1.3.0.0-17
@@ -181,12 +185,7 @@ Conflicts:	x11-server-common < 1.3.0.0-17
 Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
-
-%package -n	%{dridrivers}-experimental
-Summary:	Mesa DRI - unstable experimental drivers
-Group:		System/Libraries
-# for dri driver directory
-Requires:       %{dridrivers}
+%rename %{_lib}dri-drivers-experimental
 
 %package -n	%{libglname}-devel
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
@@ -282,6 +281,18 @@ Provides:	lib%{eglname}-devel
 Provides:	%{eglname}-devel
 Provides:	libegl-devel
 
+%package -n %{libglapiname}
+Summary:        Files for mesa (glapi libs)
+Group:          System/Libraries
+Provides:       %{libglapiname_virt} = %{version}-%{release}
+
+%package -n %{libglapiname}-devel
+Summary:        Development files for glapi libs
+Group:          Development/C
+Requires:       %{libglapiname_virt} = %{version}-%{release}
+Provides:       lib%{glapiname}-devel
+Provides:       %{libglapiname}-devel
+
 %package -n %{libglesv1name}
 Summary:	Files for Mesa (glesv1 libs)
 Group:		System/Libraries
@@ -334,7 +345,7 @@ Requires:	%{libgluname}-devel = %{version}
 %if %{with_mesaglut}
 Requires:	%{libglutname}-devel = %{version}
 %else
-Requires:	libglut-devel
+Requires:	freeglut-devel
 %endif
 Requires:	%{libeglname}-devel = %{version}
 Requires:	%{libglesv1name}-devel = %{version}
@@ -344,6 +355,11 @@ Requires:	%{libglesv2name}-devel = %{version}
 
 %description
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
+%if %{build_plf}
+
+This package is in the "tainted" section because it enables some
+OpenGL extentions that are covered by software patents.
+%endif
 
 %description common-devel
 Mesa common metapackage devel
@@ -363,15 +379,6 @@ GL and GLX parts.
 %description -n %{dridrivers}
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 DRI drivers.
-
-%description -n %{dridrivers}-experimental
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
-Experimental unstable DRI drivers.
-
-This package contains experimental DRI drivers for NVIDIA cards, for
-OpenGL acceleration with nouveau driver. These drivers are not stable
-and may crash your system. Please do not report bugs encountered with
-these drivers.
 
 %description -n %{libglname}-devel
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
@@ -410,6 +417,13 @@ GLw parts.
 
 This package contains the headers needed to compile Mesa programs.
 
+%description -n %{libglapiname}
+This packages provides the glapi shared library used by gallium.
+
+%description -n %{libglapiname}-devel
+This package contains the headers needed to compile programes against
+glapi shared library.
+
 %description -n %{libglesv1name}
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
 well-defined subset profiles of OpenGL.
@@ -447,14 +461,6 @@ Development files for OpenVG library.
 %apply_patches
 chmod +x %{SOURCE5}
 
-# for dri-drivers-experimental
-cat > README.install.urpmi <<EOF
-This package contains experimental DRI drivers for NVIDIA cards, for
-OpenGL acceleration with nouveau driver. These drivers are not stable
-and may crash your system. Please do not report bugs encountered with
-these drivers.
-EOF
-
 %build
 #%if %{git}
 #./autogen.sh -v
@@ -467,11 +473,23 @@ autoreconf
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 	--with-state-trackers=dri \
+	--enable-shared-dricore \
 	--enable-gallium-nouveau \
 	--enable-egl \
 	--enable-gles1 \
 	--enable-gles2 \
 	--enable-openvg \
+	 --enable-gallium-egl \
+%if %{with_hardware}
+	--with-gallium-drivers=r300,r600,nouveau,swrast \
+   	--enable-gallium-llvm \
+%else
+   	--disable-gallium-llvm \
+   	--with-gallium-drivers=swrast \
+%endif
+%if %{build_plf}
+   	--enable-texture-float \
+%endif
 %if %{with_mesaglut}
 	--enable-glut
 %else
@@ -500,6 +518,9 @@ rm -f %{buildroot}/%{_includedir}/GL/glut.h
 rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %endif
 
+# use swrastg if built (Anssi 12/2011)
+[ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
+
 #------------------------------------------------------------------------------
 
 %files
@@ -508,19 +529,9 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %files -n %{dridrivers}
 %ifnarch ppc64
 %dir %{_libdir}/dri
-#%{_libdir}/dri/libdricore.so
+%{_libdir}/dri/libdricore.so
+%{_libdir}/dri/libglsl.so
 %{_libdir}/dri/*_dri.so
-%exclude %{_libdir}/dri/nouveau_dri.so
-%ifnarch %arm
-%exclude %{_libdir}/dri/nouveau_vieux_dri.so
-%endif
-%endif
-
-%files -n %{dridrivers}-experimental
-%doc README.install.urpmi
-%{_libdir}/dri/nouveau_dri.so
-%ifnarch %arm
-%{_libdir}/dri/nouveau_vieux_dri.so
 %endif
 
 %files -n %{libglname}
@@ -543,8 +554,11 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %files -n %{libeglname}
 %{_libdir}/libEGL.so.%{eglmajor}*
 %dir %{_libdir}/egl
-%{_libdir}/egl/egl_dri2.so
-%{_libdir}/egl/egl_glx.so
+%{_libdir}/egl/st_GL.so
+%{_libdir}/egl/egl_gallium.so
+
+%files -n %{libglapiname}
+%{_libdir}/libglapi.so.%{glapimajor}*
 
 %files -n %{libglesv1name}
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
@@ -606,6 +620,9 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %{_includedir}/KHR
 %{_libdir}/libEGL.so
 %{_libdir}/pkgconfig/egl.pc
+
+%files -n %{libglapiname}-devel
+%{_libdir}/libglapi.so
 
 %files -n %{libglesv1name}-devel
 %{_includedir}/GLES
