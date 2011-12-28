@@ -4,27 +4,24 @@
 # freeglut should replace mesaglut soon
 %define with_mesaglut 1
 
-%define git 0
-%define relc			0
-%define	name			mesa
-%define version			7.10.3
-%define rel			1
+%define git		0
+%define relc	0
+%define release	1
 
-%define release			%mkrel %{rel}
 %define src_type tar.bz2
-%define vsuffix			%{expand:}
+%define vsuffix	%{expand:}
 
 %if %{relc}
-%define release			%mkrel 0.rc%{relc}.%{rel}
+%define release	0.rc%{relc}.%{rel}
 %define vsuffix -rc%{relc}
 %define src_type tar.bz2
 %endif
 
 %if %{git}
 %if %{relc}
-%define release			%mkrel 0.rc%{relc}.2.git%{git}.%{rel}
+%define release	0.rc%{relc}.2.git%{git}.%{rel}
 %else
-%define release			%mkrel 0.git%{git}.%{rel}
+%define release	0.git%{git}.%{rel}
 %endif
 %endif
 
@@ -51,9 +48,9 @@
 %define libgluname		%mklibname %{gluname} %{glumajor}
 %define libglutname		%mklibname %{glutname} %{glutmajor}
 %define libglwname		%mklibname %{glwname} %{glwmajor}
-%define libglesv1name		%mklibname %{glesv1name}_ %{glesv1major}
-%define libglesv2name		%mklibname %{glesv2name}_ %{glesv2major}
-%define libopenvgname		%mklibname %{openvgname} %{openvgmajor}
+%define libglesv1name	%mklibname %{glesv1name}_ %{glesv1major}
+%define libglesv2name	%mklibname %{glesv2name}_ %{glesv2major}
+%define libopenvgname	%mklibname %{openvgname} %{openvgmajor}
 
 %define dridrivers		%mklibname dri-drivers
 
@@ -92,31 +89,13 @@
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 %endif
 
-Name:		%{name}
-Version: 	%{version}
+Name:		mesa
+Version: 	7.11.2
 Release: 	%{release}
 Summary:	OpenGL 2.1 compatible 3D graphics library
 Group:		System/Libraries
 
-BuildRequires:	libxfixes-devel		>= 4.0.3
-BuildRequires:	libxt-devel		>= 1.0.5
-BuildRequires:	libxmu-devel		>= 1.0.3
-BuildRequires:	libx11-devel		>= 1.3.3
-BuildRequires:	libxdamage-devel	>= 1.1.1
-BuildRequires:	libexpat-devel		>= 2.0.1
-BuildRequires:	makedepend
-BuildRequires:	x11-proto-devel		>= 7.3
-BuildRequires:	libdrm-devel		>= 2.4.25
-
-BuildRequires:	libxext-devel		>= 1.1.1
-BuildRequires:	libxxf86vm-devel	>= 1.1.0
-BuildRequires:	libxi-devel		>= 1.3
-BuildRequires:	talloc-devel
-BuildRequires:	flex
-BuildRequires:	bison
-BuildRequires:	libxml2-python
-
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+License:	MIT
 URL:		http://www.mesa3d.org
 %if %{git}
 # (cg) Current commit ref: origin/mesa_7_5_branch
@@ -163,15 +142,29 @@ Patch001: mesa-7.10-nouveau-updates.patch
 Patch002: mesa-7.10-nouveau-revert.patch
 Patch003: mesa-7.10-nouveau-classic-libdrm.patch
 
-#------------------------------------------------------------------------------
+BuildRequires:	flex
+BuildRequires:	bison
+BuildRequires:	libxfixes-devel		>= 4.0.3
+BuildRequires:	libxt-devel		>= 1.0.5
+BuildRequires:	libxmu-devel		>= 1.0.3
+BuildRequires:	libx11-devel		>= 1.3.3
+BuildRequires:	libxdamage-devel	>= 1.1.1
+BuildRequires:	libexpat-devel		>= 2.0.1
+BuildRequires:	makedepend
+BuildRequires:	x11-proto-devel		>= 7.3
+BuildRequires:	libdrm-devel		>= 2.4.25
+BuildRequires:	libxext-devel		>= 1.1.1
+BuildRequires:	libxxf86vm-devel	>= 1.1.0
+BuildRequires:	libxi-devel		>= 1.3
+BuildRequires:	talloc-devel
+BuildRequires:	libxml2-python
 
 # package mesa
-License:	MIT
 Requires:	%{libglname} = %{version}-%{release}
-Provides:	hackMesa = %{version}
-Obsoletes:	hackMesa <= %{version}
-Provides:	Mesa = %{version}
-Obsoletes:	Mesa < %{version}
+%rename	hackMesa
+%rename	Mesa
+
+#------------------------------------------------------------------------------
 
 %package -n	%{libglname}
 Summary:	Files for Mesa (GL and GLX libs)
@@ -180,7 +173,6 @@ Obsoletes:	%{oldlibglname} < 6.4
 Provides:	%{oldlibglname} = %{version}-%{release}
 Provides:	%{libglname_virt} = %{version}-%{release}
 Requires:	%{dridrivers} >= %{version}-%{release}
-
 # (anssi) Forces the upgrade of x11-server-common to happen before
 # alternatives removal, which allows x11-server-common to grab the symlink.
 Conflicts:	x11-server-common < 1.3.0.0-17
@@ -452,17 +444,7 @@ Development files for OpenVG library.
 %setup -q -n Mesa-%{version}%{vsuffix} -b2
 %endif
 
-%patch300 -p1
-
-%patch900 -p1
-%patch902 -p1
-%patch903 -p1
-%patch905 -p1
-%patch906 -p1
-%patch1 -p1 -b .nouveau-updates
-%patch2 -p1 -b .nouveau-revert
-%patch3 -p1 -b .nouveau-classic-libdrm
-
+%apply_patches
 chmod +x %{SOURCE5}
 
 # for dri-drivers-experimental
@@ -480,19 +462,20 @@ EOF
 
 # need autoreconf since nouveau-updates patches configure.ac
 autoreconf
-%configure2_5x	--with-driver=dri \
-		--with-dri-driverdir=%{driver_dir} \
-		--with-dri-drivers="%{dri_drivers}" \
-		--with-state-trackers=dri \
-		--enable-gallium-nouveau \
-		--enable-egl \
-		--enable-gles1 \
-		--enable-gles2 \
-		--enable-openvg \
+%configure2_5x \
+	--with-driver=dri \
+	--with-dri-driverdir=%{driver_dir} \
+	--with-dri-drivers="%{dri_drivers}" \
+	--with-state-trackers=dri \
+	--enable-gallium-nouveau \
+	--enable-egl \
+	--enable-gles1 \
+	--enable-gles2 \
+	--enable-openvg \
 %if %{with_mesaglut}
-		--enable-glut
+	--enable-glut
 %else
-		--disable-glut
+	--disable-glut
 %endif
 
 %make
@@ -517,18 +500,12 @@ rm -f %{buildroot}/%{_includedir}/GL/glut.h
 rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %endif
 
-%clean
-rm -fr %{buildroot}
-
 #------------------------------------------------------------------------------
 
 %files
-%defattr(-,root,root)
 %doc docs/COPYING docs/README.*
 
 %files -n %{dridrivers}
-%defattr(-,root,root)
-%doc docs/COPYING
 %ifnarch ppc64
 %dir %{_libdir}/dri
 #%{_libdir}/dri/libdricore.so
@@ -540,8 +517,6 @@ rm -fr %{buildroot}
 %endif
 
 %files -n %{dridrivers}-experimental
-%defattr(-,root,root)
-%doc docs/COPYING
 %doc README.install.urpmi
 %{_libdir}/dri/nouveau_dri.so
 %ifnarch %arm
@@ -549,56 +524,38 @@ rm -fr %{buildroot}
 %endif
 
 %files -n %{libglname}
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.%{glmajor}*
 
 %files -n %{libgluname}
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_libdir}/libGLU.so.%{glumajor}*
 
 %if %{with_mesaglut}
 %files -n %{libglutname}
-%defattr(-,root,root)
 %doc docs/COPYING
 %{_libdir}/libglut.so.%{glutmajor}*
 %endif
 
 %files -n %{libglwname}
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_libdir}/libGLw.so.%{glwmajor}*
 
 %files -n %{libeglname}
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_libdir}/libEGL.so.%{eglmajor}*
 %dir %{_libdir}/egl
 %{_libdir}/egl/egl_dri2.so
 %{_libdir}/egl/egl_glx.so
 
 %files -n %{libglesv1name}
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
 
 %files -n %{libglesv2name}
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_libdir}/libGLESv2.so.%{glesv2major}*
 
 %files -n %{libopenvgname}
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_libdir}/libOpenVG.so.%{openvgmajor}*
 
-
 %files -n %{libglname}-devel
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
@@ -619,8 +576,6 @@ rm -fr %{buildroot}
 %{_includedir}/GL/internal/dri_interface.h
 
 %files -n %{libgluname}-devel
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
 %{_includedir}/GL/mesa_wgl.h
@@ -629,8 +584,6 @@ rm -fr %{buildroot}
 
 %if %{with_mesaglut}
 %files -n %{libglutname}-devel
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_includedir}/GL/glut.h
 %{_includedir}/GL/glutf90.h
 %{_libdir}/libglut.so
@@ -638,11 +591,9 @@ rm -fr %{buildroot}
 %endif
 
 %files common-devel
-%defattr(-,root,root)
+# meta devel pkg
 
 %files -n %{libglwname}-devel
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_includedir}/GL/GLwDrawA.h
 %{_includedir}/GL/GLwDrawAP.h
 %{_includedir}/GL/GLwMDrawA.h
@@ -651,27 +602,22 @@ rm -fr %{buildroot}
 %{_libdir}/pkgconfig/glw.pc
 
 %files -n %{libeglname}-devel
-%defattr(-,root,root)
-%doc docs/COPYING
 %{_includedir}/EGL
 %{_includedir}/KHR
 %{_libdir}/libEGL.so
 %{_libdir}/pkgconfig/egl.pc
 
 %files -n %{libglesv1name}-devel
-%defattr(-,root,root)
 %{_includedir}/GLES
 %{_libdir}/libGLESv1_CM.so
 %{_libdir}/pkgconfig/glesv1_cm.pc
 
 %files -n %{libglesv2name}-devel
-%defattr(-,root,root)
 %{_includedir}/GLES2
 %{_libdir}/libGLESv2.so
 %{_libdir}/pkgconfig/glesv2.pc
 
 %files -n %{libopenvgname}-devel
-%defattr(-,root,root)
 %{_includedir}/VG
 %{_libdir}/libOpenVG.so
 %{_libdir}/pkgconfig/vg.pc
