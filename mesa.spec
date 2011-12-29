@@ -4,11 +4,11 @@
 %define build_plf 0
 # freeglut should replace mesaglut soon
 %define with_mesaglut 1
+%define with_hardware 1
 
 %define git		0
-%define with_hardware 1
 %define relc	0
-%define release	1
+%define release	2
 
 %define src_type tar.bz2
 %define vsuffix	%{expand:}
@@ -27,52 +27,52 @@
 %endif
 %endif
 
-%define eglname			mesaegl
-%define glname			mesagl
-%define gluname			mesaglu
-%define glutname		mesaglut
-%define glwname			mesaglw
-%define glesv1name		mesaglesv1
-%define glesv2name		mesaglesv2
-%define openvgname		mesaopenvg
-%define glapiname		glapi
-
 %define eglmajor		1
-%define glmajor			1
-%define glumajor		1
-%define glutmajor		3
-%define glwmajor		1
-%define glesv1major		1
-%define glesv2major		2
-%define openvgmajor		1
-%define glapimajor		0
-
+%define eglname			egl
 %define libeglname		%mklibname %{eglname} %{eglmajor}
+%define develegl		%mklibname %{eglname} -d
+
+%define glmajor			1
+%define glname			gl
 %define libglname		%mklibname %{glname} %{glmajor}
+%define develgl			%mklibname %{glname} -d
+
+%define glumajor		1
+%define gluname			glu
 %define libgluname		%mklibname %{gluname} %{glumajor}
+%define develglu		%mklibname %{gluname} -d
+
+%define glutmajor		3
+%define glutname		glut
 %define libglutname		%mklibname %{glutname} %{glutmajor}
+%define develglut		%mklibname %{glutname} -d
+
+%define glwmajor		1
+%define glwname			glw
 %define libglwname		%mklibname %{glwname} %{glwmajor}
+%define develglw		%mklibname %{glwname} -d
+
+%define glesv1major		1
+%define glesv1name		glesv1
 %define libglesv1name	%mklibname %{glesv1name}_ %{glesv1major}
+%define develglesv1		%mklibname %{glesv1name} -d
+
+%define glesv2major		2
+%define glesv2name		glesv2
 %define libglesv2name	%mklibname %{glesv2name}_ %{glesv2major}
+%define develglesv2		%mklibname %{glesv2name} -d
+
+%define openvgmajor		1
+%define openvgname		openvg
 %define libopenvgname	%mklibname %{openvgname} %{openvgmajor}
+%define developenvg		%mklibname %{openvgname} -d
+
+%define glapimajor		0
+%define glapiname		glapi
 %define libglapiname	%mklibname %{glapiname} %{glapimajor}
+%define develglapi		%mklibname %{glapiname} -d
 
 %define dridrivers		%mklibname dri-drivers
-
-# Architecture-independent Virtual provides:
-%define libeglname_virt		lib%{eglname}
-%define libglname_virt		lib%{glname}
-%define libgluname_virt		lib%{gluname}
-%define libglutname_virt	lib%{glutname}
-%define libglwname_virt		lib%{glwname}
-%define libglesv1name_virt	lib%{glesv1name}
-%define libglesv2name_virt	lib%{glesv2name}
-%define libopenvgname_virt	lib%{openvgname}
-%define libglapiname_virt	lib%{glapiname}
-
-%define oldlibglname		%mklibname MesaGL 1
-%define oldlibgluname		%mklibname MesaGLU 1
-%define oldlibglutname		%mklibname Mesaglut 3
 
 %define mesasrcdir		%{_prefix}/src/Mesa/
 %define driver_dir		%{_libdir}/dri
@@ -142,7 +142,7 @@ Patch205: MesaLib-7.11.2-llvm3.0.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
-BuildRequires:  llvm
+BuildRequires:  llvm-devel
 BuildRequires:	expat-devel		>= 2.0.1
 BuildRequires:	gccmakedep
 BuildRequires:	makedepend
@@ -162,24 +162,8 @@ BuildRequires:	pkgconfig(xi)		>= 1.3
 
 # package mesa
 Requires:	%{libglname} = %{version}-%{release}
-%rename	hackMesa
-%rename	Mesa
 
 #------------------------------------------------------------------------------
-
-%package -n	%{libglname}
-Summary:	Files for Mesa (GL and GLX libs)
-Group:		System/Libraries
-Obsoletes:	%{oldlibglname} < 6.4
-Provides:	%{oldlibglname} = %{version}-%{release}
-Provides:	%{libglname_virt} = %{version}-%{release}
-Requires:	%{dridrivers} >= %{version}-%{release}
-%if %{build_plf}
-Requires:	%mklibname txc-dxtn
-%endif
-# (anssi) Forces the upgrade of x11-server-common to happen before
-# alternatives removal, which allows x11-server-common to grab the symlink.
-Conflicts:	x11-server-common < 1.3.0.0-17
 
 %package -n	%{dridrivers}
 Summary:	Mesa DRI drivers
@@ -187,169 +171,137 @@ Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
 
-%package -n	%{libglname}-devel
+%package -n	%{libglname}
+Summary:	Files for Mesa (GL and GLX libs)
+Group:		System/Libraries
+Provides:	libmesa%{glname} = %{version}-%{release}
+Requires:	%{dridrivers} >= %{version}-%{release}
+%if %{build_plf}
+Requires:	%mklibname txc-dxtn
+%endif
+Obsoletes:	%{_lib}mesagl1
+
+%package -n	%{develgl}
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
 Group:		Development/C
 Requires:	%{libglname} = %{version}-%{release}
-Provides:	lib%{glname}-devel = %{version}-%{release}
-Provides:	%{glname}-devel = %{version}-%{release}
+Provides:	libmesa%{glname}-devel = %{version}-%{release}
+Provides:	mesa%{glname}-devel = %{version}-%{release}
 Provides:	GL-devel
-Obsoletes:	%{oldlibglname}-devel < 6.4
-Provides:	%{oldlibglname}-devel = %{version}-%{release}
-Provides:	libMesaGL-devel = %{version}-%{release}
-Provides:	MesaGL-devel = %{version}-%{release}
-Provides:	libgl-devel
+Obsoletes:	%{_lib}mesagl1-devel
 
 %package -n	%{libgluname}
 Summary:	Files for Mesa (GLU libs)
 Group:		System/Libraries
-Obsoletes:	%{oldlibgluname} < 6.4
-Provides:	%{oldlibgluname} = %{version}-%{release}
-Provides:	%{libgluname_virt} = %{version}-%{release}
+Provides:	libmesa%{gluname} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglu1
 
-%package -n	%{libgluname}-devel
+%package -n	%{develglu}
 Summary:	Development files for GLU libs
 Group:		Development/C
 Requires:	%{libgluname} = %{version}-%{release}
-Provides:	lib%{gluname}-devel = %{version}-%{release}
-Provides:	%{gluname}-devel = %{version}-%{release}
-Obsoletes:	%{oldlibgluname}-devel < 6.4
-Provides:	%{oldlibgluname}-devel = %{version}-%{release}
-Provides:	libMesaGLU-devel = %{version}-%{release}
-Provides:	MesaGLU-devel = %{version}-%{release}
-Provides:	libglu-devel
-# pkgconfig files moved from libgl-devel:
-Conflicts:	%{libglname}-devel <= 7.9-2mdv2011.0
+Provides:	libmesa%{gluname}-devel = %{version}-%{release}
+Provides:	mesa%{gluname}-devel = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglu1-devel
 
 %if %{with_mesaglut}
 %package -n	%{libglutname}
 Summary:	Files for Mesa (glut libs)
 Group:		System/Libraries
-Requires:	%{libgluname} = %{version}-%{release}
-Provides:	Mesa-common = %{version}-%{release} hackMesa-common = %{version}
-Obsoletes:	Mesa-common <= %{version} hackMesa-common <= %{version}
-Obsoletes:	%{oldlibglutname} < 6.4
-Provides:	%{oldlibglutname} = %{version}-%{release}
-Provides:	%{libglutname_virt} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglut3
 
-%package -n	%{libglutname}-devel
+%package -n	%{develglut}
 Summary:	Development files for glut libs
 Group:		Development/C
-Requires:	%{libglutname} = %{version}-%{release} %{libgluname}-devel = %{version}-%{release}
-# (gc) /usr/lib/pkgconfig/glut.pc depends on /usr/lib/pkgconfig/{x11,xmu,xi}.pc (Requires.private) and pkg-config --list-all
-# goes wild without these deps
-Requires:	libx11-devel libxmu-devel libxi-devel
-Provides:	lib%{glutname}-devel = %{version}-%{release}
-Provides:	%{glutname}-devel = %{version}-%{release}
-Obsoletes:	%{oldlibglutname}-devel < 6.4
-Provides:	%{oldlibglutname}-devel = %{version}-%{release}
-Provides:	libMesaGLUT-devel = %{version}-%{release}
-Provides:	MesaGLUT-devel = %{version}-%{release}
-Provides:	libglut-devel
-# pkgconfig files moved from libgl-devel:
-Conflicts:	%{libglname}-devel <= 7.9-2mdv2011.0
+Requires:	%{libglutname} = %{version}-%{release}
+Provides:	libmesa%{glutname}-devel = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglut3-devel
 %endif
 
 %package -n	%{libglwname}
 Summary:	Files for Mesa (glw libs)
 Group:		System/Libraries
-Provides:	Mesa-common = %{version}-%{release} hackMesa-common = %{version}
-Obsoletes:	Mesa-common <= %{version} hackMesa-common <= %{version}
-Provides:	%{libglwname_virt} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglw1
 
-%package -n	%{libglwname}-devel
+%package -n	%{develglw}
 Summary:	Development files for glw libs
 Group:		Development/C
 Requires:	%{libglwname} = %{version}-%{release}
-Provides:	lib%{glwname}-devel = %{version}-%{release}
-Provides:	%{glwname}-devel = %{version}-%{release}
-Provides:	libglw-devel
-# pkgconfig files moved from libgl-devel:
-Conflicts:	%{libglname}-devel <= 7.9-2mdv2011.0
+Provides:	libmesa%{glwname}-devel = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglw1-devel
 
 %package -n	%{libeglname}
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
-Provides:	%{libeglname_virt} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaegl1
 
-%package -n	%{libeglname}-devel
+%package -n	%{develegl}
 Summary:	Development files for Mesa (EGL libs)
 Group:		Development/C
 Requires:	%{libeglname} = %{version}-%{release}
-Provides:	EGL-devel
-Provides:	lib%{eglname}-devel
-Provides:	%{eglname}-devel
-Provides:	libegl-devel
+Provides:   lib%{eglname}-devel
+Obsoletes:	%{_lib}mesaegl1-devel
 
 %package -n %{libglapiname}
-Summary:        Files for mesa (glapi libs)
-Group:          System/Libraries
-Provides:       %{libglapiname_virt} = %{version}-%{release}
+Summary:	Files for mesa (glapi libs)
+Group:		System/Libraries
 
-%package -n %{libglapiname}-devel
-Summary:        Development files for glapi libs
-Group:          Development/C
-Requires:       %{libglapiname_virt} = %{version}-%{release}
-Provides:       lib%{glapiname}-devel
-Provides:       %{libglapiname}-devel
+%package -n %{develglapi}
+Summary:	Development files for glapi libs
+Group:		Development/C
+Obsoletes:	%{_lib}glapi0-devel
 
 %package -n %{libglesv1name}
 Summary:	Files for Mesa (glesv1 libs)
 Group:		System/Libraries
-Provides:	%{libglesv1name_virt} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglesv1_1
 
-%package -n %{libglesv1name}-devel
+%package -n %{develglesv1}
 Summary:	Development files for glesv1 libs
 Group:		Development/C
 Requires:	%{libglesv1name} = %{version}-%{release}
 Provides:	lib%{glesv1name}-devel
-Provides:	%{glesv1name}-devel
-Provides:	libglesv1-devel
+Obsoletes:	%{_lib}mesaglesv1_1-devel
 
 %package -n %{libglesv2name}
 Summary:	Files for Mesa (glesv2 libs)
 Group:		System/Libraries
-Provides:	%{libglesv2name_virt} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglesv2_2
 
-%package -n %{libglesv2name}-devel
+%package -n %{develglesv2}
 Summary:	Development files for glesv2 libs
 Group:		Development/C
 Requires:	%{libglesv2name} = %{version}-%{release}
 Provides:	lib%{glesv2name}-devel
-Provides:	%{glesv2name}-devel
-Provides:	libglesv2-devel
+Obsoletes:	%{_lib}mesaglesv2_2-devel
 
 %package -n %{libopenvgname}
 Summary:	Files for MESA (OpenVG libs)
 Group:		System/Libraries
-Provides:	%{libopenvgname_virt} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaopenvg1
 
-%package -n %{libopenvgname}-devel
+%package -n %{developenvg}
 Summary:	Development files vor OpenVG libs
 Group:		Development/C
 Requires:	%{libopenvgname} = %{version}-%{release}
 Provides:	lib%{openvgname}-devel
-Provides:	%{openvgname}-devel
-Provides:	libopenvg-devel
+Obsoletes:	%{_lib}mesaopenvg1-devel
 
 %package	common-devel
 Summary:	Meta package for mesa devel
 Group:		Development/C
-Provides:	Mesa-common-devel = %{version}-%{release}
-Provides:	hackMesa-common-devel = %{version}
-Obsoletes:	Mesa-common-devel < %{version}
-Obsoletes:	hackMesa-common-devel < %{version}
-Requires:	%{libglname}-devel = %{version}
-Requires:	%{libglwname}-devel = %{version}
-Requires:	%{libgluname}-devel = %{version}
+Requires:	%{develegl} = %{version}
+Requires:	%{develglapi} = %{version}
+Requires:	%{develglw} = %{version}
+Requires:	%{develglu} = %{version}
 %if %{with_mesaglut}
-Requires:	%{libglutname}-devel = %{version}
+Requires:	%{develglut} = %{version}
 %else
 Requires:	freeglut-devel
 %endif
-Requires:	%{libeglname}-devel = %{version}
-Requires:	%{libglesv1name}-devel = %{version}
-Requires:	%{libglesv2name}-devel = %{version}
+Requires:	%{develgl} = %{version}
+Requires:	%{develglesv1} = %{version}
+Requires:	%{develglesv2} = %{version}
 
 #------------------------------------------------------------------------------
 
@@ -361,6 +313,10 @@ This package is in the "tainted" section because it enables some
 OpenGL extentions that are covered by software patents.
 %endif
 
+%description -n %{dridrivers}
+Mesa is an OpenGL 2.1 compatible 3D graphics library.
+DRI drivers.
+
 %description common-devel
 Mesa common metapackage devel
 
@@ -368,7 +324,7 @@ Mesa common metapackage devel
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 EGL parts.
 
-%description -n %{libeglname}-devel
+%description -n %{develegl}
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 EGL development parts.
 
@@ -376,11 +332,7 @@ EGL development parts.
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 GL and GLX parts.
 
-%description -n %{dridrivers}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
-DRI drivers.
-
-%description -n %{libglname}-devel
+%description -n %{develgl}
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 
 This package contains the headers needed to compile Mesa programs.
@@ -391,7 +343,7 @@ It provides a number of functions upon the base OpenGL library to provide
 higher-level drawing routines from the more primitive routines provided by
 OpenGL.
 
-%description -n %{libgluname}-devel
+%description -n %{develglu}
 This package contains the headers needed to compile programs with GLU.
 
 %if %{with_mesaglut}
@@ -401,7 +353,7 @@ provides them utilities to define and control windows, input from the keyboard
 and the mouse, drawing some geometric primitives (cubes, spheres, ...).
 GLUT can even create pop-up windows.
 
-%description -n %{libglutname}-devel
+%description -n %{develglut}
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 glut parts.
 
@@ -411,7 +363,7 @@ This package contains the headers needed to compile Mesa programs.
 %description -n %{libglwname}
 GLw adds Motif bindings to the OpenGL "canvas" (Xt/Motif/OpenGL widget code).
 
-%description -n %{libglwname}-devel
+%description -n %{develglw}
 Mesa is an OpenGL 2.1 compatible 3D graphics library.
 GLw parts.
 
@@ -420,7 +372,7 @@ This package contains the headers needed to compile Mesa programs.
 %description -n %{libglapiname}
 This packages provides the glapi shared library used by gallium.
 
-%description -n %{libglapiname}-devel
+%description -n %{develglapi}
 This package contains the headers needed to compile programes against
 glapi shared library.
 
@@ -430,7 +382,7 @@ well-defined subset profiles of OpenGL.
 
 This package provides the OpenGL ES library version 1.
 
-%description -n %{libglesv1name}-devel
+%description -n %{develglesv1}
 This package contains the headers needed to compile OpenGL ES 1 programs.
 
 %description -n %{libglesv2name}
@@ -439,23 +391,23 @@ well-defined subset profiles of OpenGL.
 
 This package provides the OpenGL ES library version 2.
 
-%description -n %{libglesv2name}-devel
+%description -n %{develglesv2}
 This package contains the headers needed to compile OpenGL ES 2 programs.
 
 %description -n %{libopenvgname}
 OpenVG is a royalty-free, cross-platform API that provides a low-level hardware
 acceleration interface for vector graphics libraries such as Flash and SVG.
 
-%description -n %{libopenvgname}-devel
+%description -n %{developenvg}
 Development files for OpenVG library.
 
 #------------------------------------------------------------------------------
 
 %prep
 %if %{git}
-%setup -q -n mesa-%{git}
+%setup -qn mesa-%{git}
 %else
-%setup -q -n Mesa-%{version}%{vsuffix} -b2
+%setup -qn Mesa-%{version}%{vsuffix} -b2
 %endif
 
 %apply_patches
@@ -569,7 +521,7 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %files -n %{libopenvgname}
 %{_libdir}/libOpenVG.so.%{openvgmajor}*
 
-%files -n %{libglname}-devel
+%files -n %{develgl}
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
@@ -589,7 +541,7 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 
-%files -n %{libgluname}-devel
+%files -n %{develglu}
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
 %{_includedir}/GL/mesa_wgl.h
@@ -597,7 +549,7 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %{_libdir}/pkgconfig/glu.pc
 
 %if %{with_mesaglut}
-%files -n %{libglutname}-devel
+%files -n %{develglut}
 %{_includedir}/GL/glut.h
 %{_includedir}/GL/glutf90.h
 %{_libdir}/libglut.so
@@ -607,7 +559,7 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %files common-devel
 # meta devel pkg
 
-%files -n %{libglwname}-devel
+%files -n %{develglw}
 %{_includedir}/GL/GLwDrawA.h
 %{_includedir}/GL/GLwDrawAP.h
 %{_includedir}/GL/GLwMDrawA.h
@@ -615,26 +567,26 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %{_libdir}/libGLw.so
 %{_libdir}/pkgconfig/glw.pc
 
-%files -n %{libeglname}-devel
+%files -n %{develegl}
 %{_includedir}/EGL
 %{_includedir}/KHR
 %{_libdir}/libEGL.so
 %{_libdir}/pkgconfig/egl.pc
 
-%files -n %{libglapiname}-devel
+%files -n %{develglapi}
 %{_libdir}/libglapi.so
 
-%files -n %{libglesv1name}-devel
+%files -n %{develglesv1}
 %{_includedir}/GLES
 %{_libdir}/libGLESv1_CM.so
 %{_libdir}/pkgconfig/glesv1_cm.pc
 
-%files -n %{libglesv2name}-devel
+%files -n %{develglesv2}
 %{_includedir}/GLES2
 %{_libdir}/libGLESv2.so
 %{_libdir}/pkgconfig/glesv2.pc
 
-%files -n %{libopenvgname}-devel
+%files -n %{developenvg}
 %{_includedir}/VG
 %{_libdir}/libOpenVG.so
 %{_libdir}/pkgconfig/vg.pc
