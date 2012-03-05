@@ -149,6 +149,7 @@ BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
 BuildRequires:	pkgconfig(xvmc)
+BuildRequires:	pkgconfig(vdpau)
 
 # package mesa
 Requires:	%{libglname} = %{version}-%{release}
