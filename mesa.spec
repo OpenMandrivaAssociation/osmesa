@@ -6,7 +6,7 @@
 
 %define git		0
 %define relc	0
-%define release	1
+%define release	2
 
 %define src_type tar.bz2
 %define vsuffix	%{expand:}
@@ -66,6 +66,8 @@
 %define develxatracker		%mklibname %xatrackername -d
 
 %define dridrivers		%mklibname dri-drivers
+
+%define libvadrivers		%mklibname libva-drivers
 
 %define mesasrcdir		%{_prefix}/src/Mesa/
 %define driver_dir		%{_libdir}/dri
@@ -127,6 +129,7 @@ Source5:	mesa-driver-install
 
 # Mandriva & Mageia patches
 Patch900: 0900-Mips-support.patch
+Patch901: Mesa-8.0.1-libva-0.32.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -149,7 +152,8 @@ BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
 BuildRequires:	pkgconfig(xvmc)
-BuildRequires:	pkgconfig(vdpau)
+BuildRequires:	pkgconfig(vdpau)	>= 0.4.1
+BuildRequires:	pkgconfig(libva)	>= 0.31.0
 
 # package mesa
 Requires:	%{libglname} = %{version}-%{release}
@@ -161,6 +165,10 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
+
+%package -n	%libvadrivers
+Summary:	Mesa libVA video acceleration drivers
+Group:		System/Libraries
 
 %package -n	%{libglname}
 Summary:	Files for Mesa (GL and GLX libs)
@@ -286,6 +294,10 @@ OpenGL extentions that are covered by software patents.
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 DRI drivers.
 
+%description -n %libvadrivers
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
+libVA drivers for video acceleration
+
 %description common-devel
 Mesa common metapackage devel
 
@@ -366,6 +378,9 @@ Development files for OpenVG library.
 %apply_patches
 chmod +x %{SOURCE5}
 
+# Needed after vaapi 0.32 support patch
+autoconf
+
 %build
 #%if %{git}
 #./autogen.sh -v
@@ -384,6 +399,7 @@ chmod +x %{SOURCE5}
 	--enable-xa \
 	--enable-xvmc \
 	--enable-vdpau \
+	--enable-va \
 	--enable-gles1 \
 	--enable-gles2 \
 	--enable-openvg \
@@ -445,6 +461,9 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %_libdir/xorg/modules/drivers/r300_drv.so
 %_libdir/xorg/modules/drivers/r600g_drv.so
 %endif
+
+%files -n %libvadrivers
+%_libdir/va/lib*.so*
 
 %files -n %{libglname}
 %{_libdir}/libGL.so.*
