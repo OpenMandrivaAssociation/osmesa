@@ -147,6 +147,7 @@ BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
 BuildRequires:	pkgconfig(xext)		>= 1.1.1
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
+BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
 
 # package mesa
 Requires:	%{libglname} = %{version}-%{release}
