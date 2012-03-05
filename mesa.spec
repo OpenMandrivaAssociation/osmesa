@@ -2,13 +2,11 @@
 %define _disable_ld_no_undefined 1
 
 %define build_plf 0
-# freeglut should replace mesaglut soon
-%define with_mesaglut 1
 %define with_hardware 1
 
 %define git		0
 %define relc	0
-%define release	2
+%define release	1
 
 %define src_type tar.bz2
 %define vsuffix	%{expand:}
@@ -42,16 +40,6 @@
 %define libgluname		%mklibname %{gluname} %{glumajor}
 %define develglu		%mklibname %{gluname} -d
 
-%define glutmajor		3
-%define glutname		glut
-%define libglutname		%mklibname %{glutname} %{glutmajor}
-%define develglut		%mklibname %{glutname} -d
-
-%define glwmajor		1
-%define glwname			glw
-%define libglwname		%mklibname %{glwname} %{glwmajor}
-%define develglw		%mklibname %{glwname} -d
-
 %define glesv1major		1
 %define glesv1name		glesv1
 %define libglesv1name	%mklibname %{glesv1name}_ %{glesv1major}
@@ -72,6 +60,11 @@
 %define libglapiname	%mklibname %{glapiname} %{glapimajor}
 %define develglapi		%mklibname %{glapiname} -d
 
+%define xatrackermajor		1
+%define xatrackername		xatracker
+%define libxatrackername	%mklibname %xatrackername %xatrackermajor
+%define develxatracker		%mklibname %xatrackername -d
+
 %define dridrivers		%mklibname dri-drivers
 
 %define mesasrcdir		%{_prefix}/src/Mesa/
@@ -80,14 +73,14 @@
 #FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
-%define	dri_drivers_i386	"i810,i915,i965,mga,mach64,nouveau,r128,r200,r300,r600,radeon,savage,sis,unichrome,tdfx,swrast"
+%define	dri_drivers_i386	"i915,i965,nouveau,r200,radeon,swrast"
 %define	dri_drivers_x86_64	%{dri_drivers_i386}
-%define	dri_drivers_ppc		"mach64,r128,r200,r300,radeon,tdfx,swrast"
+%define	dri_drivers_ppc		"r200,radeon,swrast"
 %define	dri_drivers_ppc64	""
-%define	dri_drivers_ia64	"i810,i915,i965,mga,r128,r200,radeon,swrast"
-%define	dri_drivers_alpha	"mga,r128,r200,radeon,swrast"
-%define	dri_drivers_sparc	"ffb,mach64,mga,radeon,savage,swrast"
-%define dri_drivers_mipsel	"mach64,mga,r128,r200,radeon,savage,tdfx"
+%define	dri_drivers_ia64	"i915,i965,r200,radeon,swrast"
+%define	dri_drivers_alpha	"r200,radeon,swrast"
+%define	dri_drivers_sparc	"ffb,radeon,swrast"
+%define dri_drivers_mipsel	"r200,radeon"
 %define dri_drivers_arm		"swrast"
 %ifarch	%{arm}
 %define	dri_drivers		%{expand:%{dri_drivers_arm}}
@@ -96,9 +89,9 @@
 %endif
 
 Name:		mesa
-Version: 	7.11.2
-Release: 	%{release}
-Summary:	OpenGL 2.1 compatible 3D graphics library
+Version: 	8.0.1
+Release: 	%release
+Summary:	OpenGL 3.0 compatible 3D graphics library
 Group:		System/Libraries
 
 License:	MIT
@@ -108,7 +101,6 @@ URL:		http://www.mesa3d.org
 Source0:	%{name}-%{git}.tar.bz2
 %else
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaLib-%{version}%{vsuffix}.%{src_type}
-Source2:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaGLUT-%{version}%{vsuffix}.%{src_type}
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
@@ -135,10 +127,6 @@ Source5:	mesa-driver-install
 
 # Mandriva & Mageia patches
 Patch900: 0900-Mips-support.patch
-Patch903: 0903-Fix-NULL-pointer-dereference-in-viaXMesaWindowMoved.patch
-# (anssi) fixes gwenview segfault, from git master:
-Patch203: nv50-nvc0-use-screen-instead-of-context-for-flush-notifier.patch
-Patch205: MesaLib-7.11.2-llvm3.0.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -204,32 +192,6 @@ Provides:	libmesa%{gluname}-devel = %{version}-%{release}
 Provides:	mesa%{gluname}-devel = %{version}-%{release}
 Obsoletes:	%{_lib}mesaglu1-devel
 
-%if %{with_mesaglut}
-%package -n	%{libglutname}
-Summary:	Files for Mesa (glut libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaglut3
-
-%package -n	%{develglut}
-Summary:	Development files for glut libs
-Group:		Development/C
-Requires:	%{libglutname} = %{version}-%{release}
-Provides:	libmesa%{glutname}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglut3-devel
-%endif
-
-%package -n	%{libglwname}
-Summary:	Files for Mesa (glw libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaglw1
-
-%package -n	%{develglw}
-Summary:	Development files for glw libs
-Group:		Development/C
-Requires:	%{libglwname} = %{version}-%{release}
-Provides:	libmesa%{glwname}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglw1-devel
-
 %package -n	%{libeglname}
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
@@ -250,6 +212,14 @@ Group:		System/Libraries
 Summary:	Development files for glapi libs
 Group:		Development/C
 Obsoletes:	%{_lib}glapi0-devel
+
+%package -n %libxatrackername
+Summary:	Files for mesa (xatracker libs)
+Group:		System/Libraries
+
+%package -n %develxatracker
+Summary:	Development files for xatracker libs
+Group:		Development/C
 
 %package -n %{libglesv1name}
 Summary:	Files for Mesa (glesv1 libs)
@@ -292,13 +262,9 @@ Summary:	Meta package for mesa devel
 Group:		Development/C
 Requires:	%{develegl} = %{version}
 Requires:	%{develglapi} = %{version}
-Requires:	%{develglw} = %{version}
+Requires:	%develxatracker = %version
 Requires:	%{develglu} = %{version}
-%if %{with_mesaglut}
-Requires:	%{develglut} = %{version}
-%else
 Requires:	freeglut-devel
-%endif
 Requires:	%{develgl} = %{version}
 Requires:	%{develglesv1} = %{version}
 Requires:	%{develglesv2} = %{version}
@@ -306,7 +272,7 @@ Requires:	%{develglesv2} = %{version}
 #------------------------------------------------------------------------------
 
 %description
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
 %if %{build_plf}
 
 This package is in the "tainted" section because it enables some
@@ -314,26 +280,26 @@ OpenGL extentions that are covered by software patents.
 %endif
 
 %description -n %{dridrivers}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
 DRI drivers.
 
 %description common-devel
 Mesa common metapackage devel
 
 %description -n %{libeglname}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
 EGL parts.
 
 %description -n %{develegl}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
 EGL development parts.
 
 %description -n %{libglname}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
 GL and GLX parts.
 
 %description -n %{develgl}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
 
 This package contains the headers needed to compile Mesa programs.
 
@@ -346,35 +312,19 @@ OpenGL.
 %description -n %{develglu}
 This package contains the headers needed to compile programs with GLU.
 
-%if %{with_mesaglut}
-%description -n %{libglutname}
-GLUT (OpenGL Utility Toolkit) is a addon library for OpenGL programs. It
-provides them utilities to define and control windows, input from the keyboard
-and the mouse, drawing some geometric primitives (cubes, spheres, ...).
-GLUT can even create pop-up windows.
-
-%description -n %{develglut}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
-glut parts.
-
-This package contains the headers needed to compile Mesa programs.
-%endif
-
-%description -n %{libglwname}
-GLw adds Motif bindings to the OpenGL "canvas" (Xt/Motif/OpenGL widget code).
-
-%description -n %{develglw}
-Mesa is an OpenGL 2.1 compatible 3D graphics library.
-GLw parts.
-
-This package contains the headers needed to compile Mesa programs.
-
 %description -n %{libglapiname}
-This packages provides the glapi shared library used by gallium.
+This package provides the glapi shared library used by gallium.
 
 %description -n %{develglapi}
-This package contains the headers needed to compile programes against
-glapi shared library.
+This package contains the headers needed to compile programs against
+the glapi shared library.
+
+%description -n %libxatrackername
+This package provides the xatracker shared library used by gallium.
+
+%description -n %develxatracker
+This package contains the headers needed to compile programs against
+the xatracker shared library.
 
 %description -n %{libglesv1name}
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
@@ -407,7 +357,7 @@ Development files for OpenVG library.
 %if %{git}
 %setup -qn mesa-%{git}
 %else
-%setup -qn Mesa-%{version}%{vsuffix} -b2
+%setup -qn Mesa-%{version}%{vsuffix}
 %endif
 
 %apply_patches
@@ -418,34 +368,34 @@ chmod +x %{SOURCE5}
 #./autogen.sh -v
 #%endif
 
-# need autoreconf since nouveau-updates patches configure.ac
-autoreconf
 %configure2_5x \
-	--with-driver=dri \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 	--with-state-trackers=dri \
 	--enable-shared-dricore \
 	--enable-gallium-nouveau \
 	--enable-egl \
+	--enable-dri \
+	--enable-glx \
+	--enable-xorg \
+	--enable-xa \
+	--enable-xvmc \
+	--enable-vdpau \
 	--enable-gles1 \
 	--enable-gles2 \
 	--enable-openvg \
-	 --enable-gallium-egl \
+	--enable-gallium-egl \
+	--enable-glx-tls \
+	--enable-gallium-g3dvl \
 %if %{with_hardware}
-	--with-gallium-drivers=r300,r600,nouveau,swrast \
+	--with-gallium-drivers=svga,i915,r300,r600,nouveau,swrast \
    	--enable-gallium-llvm \
 %else
    	--disable-gallium-llvm \
    	--with-gallium-drivers=swrast \
 %endif
 %if %{build_plf}
-   	--enable-texture-float \
-%endif
-%if %{with_mesaglut}
-	--enable-glut
-%else
-	--disable-glut
+   	--enable-texture-float
 %endif
 
 %make
@@ -465,11 +415,6 @@ popd
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
 
-%if !%{with_mesaglut}
-rm -f %{buildroot}/%{_includedir}/GL/glut.h
-rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
-%endif
-
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
 
@@ -484,6 +429,18 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %{_libdir}/dri/libdricore.so
 %{_libdir}/dri/libglsl.so
 %{_libdir}/dri/*_dri.so
+%_libdir/libXvMCnouveau.so*
+%_libdir/libXvMCr300.so*
+%_libdir/libXvMCr600.so*
+%_libdir/libXvMCsoftpipe.so*
+%_libdir/vdpau/libvdpau_nouveau.so*
+%_libdir/vdpau/libvdpau_r300.so*
+%_libdir/vdpau/libvdpau_r600.so*
+%_libdir/vdpau/libvdpau_softpipe.so*
+%_libdir/xorg/modules/drivers/modesetting_drv.so
+%_libdir/xorg/modules/drivers/nouveau2_drv.so
+%_libdir/xorg/modules/drivers/r300_drv.so
+%_libdir/xorg/modules/drivers/r600g_drv.so
 %endif
 
 %files -n %{libglname}
@@ -494,15 +451,6 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %files -n %{libgluname}
 %{_libdir}/libGLU.so.%{glumajor}*
 
-%if %{with_mesaglut}
-%files -n %{libglutname}
-%doc docs/COPYING
-%{_libdir}/libglut.so.%{glutmajor}*
-%endif
-
-%files -n %{libglwname}
-%{_libdir}/libGLw.so.%{glwmajor}*
-
 %files -n %{libeglname}
 %{_libdir}/libEGL.so.%{eglmajor}*
 %dir %{_libdir}/egl
@@ -511,6 +459,9 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 
 %files -n %{libglapiname}
 %{_libdir}/libglapi.so.%{glapimajor}*
+
+%files -n %libxatrackername
+%_libdir/libxatracker.so.%{xatrackermajor}*
 
 %files -n %{libglesv1name}
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
@@ -535,7 +486,6 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %{_libdir}/pkgconfig/dri.pc
 
 #FIXME: check those headers
-%{_includedir}/GL/glfbdev.h
 %{_includedir}/GL/vms_x_fix.h
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
@@ -544,28 +494,11 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 %files -n %{develglu}
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
-%{_includedir}/GL/mesa_wgl.h
 %{_libdir}/libGLU.so
 %{_libdir}/pkgconfig/glu.pc
 
-%if %{with_mesaglut}
-%files -n %{develglut}
-%{_includedir}/GL/glut.h
-%{_includedir}/GL/glutf90.h
-%{_libdir}/libglut.so
-%{_libdir}/pkgconfig/glut.pc
-%endif
-
 %files common-devel
 # meta devel pkg
-
-%files -n %{develglw}
-%{_includedir}/GL/GLwDrawA.h
-%{_includedir}/GL/GLwDrawAP.h
-%{_includedir}/GL/GLwMDrawA.h
-%{_includedir}/GL/GLwMDrawAP.h
-%{_libdir}/libGLw.so
-%{_libdir}/pkgconfig/glw.pc
 
 %files -n %{develegl}
 %{_includedir}/EGL
@@ -575,6 +508,11 @@ rm -f %{buildroot}/%{_includedir}/GL/glutf90.h
 
 %files -n %{develglapi}
 %{_libdir}/libglapi.so
+
+%files -n %develxatracker
+%_libdir/libxatracker.so
+%_includedir/xa_*.h
+%_libdir/pkgconfig/xatracker.pc
 
 %files -n %{develglesv1}
 %{_includedir}/GLES
