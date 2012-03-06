@@ -6,7 +6,7 @@
 
 %define git		0
 %define relc	0
-%define release	2
+%define release	3
 
 %define src_type tar.bz2
 %define vsuffix	%{expand:}
@@ -448,10 +448,10 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_libdir}/dri/libdricore.so
 %{_libdir}/dri/libglsl.so
 %{_libdir}/dri/*_dri.so
-%_libdir/libXvMCnouveau.so*
-%_libdir/libXvMCr300.so*
-%_libdir/libXvMCr600.so*
-%_libdir/libXvMCsoftpipe.so*
+%_libdir/libXvMCnouveau.so.*
+%_libdir/libXvMCr300.so.*
+%_libdir/libXvMCr600.so.*
+%_libdir/libXvMCsoftpipe.so.*
 %_libdir/vdpau/libvdpau_nouveau.so*
 %_libdir/vdpau/libvdpau_r300.so*
 %_libdir/vdpau/libvdpau_r600.so*
@@ -504,6 +504,7 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
 %{_libdir}/libGL.so
+%_libdir/libXvMC*.so
 %{_libdir}/pkgconfig/gl.pc
 %{_libdir}/pkgconfig/dri.pc
 
