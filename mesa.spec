@@ -6,7 +6,7 @@
 
 %define git		0
 %define relc	0
-%define release	3
+%define release	4
 
 %define src_type tar.bz2
 %define vsuffix	%{expand:}
@@ -386,6 +386,9 @@ autoconf
 #./autogen.sh -v
 #%endif
 
+# Replacing --disable-glx-tls with --enable-glx-tls
+# below would be good - but unfortunately it seems to
+# break the nvidia binary-only driver.
 %configure2_5x \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
@@ -404,7 +407,7 @@ autoconf
 	--enable-gles2 \
 	--enable-openvg \
 	--enable-gallium-egl \
-	--enable-glx-tls \
+	--disable-glx-tls \
 	--enable-gallium-g3dvl \
 %if %{with_hardware}
 	--with-gallium-drivers=svga,i915,r300,r600,nouveau,swrast \
