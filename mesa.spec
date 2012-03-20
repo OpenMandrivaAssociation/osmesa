@@ -6,23 +6,12 @@
 
 %define git		0
 %define relc	0
-%define release	4
 
-%define src_type tar.bz2
-%define vsuffix	%{expand:}
 
 %if %{relc}
-%define release	0.rc%{relc}.%{rel}
 %define vsuffix -rc%{relc}
-%define src_type tar.bz2
-%endif
-
-%if %{git}
-%if %{relc}
-%define release	0.rc%{relc}.2.git%{git}.%{rel}
 %else
-%define release	0.git%{git}.%{rel}
-%endif
+%define vsuffix	%nil
 %endif
 
 %define eglmajor		1
@@ -92,7 +81,19 @@
 
 Name:		mesa
 Version: 	8.0.1
-Release: 	%release
+%if %relc
+%if %git
+Release:	0.rc%relc.0.%git.1
+%else
+Release:	0.rc%relc.1
+%endif
+%else
+%if %git
+Release:	0.%git.1
+%else
+Release:	5
+%endif
+%endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Group:		System/Libraries
 
@@ -102,7 +103,7 @@ URL:		http://www.mesa3d.org
 # (cg) Current commit ref: origin/mesa_7_5_branch
 Source0:	%{name}-%{git}.tar.bz2
 %else
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaLib-%{version}%{vsuffix}.%{src_type}
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaLib-%{version}%{vsuffix}.tar.bz2
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
@@ -165,6 +166,13 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
+# Lives in %_libdir/dri, but should be provided
+# nevertheless...
+%if "%_lib" != "lib"
+Provides:	libdricore.so()(64bit)
+%else
+Provides:	libdricore.so
+%endif
 
 %package -n	%libvadrivers
 Summary:	Mesa libVA video acceleration drivers
