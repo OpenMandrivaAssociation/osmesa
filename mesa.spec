@@ -170,8 +170,10 @@ Conflicts:	%{_lib}MesaGL1 < 7.7-5
 # nevertheless...
 %if "%_lib" != "lib"
 Provides:	libdricore.so()(64bit)
+Provides:	libglsl.so()(64bit)
 %else
 Provides:	libdricore.so
+Provides:	libglsl.so
 %endif
 
 %package -n	%libvadrivers
