@@ -7,8 +7,8 @@
 %define git		0
 %define relc	0
 
-%bcond_with vdpau
-%bcond_with va
+%bcond_without vdpau
+%bcond_without va
 
 %if %{relc}
 %define vsuffix -rc%{relc}
@@ -93,7 +93,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
