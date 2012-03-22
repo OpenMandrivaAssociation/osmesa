@@ -7,6 +7,8 @@
 %define git		0
 %define relc	0
 
+%bcond_with vdpau
+%bcond_with va
 
 %if %{relc}
 %define vsuffix -rc%{relc}
@@ -153,8 +155,12 @@ BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
 BuildRequires:	pkgconfig(xvmc)
+%if %{with vdpau}
 BuildRequires:	pkgconfig(vdpau)	>= 0.4.1
+%endif
+%if %{with va}
 BuildRequires:	pkgconfig(libva)	>= 0.31.0
+%endif
 
 # package mesa
 Requires:	%{libglname} = %{version}-%{release}
@@ -402,17 +408,23 @@ autoconf
 %configure2_5x \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
-	--with-state-trackers=dri \
 	--enable-shared-dricore \
-	--enable-gallium-nouveau \
 	--enable-egl \
 	--enable-dri \
 	--enable-glx \
 	--enable-xorg \
 	--enable-xa \
 	--enable-xvmc \
+%if %{with vdpau}
 	--enable-vdpau \
+%else
+	--disable-vdpau \
+%endif
+%if %{with va}
 	--enable-va \
+%else
+	--disable-va \
+%endif
 	--enable-gles1 \
 	--enable-gles2 \
 	--enable-openvg \
@@ -465,18 +477,22 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %_libdir/libXvMCr300.so.*
 %_libdir/libXvMCr600.so.*
 %_libdir/libXvMCsoftpipe.so.*
+%if %{with vdpau}
 %_libdir/vdpau/libvdpau_nouveau.so*
 %_libdir/vdpau/libvdpau_r300.so*
 %_libdir/vdpau/libvdpau_r600.so*
 %_libdir/vdpau/libvdpau_softpipe.so*
+%endif
 %_libdir/xorg/modules/drivers/modesetting_drv.so
 %_libdir/xorg/modules/drivers/nouveau2_drv.so
 %_libdir/xorg/modules/drivers/r300_drv.so
 %_libdir/xorg/modules/drivers/r600g_drv.so
 %endif
 
+%if %{with va}
 %files -n %libvadrivers
 %_libdir/va/lib*.so*
+%endif
 
 %files -n %{libglname}
 %{_libdir}/libGL.so.*
