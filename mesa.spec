@@ -82,7 +82,7 @@
 %endif
 
 Name:		mesa
-Version: 	8.0.2
+Version: 	8.0.3
 %if %relc
 %if %git
 Release:	0.rc%relc.0.%git.1
@@ -93,7 +93,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	2
+Release:	1
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
