@@ -33,22 +33,22 @@
 
 %define glesv1major		1
 %define glesv1name		glesv1
-%define libglesv1name	%mklibname %{glesv1name}_ %{glesv1major}
+%define libglesv1name		%mklibname %{glesv1name}_ %{glesv1major}
 %define develglesv1		%mklibname %{glesv1name} -d
 
 %define glesv2major		2
 %define glesv2name		glesv2
-%define libglesv2name	%mklibname %{glesv2name}_ %{glesv2major}
+%define libglesv2name		%mklibname %{glesv2name}_ %{glesv2major}
 %define develglesv2		%mklibname %{glesv2name} -d
 
 %define openvgmajor		1
 %define openvgname		openvg
-%define libopenvgname	%mklibname %{openvgname} %{openvgmajor}
+%define libopenvgname		%mklibname %{openvgname} %{openvgmajor}
 %define developenvg		%mklibname %{openvgname} -d
 
 %define glapimajor		0
 %define glapiname		glapi
-%define libglapiname	%mklibname %{glapiname} %{glapimajor}
+%define libglapiname		%mklibname %{glapiname} %{glapimajor}
 %define develglapi		%mklibname %{glapiname} -d
 
 %define xatrackermajor		1
@@ -93,7 +93,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -228,7 +228,7 @@ Obsoletes:	%{_lib}mesaegl1
 Summary:	Development files for Mesa (EGL libs)
 Group:		Development/C
 Requires:	%{libeglname} = %{version}-%{release}
-Provides:   lib%{eglname}-devel
+Provides:	lib%{eglname}-devel
 Obsoletes:	%{_lib}mesaegl1-devel
 
 %package -n %{libglapiname}
