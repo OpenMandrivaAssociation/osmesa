@@ -93,7 +93,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	2
+Release:	3
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -143,7 +143,7 @@ BuildRequires:	makedepend
 BuildRequires:	x11-proto-devel		>= 7.3
 BuildRequires:	libxml2-python
 BuildRequires:	pkgconfig(libdrm)	>= 2.4.21
-BuildRequires:  pkgconfig(libudev)
+BuildRequires:  pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
 BuildRequires:	pkgconfig(xfixes)	>= 4.0.3
 BuildRequires:	pkgconfig(xt)		>= 1.0.5
