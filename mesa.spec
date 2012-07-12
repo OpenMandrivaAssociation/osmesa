@@ -82,7 +82,7 @@
 %endif
 
 Name:		mesa
-Version: 	8.0.3
+Version: 	8.0.4
 %if %relc
 %if %git
 Release:	0.rc%relc.0.%git.1
