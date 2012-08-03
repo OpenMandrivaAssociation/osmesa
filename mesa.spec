@@ -4,7 +4,7 @@
 %define build_plf 0
 %define with_hardware 1
 
-%define git		0
+%define git	0
 %define relc	0
 
 %bcond_without vdpau
@@ -13,7 +13,7 @@
 %if %{relc}
 %define vsuffix -rc%{relc}
 %else
-%define vsuffix	%nil
+%define vsuffix %nil
 %endif
 
 %define eglmajor		1
@@ -93,7 +93,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	3
+Release:	4
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -136,13 +136,13 @@ Patch901: Mesa-8.0.1-libva-0.32.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
-BuildRequires:  llvm-devel
-BuildRequires:	expat-devel		>= 2.0.1
+BuildRequires:	llvm-devel
+BuildRequires:	expat-devel >= 2.0.1
 BuildRequires:	gccmakedep
 BuildRequires:	makedepend
-BuildRequires:	x11-proto-devel		>= 7.3
+BuildRequires:	x11-proto-devel >= 7.3
 BuildRequires:	libxml2-python
-BuildRequires:	pkgconfig(libdrm)	>= 2.4.21
+BuildRequires:	pkgconfig(libdrm) >= 2.4.21
 BuildRequires:  pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
 BuildRequires:	pkgconfig(xfixes)	>= 4.0.3
@@ -182,7 +182,7 @@ Provides:	libdricore.so
 Provides:	libglsl.so
 %endif
 
-%package -n	%libvadrivers
+%package -n	%{libvadrivers}
 Summary:	Mesa libVA video acceleration drivers
 Group:		System/Libraries
 
@@ -194,7 +194,7 @@ Requires:	%{dridrivers} >= %{version}-%{release}
 %if %{build_plf}
 Requires:	%mklibname txc-dxtn
 %endif
-Obsoletes:	%{_lib}mesagl1
+Obsoletes:	%{_lib}mesagl1 < 8.0
 
 %package -n	%{develgl}
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
@@ -203,13 +203,13 @@ Requires:	%{libglname} = %{version}-%{release}
 Provides:	libmesa%{glname}-devel = %{version}-%{release}
 Provides:	mesa%{glname}-devel = %{version}-%{release}
 Provides:	GL-devel
-Obsoletes:	%{_lib}mesagl1-devel
+Obsoletes:	%{_lib}mesagl1-devel < 8.0
 
 %package -n	%{libgluname}
 Summary:	Files for Mesa (GLU libs)
 Group:		System/Libraries
 Provides:	libmesa%{gluname} = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglu1
+Obsoletes:	%{_lib}mesaglu1 < 8.0
 
 %package -n	%{develglu}
 Summary:	Development files for GLU libs
@@ -217,19 +217,19 @@ Group:		Development/C
 Requires:	%{libgluname} = %{version}-%{release}
 Provides:	libmesa%{gluname}-devel = %{version}-%{release}
 Provides:	mesa%{gluname}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglu1-devel
+Obsoletes:	%{_lib}mesaglu1-devel < 8.0
 
 %package -n	%{libeglname}
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
-Obsoletes:	%{_lib}mesaegl1
+Obsoletes:	%{_lib}mesaegl1 < 8.0
 
 %package -n	%{develegl}
 Summary:	Development files for Mesa (EGL libs)
 Group:		Development/C
 Requires:	%{libeglname} = %{version}-%{release}
 Provides:	lib%{eglname}-devel
-Obsoletes:	%{_lib}mesaegl1-devel
+Obsoletes:	%{_lib}mesaegl1-devel < 8.0
 
 %package -n %{libglapiname}
 Summary:	Files for mesa (glapi libs)
@@ -238,58 +238,58 @@ Group:		System/Libraries
 %package -n %{develglapi}
 Summary:	Development files for glapi libs
 Group:		Development/C
-Obsoletes:	%{_lib}glapi0-devel
+Obsoletes:	%{_lib}glapi0-devel < 8.0
 
-%package -n %libxatrackername
+%package -n %{libxatrackername}
 Summary:	Files for mesa (xatracker libs)
 Group:		System/Libraries
 
-%package -n %develxatracker
+%package -n %{develxatracker}
 Summary:	Development files for xatracker libs
 Group:		Development/C
 
 %package -n %{libglesv1name}
 Summary:	Files for Mesa (glesv1 libs)
 Group:		System/Libraries
-Obsoletes:	%{_lib}mesaglesv1_1
+Obsoletes:	%{_lib}mesaglesv1_1 < 8.0
 
 %package -n %{develglesv1}
 Summary:	Development files for glesv1 libs
 Group:		Development/C
 Requires:	%{libglesv1name} = %{version}-%{release}
 Provides:	lib%{glesv1name}-devel
-Obsoletes:	%{_lib}mesaglesv1_1-devel
+Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
 
 %package -n %{libglesv2name}
 Summary:	Files for Mesa (glesv2 libs)
 Group:		System/Libraries
-Obsoletes:	%{_lib}mesaglesv2_2
+Obsoletes:	%{_lib}mesaglesv2_2 < 8.0
 
 %package -n %{develglesv2}
 Summary:	Development files for glesv2 libs
 Group:		Development/C
 Requires:	%{libglesv2name} = %{version}-%{release}
 Provides:	lib%{glesv2name}-devel
-Obsoletes:	%{_lib}mesaglesv2_2-devel
+Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
 
 %package -n %{libopenvgname}
 Summary:	Files for MESA (OpenVG libs)
 Group:		System/Libraries
-Obsoletes:	%{_lib}mesaopenvg1
+Obsoletes:	%{_lib}mesaopenvg1 < 8.0
 
 %package -n %{developenvg}
 Summary:	Development files vor OpenVG libs
 Group:		Development/C
 Requires:	%{libopenvgname} = %{version}-%{release}
 Provides:	lib%{openvgname}-devel
-Obsoletes:	%{_lib}mesaopenvg1-devel
+Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
 
 %package	common-devel
 Summary:	Meta package for mesa devel
 Group:		Development/C
 Requires:	%{develegl} = %{version}
 Requires:	%{develglapi} = %{version}
-Requires:	%develxatracker = %version
+Requires:	%{develxatracker} = %{version}
 Requires:	%{develglu} = %{version}
 Requires:	freeglut-devel
 Requires:	%{develgl} = %{version}
@@ -300,9 +300,9 @@ Requires:	%{develglesv2} = %{version}
 
 %description
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
-%if %{build_plf}
 
-This package is in the "tainted" section because it enables some
+%if %{build_plf}
+This package is in the restricted repository because it enables some
 OpenGL extentions that are covered by software patents.
 %endif
 
@@ -310,7 +310,7 @@ OpenGL extentions that are covered by software patents.
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 DRI drivers.
 
-%description -n %libvadrivers
+%description -n %{libvadrivers}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 libVA drivers for video acceleration
 
@@ -350,10 +350,10 @@ This package provides the glapi shared library used by gallium.
 This package contains the headers needed to compile programs against
 the glapi shared library.
 
-%description -n %libxatrackername
+%description -n %{libxatrackername}
 This package provides the xatracker shared library used by gallium.
 
-%description -n %develxatracker
+%description -n %{develxatracker}
 This package contains the headers needed to compile programs against
 the xatracker shared library.
 
@@ -473,25 +473,25 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_libdir}/dri/libdricore.so
 %{_libdir}/dri/libglsl.so
 %{_libdir}/dri/*_dri.so
-%_libdir/libXvMCnouveau.so.*
-%_libdir/libXvMCr300.so.*
-%_libdir/libXvMCr600.so.*
-%_libdir/libXvMCsoftpipe.so.*
+%{_libdir}/libXvMCnouveau.so.*
+%{_libdir}/libXvMCr300.so.*
+%{_libdir}/libXvMCr600.so.*
+%{_libdir}/libXvMCsoftpipe.so.*
 %if %{with vdpau}
-%_libdir/vdpau/libvdpau_nouveau.so*
-%_libdir/vdpau/libvdpau_r300.so*
-%_libdir/vdpau/libvdpau_r600.so*
-%_libdir/vdpau/libvdpau_softpipe.so*
+%{_libdir}/vdpau/libvdpau_nouveau.so*
+%{_libdir}/vdpau/libvdpau_r300.so*
+%{_libdir}/vdpau/libvdpau_r600.so*
+%{_libdir}/vdpau/libvdpau_softpipe.so*
 %endif
-%_libdir/xorg/modules/drivers/modesetting_drv.so
-%_libdir/xorg/modules/drivers/nouveau2_drv.so
-%_libdir/xorg/modules/drivers/r300_drv.so
-%_libdir/xorg/modules/drivers/r600g_drv.so
+%{_libdir}/xorg/modules/drivers/modesetting_drv.so
+%{_libdir}/xorg/modules/drivers/nouveau2_drv.so
+%{_libdir}/xorg/modules/drivers/r300_drv.so
+%{_libdir}/xorg/modules/drivers/r600g_drv.so
 %endif
 
 %if %{with va}
-%files -n %libvadrivers
-%_libdir/va/lib*.so*
+%files -n %{libvadrivers}
+%{_libdir}/va/lib*.so*
 %endif
 
 %files -n %{libglname}
@@ -511,8 +511,8 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %files -n %{libglapiname}
 %{_libdir}/libglapi.so.%{glapimajor}*
 
-%files -n %libxatrackername
-%_libdir/libxatracker.so.%{xatrackermajor}*
+%files -n %{libxatrackername}
+%{_libdir}/libxatracker.so.%{xatrackermajor}*
 
 %files -n %{libglesv1name}
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
@@ -533,7 +533,7 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
 %{_libdir}/libGL.so
-%_libdir/libXvMC*.so
+%{_libdir}/libXvMC*.so
 %{_libdir}/pkgconfig/gl.pc
 %{_libdir}/pkgconfig/dri.pc
 
@@ -561,10 +561,10 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %files -n %{develglapi}
 %{_libdir}/libglapi.so
 
-%files -n %develxatracker
-%_libdir/libxatracker.so
-%_includedir/xa_*.h
-%_libdir/pkgconfig/xatracker.pc
+%files -n %{develxatracker}
+%{_libdir}/libxatracker.so
+%{_includedir}/xa_*.h
+%{_libdir}/pkgconfig/xatracker.pc
 
 %files -n %{develglesv1}
 %{_includedir}/GLES
