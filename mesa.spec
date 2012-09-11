@@ -51,6 +51,11 @@
 %define libglapiname		%mklibname %{glapiname} %{glapimajor}
 %define develglapi		%mklibname %{glapiname} -d
 
+%define gbmmajor		1
+%define gbmname			gbm
+%define libgbmname		%mklibname %gbmname %gbmmajor
+%define develgbm		%mklibname %gbmname -d
+
 %define xatrackermajor		1
 %define xatrackername		xatracker
 %define libxatrackername	%mklibname %xatrackername %xatrackermajor
@@ -93,7 +98,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	4
+Release:	5
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -240,6 +245,14 @@ Summary:	Development files for glapi libs
 Group:		Development/C
 Obsoletes:	%{_lib}glapi0-devel < 8.0
 
+%package -n %{libgbmname}
+Summary:	Files for mesa (gbm libs)
+Group:		System/Libraries
+
+%package -n %{develgbm}
+Summary:	Development files for gbm libs
+Group:		Development/C
+
 %package -n %{libxatrackername}
 Summary:	Files for mesa (xatracker libs)
 Group:		System/Libraries
@@ -289,6 +302,7 @@ Summary:	Meta package for mesa devel
 Group:		Development/C
 Requires:	%{develegl} = %{version}
 Requires:	%{develglapi} = %{version}
+Requires:	%develgbm = %version
 Requires:	%{develxatracker} = %{version}
 Requires:	%{develglu} = %{version}
 Requires:	freeglut-devel
@@ -349,6 +363,13 @@ This package provides the glapi shared library used by gallium.
 %description -n %{develglapi}
 This package contains the headers needed to compile programs against
 the glapi shared library.
+
+%description -n %{libgbmname}
+This package provides the gbm shared library used by gallium.
+
+%description -n %{develgbm}
+This package contains the headers needed to compile programs against
+the gbm shared library.
 
 %description -n %{libxatrackername}
 This package provides the xatracker shared library used by gallium.
@@ -411,6 +432,8 @@ autoconf
 	--enable-shared-dricore \
 	--enable-egl \
 	--enable-dri \
+	--enable-gbm \
+	--enable-shared-glapi \
 	--enable-glx \
 	--enable-xorg \
 	--enable-xa \
@@ -505,11 +528,13 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %files -n %{libeglname}
 %{_libdir}/libEGL.so.%{eglmajor}*
 %dir %{_libdir}/egl
-%{_libdir}/egl/st_GL.so
 %{_libdir}/egl/egl_gallium.so
 
 %files -n %{libglapiname}
 %{_libdir}/libglapi.so.%{glapimajor}*
+
+%files -n %libgbmname
+%{_libdir}/libgbm.so.%{gbmmajor}*
 
 %files -n %{libxatrackername}
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
@@ -560,6 +585,11 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 
 %files -n %{develglapi}
 %{_libdir}/libglapi.so
+
+%files -n %{develgbm}
+%{_libdir}/libgbm.so
+%_includedir/gbm.h
+%_libdir/pkgconfig/gbm.pc
 
 %files -n %{develxatracker}
 %{_libdir}/libxatracker.so
