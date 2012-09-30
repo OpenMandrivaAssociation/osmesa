@@ -4,11 +4,12 @@
 %define build_plf 0
 %define with_hardware 1
 
-%define git	0
+%define git	20120930
 %define relc	0
 
 %bcond_without vdpau
-%bcond_without va
+# va backend is currently unmaintained and broken
+%bcond_with va
 
 %if %{relc}
 %define vsuffix -rc%{relc}
@@ -25,11 +26,6 @@
 %define glname			gl
 %define libglname		%mklibname %{glname} %{glmajor}
 %define develgl			%mklibname %{glname} -d
-
-%define glumajor		1
-%define gluname			glu
-%define libgluname		%mklibname %{gluname} %{glumajor}
-%define develglu		%mklibname %{gluname} -d
 
 %define glesv1major		1
 %define glesv1name		glesv1
@@ -87,7 +83,7 @@
 %endif
 
 Name:		mesa
-Version: 	8.0.4
+Version: 	9.0
 %if %relc
 %if %git
 Release:	0.rc%relc.0.%git.1
@@ -98,7 +94,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	5
+Release:	1
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -107,8 +103,8 @@ Group:		System/Libraries
 License:	MIT
 URL:		http://www.mesa3d.org
 %if %{git}
-# (cg) Current commit ref: origin/mesa_7_5_branch
-Source0:	%{name}-%{git}.tar.bz2
+# (cg) Current commit ref: origin/master
+Source0:	%{name}-%{git}.tar.xz
 %else
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%version/MesaLib-%{version}%{vsuffix}.tar.bz2
 %endif
@@ -117,7 +113,7 @@ Source5:	mesa-driver-install
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
-# git checkout mesa_7_5_branch
+# git checkout master
 # git branch mdv-cherry-picks
 # git am ../02??-*.patch
 # git branch mdv-redhat
@@ -177,15 +173,6 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
-# Lives in %_libdir/dri, but should be provided
-# nevertheless...
-%if "%_lib" != "lib"
-Provides:	libdricore.so()(64bit)
-Provides:	libglsl.so()(64bit)
-%else
-Provides:	libdricore.so
-Provides:	libglsl.so
-%endif
 
 %package -n	%{libvadrivers}
 Summary:	Mesa libVA video acceleration drivers
@@ -209,20 +196,6 @@ Provides:	libmesa%{glname}-devel = %{version}-%{release}
 Provides:	mesa%{glname}-devel = %{version}-%{release}
 Provides:	GL-devel
 Obsoletes:	%{_lib}mesagl1-devel < 8.0
-
-%package -n	%{libgluname}
-Summary:	Files for Mesa (GLU libs)
-Group:		System/Libraries
-Provides:	libmesa%{gluname} = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglu1 < 8.0
-
-%package -n	%{develglu}
-Summary:	Development files for GLU libs
-Group:		Development/C
-Requires:	%{libgluname} = %{version}-%{release}
-Provides:	libmesa%{gluname}-devel = %{version}-%{release}
-Provides:	mesa%{gluname}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglu1-devel < 8.0
 
 %package -n	%{libeglname}
 Summary:	Files for Mesa (EGL libs)
@@ -304,7 +277,6 @@ Requires:	%{develegl} = %{version}
 Requires:	%{develglapi} = %{version}
 Requires:	%develgbm = %version
 Requires:	%{develxatracker} = %{version}
-Requires:	%{develglu} = %{version}
 Requires:	freeglut-devel
 Requires:	%{develgl} = %{version}
 Requires:	%{develglesv1} = %{version}
@@ -347,15 +319,6 @@ GL and GLX parts.
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 
 This package contains the headers needed to compile Mesa programs.
-
-%description -n %{libgluname}
-GLU is the OpenGL Utility Library.
-It provides a number of functions upon the base OpenGL library to provide
-higher-level drawing routines from the more primitive routines provided by
-OpenGL.
-
-%description -n %{develglu}
-This package contains the headers needed to compile programs with GLU.
 
 %description -n %{libglapiname}
 This package provides the glapi shared library used by gallium.
@@ -407,7 +370,7 @@ Development files for OpenVG library.
 
 %prep
 %if %{git}
-%setup -qn mesa-%{git}
+%setup -qn mesa
 %else
 %setup -qn Mesa-%{version}%{vsuffix}
 %endif
@@ -415,13 +378,16 @@ Development files for OpenVG library.
 %apply_patches
 chmod +x %{SOURCE5}
 
+%if %{git}
+./autogen.sh -v
+%else
 # Needed after vaapi 0.32 support patch
+aclocal
+automake -a
 autoconf
+%endif
 
 %build
-#%if %{git}
-#./autogen.sh -v
-#%endif
 
 # Replacing --disable-glx-tls with --enable-glx-tls
 # below would be good - but unfortunately it seems to
@@ -429,7 +395,6 @@ autoconf
 %configure2_5x \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
-	--enable-shared-dricore \
 	--enable-egl \
 	--enable-dri \
 	--enable-gbm \
@@ -491,11 +456,11 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %doc docs/COPYING docs/README.*
 
 %files -n %{dridrivers}
+%config(noreplace) %_sysconfdir/drirc
 %ifnarch ppc64
 %dir %{_libdir}/dri
-%{_libdir}/dri/libdricore.so
-%{_libdir}/dri/libglsl.so
 %{_libdir}/dri/*_dri.so
+%{_libdir}/libdricore9.0.0.so.*
 %{_libdir}/libXvMCnouveau.so.*
 %{_libdir}/libXvMCr300.so.*
 %{_libdir}/libXvMCr600.so.*
@@ -506,7 +471,7 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_libdir}/vdpau/libvdpau_r600.so*
 %{_libdir}/vdpau/libvdpau_softpipe.so*
 %endif
-%{_libdir}/xorg/modules/drivers/modesetting_drv.so
+%{_libdir}/xorg/modules/drivers/i915_drv.so
 %{_libdir}/xorg/modules/drivers/nouveau2_drv.so
 %{_libdir}/xorg/modules/drivers/r300_drv.so
 %{_libdir}/xorg/modules/drivers/r600g_drv.so
@@ -521,9 +486,6 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.%{glmajor}*
-
-%files -n %{libgluname}
-%{_libdir}/libGLU.so.%{glumajor}*
 
 %files -n %{libeglname}
 %{_libdir}/libEGL.so.%{eglmajor}*
@@ -557,6 +519,7 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
+%{_libdir}/libdricore9.0.0.so
 %{_libdir}/libGL.so
 %{_libdir}/libXvMC*.so
 %{_libdir}/pkgconfig/gl.pc
@@ -567,12 +530,6 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
-
-%files -n %{develglu}
-%{_includedir}/GL/glu.h
-%{_includedir}/GL/glu_mangle.h
-%{_libdir}/libGLU.so
-%{_libdir}/pkgconfig/glu.pc
 
 %files common-devel
 # meta devel pkg
