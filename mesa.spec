@@ -4,7 +4,7 @@
 %define build_plf 0
 %define with_hardware 1
 
-%define git	20120930
+%define git	20121003
 %define relc	0
 
 %bcond_without vdpau
