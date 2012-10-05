@@ -1,6 +1,10 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
+# Hack required when linking libllvmpipe.a
+# FIXME remove/comment if build succeeds without it (linker kludge...)
+%define _disable_ld_as_needed 1
+
 %define build_plf 0
 %define with_hardware 1
 
@@ -86,15 +90,15 @@ Name:		mesa
 Version: 	9.0
 %if %relc
 %if %git
-Release:	0.rc%relc.0.%git.1
+Release:	0.rc%relc.0.%git.2
 %else
-Release:	0.rc%relc.1
+Release:	0.rc%relc.2
 %endif
 %else
 %if %git
-Release:	0.%git.1
+Release:	0.%git.2
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
