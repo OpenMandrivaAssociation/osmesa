@@ -8,7 +8,7 @@
 %define build_plf 0
 %define with_hardware 1
 
-%define git	20121003
+%define git	0
 %define relc	0
 
 %bcond_without vdpau
@@ -138,6 +138,7 @@ Source5:	mesa-driver-install
 # Mandriva & Mageia patches
 Patch900: 0900-Mips-support.patch
 Patch901: Mesa-8.0.1-libva-0.32.patch
+Patch902: mesa-9.0-missing-include.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -386,6 +387,7 @@ chmod +x %{SOURCE5}
 ./autogen.sh -v
 %else
 # Needed after vaapi 0.32 support patch
+libtoolize --force
 aclocal
 automake -a
 autoconf
