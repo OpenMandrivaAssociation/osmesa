@@ -297,6 +297,7 @@ Summary:	Files for MESA (OpenVG libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaopenvg1 < 8.0
 
+%if %{with vdpau}
 %package -n	%{_lib}vdpau-driver-nouveau
 Summary:	VDPAU plugin for nouveau driver
 Group:		System/Libraries
@@ -316,6 +317,7 @@ Group:		System/Libraries
 %package -n	%{_lib}vdpau-driver-softpipe
 Summary:	VDPAU plugin for softpipe driver
 Group:		System/Libraries
+%endif
 
 %package -n %{developenvg}
 Summary:	Development files vor OpenVG libs
@@ -448,6 +450,7 @@ acceleration interface for vector graphics libraries such as Flash and SVG.
 %description -n %{developenvg}
 Development files for OpenVG library.
 
+%if %{with vdpau}
 %description -n %{_lib}vdpau-driver-nouveau
 This packages provides a VPDAU plugin to enable video acceleration
 with the nouveau driver.
@@ -467,7 +470,7 @@ with the radeonsi driver.
 %description -n %{_lib}vdpau-driver-softpipe
 This packages provides a VPDAU plugin to enable video acceleration
 with the softpipe driver.
-
+%endif
 
 %if %{with wayland}
 %description -n %{libgbmname}
@@ -534,7 +537,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 		--enable-openvg \
 		--enable-gallium-egl \
 		--enable-gallium-g3dvl \
-		--disable-xvmc \
+		--enable-xvmc \
 %if %{with vdpau}
 		--enable-vdpau \
 %else		
@@ -609,13 +612,16 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %config(noreplace) %{_sysconfdir}/drirc
 
 %files -n %{dridrivers}
-%defattr(-,root,root)
 %doc docs/COPYING
 %ifnarch ppc64
 %dir %{_libdir}/dri
 # (blino) new mesa 8.1 build system seems to use a static libglsl
 #%{_libdir}/dri/libglsl.so
 %{_libdir}/dri/*_dri.so
+%{_libdir}/libXvMCnouveau.so.*
+%{_libdir}/libXvMCr300.so.*
+%{_libdir}/libXvMCr600.so.*
+%{_libdir}/libXvMCsoftpipe.so.*
 %endif
 
 %files -n %{libdricorename}
@@ -688,6 +694,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
 %{_libdir}/libGL.so
+%{_libdir}/libXvMC*.so
 %{_libdir}/pkgconfig/gl.pc
 %{_libdir}/pkgconfig/dri.pc
 
@@ -714,6 +721,8 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %files -n %{develdricore}
 %{_libdir}/libdricore%{version}.so
 
+#vdpau enblaed
+%if %{with vdpau}
 %files -n %{_lib}vdpau-driver-nouveau
 %{_libdir}/vdpau/libvdpau_nouveau.so.*
 
@@ -728,6 +737,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %files -n %{_lib}vdpau-driver-softpipe
 %{_libdir}/vdpau/libvdpau_softpipe.so.*
+%endif
 
 %files -n %{develglesv1}
 %{_includedir}/GLES
