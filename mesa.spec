@@ -6,8 +6,6 @@
 
 %define build_plf 0
 
-%define with_hardware 1
-
 %define git 0
 %define git_branch 9.0
 %define with_hardware 1
@@ -19,12 +17,17 @@
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
+%bcond_without egl
 
 %if %{relc}
 %define vsuffix -rc%{relc}
 %else
 %define vsuffix %nil
 %endif
+
+%define osmesamajor		8
+%define libosmesaname		%mklibname osmesa %{osmesamajor}
+%define osmesadevel		%mklibname osmesa -d
 
 %define eglmajor		1
 %define eglname			egl
@@ -198,6 +201,16 @@ Conflicts:	%{_lib}MesaGL1 < 7.7-5
 Summary:	Shared library for DRI drivers
 Group:		System/Libraries
 
+%package -n	%{libosmesaname}
+Summary:	Mesa offscreen rendering library
+Group:		System/Libraries
+
+%package -n	%{osmesadevel}
+Summary:	Development files for libosmesa
+Group:		Development/C
+Requires:	%{libosmesaname} = %{version}-%{release}
+Provides:	osmesa-devel = %{version}-%{release}
+
 %package -n	%{libvadrivers}
 Summary:	Mesa libVA video acceleration drivers
 Group:		System/Libraries
@@ -222,6 +235,7 @@ Provides:	GL-devel = %{version}-%{release}
 Obsoletes:	%{_lib}mesagl1-devel < 8.0
 Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
 
+%if %{with egl}
 %package -n	%{libeglname}
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
@@ -234,6 +248,7 @@ Requires:	%{libeglname} = %{version}-%{release}
 Provides:	lib%{eglname}-devel = %{version}-%{release}
 Obsoletes:	%{_lib}mesaegl1-devel < 8.0
 Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
+%endif
 
 %package -n %{libglapiname}
 Summary:	Files for mesa (glapi libs)
@@ -281,6 +296,26 @@ Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
 Summary:	Files for MESA (OpenVG libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaopenvg1 < 8.0
+
+%package -n	%{_lib}vdpau-driver-nouveau
+Summary:	VDPAU plugin for nouveau driver
+Group:		System/Libraries
+
+%package -n	%{_lib}vdpau-driver-r300
+Summary:	VDPAU plugin for r300 driver
+Group:		System/Libraries
+
+%package -n	%{_lib}vdpau-driver-r600
+Summary:	VDPAU plugin for r600 driver
+Group:		System/Libraries
+
+%package -n	%{_lib}vdpau-driver-radeonsi
+Summary:	VDPAU plugin for radeonsi driver
+Group:		System/Libraries
+
+%package -n	%{_lib}vdpau-driver-softpipe
+Summary:	VDPAU plugin for softpipe driver
+Group:		System/Libraries
 
 %package -n %{developenvg}
 Summary:	Development files vor OpenVG libs
@@ -338,6 +373,14 @@ OpenGL extentions that are covered by software patents.
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 DRI drivers.
 
+%description -n %{libosmesaname}
+Mesa offscreen rendering libraries for rendering OpenGL into
+application-allocated blocks of memory.
+
+%description -n %{osmesadevel}
+This package contains the headers needed to compile programs against
+the Mesa offscreen rendering library.
+
 %description -n %{libdricorename}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 DRI core part.
@@ -349,6 +392,7 @@ libVA drivers for video acceleration
 %description common-devel
 Mesa common metapackage devel
 
+%if %{with egl}
 %description -n %{libeglname}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 EGL parts.
@@ -356,6 +400,7 @@ EGL parts.
 %description -n %{develegl}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 EGL development parts.
+%endif
 
 %description -n %{libglname}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
@@ -403,6 +448,27 @@ acceleration interface for vector graphics libraries such as Flash and SVG.
 %description -n %{developenvg}
 Development files for OpenVG library.
 
+%description -n %{_lib}vdpau-driver-nouveau
+This packages provides a VPDAU plugin to enable video acceleration
+with the nouveau driver.
+
+%description -n %{_lib}vdpau-driver-r300
+This packages provides a VPDAU plugin to enable video acceleration
+with the r300 driver.
+
+%description -n %{_lib}vdpau-driver-r600
+This packages provides a VPDAU plugin to enable video acceleration
+with the r600 driver.
+
+%description -n %{_lib}vdpau-driver-radeonsi
+This packages provides a VPDAU plugin to enable video acceleration
+with the radeonsi driver.
+
+%description -n %{_lib}vdpau-driver-softpipe
+This packages provides a VPDAU plugin to enable video acceleration
+with the softpipe driver.
+
+
 %if %{with wayland}
 %description -n %{libgbmname}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
@@ -438,108 +504,132 @@ chmod +x %{SOURCE5}
 
 autoreconf -vfi
 
+# Duplicate source tree for OSMesa, since building both versions out-of-tree
+# would break build. - Anssi 12/2012
+all=$(ls)
+mkdir -p build-osmesa
+cp -a $all build-osmesa
+
 %build
 # fix build - TODO: should this be fixed in llvm somehow, or maybe the library
 # symlinks should be moved to %{_libdir}? -Anssi 08/2012
 export LDFLAGS="-L%{_libdir}/llvm"
 
-# Replacing --disable-glx-tls with --enable-glx-tls
-# below would be good - but unfortunately it seems to
-# break the nvidia binary-only driver.
-%configure2_5x \
-	--with-dri-driverdir=%{driver_dir} \
-	--with-dri-drivers="%{dri_drivers}" \
-	--enable-shared-dricore \
-	--enable-egl \
-	--enable-dri \
-	--enable-glx \
-	--enable-xorg \
-	--enable-xa \
-	--enable-xvmc \
-%if %{with wayland}
-	--with-egl-platforms=x11,wayland,drm \
-	--enable-gbm \
-	--enable-shared-glapi \
-%endif
-%if %{with vdpau}
-	--enable-vdpau \
+%configure2_5x	--enable-dri \
+		--enable-glx \
+		--with-dri-driverdir=%{driver_dir} \
+		--with-dri-drivers="%{dri_drivers}" \
+%if %{with egl}
+		--enable-egl \
 %else
-	--disable-vdpau \
+		--disable-egl \
+%endif
+%if %{with wayland}
+		--with-egl-platforms=x11,wayland,drm \
+		--enable-gbm \
+		--enable-shared-glapi \
+%endif
+		--enable-gles1 \
+		--enable-gles2 \
+		--enable-openvg \
+		--enable-gallium-egl \
+		--enable-gallium-g3dvl \
+		--disable-xvmc \
+%if %{with vdpau}
+		--enable-vdpau \
+%else		
+		--disable-vdpau \
 %endif
 %if %{with va}
-	--enable-va \
+		--enable-va \
 %else
-	--disable-va \
+		--disable-va \
 %endif
-	--enable-gles1 \
-	--enable-gles2 \
-	--enable-openvg \
-	--enable-gallium-egl \
-	--disable-glx-tls \
-	--enable-gallium-g3dvl \
 %if %{with_hardware}
-	--with-gallium-drivers=r300,r600,radeonsi,nouveau,swrast \
-   	--enable-gallium-llvm \
+		--with-gallium-drivers=r300,r600,radeonsi,nouveau,swrast \
+		--enable-gallium-llvm \
 %else
-   	--disable-gallium-llvm \
-   	--with-gallium-drivers=swrast \
+		--disable-gallium-llvm \
+		--with-gallium-drivers=swrast \
 %endif
 %if %{build_plf}
-   	--enable-texture-float
+		--enable-texture-float  \
 %endif
+		# end of configure options
+
+
+# Build OSMesa separately, since we want to build OSMesa without shared-glapi,
+# since doing that causes OSMesa to miss the OpenGL symbols.
+# See e.g. https://bugs.launchpad.net/ubuntu/+source/mesa/+bug/1066599
+# -Anssi 12/2012
+
+pushd build-osmesa
+%configure2_5x \
+		--enable-osmesa \
+		--disable-dri \
+		--disable-glx \
+		--disable-egl \
+		--disable-shared-glapi \
+		--without-gallium-drivers
+popd
 
 %make
+%make -C build-osmesa
 
 %install
-rm -rf %{buildroot}
+%makeinstall_std -C build-osmesa
 %makeinstall_std
 
+# FIXME: strip will likely break the hardlink
 # (blino) hardlink libGL files in %{_libdir}/mesa
 # to prevent proprietary driver installers from removing them
-mkdir -p %{buildroot}%{_libdir}/mesa
-pushd %{buildroot}%{_libdir}/mesa
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa
+pushd $RPM_BUILD_ROOT%{_libdir}/mesa
 for l in ../libGL.so.*; do cp -a $l .; done
 popd
 
 %ifarch %{x86_64}
-mkdir -p %{buildroot}%{_prefix}/lib/dri
+mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
 %endif
+
+# .so files are not needed by vdpau
+rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
+
+# .la files are not needed by mesa
+find %{buildroot} -name '*.la' -exec rm {} \;
 
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
 
 #------------------------------------------------------------------------------
 
+
 %files
 %doc docs/COPYING docs/README.*
 %config(noreplace) %{_sysconfdir}/drirc
 
 %files -n %{dridrivers}
+%defattr(-,root,root)
+%doc docs/COPYING
 %ifnarch ppc64
 %dir %{_libdir}/dri
-# (blino) new mesa 8.1 and 9.0 build system seems to use a static libglsl
+# (blino) new mesa 8.1 build system seems to use a static libglsl
 #%{_libdir}/dri/libglsl.so
 %{_libdir}/dri/*_dri.so
-%{_libdir}/libXvMCnouveau.so.*
-%{_libdir}/libXvMCr300.so.*
-%{_libdir}/libXvMCr600.so.*
-%{_libdir}/libXvMCsoftpipe.so.*
-%if %{with vdpau}
-%{_libdir}/vdpau/libvdpau_nouveau.so*
-%{_libdir}/vdpau/libvdpau_r300.so*
-%{_libdir}/vdpau/libvdpau_r600.so*
-%{_libdir}/vdpau/libvdpau_radeonsi.so*
-%{_libdir}/vdpau/libvdpau_softpipe.so*
-%endif
-%{_libdir}/xorg/modules/drivers/nouveau2_drv.so
-%{_libdir}/xorg/modules/drivers/r300_drv.so
-%{_libdir}/xorg/modules/drivers/r600g_drv.so
-%{_libdir}/xorg/modules/drivers/radeonsi_drv.so
 %endif
 
 %files -n %{libdricorename}
 %{_libdir}/libdricore%{version}.so.%{dricoremajor}
 %{_libdir}/libdricore%{version}.so.%{dricoremajor}.*
+
+%files -n %{libosmesaname}
+%{_libdir}/libOSMesa.so.%{osmesamajor}*
+
+%files -n %{osmesadevel}
+%dir %{_includedir}/GL
+%{_includedir}/GL/osmesa.h
+%{_libdir}/libOSMesa.so
+%{_libdir}/pkgconfig/osmesa.pc
 
 %if %{with va}
 %files -n %{libvadrivers}
@@ -551,13 +641,17 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.%{glmajor}*
 
+%if %{with egl}
 %files -n %{libeglname}
+%doc docs/COPYING
 %{_libdir}/libEGL.so.%{eglmajor}*
 %dir %{_libdir}/egl
 %if !%{with wayland}
+# st_GL, built only when shared glapi is not enabled
 %{_libdir}/egl/st_GL.so
 %endif
 %{_libdir}/egl/egl_gallium.so
+%endif
 
 %files -n %{libglapiname}
 %{_libdir}/libglapi.so.%{glapimajor}*
@@ -584,16 +678,16 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
 
 %files -n %{develgl}
+%doc docs/COPYING
+%dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
-%{_includedir}/GL/osmesa.h
 %{_includedir}/GL/wglext.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
 %{_libdir}/libGL.so
-%{_libdir}/libXvMC*.so
 %{_libdir}/pkgconfig/gl.pc
 %{_libdir}/pkgconfig/dri.pc
 
@@ -606,17 +700,34 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 %files common-devel
 # meta devel pkg
 
+%if %{with egl}
 %files -n %{develegl}
 %{_includedir}/EGL
 %{_includedir}/KHR
 %{_libdir}/libEGL.so
 %{_libdir}/pkgconfig/egl.pc
+%endif
 
 %files -n %{develglapi}
 %{_libdir}/libglapi.so
 
 %files -n %{develdricore}
 %{_libdir}/libdricore%{version}.so
+
+%files -n %{_lib}vdpau-driver-nouveau
+%{_libdir}/vdpau/libvdpau_nouveau.so.*
+
+%files -n %{_lib}vdpau-driver-r300
+%{_libdir}/vdpau/libvdpau_r300.so.*
+
+%files -n %{_lib}vdpau-driver-r600
+%{_libdir}/vdpau/libvdpau_r600.so.*
+
+%files -n %{_lib}vdpau-driver-radeonsi
+%{_libdir}/vdpau/libvdpau_radeonsi.so.*
+
+%files -n %{_lib}vdpau-driver-softpipe
+%{_libdir}/vdpau/libvdpau_softpipe.so.*
 
 %files -n %{develglesv1}
 %{_includedir}/GLES
