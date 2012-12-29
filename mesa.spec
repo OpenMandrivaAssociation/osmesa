@@ -113,7 +113,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.6.1
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
