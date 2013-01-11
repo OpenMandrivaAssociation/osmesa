@@ -1,0 +1,24 @@
+--- Mesa-9.0.1/configure.ac.bero	2013-01-04 20:21:54.122796413 +0100
++++ Mesa-9.0.1/configure.ac	2013-01-04 20:22:48.437134321 +0100
+@@ -1805,8 +1805,8 @@ if test "x$with_gallium_drivers" != x; t
+             gallium_require_drm_loader
+             GALLIUM_DRIVERS_DIRS="$GALLIUM_DRIVERS_DIRS r600"
+             if test "x$enable_r600_llvm" = xyes -o "x$enable_opencl" = xyes; then
+-                if test "x$LLVM_VERSION" != "x3.1"; then
+-                    AC_MSG_ERROR([LLVM 3.1 is required for the r600 llvm compiler.])
++                if test "x$LLVM_VERSION" != "x3.1" -a "x$LLVM_VERSION" != "x3.2"; then
++                    AC_MSG_ERROR([LLVM 3.1 or 3.2 are required for the r600 llvm compiler.])
+                 fi
+                 NEED_RADEON_GALLIUM=yes;
+             fi
+@@ -1822,8 +1822,8 @@ if test "x$with_gallium_drivers" != x; t
+             PKG_CHECK_MODULES([RADEON], [libdrm_radeon >= $LIBDRM_RADEON_REQUIRED])
+             gallium_require_drm_loader
+             GALLIUM_DRIVERS_DIRS="$GALLIUM_DRIVERS_DIRS radeonsi"
+-            if test "x$LLVM_VERSION" != "x3.1"; then
+-                AC_MSG_ERROR([LLVM 3.1 is required to build the radeonsi driver.])
++            if test "x$LLVM_VERSION" != "x3.1" -a "x$LLVM_VERSION" != "x3.2"; then
++                AC_MSG_ERROR([LLVM 3.1 or 3.2 are required to build the radeonsi driver.])
+             fi
+ 	    NEED_RADEON_GALLIUM=yes;
+             gallium_check_st "radeon/drm" "dri-radeonsi" "xorg-radeonsi" "" "" "vdpau-radeonsi" ""

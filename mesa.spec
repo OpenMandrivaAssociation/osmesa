@@ -6,8 +6,8 @@
 
 %define build_plf 0
 
-%define git 0
-%define git_branch 9.0
+%define git 20130111
+%define git_branch 9.1
 %define with_hardware 1
 
 %define opengl_ver 3.0
@@ -48,6 +48,8 @@
 %define glesv2name		glesv2
 %define libglesv2name		%mklibname %{glesv2name}_ %{glesv2major}
 %define develglesv2		%mklibname %{glesv2name} -d
+
+%define develglesv3		%mklibname glesv3 -d
 
 %define openvgmajor		1
 %define openvgname		openvg
@@ -99,10 +101,10 @@
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 %endif
 
-%define short_ver 9.0.1
+%define short_ver 9.1
 
 Name:		mesa
-Version:	9.0.1
+Version:	9.1.0
 %if %relc
 %if %git
 Release:	0.rc%relc.0.%git.1
@@ -111,9 +113,9 @@ Release:	0.rc%relc.1
 %endif
 %else
 %if %git
-Release:	0.%git.6.1
+Release:	0.%git.1
 %else
-Release:	2
+Release:	1
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -123,7 +125,7 @@ License:	MIT
 URL:		http://www.mesa3d.org
 %if %{git}
 # (cg) Current commit ref: origin/mesa_7_5_branch
-Source0:	%{name}-%{git_branch}-%{git}.tar.bz2
+Source0:	%{name}-%{git_branch}-%{git}.tar.xz
 %else
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/MesaLib-%{short_ver}%{vsuffix}.tar.bz2
 %endif
@@ -150,10 +152,6 @@ Source5:	mesa-driver-install
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
-
-# Patches "liberated" from Fedora:
-# Patches from ChromiumOS
-Patch901: 0901-gallium-only-link-static-archives-between-ld-start-e.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -183,7 +181,7 @@ BuildRequires:	pkgconfig(vdpau)	>= 0.4.1
 BuildRequires:	pkgconfig(libva)	>= 0.31.0
 %endif
 %if %{with wayland}
-BuildRequires:	wayland-devel
+BuildRequires:	wayland-devel		>= 1.0.2
 %endif
 
 # package mesa
@@ -291,6 +289,10 @@ Requires:	%{libglesv2name} = %{version}-%{release}
 Provides:	lib%{glesv2name}-devel = %{version}-%{release}
 Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
 Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
+
+%package -n %{develglesv3}
+Summary:	Development files for glesv3 libs
+Group:		Development/C
 
 %package -n %{libopenvgname}
 Summary:	Files for MESA (OpenVG libs)
@@ -443,6 +445,9 @@ This package provides the OpenGL ES library version 2.
 %description -n %{develglesv2}
 This package contains the headers needed to compile OpenGL ES 2 programs.
 
+%description -n %{develglesv3}
+This package contains the headers needed to compile OpenGL ES 3 programs.
+
 %description -n %{libopenvgname}
 OpenVG is a royalty-free, cross-platform API that provides a low-level hardware
 acceleration interface for vector graphics libraries such as Flash and SVG.
@@ -534,6 +539,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 %endif
 		--enable-gles1 \
 		--enable-gles2 \
+		--enable-gles3 \
 		--enable-openvg \
 		--enable-gallium-egl \
 		--enable-gallium-g3dvl \
@@ -622,6 +628,13 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/libXvMCr300.so.*
 %{_libdir}/libXvMCr600.so.*
 %{_libdir}/libXvMCsoftpipe.so.*
+%dir %_libdir/gallium-pipe
+%_libdir/gallium-pipe/pipe_nouveau.so
+%_libdir/gallium-pipe/pipe_r300.so
+%_libdir/gallium-pipe/pipe_r600.so
+%_libdir/gallium-pipe/pipe_radeonsi.so
+%_libdir/gallium-pipe/pipe_swrast.so
+%_libdir/libllvmradeon9.1.0.so
 %endif
 
 %files -n %{libdricorename}
@@ -676,7 +689,6 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/libgbm.so.%{gbmmajor}
 %{_libdir}/libgbm.so.%{gbmmajor}.*
 %{_libdir}/gbm/gbm_*.so
-%{_libdir}/gbm/pipe_*.so
 
 %files -n %{libwaylandeglname}
 %{_libdir}/libwayland-egl.so.%{waylandeglmajor}
@@ -699,7 +711,6 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/pkgconfig/dri.pc
 
 #FIXME: check those headers
-%{_includedir}/GL/vms_x_fix.h
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
@@ -748,6 +759,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/GLES2
 %{_libdir}/libGLESv2.so
 %{_libdir}/pkgconfig/glesv2.pc
+
+%files -n %{develglesv3}
+%{_includedir}/GLES3
 
 %files -n %{developenvg}
 %{_includedir}/VG
