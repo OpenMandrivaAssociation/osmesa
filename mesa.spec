@@ -21,6 +21,7 @@
 %bcond_with va
 %bcond_without wayland
 %bcond_without egl
+%bcond_without opencl
 
 %if %{relc}
 %define vsuffix -rc%{relc}
@@ -180,7 +181,9 @@ BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
 BuildRequires:	pkgconfig(xext)		>= 1.1.1
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
-BuildRequires:	pkgconfig(libclc)
+%if %{with opencl}
+BuildRequires:	pkgconfig(libclc) clang
+%endif
 %if ! %{with bootstrap}
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
 %endif
@@ -589,7 +592,9 @@ export LDFLAGS="-L%{_libdir}/llvm"
 		--enable-gles2 \
 		--enable-gles3 \
 		--enable-openvg \
+%if %{with opencl}
 		--enable-opencl \
+%endif
 		--enable-gallium-egl \
 		--enable-gallium-g3dvl \
 		--enable-xvmc \
@@ -737,8 +742,10 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %files -n %{libopenvgname}
 %{_libdir}/libOpenVG.so.%{openvgmajor}*
 
+%if %{with opencl}
 %files -n %libclname
 %_libdir/libOpenCL.so.%{clmajor}*
+%endif
 
 %if %{with wayland}
 %files -n %{libgbmname}
