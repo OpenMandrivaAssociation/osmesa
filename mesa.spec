@@ -14,6 +14,9 @@
 
 %define relc	0
 
+# bootstrap option: Build without requiring an X server
+# (which in turn requires mesa to build)
+%bcond_without bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
@@ -155,7 +158,7 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
-BuildRequires:	llvm-devel
+BuildRequires:	llvm-devel >= 3.2
 BuildRequires:	expat-devel >= 2.0.1
 BuildRequires:	gccmakedep
 BuildRequires:	makedepend
@@ -172,7 +175,9 @@ BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
 BuildRequires:	pkgconfig(xext)		>= 1.1.1
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
+%if ! %{with bootstrap}
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
+%endif
 BuildRequires:	pkgconfig(xvmc)
 %if %{with vdpau}
 BuildRequires:	pkgconfig(vdpau)	>= 0.4.1
