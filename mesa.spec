@@ -16,7 +16,7 @@
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
-%bcond_without bootstrap
+%bcond_with bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
@@ -75,6 +75,11 @@
 %define gbmname			gbm
 %define libgbmname		%mklibname %{gbmname} %{gbmmajor}
 %define develgbm		%mklibname %{gbmname} -d
+
+%define clmajor			1
+%define clname			opencl
+%define libclname		%mklibname %clname %clmajor
+%define develcl			%mklibname %clname -d
 
 %define waylandeglmajor		1
 %define waylandeglname		wayland-egl
@@ -175,6 +180,7 @@ BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
 BuildRequires:	pkgconfig(xext)		>= 1.1.1
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
+BuildRequires:	pkgconfig(libclc)
 %if ! %{with bootstrap}
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
 %endif
@@ -199,6 +205,10 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
+
+%package	xorg-drivers
+Summary:	Mesa/Gallium XOrg drivers
+Group:		System/X11
 
 %package -n	%{libdricorename}
 Summary:	Shared library for DRI drivers
@@ -304,6 +314,10 @@ Summary:	Files for MESA (OpenVG libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaopenvg1 < 8.0
 
+%package -n %libclname
+Summary:	OpenCL libs
+Group:		System/Libraries
+
 %if %{with vdpau}
 %package -n	%{_lib}vdpau-driver-nouveau
 Summary:	VDPAU plugin for nouveau driver
@@ -327,11 +341,17 @@ Group:		System/Libraries
 %endif
 
 %package -n %{developenvg}
-Summary:	Development files vor OpenVG libs
+Summary:	Development files for OpenVG libs
 Group:		Development/C
 Requires:	%{libopenvgname} = %{version}-%{release}
 Provides:	lib%{openvgname}-devel = %{version}-%{release}
 Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
+
+%package -n %develcl
+Summary:	Development files for OpenCL libs
+Group:		Development/Other
+Requires:	%libclname = %version-%release
+Provides:	lib%libclname-devel = %version-%release
 
 %if %{with wayland}
 %package -n %{libgbmname}
@@ -381,6 +401,9 @@ OpenGL extentions that are covered by software patents.
 %description -n %{dridrivers}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 DRI drivers.
+
+%description xorg-drivers
+Xorg drivers from the Mesa/Gallium project
 
 %description -n %{libosmesaname}
 Mesa offscreen rendering libraries for rendering OpenGL into
@@ -460,6 +483,21 @@ acceleration interface for vector graphics libraries such as Flash and SVG.
 %description -n %{developenvg}
 Development files for OpenVG library.
 
+%description -n %libclname
+Open Computing Language (OpenCL) is a framework for writing programs that
+execute across heterogeneous platforms consisting of central processing units
+(CPUs), graphics processing units (GPUs), DSPs and other processors.
+
+OpenCL includes a language (based on C99) for writing kernels (functions that
+execute on OpenCL devices), plus application programming interfaces (APIs) that
+are used to define and then control the platforms. OpenCL provides parallel
+computing using task-based and data-based parallelism. OpenCL is an open
+standard maintained by the non-profit technology consortium Khronos Group.
+It has been adopted by Intel, Advanced Micro Devices, Nvidia, and ARM Holdings.
+
+%description -n %develcl
+Development files for the OpenCL library
+
 %if %{with vdpau}
 %description -n %{_lib}vdpau-driver-nouveau
 This packages provides a VPDAU plugin to enable video acceleration
@@ -532,6 +570,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 		--enable-glx \
 		--with-dri-driverdir=%{driver_dir} \
 		--with-dri-drivers="%{dri_drivers}" \
+		--with-clang-libdir=%_prefix/lib \
 %if %{with egl}
 		--enable-egl \
 %else
@@ -542,10 +581,15 @@ export LDFLAGS="-L%{_libdir}/llvm"
 		--enable-gbm \
 		--enable-shared-glapi \
 %endif
+%if ! %{with bootstrap}
+		--enable-xorg \
+		--enable-xa \
+%endif
 		--enable-gles1 \
 		--enable-gles2 \
 		--enable-gles3 \
 		--enable-openvg \
+		--enable-opencl \
 		--enable-gallium-egl \
 		--enable-gallium-g3dvl \
 		--enable-xvmc \
@@ -562,6 +606,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 %if %{with_hardware}
 		--with-gallium-drivers=r300,r600,radeonsi,nouveau,swrast \
 		--enable-gallium-llvm \
+		--enable-r600-llvm-compiler \
 %else
 		--disable-gallium-llvm \
 		--with-gallium-drivers=swrast \
@@ -642,6 +687,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/libllvmradeon9.1.0.so
 %endif
 
+%files xorg-drivers
+%_libdir/xorg/modules/drivers/*.so
+
 %files -n %{libdricorename}
 %{_libdir}/libdricore%{version}.so.%{dricoremajor}
 %{_libdir}/libdricore%{version}.so.%{dricoremajor}.*
@@ -689,6 +737,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %files -n %{libopenvgname}
 %{_libdir}/libOpenVG.so.%{openvgmajor}*
 
+%files -n %libclname
+%_libdir/libOpenCL.so.%{clmajor}*
+
 %if %{with wayland}
 %files -n %{libgbmname}
 %{_libdir}/libgbm.so.%{gbmmajor}
@@ -719,6 +770,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
+%_includedir/xa_*.h
 
 %files common-devel
 # meta devel pkg
@@ -772,6 +824,10 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/VG
 %{_libdir}/libOpenVG.so
 %{_libdir}/pkgconfig/vg.pc
+
+%files -n %develcl
+%_includedir/CL
+%_libdir/libOpenCL.so
 
 %if %{with wayland}
 %files -n %{develgbm}
