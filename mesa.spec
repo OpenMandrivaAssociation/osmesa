@@ -183,7 +183,7 @@ BuildRequires:	pkgconfig(xext)		>= 1.1.1
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
 %if %{with opencl}
-BuildRequires:	pkgconfig(libclc) clang-devel
+BuildRequires:	pkgconfig(libclc) clang-devel clang
 %endif
 %if ! %{with bootstrap}
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
@@ -789,9 +789,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
-%if ! %{with bootstrap}
 %_includedir/xa_*.h
-%endif
 
 
 %files common-devel
