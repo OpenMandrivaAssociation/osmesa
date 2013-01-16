@@ -21,7 +21,7 @@
 %bcond_with va
 %bcond_without wayland
 %bcond_without egl
-%bcond_with opencl
+%bcond_without opencl
 
 %if %{relc}
 %define vsuffix -rc%{relc}
@@ -318,9 +318,11 @@ Summary:	Files for MESA (OpenVG libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaopenvg1 < 8.0
 
+%if %{with opencl}
 %package -n %libclname
 Summary:	OpenCL libs
 Group:		System/Libraries
+%endif
 
 %if %{with vdpau}
 %package -n	%{_lib}vdpau-driver-nouveau
@@ -351,11 +353,13 @@ Requires:	%{libopenvgname} = %{version}-%{release}
 Provides:	lib%{openvgname}-devel = %{version}-%{release}
 Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
 
+%if %{with opencl}
 %package -n %develcl
 Summary:	Development files for OpenCL libs
 Group:		Development/Other
 Requires:	%libclname = %version-%release
 Provides:	lib%libclname-devel = %version-%release
+%endif
 
 %if %{with wayland}
 %package -n %{libgbmname}
@@ -487,6 +491,8 @@ acceleration interface for vector graphics libraries such as Flash and SVG.
 %description -n %{developenvg}
 Development files for OpenVG library.
 
+
+%if %{with opencl}
 %description -n %libclname
 Open Computing Language (OpenCL) is a framework for writing programs that
 execute across heterogeneous platforms consisting of central processing units
@@ -501,6 +507,7 @@ It has been adopted by Intel, Advanced Micro Devices, Nvidia, and ARM Holdings.
 
 %description -n %develcl
 Development files for the OpenCL library
+%endif
 
 %if %{with vdpau}
 %description -n %{_lib}vdpau-driver-nouveau
@@ -671,7 +678,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %files
 %doc docs/COPYING docs/README.*
-#% config(noreplace) %{_sysconfdir}/drirc
+%config(noreplace) %{_sysconfdir}/drirc
 
 %files -n %{dridrivers}
 %doc docs/COPYING
@@ -838,9 +845,11 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/libOpenVG.so
 %{_libdir}/pkgconfig/vg.pc
 
+%if %{with opencl}
 %files -n %develcl
 %_includedir/CL
 %_libdir/libOpenCL.so
+%endif
 
 %if %{with wayland}
 %files -n %{develgbm}
