@@ -16,12 +16,12 @@
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
-%bcond_with bootstrap
+%bcond_without bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
 %bcond_without egl
-%bcond_without opencl
+%bcond_with opencl
 
 %if %{relc}
 %define vsuffix -rc%{relc}
@@ -161,6 +161,7 @@ Source5:	mesa-driver-install
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
+Patch202: patch.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -670,7 +671,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %files
 %doc docs/COPYING docs/README.*
-%config(noreplace) %{_sysconfdir}/drirc
+#% config(noreplace) %{_sysconfdir}/drirc
 
 %files -n %{dridrivers}
 %doc docs/COPYING
@@ -692,8 +693,10 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/libllvmradeon9.1.0.so
 %endif
 
+%if ! %{with bootstrap}
 %files xorg-drivers
 %_libdir/xorg/modules/drivers/*.so
+%endif
 
 %files -n %{libdricorename}
 %{_libdir}/libdricore%{version}.so.%{dricoremajor}
@@ -777,7 +780,10 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
+%if ! %{with bootstrap}
 %_includedir/xa_*.h
+%endif
+
 
 %files common-devel
 # meta devel pkg
