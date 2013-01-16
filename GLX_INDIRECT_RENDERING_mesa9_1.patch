@@ -1,0 +1,13 @@
+diff --git a/src/mapi/glapi/glapi_dispatch.c b/src/mapi/glapi/glapi_dispatch.c
+index be65ebe..5a0897e 100644
+--- a/src/mapi/glapi/glapi_dispatch.c
++++ b/src/mapi/glapi/glapi_dispatch.c
+@@ -86,7 +86,7 @@
+ #ifdef GLX_INDIRECT_RENDERING
+ /* those link to libglapi.a should provide the entry points */
+ #define _GLAPI_SKIP_PROTO_ENTRY_POINTS
+-#endif
+ #include "glapi/glapitemp.h"
++#endif
+ 
+ #endif /* USE_X86_ASM */

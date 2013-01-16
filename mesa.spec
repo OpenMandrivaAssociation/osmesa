@@ -161,7 +161,7 @@ Source5:	mesa-driver-install
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
-Patch202: patch.patch
+Patch202: GLX_INDIRECT_RENDERING_mesa9_1.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
