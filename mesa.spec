@@ -183,7 +183,7 @@ BuildRequires:	pkgconfig(xext)		>= 1.1.1
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xi)		>= 1.3
 %if %{with opencl}
-BuildRequires:	pkgconfig(libclc) clang
+BuildRequires:	pkgconfig(libclc) clang-devel
 %endif
 %if ! %{with bootstrap}
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
@@ -678,7 +678,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %files
 %doc docs/COPYING docs/README.*
+%ifnarch %{arm}
 %config(noreplace) %{_sysconfdir}/drirc
+%endif
 
 %files -n %{dridrivers}
 %doc docs/COPYING
