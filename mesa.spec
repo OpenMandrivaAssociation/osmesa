@@ -789,7 +789,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
-#% _includedir/xa_*.h
+%if ! %{with bootstrap}
+%_includedir/xa_*.h
+%endif
 
 
 %files common-devel
