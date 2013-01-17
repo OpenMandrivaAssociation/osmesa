@@ -122,9 +122,9 @@ Release:	0.rc%relc.1
 %endif
 %else
 %if %git
-Release:	0.%git.1
+Release:	0.%git.2
 %else
-Release:	2
+Release:	1
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -209,6 +209,7 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
+%define __noautoreq '.*llvmradeon.*'
 
 %package	xorg-drivers
 Summary:	Mesa/Gallium XOrg drivers
