@@ -16,7 +16,7 @@
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
-%bcond_without bootstrap
+%bcond_with bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
@@ -124,7 +124,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
