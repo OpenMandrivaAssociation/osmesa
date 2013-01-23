@@ -209,10 +209,40 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
+Requires:	%{dridrivers}-radeon = %EVRD
+Requires:	%{dridrivers}-intel = %EVRD
+Requires:	%{dridrivers}-nouveau = %EVRD
+Requires:	%{dridrivers}-swrast = %EVRD
+
+%package -n	%{dridrivers}-radeon
+Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
+Group:		System/Libraries
 %define __noautoreq '.*llvmradeon.*'
+
+%package -n	%{dridrivers}-intel
+Summary:	DRI Drivers for Intel graphics chipsets
+Group:		System/Libraries
+
+%package -n	%{dridrivers}-nouveau
+Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
+Group:		System/Libraries
+
+%package -n	%{dridrivers}-swrast
+Summary:	DRI Drivers for software rendering
+Group:		System/Libraries
 
 %package	xorg-drivers
 Summary:	Mesa/Gallium XOrg drivers
+Group:		System/X11
+Requires:	%name-xorg-drivers-radeon = %EVRD
+Requires:	%name-xorg-drivers-nouveau = %EVRD
+
+%package	xorg-drivers-radeon
+Summary:	Mesa/Gallium XOrg drivers for AMD/ATI Radeon chipsets
+Group:		System/X11
+
+%package	xorg-drivers-nouveau
+Summary:	Mesa/Gallium XOrg drivers for NVIDIA chipsets using the Nouveau driver
 Group:		System/X11
 
 %package -n	%{libdricorename}
@@ -237,7 +267,7 @@ Group:		System/Libraries
 Summary:	Files for Mesa (GL and GLX libs)
 Group:		System/Libraries
 Provides:	libmesa%{glname} = %{version}-%{release}
-Requires:	%{dridrivers} >= %{version}-%{release}
+Suggests:	%{dridrivers} >= %{version}-%{release}
 %if %{build_plf}
 Requires:	%mklibname txc-dxtn
 %endif
@@ -410,10 +440,28 @@ OpenGL extentions that are covered by software patents.
 
 %description -n %{dridrivers}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
-DRI drivers.
+DRI and XvMC drivers.
+
+%description -n %{dridrivers}-radeon
+DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+
+%description -n %{dridrivers}-intel
+DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+
+%description -n %{dridrivers}-nouveau
+DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+
+%description -n %{dridrivers}-swrast
+DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 
 %description xorg-drivers
 Xorg drivers from the Mesa/Gallium project
+
+%description xorg-drivers-radeon
+Xorg drivers from the Mesa/Gallium project for AMD/ATI Radeon graphics chipsets
+
+%description xorg-drivers-nouveau
+Xorg drivers from the Mesa/Gallium project for NVIDIA graphics chipsets
 
 %description -n %{libosmesaname}
 Mesa offscreen rendering libraries for rendering OpenGL into
@@ -689,27 +737,38 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %files -n %{dridrivers}
 %doc docs/COPYING
-%ifnarch ppc64
-%dir %{_libdir}/dri
-# (blino) new mesa 8.1 build system seems to use a static libglsl
-#%{_libdir}/dri/libglsl.so
-%{_libdir}/dri/*_dri.so
-%{_libdir}/libXvMCnouveau.so.*
-%{_libdir}/libXvMCr300.so.*
-%{_libdir}/libXvMCr600.so.*
-%{_libdir}/libXvMCsoftpipe.so.*
-%dir %_libdir/gallium-pipe
-%_libdir/gallium-pipe/pipe_nouveau.so
-%_libdir/gallium-pipe/pipe_r300.so
-%_libdir/gallium-pipe/pipe_r600.so
+
+%files -n %{dridrivers}-radeon
+%_libdir/dri/r?00_dri.so
+%_libdir/dri/radeon_dri.so
+%_libdir/dri/radeonsi_dri.so
+%_libdir/gallium-pipe/pipe_r?00.so
 %_libdir/gallium-pipe/pipe_radeonsi.so
+%_libdir/libXvMCr?00.so.*
+%_libdir/libllvmradeon*.so
+
+%files -n %{dridrivers}-intel
+%_libdir/dri/i9?5_dri.so
+
+%files -n %{dridrivers}-nouveau
+%_libdir/dri/nouveau*_dri.so
+%_libdir/gallium-pipe/pipe_nouveau.so
+%_libdir/libXvMCnouveau.so.*
+
+%files -n %{dridrivers}-swrast
+%_libdir/dri/swrast_dri.so
 %_libdir/gallium-pipe/pipe_swrast.so
-%_libdir/libllvmradeon9.1.0.so
-%endif
+%_libdir/libXvMCsoftpipe.so.*
 
 %if ! %{with bootstrap}
 %files xorg-drivers
-%_libdir/xorg/modules/drivers/*.so
+
+%files xorg-drivers-radeon
+%_libdir/xorg/modules/drivers/r?00g_drv.so
+%_libdir/xorg/modules/drivers/radeonsi_drv.so
+
+%files xorg-drivers-nouveau
+%_libdir/xorg/modules/drivers/nouveau2_drv.so
 %endif
 
 %files -n %{libdricorename}
@@ -734,6 +793,8 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.%{glmajor}*
+%dir %_libdir/dri
+%dir %_libdir/gallium-pipe
 
 %if %{with egl}
 %files -n %{libeglname}
