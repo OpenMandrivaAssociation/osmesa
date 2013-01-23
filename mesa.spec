@@ -6,7 +6,7 @@
 
 %define build_plf 0
 
-%define git 20130111
+%define git 20130123
 %define git_branch 9.1
 %define with_hardware 1
 
@@ -122,7 +122,7 @@ Release:	0.rc%relc.1
 %endif
 %else
 %if %git
-Release:	0.%git.3
+Release:	0.%git.1
 %else
 Release:	1
 %endif
@@ -351,6 +351,7 @@ Group:		System/Libraries
 Summary:	Development files for OpenVG libs
 Group:		Development/C
 Requires:	%{libopenvgname} = %{version}-%{release}
+Requires:	%{develegl} = %{version}-%{release}
 Provides:	lib%{openvgname}-devel = %{version}-%{release}
 Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
 
@@ -585,13 +586,16 @@ export LDFLAGS="-L%{_libdir}/llvm"
 		--with-clang-libdir=%_prefix/lib \
 %if %{with egl}
 		--enable-egl \
+		--enable-gallium-egl \
+		--enable-gbm \
+		--enable-shared-glapi \
 %else
 		--disable-egl \
 %endif
 %if %{with wayland}
-		--with-egl-platforms=x11,wayland,drm \
-		--enable-gbm \
-		--enable-shared-glapi \
+		--with-egl-platforms=x11,wayland,drm,fbdev \
+%else
+		--with-egl-platforms=x11,drm,fbdev \
 %endif
 %if ! %{with bootstrap}
 		--enable-xorg \
