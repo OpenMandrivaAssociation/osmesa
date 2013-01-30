@@ -6,7 +6,7 @@
 
 %define build_plf 0
 
-%define git 20130123
+%define git 20130130
 %define git_branch 9.1
 %define with_hardware 1
 
