@@ -122,7 +122,7 @@ Release:	0.rc%relc.1
 %endif
 %else
 %if %git
-Release:	0.%git.1
+Release:	0.%git.2
 %else
 Release:	1
 %endif
@@ -217,19 +217,23 @@ Requires:	%{dridrivers}-swrast = %EVRD
 %package -n	%{dridrivers}-radeon
 Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
 Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %define __noautoreq '.*llvmradeon.*'
 
 %package -n	%{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %package -n	%{dridrivers}-nouveau
 Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
 Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %package -n	%{dridrivers}-swrast
 Summary:	DRI Drivers for software rendering
 Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %package	xorg-drivers
 Summary:	Mesa/Gallium XOrg drivers
