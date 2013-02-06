@@ -6,7 +6,7 @@
 
 %define build_plf 0
 
-%define git 20130130
+%define git 20130206
 %define git_branch 9.1
 %define with_hardware 1
 
@@ -171,7 +171,7 @@ BuildRequires:	gccmakedep
 BuildRequires:	makedepend
 BuildRequires:	x11-proto-devel >= 7.3
 BuildRequires:	libxml2-python
-BuildRequires:	pkgconfig(libdrm) >= 2.4.21
+BuildRequires:	pkgconfig(libdrm) >= 2.4.22
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
 BuildRequires:	pkgconfig(xfixes)	>= 4.0.3
