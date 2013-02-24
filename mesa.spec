@@ -6,7 +6,7 @@
 
 %define build_plf 0
 
-%define git 20130206
+%define git 0
 %define git_branch 9.1
 %define with_hardware 1
 
@@ -136,10 +136,12 @@ URL:		http://www.mesa3d.org
 # (cg) Current commit ref: origin/mesa_7_5_branch
 Source0:	%{name}-%{git_branch}-%{git}.tar.xz
 %else
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/MesaLib-%{short_ver}%{vsuffix}.tar.bz2
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%(echo %{version} |cut -d. -f1-2)/MesaLib-%{short_ver}%{vsuffix}.tar.bz2
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
+
+Source100:	%name.rpmlintrc
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa

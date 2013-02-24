@@ -1,4 +1,5 @@
 removed_sources:
   mesa-9.1-20130130.tar.xz: baae4a9d06dedf230acf911cb14fc3d0884c9b54
 sources:
+  MesaLib-9.1.tar.bz2: 9182f0f12bb271c81e1220007b040caae02e9b6f
   mesa-9.1-20130206.tar.xz: 79b5c4715149ab4f905254beb76cd2c69abcd976
