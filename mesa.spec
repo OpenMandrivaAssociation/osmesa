@@ -16,7 +16,7 @@
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
-%bcond_with bootstrap
+%bcond_without bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
@@ -212,7 +212,9 @@ Group:		System/Libraries
 Conflicts:	%{_lib}MesaGL1 < 7.7-5
 %rename %{_lib}dri-drivers-experimental
 Requires:	%{dridrivers}-radeon = %EVRD
+%ifnarch %arm
 Requires:	%{dridrivers}-intel = %EVRD
+%endif
 Requires:	%{dridrivers}-nouveau = %EVRD
 Requires:	%{dridrivers}-swrast = %EVRD
 
@@ -222,10 +224,12 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %define __noautoreq '.*llvmradeon.*'
 
+%ifnarch %arm
 %package -n	%{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+%endif
 
 %package -n	%{dridrivers}-nouveau
 Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
@@ -451,8 +455,10 @@ DRI and XvMC drivers.
 %description -n %{dridrivers}-radeon
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 
+%ifnarch %arm
 %description -n %{dridrivers}-intel
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+%endif
 
 %description -n %{dridrivers}-nouveau
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
@@ -737,24 +743,26 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %files
 %doc docs/COPYING docs/README.*
-%ifnarch %{arm}
 %config(noreplace) %{_sysconfdir}/drirc
-%endif
 
 %files -n %{dridrivers}
 %doc docs/COPYING
 
 %files -n %{dridrivers}-radeon
 %_libdir/dri/r?00_dri.so
+%ifnarch %arm
 %_libdir/dri/radeon_dri.so
+%endif
 %_libdir/dri/radeonsi_dri.so
 %_libdir/gallium-pipe/pipe_r?00.so
 %_libdir/gallium-pipe/pipe_radeonsi.so
 %_libdir/libXvMCr?00.so.*
 %_libdir/libllvmradeon*.so
 
+%ifnarch %arm
 %files -n %{dridrivers}-intel
 %_libdir/dri/i9?5_dri.so
+%endif
 
 %files -n %{dridrivers}-nouveau
 %_libdir/dri/nouveau*_dri.so
