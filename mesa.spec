@@ -110,10 +110,10 @@
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 %endif
 
-%define short_ver 9.1
+%define short_ver 9.1.1
 
 Name:		mesa
-Version:	9.1.0
+Version:	9.1.1
 %if %relc
 %if %git
 Release:	0.rc%relc.0.%git.1
@@ -136,7 +136,7 @@ URL:		http://www.mesa3d.org
 # (cg) Current commit ref: origin/mesa_7_5_branch
 Source0:	%{name}-%{git_branch}-%{git}.tar.xz
 %else
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%(echo %{version} |cut -d. -f1-2)/MesaLib-%{short_ver}%{vsuffix}.tar.bz2
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%short_ver/MesaLib-%{short_ver}%{vsuffix}.tar.bz2
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
