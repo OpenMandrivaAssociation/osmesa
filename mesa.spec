@@ -77,6 +77,11 @@
 %define libgbmname		%mklibname %{gbmname} %{gbmmajor}
 %define develgbm		%mklibname %{gbmname} -d
 
+%define xatrackermajor         1
+%define xatrackername          xatracker
+%define libxatrackername       %mklibname %xatrackername %xatrackermajor
+%define develxatracker         %mklibname %xatrackername -d
+
 %define clmajor			1
 %define clname			opencl
 %define libclname		%mklibname %clname %clmajor
@@ -124,7 +129,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.2
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -225,6 +230,11 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %define __noautoreq '.*llvmradeon.*'
 
 %ifnarch %arm
+%package -n	%{dridrivers}-vmwgfx
+Summary:	DRI Drivers for VMWare guest OS
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
 %package -n	%{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
@@ -323,6 +333,14 @@ Group:		Development/C
 Requires:	%{libdricorename} = %{version}-%{release}
 Provides:	lib%{dricorename}-devel = %{version}-%{release}
 Provides:	%{dricorename}-devel = %{version}-%{release}
+
+%package -n %{libxatrackername}
+Summary:	Files for mesa (xatracker libs)
+Group:		System/Libraries
+
+%package -n %{develxatracker}
+Summary:	Development files for xatracker libs
+Group:		Development/C
 
 %package -n %{libglesv1name}
 Summary:	Files for Mesa (glesv1 libs)
@@ -456,6 +474,9 @@ DRI and XvMC drivers.
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 
 %ifnarch %arm
+%description -n %{dridrivers}-vmwgfx
+DRI and XvMC drivers for VMWare guest Operating Systems.
+
 %description -n %{dridrivers}-intel
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 %endif
@@ -524,6 +545,13 @@ the glapi shared library.
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 
 This package contains the headers needed to compile DRI drivers.
+
+%description -n %{libxatrackername}
+This package provides the xatracker shared library used by gallium.
+ 
+%description -n %{develxatracker}
+This package contains the headers needed to compile programs against
+the xatracker shared library.
 
 %description -n %{libglesv1name}
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
@@ -682,7 +710,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 		--disable-va \
 %endif
 %if %{with_hardware}
-		--with-gallium-drivers=r300,r600,radeonsi,nouveau,swrast \
+		--with-gallium-drivers=svga,r300,r600,radeonsi,nouveau,swrast \
 		--enable-gallium-llvm \
 		--enable-r600-llvm-compiler \
 %else
@@ -760,6 +788,10 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/libllvmradeon*.so
 
 %ifnarch %arm
+%files -n %{dridrivers}-vmwgfx
+%_libdir/dri/vmwgfx_dri.so
+%_libdir/gallium-pipe/pipe_vmwgfx.so
+
 %files -n %{dridrivers}-intel
 %_libdir/dri/i9?5_dri.so
 %endif
@@ -825,6 +857,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %files -n %{libglapiname}
 %{_libdir}/libglapi.so.%{glapimajor}*
 
+%files -n %{libxatrackername}
+%{_libdir}/libxatracker.so.%{xatrackermajor}*
+
 %files -n %{libglesv1name}
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
 
@@ -869,10 +904,6 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
-%if ! %{with bootstrap}
-%_includedir/xa_*.h
-%endif
-
 
 %files common-devel
 # meta devel pkg
@@ -908,6 +939,11 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %files -n %{_lib}vdpau-driver-softpipe
 %{_libdir}/vdpau/libvdpau_softpipe.so.*
 %endif
+
+%files -n %{develxatracker}
+%{_libdir}/libxatracker.so
+%{_includedir}/xa_*.h
+%{_libdir}/pkgconfig/xatracker.pc
 
 %files -n %{develglesv1}
 %{_includedir}/GLES
