@@ -710,7 +710,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 		--disable-va \
 %endif
 %if %{with_hardware}
-		--with-gallium-drivers=svga,r300,r600,radeonsi,nouveau,swrast \
+		--with-gallium-drivers=svga,i915,r300,r600,radeonsi,nouveau,swrast \
 		--enable-gallium-llvm \
 		--enable-r600-llvm-compiler \
 %else
@@ -793,7 +793,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/gallium-pipe/pipe_vmwgfx.so
 
 %files -n %{dridrivers}-intel
+%{_libdir}/xorg/modules/drivers/i915_drv.so
 %_libdir/dri/i9?5_dri.so
+%_libdir/gallium-pipe/pipe_i915.so
 %endif
 
 %files -n %{dridrivers}-nouveau
