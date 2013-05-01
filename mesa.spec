@@ -115,10 +115,10 @@
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 %endif
 
-%define short_ver 9.1.1
+%define short_ver 9.1.2
 
 Name:		mesa
-Version:	9.1.1
+Version:	9.1.2
 %if %relc
 %if %git
 Release:	0.rc%relc.0.%git.1
