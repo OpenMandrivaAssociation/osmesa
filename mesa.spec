@@ -115,10 +115,10 @@
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 %endif
 
-%define short_ver 9.1.2
+%define short_ver 9.1.3
 
 Name:		mesa
-Version:	9.1.2
+Version:	9.1.3
 %if %relc
 %if %git
 Release:	0.rc%relc.0.%git.1
@@ -127,9 +127,9 @@ Release:	0.rc%relc.1
 %endif
 %else
 %if %git
-Release:	0.%git.2
+Release:	0.%git.1
 %else
-Release:	2
+Release:	1
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
