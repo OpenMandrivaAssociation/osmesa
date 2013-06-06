@@ -129,7 +129,7 @@ Release:	0.rc%relc.1
 %if %git
 Release:	0.%git.1
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Summary:	OpenGL 3.0 compatible 3D graphics library
@@ -222,6 +222,7 @@ Requires:	%{dridrivers}-intel = %EVRD
 %endif
 Requires:	%{dridrivers}-nouveau = %EVRD
 Requires:	%{dridrivers}-swrast = %EVRD
+Provides:	dri-drivers = %EVRD
 
 %package -n	%{dridrivers}-radeon
 Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
