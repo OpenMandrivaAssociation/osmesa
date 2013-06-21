@@ -1,5 +1,5 @@
 # (cg) Cheater...
-%define Werror_cflags %nil
+%define Werror_cflags %{nil}
 
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
@@ -26,76 +26,76 @@
 %if %{relc}
 %define vsuffix -rc%{relc}
 %else
-%define vsuffix %nil
+%define vsuffix %{nil}
 %endif
 
-%define osmesamajor		8
-%define libosmesaname		%mklibname osmesa %{osmesamajor}
-%define osmesadevel		%mklibname osmesa -d
+%define osmesamajor	8
+%define libosmesa	%mklibname osmesa %{osmesamajor}
+%define devosmesa	%mklibname osmesa -d
 
-%define eglmajor		1
-%define eglname			egl
-%define libeglname		%mklibname %{eglname} %{eglmajor}
-%define develegl		%mklibname %{eglname} -d
+%define eglmajor	1
+%define eglname		egl
+%define libegl		%mklibname %{eglname} %{eglmajor}
+%define devegl		%mklibname %{eglname} -d
 
-%define glmajor			1
-%define glname			gl
-%define libglname		%mklibname %{glname} %{glmajor}
-%define develgl			%mklibname %{glname} -d
+%define glmajor		1
+%define glname		gl
+%define libgl		%mklibname %{glname} %{glmajor}
+%define devgl		%mklibname %{glname} -d
 
-%define glesv1major		1
-%define glesv1name		glesv1
-%define libglesv1name		%mklibname %{glesv1name}_ %{glesv1major}
-%define develglesv1		%mklibname %{glesv1name} -d
+%define glesv1major	1
+%define glesv1name	glesv1
+%define libglesv1	%mklibname %{glesv1name}_ %{glesv1major}
+%define devglesv1	%mklibname %{glesv1name} -d
 
-%define glesv2major		2
-%define glesv2name		glesv2
-%define libglesv2name		%mklibname %{glesv2name}_ %{glesv2major}
-%define develglesv2		%mklibname %{glesv2name} -d
+%define glesv2major	2
+%define glesv2name	glesv2
+%define libglesv2	%mklibname %{glesv2name}_ %{glesv2major}
+%define devglesv2	%mklibname %{glesv2name} -d
 
-%define develglesv3		%mklibname glesv3 -d
+%define devglesv3	%mklibname glesv3 -d
 
-%define openvgmajor		1
-%define openvgname		openvg
-%define libopenvgname		%mklibname %{openvgname} %{openvgmajor}
-%define developenvg		%mklibname %{openvgname} -d
+%define openvgmajor	1
+%define openvgname	openvg
+%define libopenvg	%mklibname %{openvgname} %{openvgmajor}
+%define devopenvg	%mklibname %{openvgname} -d
 
-%define glapimajor		0
-%define glapiname		glapi
-%define libglapiname		%mklibname %{glapiname} %{glapimajor}
-%define develglapi		%mklibname %{glapiname} -d
+%define glapimajor	0
+%define glapiname	glapi
+%define libglapi	%mklibname %{glapiname} %{glapimajor}
+%define devglapi	%mklibname %{glapiname} -d
 
-%define dridrivers		%mklibname dri-drivers
+%define dridrivers	%mklibname dri-drivers
 
-%define dricoremajor		1
-%define dricorename		dricore
-%define libdricorename		%mklibname %{dricorename} %{dricoremajor}
-%define develdricore		%mklibname %{dricorename} -d
+%define dricoremajor	1
+%define dricorename	dricore
+%define libdricore	%mklibname %{dricorename} %{dricoremajor}
+%define devdricore	%mklibname %{dricorename} -d
 
-%define gbmmajor		1
-%define gbmname			gbm
-%define libgbmname		%mklibname %{gbmname} %{gbmmajor}
-%define develgbm		%mklibname %{gbmname} -d
+%define gbmmajor	1
+%define gbmname		gbm
+%define libgbm		%mklibname %{gbmname} %{gbmmajor}
+%define devgbm		%mklibname %{gbmname} -d
 
-%define xatrackermajor         1
-%define xatrackername          xatracker
-%define libxatrackername       %mklibname %xatrackername %xatrackermajor
-%define develxatracker         %mklibname %xatrackername -d
+%define xatrackermajor	1
+%define xatrackername	xatracker
+%define libxatracker	%mklibname %xatrackername %{xatrackermajor}
+%define devxatracker	%mklibname %xatrackername -d
 
-%define clmajor			1
-%define clname			opencl
-%define libclname		%mklibname %clname %clmajor
-%define develcl			%mklibname %clname -d
+%define clmajor		1
+%define clname		opencl
+%define libcl		%mklibname %clname %clmajor
+%define devcl		%mklibname %clname -d
 
-%define waylandeglmajor		1
-%define waylandeglname		wayland-egl
-%define libwaylandeglname	%mklibname %{waylandeglname} %{waylandeglmajor}
-%define develwaylandegl		%mklibname %{waylandeglname} -d
+%define waylandeglmajor	1
+%define waylandeglname	wayland-egl
+%define libwaylandegl	%mklibname %{waylandeglname} %{waylandeglmajor}
+%define devwaylandegl	%mklibname %{waylandeglname} -d
 
-%define libvadrivers		%mklibname libva-drivers
+%define libvadrivers	%mklibname va-drivers
 
-%define mesasrcdir		%{_prefix}/src/Mesa/
-%define driver_dir		%{_libdir}/dri
+%define mesasrcdir	%{_prefix}/src/Mesa/
+%define driver_dir	%{_libdir}/dri
 
 #FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
@@ -117,26 +117,25 @@
 
 %define short_ver 9.1.3
 
+Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
 Version:	9.1.3
-%if %relc
-%if %git
-Release:	0.rc%relc.0.%git.1
+%if %{relc}
+%if %{git}
+Release:	0.rc%{relc}.0.%{git}.1
 %else
-Release:	0.rc%relc.1
+Release:	0.rc%{relc}.1
 %endif
 %else
-%if %git
-Release:	0.%git.1
+%if %{git}
+Release:	0.%{git}.1
 %else
-Release:	2
+Release:	3
 %endif
 %endif
-Summary:	OpenGL 3.0 compatible 3D graphics library
 Group:		System/Libraries
-
 License:	MIT
-URL:		http://www.mesa3d.org
+Url:		http://www.mesa3d.org
 %if %{git}
 # (cg) Current commit ref: origin/mesa_7_5_branch
 Source0:	%{name}-%{git_branch}-%{git}.tar.xz
@@ -145,8 +144,7 @@ Source0:	ftp://ftp.freedesktop.org/pub/mesa/%short_ver/MesaLib-%{short_ver}%{vsu
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
-
-Source100:	%name.rpmlintrc
+Source100:	%{name}.rpmlintrc
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -172,25 +170,26 @@ Patch202: GLX_INDIRECT_RENDERING_mesa9_1.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
-BuildRequires:	llvm-devel >= 3.2
-BuildRequires:	expat-devel >= 2.0.1
 BuildRequires:	gccmakedep
-BuildRequires:	makedepend
-BuildRequires:	x11-proto-devel >= 7.3
 BuildRequires:	libxml2-python
+BuildRequires:	makedepend
+BuildRequires:	llvm-devel >= 3.2
+BuildRequires:	pkgconfig(expat)
 BuildRequires:	pkgconfig(libdrm) >= 2.4.22
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
-BuildRequires:	pkgconfig(xfixes)	>= 4.0.3
-BuildRequires:	pkgconfig(xt)		>= 1.0.5
-BuildRequires:	pkgconfig(xmu)		>= 1.0.3
 BuildRequires:	pkgconfig(x11)		>= 1.3.3
 BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
 BuildRequires:	pkgconfig(xext)		>= 1.1.1
-BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
+BuildRequires:	pkgconfig(xfixes)	>= 4.0.3
 BuildRequires:	pkgconfig(xi)		>= 1.3
+BuildRequires:	pkgconfig(xmu)		>= 1.0.3
+BuildRequires:	pkgconfig(xproto)
+BuildRequires:	pkgconfig(xt)		>= 1.0.5
+BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 %if %{with opencl}
-BuildRequires:	pkgconfig(libclc) clang-devel clang
+BuildRequires:	pkgconfig(libclc)
+BuildRequires:	clang-devel clang
 %endif
 %if ! %{with bootstrap}
 BuildRequires:	pkgconfig(xorg-server)	>= 1.11.0
@@ -207,257 +206,7 @@ BuildRequires:	wayland-devel		>= 1.0.2
 %endif
 
 # package mesa
-Requires:	%{libglname} = %{version}-%{release}
-
-#------------------------------------------------------------------------------
-
-%package -n	%{dridrivers}
-Summary:	Mesa DRI drivers
-Group:		System/Libraries
-Conflicts:	%{_lib}MesaGL1 < 7.7-5
-%rename %{_lib}dri-drivers-experimental
-Requires:	%{dridrivers}-radeon = %EVRD
-%ifnarch %arm
-Requires:	%{dridrivers}-intel = %EVRD
-%endif
-Requires:	%{dridrivers}-nouveau = %EVRD
-Requires:	%{dridrivers}-swrast = %EVRD
-Provides:	dri-drivers = %EVRD
-
-%package -n	%{dridrivers}-radeon
-Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
-Group:		System/Libraries
-Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
-%define __noautoreq '.*llvmradeon.*'
-
-%ifnarch %arm
-%package -n	%{dridrivers}-vmwgfx
-Summary:	DRI Drivers for VMWare guest OS
-Group:		System/Libraries
-Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
-
-%package -n	%{dridrivers}-intel
-Summary:	DRI Drivers for Intel graphics chipsets
-Group:		System/Libraries
-Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
-%endif
-
-%package -n	%{dridrivers}-nouveau
-Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
-Group:		System/Libraries
-Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
-
-%package -n	%{dridrivers}-swrast
-Summary:	DRI Drivers for software rendering
-Group:		System/Libraries
-Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
-
-%package	xorg-drivers
-Summary:	Mesa/Gallium XOrg drivers
-Group:		System/X11
-Requires:	%name-xorg-drivers-radeon = %EVRD
-Requires:	%name-xorg-drivers-nouveau = %EVRD
-
-%package	xorg-drivers-radeon
-Summary:	Mesa/Gallium XOrg drivers for AMD/ATI Radeon chipsets
-Group:		System/X11
-
-%package	xorg-drivers-nouveau
-Summary:	Mesa/Gallium XOrg drivers for NVIDIA chipsets using the Nouveau driver
-Group:		System/X11
-
-%package -n	%{libdricorename}
-Summary:	Shared library for DRI drivers
-Group:		System/Libraries
-
-%package -n	%{libosmesaname}
-Summary:	Mesa offscreen rendering library
-Group:		System/Libraries
-
-%package -n	%{osmesadevel}
-Summary:	Development files for libosmesa
-Group:		Development/C
-Requires:	%{libosmesaname} = %{version}-%{release}
-Provides:	osmesa-devel = %{version}-%{release}
-
-%package -n	%{libvadrivers}
-Summary:	Mesa libVA video acceleration drivers
-Group:		System/Libraries
-
-%package -n	%{libglname}
-Summary:	Files for Mesa (GL and GLX libs)
-Group:		System/Libraries
-Provides:	libmesa%{glname} = %{version}-%{release}
-Suggests:	%{dridrivers} >= %{version}-%{release}
-%if %{build_plf}
-Requires:	%mklibname txc-dxtn
-%endif
-Obsoletes:	%{_lib}mesagl1 < %{version}-%{release}
-
-%package -n	%{develgl}
-Summary:	Development files for Mesa (OpenGL compatible 3D lib)
-Group:		Development/C
-Requires:	%{libglname} = %{version}-%{release}
-Provides:	libmesa%{glname}-devel = %{version}-%{release}
-Provides:	mesa%{glname}-devel = %{version}-%{release}
-Provides:	GL-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesagl1-devel < 8.0
-Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
-
-%if %{with egl}
-%package -n	%{libeglname}
-Summary:	Files for Mesa (EGL libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaegl1 < 8.0
-
-%package -n	%{develegl}
-Summary:	Development files for Mesa (EGL libs)
-Group:		Development/C
-Requires:	%{libeglname} = %{version}-%{release}
-Provides:	lib%{eglname}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaegl1-devel < 8.0
-Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
-%endif
-
-%package -n %{libglapiname}
-Summary:	Files for mesa (glapi libs)
-Group:		System/Libraries
-
-%package -n %{develglapi}
-Summary:	Development files for glapi libs
-Group:		Development/C
-Obsoletes:	%{_lib}glapi0-devel < %{version}-%{release}
-
-%package -n	%{develdricore}
-Summary:	Development files for DRI core
-Group:		Development/C
-Requires:	%{libdricorename} = %{version}-%{release}
-Provides:	lib%{dricorename}-devel = %{version}-%{release}
-Provides:	%{dricorename}-devel = %{version}-%{release}
-
-%package -n %{libxatrackername}
-Summary:	Files for mesa (xatracker libs)
-Group:		System/Libraries
-
-%package -n %{develxatracker}
-Summary:	Development files for xatracker libs
-Group:		Development/C
-
-%package -n %{libglesv1name}
-Summary:	Files for Mesa (glesv1 libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaglesv1_1 < 8.0
-
-%package -n %{develglesv1}
-Summary:	Development files for glesv1 libs
-Group:		Development/C
-Requires:	%{libglesv1name} = %{version}-%{release}
-Provides:	lib%{glesv1name}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
-Obsoletes:	%{_lib}glesv1_1-devel < %{version}-%{release}
-
-%package -n %{libglesv2name}
-Summary:	Files for Mesa (glesv2 libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaglesv2_2 < 8.0
-
-%package -n %{develglesv2}
-Summary:	Development files for glesv2 libs
-Group:		Development/C
-Requires:	%{libglesv2name} = %{version}-%{release}
-Provides:	lib%{glesv2name}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
-Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
-
-%package -n %{develglesv3}
-Summary:	Development files for glesv3 libs
-Group:		Development/C
-
-%package -n %{libopenvgname}
-Summary:	Files for MESA (OpenVG libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaopenvg1 < 8.0
-
-%if %{with opencl}
-%package -n %libclname
-Summary:	OpenCL libs
-Group:		System/Libraries
-%endif
-
-%if %{with vdpau}
-%package -n	%{_lib}vdpau-driver-nouveau
-Summary:	VDPAU plugin for nouveau driver
-Group:		System/Libraries
-
-%package -n	%{_lib}vdpau-driver-r300
-Summary:	VDPAU plugin for r300 driver
-Group:		System/Libraries
-
-%package -n	%{_lib}vdpau-driver-r600
-Summary:	VDPAU plugin for r600 driver
-Group:		System/Libraries
-
-%package -n	%{_lib}vdpau-driver-radeonsi
-Summary:	VDPAU plugin for radeonsi driver
-Group:		System/Libraries
-
-%package -n	%{_lib}vdpau-driver-softpipe
-Summary:	VDPAU plugin for softpipe driver
-Group:		System/Libraries
-%endif
-
-%package -n %{developenvg}
-Summary:	Development files for OpenVG libs
-Group:		Development/C
-Requires:	%{libopenvgname} = %{version}-%{release}
-Requires:	%{develegl} = %{version}-%{release}
-Provides:	lib%{openvgname}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
-
-%if %{with opencl}
-%package -n %develcl
-Summary:	Development files for OpenCL libs
-Group:		Development/Other
-Requires:	%libclname = %version-%release
-Provides:	lib%libclname-devel = %version-%release
-%endif
-
-%if %{with wayland}
-%package -n %{libgbmname}
-Summary:	Files for Mesa (gbm libs)
-Group:		System/Libraries
-
-%package -n %{develgbm}
-Summary:	Development files for Mesa (gbm libs)
-Group:		Development/C
-Requires:	%{libgbmname} = %{version}-%{release}
-Provides:	lib%{gbmname}-devel = %{version}-%{release}
-Provides:	%{gbmname}-devel = %{version}-%{release}
-
-%package -n %{libwaylandeglname}
-Summary:	Files for Mesa (Wayland EGL libs)
-Group:		System/Libraries
-
-%package -n %{develwaylandegl}
-Summary:	Development files for Mesa (Wayland EGL libs)
-Group:		Development/C
-Requires:	%{libwaylandeglname} = %{version}-%{release}
-Provides:	lib%{waylandeglname}-devel = %{version}-%{release}
-Provides:	%{waylandeglname}-devel = %{version}-%{release}
-%endif
-
-%package	common-devel
-Summary:	Meta package for mesa devel
-Group:		Development/C
-Requires:	pkgconfig(glu)
-Requires:	pkgconfig(glut)
-Requires:	%{develgl} = %{version}-%{release}
-Requires:	%{develegl} = %{version}-%{release}
-Requires:	%{develglapi} = %{version}-%{release}
-Requires:	%{develglesv1} = %{version}-%{release}
-Requires:	%{develglesv2} = %{version}-%{release}
-
-#------------------------------------------------------------------------------
+Requires:	%{libgl} = %{version}-%{release}
 
 %description
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
@@ -467,124 +216,283 @@ This package is in the restricted repository because it enables some
 OpenGL extentions that are covered by software patents.
 %endif
 
+%package -n	%{dridrivers}
+Summary:	Mesa DRI drivers
+Group:		System/Libraries
+Requires:	%{dridrivers}-radeon = %{EVRD}
+%ifnarch %arm
+Requires:	%{dridrivers}-intel = %{EVRD}
+%endif
+Requires:	%{dridrivers}-nouveau = %{EVRD}
+Requires:	%{dridrivers}-swrast = %{EVRD}
+Provides:	dri-drivers = %{EVRD}
+
 %description -n %{dridrivers}
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
 DRI and XvMC drivers.
+
+%package -n	%{dridrivers}-radeon
+Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+%define __noautoreq '.*llvmradeon.*'
 
 %description -n %{dridrivers}-radeon
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 
 %ifnarch %arm
+%package -n	%{dridrivers}-vmwgfx
+Summary:	DRI Drivers for VMWare guest OS
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
 %description -n %{dridrivers}-vmwgfx
 DRI and XvMC drivers for VMWare guest Operating Systems.
+
+%package -n	%{dridrivers}-intel
+Summary:	DRI Drivers for Intel graphics chipsets
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-intel
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 %endif
 
+%package -n	%{dridrivers}-nouveau
+Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
 %description -n %{dridrivers}-nouveau
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+
+%package -n	%{dridrivers}-swrast
+Summary:	DRI Drivers for software rendering
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-swrast
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 
+%package	xorg-drivers
+Summary:	Mesa/Gallium XOrg drivers
+Group:		System/X11
+Requires:	%{name}-xorg-drivers-radeon = %{EVRD}
+Requires:	%{name}-xorg-drivers-nouveau = %{EVRD}
+
 %description xorg-drivers
 Xorg drivers from the Mesa/Gallium project
+
+%package	xorg-drivers-radeon
+Summary:	Mesa/Gallium XOrg drivers for AMD/ATI Radeon chipsets
+Group:		System/X11
 
 %description xorg-drivers-radeon
 Xorg drivers from the Mesa/Gallium project for AMD/ATI Radeon graphics chipsets
 
+%package	xorg-drivers-nouveau
+Summary:	Mesa/Gallium XOrg drivers for NVIDIA chipsets using the Nouveau driver
+Group:		System/X11
+
 %description xorg-drivers-nouveau
 Xorg drivers from the Mesa/Gallium project for NVIDIA graphics chipsets
 
-%description -n %{libosmesaname}
+%package -n	%{libdricore}
+Summary:	Shared library for DRI drivers
+Group:		System/Libraries
+
+%description -n %{libdricore}
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
+DRI core part.
+
+%package -n	%{devdricore}
+Summary:	Development files for DRI core
+Group:		Development/C
+Requires:	%{libdricore} = %{version}-%{release}
+
+%description -n %{devdricore}
+This package contains the headers needed to compile DRI drivers.
+
+%package -n	%{libosmesa}
+Summary:	Mesa offscreen rendering library
+Group:		System/Libraries
+
+%description -n %{libosmesa}
 Mesa offscreen rendering libraries for rendering OpenGL into
 application-allocated blocks of memory.
 
-%description -n %{osmesadevel}
+%package -n	%{devosmesa}
+Summary:	Development files for libosmesa
+Group:		Development/C
+Requires:	%{libosmesa} = %{version}-%{release}
+
+%description -n %{devosmesa}
 This package contains the headers needed to compile programs against
 the Mesa offscreen rendering library.
 
-%description -n %{libdricorename}
-Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
-DRI core part.
+%if %{with va}
+%package -n	%{libvadrivers}
+Summary:	Mesa libVA video acceleration drivers
+Group:		System/Libraries
 
 %description -n %{libvadrivers}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 libVA drivers for video acceleration
+%endif
 
-%description common-devel
-Mesa common metapackage devel
+%package -n	%{libgl}
+Summary:	Files for Mesa (GL and GLX libs)
+Group:		System/Libraries
+Suggests:	%{dridrivers} >= %{version}-%{release}
+%if %{build_plf}
+Requires:	%mklibname txc-dxtn
+%endif
+Obsoletes:	%{_lib}mesagl1 < %{version}-%{release}
+
+%description -n %{libgl}
+Mesa is an OpenGL 3.0 compatible 3D graphics library.
+GL and GLX parts.
+
+%package -n	%{devgl}
+Summary:	Development files for Mesa (OpenGL compatible 3D lib)
+Group:		Development/C
+Requires:	%{libgl} = %{version}-%{release}
+Obsoletes:	%{_lib}mesagl1-devel < 8.0
+Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
+
+%description -n %{devgl}
+This package contains the headers needed to compile Mesa programs.
 
 %if %{with egl}
-%description -n %{libeglname}
+%package -n	%{libegl}
+Summary:	Files for Mesa (EGL libs)
+Group:		System/Libraries
+Obsoletes:	%{_lib}mesaegl1 < 8.0
+
+%description -n %{libegl}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 EGL parts.
 
-%description -n %{develegl}
+%package -n	%{devegl}
+Summary:	Development files for Mesa (EGL libs)
+Group:		Development/C
+Requires:	%{libegl} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaegl1-devel < 8.0
+Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
+
+%description -n %{devegl}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
 EGL development parts.
 %endif
 
-%description -n %{libglname}
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
-GL and GLX parts.
+%package -n %{libglapi}
+Summary:	Files for mesa (glapi libs)
+Group:		System/Libraries
 
-%description -n %{develgl}
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
-
-This package contains the headers needed to compile Mesa programs.
-
-%description -n %{libglapiname}
+%description -n %{libglapi}
 This package provides the glapi shared library used by gallium.
 
-%description -n %{develglapi}
+%package -n %{devglapi}
+Summary:	Development files for glapi libs
+Group:		Development/C
+Requires:	%{libglapi} = %{version}-%{release}
+Obsoletes:	%{_lib}glapi0-devel < %{version}-%{release}
+
+%description -n %{devglapi}
 This package contains the headers needed to compile programs against
 the glapi shared library.
 
-%description -n %{develdricore}
-Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
+%package -n %{libxatracker}
+Summary:	Files for mesa (xatracker libs)
+Group:		System/Libraries
 
-This package contains the headers needed to compile DRI drivers.
-
-%description -n %{libxatrackername}
+%description -n %{libxatracker}
 This package provides the xatracker shared library used by gallium.
  
-%description -n %{develxatracker}
+%package -n %{devxatracker}
+Summary:	Development files for xatracker libs
+Group:		Development/C
+Requires:	%{libxatracker} = %{version}-%{release}
+
+%description -n %{devxatracker}
 This package contains the headers needed to compile programs against
 the xatracker shared library.
 
-%description -n %{libglesv1name}
+%package -n %{libglesv1}
+Summary:	Files for Mesa (glesv1 libs)
+Group:		System/Libraries
+Obsoletes:	%{_lib}mesaglesv1_1 < 8.0
+
+%description -n %{libglesv1}
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
 well-defined subset profiles of OpenGL.
 
 This package provides the OpenGL ES library version 1.
 
-%description -n %{develglesv1}
+%package -n %{devglesv1}
+Summary:	Development files for glesv1 libs
+Group:		Development/C
+Requires:	%{libglesv1} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
+Obsoletes:	%{_lib}glesv1_1-devel < %{version}-%{release}
+
+%description -n %{devglesv1}
 This package contains the headers needed to compile OpenGL ES 1 programs.
 
-%description -n %{libglesv2name}
+%package -n %{libglesv2}
+Summary:	Files for Mesa (glesv2 libs)
+Group:		System/Libraries
+Obsoletes:	%{_lib}mesaglesv2_2 < 8.0
+
+%description -n %{libglesv2}
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
 well-defined subset profiles of OpenGL.
 
 This package provides the OpenGL ES library version 2.
 
-%description -n %{develglesv2}
+%package -n %{devglesv2}
+Summary:	Development files for glesv2 libs
+Group:		Development/C
+Requires:	%{libglesv2} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
+Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
+
+%description -n %{devglesv2}
 This package contains the headers needed to compile OpenGL ES 2 programs.
 
-%description -n %{develglesv3}
+%package -n %{devglesv3}
+Summary:	Development files for glesv3 libs
+Group:		Development/C
+# there is no pkgconfig 
+Provides:	glesv3-devel = %{version}-%{release}
+
+%description -n %{devglesv3}
 This package contains the headers needed to compile OpenGL ES 3 programs.
 
-%description -n %{libopenvgname}
+%package -n %{libopenvg}
+Summary:	Files for MESA (OpenVG libs)
+Group:		System/Libraries
+Obsoletes:	%{_lib}mesaopenvg1 < 8.0
+
+%description -n %{libopenvg}
 OpenVG is a royalty-free, cross-platform API that provides a low-level hardware
 acceleration interface for vector graphics libraries such as Flash and SVG.
 
-%description -n %{developenvg}
+%package -n %{devopenvg}
+Summary:	Development files for OpenVG libs
+Group:		Development/C
+Requires:	%{libopenvg} = %{version}-%{release}
+Requires:	%{devegl} = %{version}-%{release}
+Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
+
+%description -n %{devopenvg}
 Development files for OpenVG library.
 
-
 %if %{with opencl}
-%description -n %libclname
+%package -n %{libcl}
+Summary:	OpenCL libs
+Group:		System/Libraries
+
+%description -n %{libcl}
 Open Computing Language (OpenCL) is a framework for writing programs that
 execute across heterogeneous platforms consisting of central processing units
 (CPUs), graphics processing units (GPUs), DSPs and other processors.
@@ -596,26 +504,52 @@ computing using task-based and data-based parallelism. OpenCL is an open
 standard maintained by the non-profit technology consortium Khronos Group.
 It has been adopted by Intel, Advanced Micro Devices, Nvidia, and ARM Holdings.
 
-%description -n %develcl
+%package -n %{devcl}
+Summary:	Development files for OpenCL libs
+Group:		Development/Other
+Requires:	%{libcl} = %{version}-%{release}
+Provides:	lib%{libcl}-devel = %{version}-%{release}
+
+%description -n %{devcl}
 Development files for the OpenCL library
 %endif
 
 %if %{with vdpau}
+%package -n	%{_lib}vdpau-driver-nouveau
+Summary:	VDPAU plugin for nouveau driver
+Group:		System/Libraries
+
 %description -n %{_lib}vdpau-driver-nouveau
 This packages provides a VPDAU plugin to enable video acceleration
 with the nouveau driver.
+
+%package -n	%{_lib}vdpau-driver-r300
+Summary:	VDPAU plugin for r300 driver
+Group:		System/Libraries
 
 %description -n %{_lib}vdpau-driver-r300
 This packages provides a VPDAU plugin to enable video acceleration
 with the r300 driver.
 
+%package -n	%{_lib}vdpau-driver-r600
+Summary:	VDPAU plugin for r600 driver
+Group:		System/Libraries
+
 %description -n %{_lib}vdpau-driver-r600
 This packages provides a VPDAU plugin to enable video acceleration
 with the r600 driver.
 
+%package -n	%{_lib}vdpau-driver-radeonsi
+Summary:	VDPAU plugin for radeonsi driver
+Group:		System/Libraries
+
 %description -n %{_lib}vdpau-driver-radeonsi
 This packages provides a VPDAU plugin to enable video acceleration
 with the radeonsi driver.
+
+%package -n	%{_lib}vdpau-driver-softpipe
+Summary:	VDPAU plugin for softpipe driver
+Group:		System/Libraries
 
 %description -n %{_lib}vdpau-driver-softpipe
 This packages provides a VPDAU plugin to enable video acceleration
@@ -623,24 +557,54 @@ with the softpipe driver.
 %endif
 
 %if %{with wayland}
-%description -n %{libgbmname}
+%package -n %{libgbm}
+Summary:	Files for Mesa (gbm libs)
+Group:		System/Libraries
+
+%description -n %{libgbm}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 GBM (Graphics Buffer Manager) parts.
 
-%description -n %{develgbm}
+%package -n %{devgbm}
+Summary:	Development files for Mesa (gbm libs)
+Group:		Development/C
+Requires:	%{libgbm} = %{version}-%{release}
+
+%description -n %{devgbm}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 GBM (Graphics Buffer Manager) development parts.
 
-%description -n %{libwaylandeglname}
+%package -n %{libwaylandegl}
+Summary:	Files for Mesa (Wayland EGL libs)
+Group:		System/Libraries
+
+%description -n %{libwaylandegl}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 Wayland EGL platform parts.
 
-%description -n %{develwaylandegl}
+%package -n %{devwaylandegl}
+Summary:	Development files for Mesa (Wayland EGL libs)
+Group:		Development/C
+Requires:	%{libwaylandegl} = %{version}-%{release}
+
+%description -n %{devwaylandegl}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 Wayland EGL platform development parts.
 %endif
 
-#------------------------------------------------------------------------------
+%package	common-devel
+Summary:	Meta package for mesa devel
+Group:		Development/C
+Requires:	pkgconfig(glu)
+Requires:	pkgconfig(glut)
+Requires:	%{devgl} = %{version}-%{release}
+Requires:	%{devegl} = %{version}-%{release}
+Requires:	%{devglapi} = %{version}-%{release}
+Requires:	%{devglesv1} = %{version}-%{release}
+Requires:	%{devglesv2} = %{version}-%{release}
+
+%description common-devel
+Mesa common metapackage devel
 
 %prep
 %if %{git}
@@ -668,60 +632,61 @@ cp -a $all build-osmesa
 # symlinks should be moved to %{_libdir}? -Anssi 08/2012
 export LDFLAGS="-L%{_libdir}/llvm"
 
-%configure2_5x	--enable-dri \
-		--enable-glx \
-		--with-dri-driverdir=%{driver_dir} \
-		--with-dri-drivers="%{dri_drivers}" \
-		--with-clang-libdir=%_prefix/lib \
+%configure2_5x \
+	--enable-dri \
+	--enable-glx \
+	--with-dri-driverdir=%{driver_dir} \
+	--with-dri-drivers="%{dri_drivers}" \
+	--with-clang-libdir=%{_prefix}/lib \
 %if %{with egl}
-		--enable-egl \
-		--enable-gallium-egl \
-		--enable-gbm \
-		--enable-shared-glapi \
+	--enable-egl \
+	--enable-gallium-egl \
+	--enable-gbm \
+	--enable-shared-glapi \
 %else
-		--disable-egl \
+	--disable-egl \
 %endif
 %if %{with wayland}
-		--with-egl-platforms=x11,wayland,drm,fbdev \
+	--with-egl-platforms=x11,wayland,drm,fbdev \
 %else
-		--with-egl-platforms=x11,drm,fbdev \
+	--with-egl-platforms=x11,drm,fbdev \
 %endif
 %if ! %{with bootstrap}
-		--enable-xorg \
-		--enable-xa \
+	--enable-xorg \
+	--enable-xa \
 %endif
-		--enable-gles1 \
-		--enable-gles2 \
-		--enable-gles3 \
-		--enable-openvg \
+	--enable-gles1 \
+	--enable-gles2 \
+	--enable-gles3 \
+	--enable-openvg \
 %if %{with opencl}
-		--enable-opencl \
+	--enable-opencl \
 %endif
-		--enable-gallium-egl \
-		--enable-gallium-g3dvl \
-		--enable-xvmc \
+	--enable-gallium-egl \
+	--enable-gallium-g3dvl \
+	--enable-xvmc \
 %if %{with vdpau}
-		--enable-vdpau \
+	--enable-vdpau \
 %else		
-		--disable-vdpau \
+	--disable-vdpau \
 %endif
 %if %{with va}
-		--enable-va \
+	--enable-va \
 %else
-		--disable-va \
+	--disable-va \
 %endif
 %if %{with_hardware}
-		--with-gallium-drivers=svga,i915,r300,r600,radeonsi,nouveau,swrast \
-		--enable-gallium-llvm \
-		--enable-r600-llvm-compiler \
+	--with-gallium-drivers=svga,i915,r300,r600,radeonsi,nouveau,swrast \
+	--enable-gallium-llvm \
+	--enable-r600-llvm-compiler \
 %else
-		--disable-gallium-llvm \
-		--with-gallium-drivers=swrast \
+	--disable-gallium-llvm \
+	--with-gallium-drivers=swrast \
 %endif
 %if %{build_plf}
-		--enable-texture-float  \
+	--enable-texture-float  \
 %endif
-		# end of configure options
+	# end of configure options
 
 
 # Build OSMesa separately, since we want to build OSMesa without shared-glapi,
@@ -731,12 +696,12 @@ export LDFLAGS="-L%{_libdir}/llvm"
 
 pushd build-osmesa
 %configure2_5x \
-		--enable-osmesa \
-		--disable-dri \
-		--disable-glx \
-		--disable-egl \
-		--disable-shared-glapi \
-		--without-gallium-drivers
+	--enable-osmesa \
+	--disable-dri \
+	--disable-glx \
+	--disable-egl \
+	--disable-shared-glapi \
+	--without-gallium-drivers
 popd
 
 %make
@@ -749,13 +714,13 @@ popd
 # FIXME: strip will likely break the hardlink
 # (blino) hardlink libGL files in %{_libdir}/mesa
 # to prevent proprietary driver installers from removing them
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/mesa
-pushd $RPM_BUILD_ROOT%{_libdir}/mesa
+mkdir -p %{buildroot}%{_libdir}/mesa
+pushd %{buildroot}%{_libdir}/mesa
 for l in ../libGL.so.*; do cp -a $l .; done
 popd
 
 %ifarch %{x86_64}
-mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/dri
+mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
 
 # .so files are not needed by vdpau
@@ -766,8 +731,6 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
-
-#------------------------------------------------------------------------------
 
 
 %files
@@ -820,14 +783,13 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/xorg/modules/drivers/nouveau2_drv.so
 %endif
 
-%files -n %{libdricorename}
-%{_libdir}/libdricore%{version}.so.%{dricoremajor}
-%{_libdir}/libdricore%{version}.so.%{dricoremajor}.*
+%files -n %{libdricore}
+%{_libdir}/libdricore%{version}.so.%{dricoremajor}*
 
-%files -n %{libosmesaname}
+%files -n %{libosmesa}
 %{_libdir}/libOSMesa.so.%{osmesamajor}*
 
-%files -n %{osmesadevel}
+%files -n %{devosmesa}
 %dir %{_includedir}/GL
 %{_includedir}/GL/osmesa.h
 %{_libdir}/libOSMesa.so
@@ -838,7 +800,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/va/lib*.so*
 %endif
 
-%files -n %{libglname}
+%files -n %{libgl}
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.%{glmajor}*
@@ -846,7 +808,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %dir %_libdir/gallium-pipe
 
 %if %{with egl}
-%files -n %{libeglname}
+%files -n %{libegl}
 %doc docs/COPYING
 %{_libdir}/libEGL.so.%{eglmajor}*
 %dir %{_libdir}/egl
@@ -857,38 +819,36 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/egl/egl_gallium.so
 %endif
 
-%files -n %{libglapiname}
+%files -n %{libglapi}
 %{_libdir}/libglapi.so.%{glapimajor}*
 
-%files -n %{libxatrackername}
+%files -n %{libxatracker}
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
 
-%files -n %{libglesv1name}
+%files -n %{libglesv1}
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
 
-%files -n %{libglesv2name}
+%files -n %{libglesv2}
 %{_libdir}/libGLESv2.so.%{glesv2major}*
 
-%files -n %{libopenvgname}
+%files -n %{libopenvg}
 %{_libdir}/libOpenVG.so.%{openvgmajor}*
 
 %if %{with opencl}
-%files -n %libclname
+%files -n %{libcl}
 %_libdir/libOpenCL.so.%{clmajor}*
 %endif
 
 %if %{with wayland}
-%files -n %{libgbmname}
-%{_libdir}/libgbm.so.%{gbmmajor}
-%{_libdir}/libgbm.so.%{gbmmajor}.*
+%files -n %{libgbm}
+%{_libdir}/libgbm.so.%{gbmmajor}*
 %{_libdir}/gbm/gbm_*.so
 
-%files -n %{libwaylandeglname}
-%{_libdir}/libwayland-egl.so.%{waylandeglmajor}
-%{_libdir}/libwayland-egl.so.%{waylandeglmajor}.*
+%files -n %{libwaylandegl}
+%{_libdir}/libwayland-egl.so.%{waylandeglmajor}*
 %endif
 
-%files -n %{develgl}
+%files -n %{devgl}
 %doc docs/COPYING
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
@@ -912,17 +872,17 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 # meta devel pkg
 
 %if %{with egl}
-%files -n %{develegl}
+%files -n %{devegl}
 %{_includedir}/EGL
 %{_includedir}/KHR
 %{_libdir}/libEGL.so
 %{_libdir}/pkgconfig/egl.pc
 %endif
 
-%files -n %{develglapi}
+%files -n %{devglapi}
 %{_libdir}/libglapi.so
 
-%files -n %{develdricore}
+%files -n %{devdricore}
 %{_libdir}/libdricore%{version}.so
 
 #vdpau enblaed
@@ -943,42 +903,43 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/vdpau/libvdpau_softpipe.so.*
 %endif
 
-%files -n %{develxatracker}
+%files -n %{devxatracker}
 %{_libdir}/libxatracker.so
 %{_includedir}/xa_*.h
 %{_libdir}/pkgconfig/xatracker.pc
 
-%files -n %{develglesv1}
+%files -n %{devglesv1}
 %{_includedir}/GLES
 %{_libdir}/libGLESv1_CM.so
 %{_libdir}/pkgconfig/glesv1_cm.pc
 
-%files -n %{develglesv2}
+%files -n %{devglesv2}
 %{_includedir}/GLES2
 %{_libdir}/libGLESv2.so
 %{_libdir}/pkgconfig/glesv2.pc
 
-%files -n %{develglesv3}
+%files -n %{devglesv3}
 %{_includedir}/GLES3
 
-%files -n %{developenvg}
+%files -n %{devopenvg}
 %{_includedir}/VG
 %{_libdir}/libOpenVG.so
 %{_libdir}/pkgconfig/vg.pc
 
 %if %{with opencl}
-%files -n %develcl
+%files -n %{devcl}
 %_includedir/CL
 %_libdir/libOpenCL.so
 %endif
 
 %if %{with wayland}
-%files -n %{develgbm}
+%files -n %{devgbm}
 %{_includedir}/gbm.h
 %{_libdir}/libgbm.so
 %{_libdir}/pkgconfig/gbm.pc
 
-%files -n %{develwaylandegl}
+%files -n %{devwaylandegl}
 %{_libdir}/libwayland-egl.so
 %{_libdir}/pkgconfig/wayland-egl.pc
 %endif
+
