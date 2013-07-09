@@ -22,6 +22,11 @@
 %bcond_without wayland
 %bcond_without egl
 %bcond_without opencl
+%ifarch %arm mips sparc
+%bcond_with intel
+%else
+%bcond_without intel
+%endif
 
 %if %{relc}
 %define vsuffix -rc%{relc}
@@ -672,7 +677,11 @@ export LDFLAGS="-L%{_libdir}/llvm"
 	--disable-va \
 %endif
 %if %{with hardware}
+%if %{with intel}
+	--with-gallium-drivers=svga,i915,r300,r600,radeonsi,nouveau,swrast \
+%else
 	--with-gallium-drivers=svga,r300,r600,radeonsi,nouveau,swrast \
+%endif
 	--enable-gallium-llvm \
 	--enable-r600-llvm-compiler \
 %else
