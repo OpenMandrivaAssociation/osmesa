@@ -8,7 +8,6 @@
 
 %define git 0
 %define git_branch 9.1
-%define with_hardware 1
 
 %define opengl_ver 3.0
 
@@ -16,6 +15,7 @@
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
+%bcond_without hardware
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_with va
@@ -104,16 +104,12 @@
 %define	dri_drivers_x86_64	%{dri_drivers_i386}
 %define	dri_drivers_ppc		"r200,radeon,swrast"
 %define	dri_drivers_ppc64	""
-%define	dri_drivers_ia64	"i915,i965,r200,radeon,swrast"
+%define	dri_drivers_ia64	"i915,i965,mga,r200,radeon,swrast"
 %define	dri_drivers_alpha	"r200,radeon,swrast"
 %define	dri_drivers_sparc	"ffb,radeon,swrast"
-%define dri_drivers_mipsel	"r200,radeon"
-%define dri_drivers_arm		"swrast"
-%ifarch	%{arm}
-%define	dri_drivers		%{expand:%{dri_drivers_arm}}
-%else
+%define dri_drivers_mipsel	"r200,radeon,swrast"
+%define dri_drivers_arm		"nouveau,r200,radeon,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
-%endif
 
 %define short_ver 9.1.4
 
@@ -675,8 +671,8 @@ export LDFLAGS="-L%{_libdir}/llvm"
 %else
 	--disable-va \
 %endif
-%if %{with_hardware}
-	--with-gallium-drivers=svga,i915,r300,r600,radeonsi,nouveau,swrast \
+%if %{with hardware}
+	--with-gallium-drivers=svga,r300,r600,radeonsi,nouveau,swrast \
 	--enable-gallium-llvm \
 	--enable-r600-llvm-compiler \
 %else
