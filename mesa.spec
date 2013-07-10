@@ -240,7 +240,6 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-radeon
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 
-%ifnarch %arm
 %package -n	%{dridrivers}-vmwgfx
 Summary:	DRI Drivers for VMWare guest OS
 Group:		System/Libraries
@@ -249,6 +248,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-vmwgfx
 DRI and XvMC drivers for VMWare guest Operating Systems.
 
+%ifnarch %arm
 %package -n	%{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
