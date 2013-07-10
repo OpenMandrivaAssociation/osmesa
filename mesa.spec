@@ -747,20 +747,18 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %files -n %{dridrivers}-radeon
 %_libdir/dri/r?00_dri.so
-%ifnarch %arm
 %_libdir/dri/radeon_dri.so
-%endif
 %_libdir/dri/radeonsi_dri.so
 %_libdir/gallium-pipe/pipe_r?00.so
 %_libdir/gallium-pipe/pipe_radeonsi.so
 %_libdir/libXvMCr?00.so.*
 %_libdir/libllvmradeon*.so
 
-%ifnarch %arm
 %files -n %{dridrivers}-vmwgfx
 %_libdir/dri/vmwgfx_dri.so
 %_libdir/gallium-pipe/pipe_vmwgfx.so
 
+%ifnarch %arm
 %files -n %{dridrivers}-intel
 %{_libdir}/xorg/modules/drivers/i915_drv.so
 %_libdir/dri/i9?5_dri.so
