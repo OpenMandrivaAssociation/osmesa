@@ -4,8 +4,6 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-%define build_plf 0
-
 %define git 0
 %define git_branch 9.1
 
@@ -16,12 +14,13 @@
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
 %bcond_without hardware
-%bcond_with bootstrap
+%bcond_without bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
 %bcond_without egl
 %bcond_without opencl
+%bcond_without tfloat
 %ifarch %arm mips sparc
 %bcond_with intel
 %else
@@ -113,14 +112,14 @@
 %define	dri_drivers_alpha	"r200,radeon,swrast"
 %define	dri_drivers_sparc	"ffb,radeon,swrast"
 %define dri_drivers_mipsel	"r200,radeon,swrast"
-%define dri_drivers_arm		"nouveau,r200,radeon,swrast"
+%define dri_drivers_arm		"nouveau,r200,radeon,swrast,freedreno"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
-%define short_ver 9.1.6
+%define short_ver 9.2.0
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	9.1.6
+Version:	9.2.0
 %if %{relc}
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
@@ -131,7 +130,7 @@ Release:	0.rc%{relc}.1
 %if %{git}
 Release:	0.%{git}.1
 %else
-Release:	2
+Release:	1
 %endif
 %endif
 Group:		System/Libraries
@@ -146,6 +145,10 @@ Source0:	ftp://ftp.freedesktop.org/pub/mesa/%short_ver/MesaLib-%{short_ver}%{vsu
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
 Source100:	%{name}.rpmlintrc
+
+# fedora patches
+Patch15: mesa-9.2-hardware-float.patch
+Patch20: mesa-9.2-evergreen-big-endian.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -211,11 +214,6 @@ Requires:	%{libgl} = %{version}-%{release}
 
 %description
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
-
-%if %{build_plf}
-This package is in the restricted repository because it enables some
-OpenGL extentions that are covered by software patents.
-%endif
 
 %package -n	%{dridrivers}
 Summary:	Mesa DRI drivers
@@ -344,7 +342,7 @@ libVA drivers for video acceleration
 Summary:	Files for Mesa (GL and GLX libs)
 Group:		System/Libraries
 Suggests:	%{dridrivers} >= %{version}-%{release}
-%if %{build_plf}
+%if %{with tfloat}
 Requires:	%mklibname txc-dxtn
 %endif
 Obsoletes:	%{_lib}mesagl1 < %{version}-%{release}
@@ -680,7 +678,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 %if %{with intel}
 	--with-gallium-drivers=svga,i915,r300,r600,radeonsi,nouveau,swrast \
 %else
-	--with-gallium-drivers=svga,r300,r600,radeonsi,nouveau,swrast \
+	--with-gallium-drivers=svga,r300,r600,radeonsi,nouveau,swrast,freedreno \
 %endif
 	--enable-gallium-llvm \
 	--enable-r600-llvm-compiler \
@@ -688,7 +686,7 @@ export LDFLAGS="-L%{_libdir}/llvm"
 	--disable-gallium-llvm \
 	--with-gallium-drivers=swrast \
 %endif
-%if %{build_plf}
+%if %{with tfloat}
 	--enable-texture-float  \
 %endif
 	# end of configure options
@@ -752,7 +750,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/gallium-pipe/pipe_r?00.so
 %_libdir/gallium-pipe/pipe_radeonsi.so
 %_libdir/libXvMCr?00.so.*
-%_libdir/libllvmradeon*.so
+#% _libdir/libllvmradeon*.so
 
 %files -n %{dridrivers}-vmwgfx
 %_libdir/dri/vmwgfx_dri.so
