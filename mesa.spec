@@ -14,7 +14,7 @@
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
 %bcond_without hardware
-%bcond_with bootstrap
+%bcond_without bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
@@ -401,6 +401,7 @@ Obsoletes:	%{_lib}glapi0-devel < %{version}-%{release}
 This package contains the headers needed to compile programs against
 the glapi shared library.
 
+%if ! %{with bootstrap}
 %package -n %{libxatracker}
 Summary:	Files for mesa (xatracker libs)
 Group:		System/Libraries
@@ -416,6 +417,7 @@ Requires:	%{libxatracker} = %{version}-%{release}
 %description -n %{devxatracker}
 This package contains the headers needed to compile programs against
 the xatracker shared library.
+%endif
 
 %package -n %{libglesv1}
 Summary:	Files for Mesa (glesv1 libs)
@@ -765,7 +767,9 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 
 %ifnarch %arm
 %files -n %{dridrivers}-intel
+%if ! %{with bootstrap}
 %{_libdir}/xorg/modules/drivers/i915_drv.so
+%endif
 %_libdir/dri/i9?5_dri.so
 %_libdir/gallium-pipe/pipe_i915.so
 %endif
@@ -830,8 +834,10 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %files -n %{libglapi}
 %{_libdir}/libglapi.so.%{glapimajor}*
 
+%if ! %{with bootstrap}
 %files -n %{libxatracker}
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
+%endif
 
 %files -n %{libglesv1}
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
@@ -911,10 +917,12 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/vdpau/libvdpau_softpipe.so.*
 %endif
 
+%if ! %{with bootstrap}
 %files -n %{devxatracker}
 %{_libdir}/libxatracker.so
 %{_includedir}/xa_*.h
 %{_libdir}/pkgconfig/xatracker.pc
+%endif
 
 %files -n %{devglesv1}
 %{_includedir}/GLES
