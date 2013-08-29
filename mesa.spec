@@ -14,7 +14,7 @@
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
 %bcond_without hardware
-%bcond_without bootstrap
+%bcond_with bootstrap
 %bcond_without vdpau
 %bcond_with va
 %bcond_without wayland
@@ -632,6 +632,17 @@ cp -a $all build-osmesa
 # symlinks should be moved to %{_libdir}? -Anssi 08/2012
 export LDFLAGS="-L%{_libdir}/llvm"
 
+GALLIUM_DRIVERS="swrast"
+%if %{with hardware}
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,r600,radeonsi,nouveau"
+%if %{with intel}
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,i915,ilo"
+%endif
+%ifarch %arm
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
+%endif
+%endif
+
 %configure2_5x \
 	--enable-dri \
 	--enable-glx \
@@ -675,17 +686,12 @@ export LDFLAGS="-L%{_libdir}/llvm"
 %else
 	--disable-va \
 %endif
+	--with-gallium-drivers=$GALLIUM_DRIVERS \
 %if %{with hardware}
-%if %{with intel}
-	--with-gallium-drivers=svga,i915,r300,r600,radeonsi,nouveau,swrast \
-%else
-	--with-gallium-drivers=svga,r300,r600,radeonsi,nouveau,swrast,freedreno \
-%endif
 	--enable-gallium-llvm \
 	--enable-r600-llvm-compiler \
 %else
 	--disable-gallium-llvm \
-	--with-gallium-drivers=swrast \
 %endif
 %if %{with tfloat}
 	--enable-texture-float  \
