@@ -179,6 +179,7 @@ BuildRequires:	libxml2-python
 BuildRequires:	makedepend
 BuildRequires:	llvm-devel >= 3.2
 BuildRequires:	pkgconfig(expat)
+BuildRequires:	elfutils-devel
 BuildRequires:	pkgconfig(libdrm) >= 2.4.22
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
