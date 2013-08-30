@@ -225,6 +225,9 @@ Requires:	%{dridrivers}-intel = %{EVRD}
 %endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
 Requires:	%{dridrivers}-swrast = %{EVRD}
+%ifarch %arm
+Requires:	%{dridrivers}-freedreno = %{EVRD}
+%endif
 Provides:	dri-drivers = %{EVRD}
 
 %description -n %{dridrivers}
@@ -272,6 +275,16 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-swrast
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+
+%ifarch %arm
+%package -n	%{dridrivers}-freedreno
+Summary:	DRI Drivers for software rendering
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-freedreno
+DRI and XvMC drivers for Adreno graphics chipsets
+%endif
 
 %package	xorg-drivers
 Summary:	Mesa/Gallium XOrg drivers
@@ -783,6 +796,11 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/dri/swrast_dri.so
 %_libdir/gallium-pipe/pipe_swrast.so
 %_libdir/libXvMCsoftpipe.so.*
+
+%ifarch %arm
+%files -n %{dridrivers}-freedreno
+%{_libdir}/dri/kgsl_dri.so
+%endif
 
 %if ! %{with bootstrap}
 %files xorg-drivers
