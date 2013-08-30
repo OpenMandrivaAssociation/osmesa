@@ -112,7 +112,7 @@
 %define	dri_drivers_alpha	"r200,radeon,swrast"
 %define	dri_drivers_sparc	"ffb,radeon,swrast"
 %define dri_drivers_mipsel	"r200,radeon,swrast"
-%define dri_drivers_arm		"nouveau,r200,radeon,swrast,freedreno"
+%define dri_drivers_arm		"nouveau,r200,radeon,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
 %define short_ver 9.2.0
