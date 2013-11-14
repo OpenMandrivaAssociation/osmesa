@@ -1,4 +1,5 @@
 removed_sources:
   MesaLib-9.2.1.tar.bz2: 8e99380ca889cb3a2e01f760cdc9c2b0cf6bae73
-sources:
   MesaLib-9.2.2.tar.bz2: 276ba49cea50b28eb3bc96df56520ae8b66cbb17
+sources:
+  MesaLib-9.2.3.tar.bz2: 2ccf08e261c94001dbdb2e2422b8afef56f56df0

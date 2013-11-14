@@ -115,11 +115,11 @@
 %define dri_drivers_arm		"nouveau,r200,radeon,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
-%define short_ver 9.2.2
+%define short_ver 9.2.3
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	9.2.2
+Version:	9.2.3
 %if %{relc}
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
