@@ -600,6 +600,8 @@ mkdir -p build-osmesa
 cp -a $all build-osmesa
 
 %build
+export CFLAGS="%optflags -fno-optimize-sibling-calls"
+export CXXFLAGS="%optflags -fno-optimize-sibling-calls"
 # fix build - TODO: should this be fixed in llvm somehow, or maybe the library
 # symlinks should be moved to %{_libdir}? -Anssi 08/2012
 export LDFLAGS="-L%{_libdir}/llvm -fuse-ld=bfd"
