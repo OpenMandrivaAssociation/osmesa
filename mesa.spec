@@ -755,6 +755,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %ifarch %arm
 %files -n %{dridrivers}-freedreno
 %{_libdir}/dri/kgsl_dri.so
+%{_libdir}/dri/msm_dri.so
 %endif
 
 %files -n %{libosmesa}
