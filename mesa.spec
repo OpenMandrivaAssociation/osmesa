@@ -9,7 +9,7 @@
 
 %define opengl_ver 3.0
 
-%define relc	2
+%define relc	0
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
