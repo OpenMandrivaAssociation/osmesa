@@ -21,7 +21,7 @@
 %bcond_without egl
 %bcond_without opencl
 %bcond_without tfloat
-%ifarch %arm mips sparc
+%ifarch %arm mips sparc aarch64
 %bcond_with intel
 %else
 %bcond_without intel
@@ -223,12 +223,12 @@ Mesa is an OpenGL 3.0 compatible 3D graphics library.
 Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Requires:	%{dridrivers}-radeon = %{EVRD}
-%ifnarch %arm
+%ifnarch %arm aarch64
 Requires:	%{dridrivers}-intel = %{EVRD}
 %endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
 Requires:	%{dridrivers}-swrast = %{EVRD}
-%ifarch %arm
+%ifarch %arm aarch64
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
@@ -612,7 +612,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,r600,radeonsi,nouveau"
 %if %{with intel}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,i915,ilo"
 %endif
-%ifarch %arm
+%ifarch %arm aarch64
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 %endif
 %endif
@@ -737,7 +737,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/dri/vmwgfx_dri.so
 %_libdir/gallium-pipe/pipe_vmwgfx.so
 
-%ifnarch %arm
+%ifnarch %arm aarch64
 %files -n %{dridrivers}-intel
 %_libdir/dri/i9?5_dri.so
 %_libdir/gallium-pipe/pipe_i915.so
@@ -752,7 +752,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %_libdir/dri/swrast_dri.so
 %_libdir/gallium-pipe/pipe_swrast.so
 
-%ifarch %arm
+%ifarch %arm aarch64
 %files -n %{dridrivers}-freedreno
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
