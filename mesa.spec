@@ -117,15 +117,15 @@ Name:		mesa
 Version:	10.1.0
 %if %{relc}
 %if %{git}
-Release:	0.rc%{relc}.0.%{git}.2
+Release:	0.rc%{relc}.0.%{git}.3
 %else
-Release:	0.rc%{relc}.2
+Release:	0.rc%{relc}.3
 %endif
 %else
 %if %{git}
-Release:	0.%{git}.2
+Release:	0.%{git}.3
 %else
-Release:	2
+Release:	3
 %endif
 %endif
 Group:		System/Libraries
@@ -325,6 +325,7 @@ Suggests:	%{dridrivers} >= %{version}-%{release}
 Requires:	%mklibname txc-dxtn
 %endif
 Obsoletes:	%{_lib}mesagl1 < %{version}-%{release}
+Requires:	%{_lib}udev1
 
 %description -n %{libgl}
 Mesa is an OpenGL 3.0 compatible 3D graphics library.
