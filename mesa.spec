@@ -110,22 +110,22 @@
 %define dri_drivers_arm		"nouveau,r200,radeon,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
-%define short_ver 10.1
+%define short_ver %(if [ `echo %{version} |cut -d. -f3` = "0" ]; then echo %{version} |cut -d. -f1-2; else echo %{version}; fi)
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	10.1.0
+Version:	10.1.1
 %if %{relc}
 %if %{git}
-Release:	0.rc%{relc}.0.%{git}.3
+Release:	0.rc%{relc}.0.%{git}.1
 %else
-Release:	0.rc%{relc}.3
+Release:	0.rc%{relc}.1
 %endif
 %else
 %if %{git}
-Release:	0.%{git}.3
+Release:	0.%{git}.1
 %else
-Release:	3
+Release:	1
 %endif
 %endif
 Group:		System/Libraries
