@@ -5,11 +5,11 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define git_branch 10.1
+%define git_branch 10.2
 
 %define opengl_ver 3.0
 
-%define relc	0
+%define relc	1
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -114,7 +114,7 @@
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	10.1.1
+Version:	10.2.0
 %if %{relc}
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
@@ -154,7 +154,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
-Patch20: mesa-9.2-evergreen-big-endian.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -261,7 +260,7 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-intel
-DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+DRI and XvMC drivers for Intel graphics chipsets
 %endif
 
 %package -n	%{dridrivers}-nouveau
@@ -270,7 +269,7 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-nouveau
-DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+DRI and XvMC drivers for Nvidia graphics chipsets
 
 %package -n	%{dridrivers}-swrast
 Summary:	DRI Drivers for software rendering
@@ -278,7 +277,7 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-swrast
-DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+Generic DRI driver using CPU rendering
 
 %ifarch %arm
 %package -n	%{dridrivers}-freedreno
@@ -743,6 +742,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %ifnarch %arm aarch64
 %files -n %{dridrivers}-intel
 %_libdir/dri/i9?5_dri.so
+%_libdir/dri/ilo_dri.so
 %_libdir/gallium-pipe/pipe_i915.so
 %endif
 
