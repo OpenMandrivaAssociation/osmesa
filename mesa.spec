@@ -9,7 +9,7 @@
 
 %define opengl_ver 3.0
 
-%define relc	4
+%define relc	5
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -151,6 +151,8 @@ Obsoletes:	%{name}-xorg-drivers < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-radeon < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
+# https://bugs.freedesktop.org/show_bug.cgi?id=74098
+Patch1:	mesa-10.2-clang-compilefix.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -175,7 +177,6 @@ Patch15: mesa-9.2-hardware-float.patch
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
-Patch202: GLX_INDIRECT_RENDERING_mesa9_1.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -914,4 +915,3 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %{_libdir}/libwayland-egl.so
 %{_libdir}/pkgconfig/wayland-egl.pc
 %endif
-
