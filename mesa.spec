@@ -280,7 +280,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-swrast
 Generic DRI driver using CPU rendering
 
-%ifarch %arm
+%ifarch %arm aarch64
 %package -n	%{dridrivers}-freedreno
 Summary:	DRI Drivers for software rendering
 Group:		System/Libraries
@@ -760,6 +760,7 @@ find %{buildroot} -name '*.la' -exec rm {} \;
 %files -n %{dridrivers}-freedreno
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
+%{_libdir}/gallium-pipe/pipe_msm.so
 %endif
 
 %files -n %{libosmesa}
