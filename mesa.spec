@@ -119,7 +119,7 @@ Version:	10.2.0
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
 %else
-Release:	0.rc%{relc}.1
+Release:	0.rc%{relc}.2
 %endif
 %else
 %if %{git}
@@ -602,6 +602,8 @@ mkdir -p build-osmesa
 cp -a $all build-osmesa
 
 %build
+export CC=gcc
+export CXX=g++
 export CFLAGS="%optflags -fno-optimize-sibling-calls"
 export CXXFLAGS="%optflags -fno-optimize-sibling-calls"
 # fix build - TODO: should this be fixed in llvm somehow, or maybe the library
