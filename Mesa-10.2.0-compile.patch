@@ -1,0 +1,10 @@
+--- Mesa-10.2.0/src/gallium/drivers/radeonsi/si_blit.c.omv~	2014-06-07 11:37:54.241783964 +0200
++++ Mesa-10.2.0/src/gallium/drivers/radeonsi/si_blit.c	2014-06-07 11:38:06.906625632 +0200
+@@ -692,7 +692,6 @@ static bool do_hardware_msaa_resolve(str
+ 	    !(dst->surface.flags & RADEON_SURF_SCANOUT) &&
+ 	    (!dst->cmask.size || !dst->dirty_level_mask) /* dst cannot be fast-cleared */) {
+ 		si_blitter_begin(ctx, SI_COLOR_RESOLVE);
+-t-cleared
+ 		util_blitter_custom_resolve_color(sctx->blitter,
+ 						  info->dst.resource, info->dst.level,
+ 						  info->dst.box.z,

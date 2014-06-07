@@ -9,7 +9,7 @@
 
 %define opengl_ver 3.0
 
-%define relc	5
+%define relc	0
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -119,7 +119,7 @@ Version:	10.2.0
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
 %else
-Release:	0.rc%{relc}.3
+Release:	0.rc%{relc}.1
 %endif
 %else
 %if %{git}
@@ -153,6 +153,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
+Patch2: Mesa-10.2.0-compile.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -602,13 +603,12 @@ mkdir -p build-osmesa
 cp -a $all build-osmesa
 
 %build
-export CC=gcc
-export CXX=g++
 export CFLAGS="%optflags -fno-optimize-sibling-calls"
 export CXXFLAGS="%optflags -fno-optimize-sibling-calls"
-# fix build - TODO: should this be fixed in llvm somehow, or maybe the library
-# symlinks should be moved to %{_libdir}? -Anssi 08/2012
-export LDFLAGS="-L%{_libdir}/llvm -fuse-ld=bfd"
+# Using clang causes the r600 driver to crash on startup, and to complain
+# about "libGL: driver does not expose __driDriverGetExtensions_r600(): /usr/lib64/dri/r600_dri.so: undefined symbol: __driDriverGetExtensions_r600"
+export CC=gcc
+export CXX=g++
 
 GALLIUM_DRIVERS="swrast"
 %if %{with hardware}
@@ -621,7 +621,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 %endif
 %endif
 
-%configure2_5x \
+%configure \
 	--enable-dri \
 	--enable-glx \
 	--enable-glx-tls \
@@ -677,14 +677,13 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 %endif
 	# end of configure options
 
-
 # Build OSMesa separately, since we want to build OSMesa without shared-glapi,
 # since doing that causes OSMesa to miss the OpenGL symbols.
 # See e.g. https://bugs.launchpad.net/ubuntu/+source/mesa/+bug/1066599
 # -Anssi 12/2012
 
 pushd build-osmesa
-%configure2_5x \
+%configure \
 	--enable-osmesa \
 	--disable-dri \
 	--disable-glx \
@@ -716,7 +715,7 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
 
 # .la files are not needed by mesa
-find %{buildroot} -name '*.la' -exec rm {} \;
+find %{buildroot} -name '*.la' |xargs rm -f
 
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
