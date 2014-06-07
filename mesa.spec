@@ -119,7 +119,7 @@ Version:	10.2.0
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
 %else
-Release:	0.rc%{relc}.2
+Release:	0.rc%{relc}.3
 %endif
 %else
 %if %{git}
