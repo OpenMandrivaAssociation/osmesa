@@ -1,0 +1,86 @@
+--- Mesa-10.2.2/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp.omv~	2014-06-27 15:13:22.156792443 +0200
++++ Mesa-10.2.2/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp	2014-06-27 15:23:10.783782014 +0200
+@@ -57,12 +57,13 @@
+ #include <llvm/MC/MCRegisterInfo.h>
+ #endif /* HAVE_LLVM >= 0x0301 */
+ 
+-#if HAVE_LLVM >= 0x0303
++#if HAVE_LLVM >= 0x0303 && HAVE_LLVM < 0x0305
+ #include <llvm/ADT/OwningPtr.h>
+ #endif
+ 
+ #if HAVE_LLVM >= 0x0305
+ #include <llvm/MC/MCContext.h>
++#include <memory>
+ #endif
+ 
+ #include "util/u_math.h"
+@@ -217,7 +218,9 @@ disassemble(const void* func, llvm::raw_
+    std::string Error;
+    const Target *T = TargetRegistry::lookupTarget(Triple, Error);
+ 
+-#if HAVE_LLVM >= 0x0304
++#if HAVE_LLVM >= 0x0305
++   std::unique_ptr<const MCAsmInfo> AsmInfo(T->createMCAsmInfo(*T->createMCRegInfo(Triple), Triple));
++#elif HAVE_LLVM >= 0x0304
+    OwningPtr<const MCAsmInfo> AsmInfo(T->createMCAsmInfo(*T->createMCRegInfo(Triple), Triple));
+ #elif HAVE_LLVM >= 0x0300
+    OwningPtr<const MCAsmInfo> AsmInfo(T->createMCAsmInfo(Triple));
+@@ -236,7 +239,19 @@ disassemble(const void* func, llvm::raw_
+    int AsmPrinterVariant = AsmInfo->getAssemblerDialect();
+ #endif
+ 
+-#if HAVE_LLVM >= 0x0301
++#if HAVE_LLVM >= 0x0305
++   std::unique_ptr<const MCRegisterInfo> MRI(T->createMCRegInfo(Triple));
++   if (!MRI) {
++      Out << "error: no register info for target " << Triple.c_str() << "\n";
++      return 0;
++   }
++
++   std::unique_ptr<const MCInstrInfo> MII(T->createMCInstrInfo());
++   if (!MII) {
++      Out << "error: no instruction info for target " << Triple.c_str() << "\n";
++      return 0;
++   }
++#elif HAVE_LLVM >= 0x0301
+    OwningPtr<const MCRegisterInfo> MRI(T->createMCRegInfo(Triple));
+    if (!MRI) {
+       Out << "error: no register info for target " << Triple.c_str() << "\n";
+@@ -251,9 +266,9 @@ disassemble(const void* func, llvm::raw_
+ #endif
+ 
+ #if HAVE_LLVM >= 0x0305
+-   OwningPtr<const MCSubtargetInfo> STI(T->createMCSubtargetInfo(Triple, sys::getHostCPUName(), ""));
+-   OwningPtr<MCContext> MCCtx(new MCContext(AsmInfo.get(), MRI.get(), 0));
+-   OwningPtr<const MCDisassembler> DisAsm(T->createMCDisassembler(*STI, *MCCtx));
++   std::unique_ptr<const MCSubtargetInfo> STI(T->createMCSubtargetInfo(Triple, sys::getHostCPUName(), ""));
++   std::unique_ptr<MCContext> MCCtx(new MCContext(AsmInfo.get(), MRI.get(), 0));
++   std::unique_ptr<const MCDisassembler> DisAsm(T->createMCDisassembler(*STI, *MCCtx));
+ #elif HAVE_LLVM >= 0x0300
+    OwningPtr<const MCSubtargetInfo> STI(T->createMCSubtargetInfo(Triple, sys::getHostCPUName(), ""));
+    OwningPtr<const MCDisassembler> DisAsm(T->createMCDisassembler(*STI));
+@@ -266,7 +281,10 @@ disassemble(const void* func, llvm::raw_
+    }
+ 
+ 
+-#if HAVE_LLVM >= 0x0301
++#if HAVE_LLVM >= 0x0305
++   std::unique_ptr<MCInstPrinter> Printer(
++         T->createMCInstPrinter(AsmPrinterVariant, *AsmInfo, *MII, *MRI, *STI));
++#elif HAVE_LLVM >= 0x0301
+    OwningPtr<MCInstPrinter> Printer(
+          T->createMCInstPrinter(AsmPrinterVariant, *AsmInfo, *MII, *MRI, *STI));
+ #elif HAVE_LLVM == 0x0300
+@@ -295,7 +313,11 @@ disassemble(const void* func, llvm::raw_
+ #if defined(DEBUG) || defined(PROFILE)
+    options.NoFramePointerElim = true;
+ #endif
++#if HAVE_LLVM >= 0x0305
++   std::unique_ptr<TargetMachine> TM(T->createTargetMachine(Triple, sys::getHostCPUName(), "", options));
++#else
+    OwningPtr<TargetMachine> TM(T->createTargetMachine(Triple, sys::getHostCPUName(), "", options));
++#endif
+ #elif HAVE_LLVM == 0x0300
+    OwningPtr<TargetMachine> TM(T->createTargetMachine(Triple, sys::getHostCPUName(), ""));
+ #else

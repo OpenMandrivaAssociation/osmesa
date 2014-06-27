@@ -114,7 +114,7 @@
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	10.2.1
+Version:	10.2.2
 %if %{relc}
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
@@ -125,7 +125,7 @@ Release:	0.rc%{relc}.1
 %if %{git}
 Release:	0.%{git}.1
 %else
-Release:	2
+Release:	1
 %endif
 %endif
 Group:		System/Libraries
@@ -153,6 +153,8 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
+# Make it build with more recent llvm 3.5 snapshots
+Patch2: Mesa-10.2.2-llvm-3.5.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
