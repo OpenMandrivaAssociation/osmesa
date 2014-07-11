@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 
 %define git 0
-%define git_branch 10.2
+%define git_branch %(echo %{version} |cut -d. -f1-2)
 
 %define opengl_ver 3.0
 
@@ -114,7 +114,7 @@
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	10.2.2
+Version:	10.2.3
 %if %{relc}
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
