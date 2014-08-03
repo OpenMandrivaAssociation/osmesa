@@ -108,6 +108,7 @@
 %define	dri_drivers_sparc	"ffb,radeon,swrast"
 %define dri_drivers_mipsel	"r200,radeon,swrast"
 %define dri_drivers_arm		"nouveau,r200,radeon,swrast"
+%define dri_drivers_aarch64	"nouveau,r200,radeon,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
 %define short_ver %(if [ `echo %{version} |cut -d. -f3` = "0" ]; then echo %{version} |cut -d. -f1-2; else echo %{version}; fi)
