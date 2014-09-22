@@ -115,7 +115,7 @@
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	10.2.7
+Version:	10.3.0
 %if %{relc}
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
@@ -154,8 +154,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
-# Make it build with more recent llvm 3.5 snapshots
-Patch2: Mesa-10.2.2-llvm-3.5.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -189,7 +187,7 @@ BuildRequires:	makedepend
 BuildRequires:	llvm-devel >= 3.3
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
-BuildRequires:	pkgconfig(libdrm) >= 2.4.22
+BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
 BuildRequires:	pkgconfig(x11)		>= 1.3.3
@@ -221,7 +219,9 @@ BuildRequires:	wayland-devel		>= 1.0.2
 Requires:	%{libgl} = %{version}-%{release}
 
 %description
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
+Mesa is an OpenGL 3.2 compatible 3D graphics library.
+
+%libpackage XvMCgallium 1
 
 %package -n	%{dridrivers}
 Summary:	Mesa DRI drivers
@@ -589,6 +589,7 @@ Mesa common metapackage devel
 %else
 %setup -qn Mesa-%{version}%{vsuffix}
 %endif
+sed -i -e 's,HAVE_COMPAT_SYMLINKS=yes,HAVE_COMPAT_SYMLINKS=no,g' configure.ac
 
 %apply_patches
 chmod +x %{SOURCE5}
@@ -757,6 +758,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %files -n %{dridrivers}-swrast
 %_libdir/dri/swrast_dri.so
+%_libdir/dri/kms_swrast_dri.so
 %_libdir/gallium-pipe/pipe_swrast.so
 
 %ifarch %arm aarch64
@@ -834,6 +836,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %doc docs/COPYING
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
+%{_includedir}/GL/glcorearb.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/wglext.h
