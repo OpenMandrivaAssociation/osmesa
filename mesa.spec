@@ -4,7 +4,7 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-%define git 0
+%define git 20141028
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 %define opengl_ver 3.0
@@ -115,7 +115,7 @@
 
 Summary:	OpenGL 3.0 compatible 3D graphics library
 Name:		mesa
-Version:	10.3.2
+Version:	10.4.0
 %if %{relc}
 %if %{git}
 Release:	0.rc%{relc}.0.%{git}.1
@@ -748,7 +748,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{dridrivers}-intel
 %_libdir/dri/i9?5_dri.so
 %_libdir/dri/ilo_dri.so
-%_libdir/gallium-pipe/pipe_i915.so
+%_libdir/gallium-pipe/pipe_i9?5.so
 %endif
 
 %files -n %{dridrivers}-nouveau
