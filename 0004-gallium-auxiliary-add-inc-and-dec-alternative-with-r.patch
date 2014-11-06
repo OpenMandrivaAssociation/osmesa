@@ -1,0 +1,157 @@
+From e9f00d0ddb6e54b861b08a0bf2d90c7cec574abf Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <christoph.bumiller@speed.at>
+Date: Sat, 18 Oct 2014 12:21:21 +0200
+Subject: [PATCH 04/34] gallium/auxiliary: add inc and dec alternative with
+ return (v2)
+
+At this moment we use only zero or positive values.
+
+v2: Implement it for also for Solaris, MSVC assembly
+    and enable for other combinations.
+
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ src/gallium/auxiliary/util/u_atomic.h | 78 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
+
+diff --git a/src/gallium/auxiliary/util/u_atomic.h b/src/gallium/auxiliary/util/u_atomic.h
+index 2f2b42b..f177b60 100644
+--- a/src/gallium/auxiliary/util/u_atomic.h
++++ b/src/gallium/auxiliary/util/u_atomic.h
+@@ -69,6 +69,18 @@ p_atomic_dec(int32_t *v)
+ }
+ 
+ static INLINE int32_t
++p_atomic_inc_return(int32_t *v)
++{
++   return __sync_add_and_fetch(v, 1);
++}
++
++static INLINE int32_t
++p_atomic_dec_return(int32_t *v)
++{
++   return __sync_sub_and_fetch(v, 1);
++}
++
++static INLINE int32_t
+ p_atomic_cmpxchg(int32_t *v, int32_t old, int32_t _new)
+ {
+    return __sync_val_compare_and_swap(v, old, _new);
+@@ -116,6 +128,18 @@ p_atomic_dec(int32_t *v)
+ }
+ 
+ static INLINE int32_t
++p_atomic_inc_return(int32_t *v)
++{
++   return __sync_add_and_fetch(v, 1);
++}
++
++static INLINE int32_t
++p_atomic_dec_return(int32_t *v)
++{
++   return __sync_sub_and_fetch(v, 1);
++}
++
++static INLINE int32_t
+ p_atomic_cmpxchg(int32_t *v, int32_t old, int32_t _new)
+ {
+    return __sync_val_compare_and_swap(v, old, _new);
+@@ -161,6 +185,18 @@ p_atomic_dec(int32_t *v)
+ }
+ 
+ static INLINE int32_t
++p_atomic_inc_return(int32_t *v)
++{
++   return __sync_add_and_fetch(v, 1);
++}
++
++static INLINE int32_t
++p_atomic_dec_return(int32_t *v)
++{
++   return __sync_sub_and_fetch(v, 1);
++}
++
++static INLINE int32_t
+ p_atomic_cmpxchg(int32_t *v, int32_t old, int32_t _new)
+ {
+    return __sync_val_compare_and_swap(v, old, _new);
+@@ -186,6 +222,8 @@ p_atomic_cmpxchg(int32_t *v, int32_t old, int32_t _new)
+ #define p_atomic_dec_zero(_v) ((boolean) --(*(_v)))
+ #define p_atomic_inc(_v) ((void) (*(_v))++)
+ #define p_atomic_dec(_v) ((void) (*(_v))--)
++#define p_atomic_inc_return(_v) ((*(_v))++)
++#define p_atomic_dec_return(_v) ((*(_v))--)
+ #define p_atomic_cmpxchg(_v, old, _new) (*(_v) == old ? *(_v) = (_new) : *(_v))
+ 
+ #endif
+@@ -237,6 +275,32 @@ p_atomic_dec(int32_t *v)
+ }
+ 
+ static INLINE int32_t
++p_atomic_inc_return(int32_t *v)
++{
++   int32_t i;
++
++   __asm {
++      mov       eax, [v]
++      lock inc  dword ptr [eax]
++      mov       [i], eax
++   }
++   return i;
++}
++
++static INLINE int32_t
++p_atomic_dec_return(int32_t *v)
++{
++   int32_t i;
++
++   __asm {
++      mov       eax, [v]
++      lock dec  dword ptr [eax]
++      mov       [i], eax
++   }
++   return i;
++}
++
++static INLINE int32_t
+ p_atomic_cmpxchg(int32_t *v, int32_t old, int32_t _new)
+ {
+    int32_t orig;
+@@ -288,6 +352,12 @@ p_atomic_inc(int32_t *v)
+    _InterlockedIncrement((long *)v);
+ }
+ 
++static INLINE int32_t
++p_atomic_inc_return(int32_t *v)
++{
++   return _InterlockedIncrement((long *)v);
++}
++
+ static INLINE void
+ p_atomic_dec(int32_t *v)
+ {
+@@ -295,6 +365,12 @@ p_atomic_dec(int32_t *v)
+ }
+ 
+ static INLINE int32_t
++p_atomic_dec_return(int32_t *v)
++{
++   return _InterlockedDecrement((long *)v);
++}
++
++static INLINE int32_t
+ p_atomic_cmpxchg(int32_t *v, int32_t old, int32_t _new)
+ {
+    return _InterlockedCompareExchange((long *)v, _new, old);
+@@ -329,6 +405,8 @@ p_atomic_dec_zero(int32_t *v)
+ 
+ #define p_atomic_inc(_v) atomic_inc_32((uint32_t *) _v)
+ #define p_atomic_dec(_v) atomic_dec_32((uint32_t *) _v)
++#define p_atomic_inc_return(_v) atomic_inc_32_nv((uint32_t *) _v)
++#define p_atomic_dec_return(_v) atomic_dec_32_nv((uint32_t *) _v)
+ 
+ #define p_atomic_cmpxchg(_v, _old, _new) \
+ 	atomic_cas_32( (uint32_t *) _v, (uint32_t) _old, (uint32_t) _new)
+-- 
+2.1.3
+

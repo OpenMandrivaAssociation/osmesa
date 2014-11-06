@@ -1,0 +1,74 @@
+From cba4e5ac5a6defac42b2741df2533d6804442cbc Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <e0425955@student.tuwien.ac.at>
+Date: Sat, 31 May 2014 23:13:24 +0200
+Subject: [PATCH 22/34] gallium: add blending to pipe blit
+
+Following nouveau commit make use of these.
+
+Signed-off-by: David Heidelberger <david.heidelberger@ixit.cz>
+---
+ src/gallium/include/pipe/p_state.h           | 1 +
+ src/gallium/state_trackers/nine/device9.c    | 1 +
+ src/gallium/state_trackers/nine/swapchain9.c | 2 ++
+ src/mesa/state_tracker/st_cb_blit.c          | 1 +
+ 4 files changed, 5 insertions(+)
+
+diff --git a/src/gallium/include/pipe/p_state.h b/src/gallium/include/pipe/p_state.h
+index 7b9996d..b7adb99 100644
+--- a/src/gallium/include/pipe/p_state.h
++++ b/src/gallium/include/pipe/p_state.h
+@@ -619,6 +619,7 @@ struct pipe_blit_info
+ 
+    boolean render_condition_enable; /**< whether the blit should honor the
+                                     current render condition */
++   boolean alpha_blend; /* dst.rgb = src.rgb * src.a + dst.rgb * (1 - src.a) */
+ };
+ 
+ 
+diff --git a/src/gallium/state_trackers/nine/device9.c b/src/gallium/state_trackers/nine/device9.c
+index d48a523..7f2e4d8 100644
+--- a/src/gallium/state_trackers/nine/device9.c
++++ b/src/gallium/state_trackers/nine/device9.c
+@@ -1283,6 +1283,7 @@ NineDevice9_StretchRect( struct NineDevice9 *This,
+     blit.filter = Filter == D3DTEXF_LINEAR ?
+        PIPE_TEX_FILTER_LINEAR : PIPE_TEX_FILTER_NEAREST;
+     blit.scissor_enable = FALSE;
++    blit.alpha_blend = FALSE;
+ 
+     /* If both of a src and dst dimension are negative, flip them. */
+     if (blit.dst.box.width < 0 && blit.src.box.width < 0) {
+diff --git a/src/gallium/state_trackers/nine/swapchain9.c b/src/gallium/state_trackers/nine/swapchain9.c
+index ffa89b2..f18cfd8 100644
+--- a/src/gallium/state_trackers/nine/swapchain9.c
++++ b/src/gallium/state_trackers/nine/swapchain9.c
+@@ -554,6 +554,7 @@ handle_draw_cursor_and_hud( struct NineSwapChain9 *This, struct pipe_resource *r
+             blit.src.box.width, blit.src.box.height,
+             blit.dst.box.x, blit.dst.box.y);
+ 
++        blit.alpha_blend = TRUE;
+         This->pipe->blit(This->pipe, &blit);
+     }
+ 
+@@ -670,6 +671,7 @@ present( struct NineSwapChain9 *This,
+         blit.mask = PIPE_MASK_RGBA;
+         blit.filter = PIPE_TEX_FILTER_NEAREST;
+         blit.scissor_enable = FALSE;
++        blit.alpha_blend = FALSE;
+ 
+         This->pipe->blit(This->pipe, &blit);
+     }
+diff --git a/src/mesa/state_tracker/st_cb_blit.c b/src/mesa/state_tracker/st_cb_blit.c
+index 9c33f4e..93b5c4f 100644
+--- a/src/mesa/state_tracker/st_cb_blit.c
++++ b/src/mesa/state_tracker/st_cb_blit.c
+@@ -188,6 +188,7 @@ st_BlitFramebuffer(struct gl_context *ctx,
+ 
+    blit.filter = pFilter;
+    blit.render_condition_enable = TRUE;
++   blit.alpha_blend = FALSE;
+ 
+    if (mask & GL_COLOR_BUFFER_BIT) {
+       struct gl_renderbuffer_attachment *srcAtt =
+-- 
+2.1.3
+

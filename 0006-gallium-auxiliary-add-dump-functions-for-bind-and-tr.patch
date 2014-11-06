@@ -1,0 +1,142 @@
+From f28d3fd2f835d234c7a33bdb5b361fd8f2b001c4 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <christoph.bumiller@speed.at>
+Date: Sat, 18 Oct 2014 10:54:46 +0200
+Subject: [PATCH 06/34] gallium/auxiliary: add dump functions for bind and
+ transfer flags
+
+v2: rename and extend support with code for C11 and MSVC (thanks to Brian)
+
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ src/gallium/auxiliary/util/u_dump.h         |  6 ++
+ src/gallium/auxiliary/util/u_dump_defines.c | 86 +++++++++++++++++++++++++++++
+ 2 files changed, 92 insertions(+)
+
+diff --git a/src/gallium/auxiliary/util/u_dump.h b/src/gallium/auxiliary/util/u_dump.h
+index 58e7dfd..84ba1ed 100644
+--- a/src/gallium/auxiliary/util/u_dump.h
++++ b/src/gallium/auxiliary/util/u_dump.h
+@@ -88,6 +88,12 @@ util_dump_tex_filter(unsigned value, boolean shortened);
+ const char *
+ util_dump_query_type(unsigned value, boolean shortened);
+ 
++const char *
++util_dump_bind_flags(unsigned flags);
++
++const char *
++util_dump_transfer_flags(unsigned flags);
++
+ 
+ /*
+  * p_state.h, through a FILE
+diff --git a/src/gallium/auxiliary/util/u_dump_defines.c b/src/gallium/auxiliary/util/u_dump_defines.c
+index 03fd15d..20ae6c0 100644
+--- a/src/gallium/auxiliary/util/u_dump_defines.c
++++ b/src/gallium/auxiliary/util/u_dump_defines.c
+@@ -61,6 +61,36 @@ util_dump_enum_continuous(unsigned value,
+    return names[value];
+ }
+ 
++static const char *
++util_dump_flags(unsigned flags, const char *prefix,
++                unsigned num_names,
++                const char **names)
++{
++#if __STDC_VERSION__ >= 201112 && !defined __STDC_NO_THREADS__
++   static _Thread_local char str[256];
++#elif defined(PIPE_CC_GCC)
++   static __thread char str[256];
++#elif defined(PIPE_CC_MSVC)
++   static __declspec(thread) char str[256];
++#else
++#error "Unsupported compiler: please find how to implement thread local storage on it"
++#endif
++   int i, pos;
++
++   if (!flags)
++      return "";
++   pos = snprintf(str, Elements(str), "%s_", prefix);
++
++   for (i = 0; (i < num_names) && flags; flags >>= 1, ++i) {
++      if (flags & 1) {
++         pos += snprintf(&str[pos], Elements(str) - pos, "%s", names[i]);
++         if (flags & ~1)
++            pos += snprintf(&str[pos], Elements(str) - pos, "|");
++      }
++   }
++   return str;
++}
++
+ 
+ #define DEFINE_UTIL_DUMP_CONTINUOUS(_name) \
+    const char * \
+@@ -90,6 +120,14 @@ util_dump_enum_continuous(unsigned value,
+    }
+ 
+ 
++#define DEFINE_UTIL_DUMP_FLAGS(_prefix, _name)   \
++   const char * \
++   util_dump_##_name##_flags(unsigned flags) \
++   { \
++      return util_dump_flags(flags, _prefix, Elements(util_dump_##_name##_flag_names), util_dump_##_name##_flag_names); \
++   }
++
++
+ static const char *
+ util_dump_blend_factor_names[] = {
+    UTIL_DUMP_INVALID_NAME, /* 0x0 */
+@@ -392,3 +430,51 @@ util_dump_query_type_short_names[] = {
+ };
+ 
+ DEFINE_UTIL_DUMP_CONTINUOUS(query_type)
++
++
++static const char *
++util_dump_bind_flag_names[] = {
++   "DEPTH_STENCIL",
++   "RENDER_TARGET",
++   "BLENDABLE",
++   "SAMPLER_VIEW",
++   "VERTEX_BUFFER",
++   "INDEX_BUFFER",
++   "CONSTANT_BUFFER",
++   "(7)",
++   "DISPLAY_TARGET",
++   "TRANSFER_WRITE",
++   "TRANSFER_READ",
++   "STREAM_OUTPUT",
++   "(12)",
++   "(13)",
++   "(14)",
++   "(15)",
++   "CURSOR",
++   "CUSTOM",
++   "GLOBAL",
++   "SHADER_RESOURCE",
++   "COMPUTE_RESOURCE"
++};
++
++DEFINE_UTIL_DUMP_FLAGS("PIPE_BIND", bind)
++
++
++static const char *
++util_dump_transfer_flag_names[] = {
++   "READ",
++   "WRITE",
++   "MAP_DIRECTLY",
++   "(3)",
++   "(4)",
++   "(5)",
++   "(6)",
++   "(7)",
++   "DISCARD_RANGE",
++   "DONTBLOCK",
++   "UNSYNCHRONIZED",
++   "FLUSH_EXPLICIT",
++   "DISCARD_WHOLE_RESOURCE"
++};
++
++DEFINE_UTIL_DUMP_FLAGS("", transfer)
+-- 
+2.1.3
+

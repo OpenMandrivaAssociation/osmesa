@@ -1,0 +1,27 @@
+From b8a7f5df700feac63dca93e58f595bebf696436f Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <christoph.bumiller@speed.at>
+Date: Thu, 6 Jun 2013 17:15:13 +0200
+Subject: [PATCH 24/34] nvc0: NULL vertex buffers are allowed
+
+---
+ src/gallium/drivers/nouveau/nvc0/nvc0_vbo.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_vbo.c b/src/gallium/drivers/nouveau/nvc0/nvc0_vbo.c
+index 0911eb2..eeaf5ce 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_vbo.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_vbo.c
+@@ -397,6 +397,10 @@ nvc0_validate_vertex_buffers_shared(struct nvc0_context *nvc0)
+          /* address/value set in nvc0_update_user_vbufs_shared */
+          continue;
+       }
++      if (!vb->buffer) {
++         IMMED_NVC0(push, NVC0_3D(VERTEX_ARRAY_FETCH(b)), 0);
++         continue;
++      }
+       buf = nv04_resource(vb->buffer);
+       offset = vb->buffer_offset;
+       limit = buf->base.width0 - 1;
+-- 
+2.1.3
+

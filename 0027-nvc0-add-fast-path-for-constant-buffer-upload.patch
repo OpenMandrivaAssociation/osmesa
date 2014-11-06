@@ -1,0 +1,72 @@
+From 0eeb3ca60dd7f1a6e93d8aceabdd70fb480a9dc3 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <christoph.bumiller@speed.at>
+Date: Mon, 17 Jun 2013 11:27:09 +0200
+Subject: [PATCH 27/34] nvc0: add fast-path for constant buffer upload
+
+Saves a memcpy, and increased threshold for push method, which is
+usually better because there's no subchannel switch.
+
+Reviewed-by: David Heidelberger <david.heidelberger@ixit.cz>
+Signed-off-by: Tiziano Bacocco <tizbac2@gmail.com>
+Author: Christoph Bumiller <christoph.bumiller@speed.at>
+---
+ src/gallium/drivers/nouveau/nouveau_buffer.c | 36 +++++++++++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/nouveau/nouveau_buffer.c b/src/gallium/drivers/nouveau/nouveau_buffer.c
+index 49ff100..c077a3b 100644
+--- a/src/gallium/drivers/nouveau/nouveau_buffer.c
++++ b/src/gallium/drivers/nouveau/nouveau_buffer.c
+@@ -594,6 +594,40 @@ nouveau_copy_buffer(struct nouveau_context *nv,
+ }
+ 
+ 
++/* We want to special-case constant buffer upload. */
++static void
++nouveau_buffer_transfer_inline_write(struct pipe_context *pipe,
++                                     struct pipe_resource *resource,
++                                     unsigned level,
++                                     unsigned usage,
++                                     const struct pipe_box *box,
++                                     const void *data,
++                                     unsigned stride,
++                                     unsigned layer_stride)
++{
++   struct nouveau_context *nv = nouveau_context(pipe);
++   struct pipe_transfer *transfer;
++   uint8_t *map;
++
++   assert(box->height == 1 && box->depth == 1);
++   assert(!(usage & (PIPE_TRANSFER_READ |
++                     PIPE_TRANSFER_MAP_DIRECTLY |
++                     PIPE_TRANSFER_FLUSH_EXPLICIT)));
++
++   if ((resource->bind & PIPE_BIND_CONSTANT_BUFFER) &&
++       nv->push_cb &&
++       !((box->x | box->width) & 3) &&
++       box->width < (1 << 12)) {
++      struct nv04_resource *buf = nv04_resource(resource);
++      nv->push_cb(nv,
++                  buf->bo, buf->domain, buf->offset, buf->base.width0,
++                  box->x, box->width / 4, data);
++   } else {
++      u_default_transfer_inline_write(pipe,resource,level,usage,box,data,stride,layer_stride);
++   }
++}
++
++
+ void *
+ nouveau_resource_map_offset(struct nouveau_context *nv,
+                             struct nv04_resource *res, uint32_t offset,
+@@ -630,7 +664,7 @@ const struct u_resource_vtbl nouveau_buffer_vtbl =
+    nouveau_buffer_transfer_map,          /* transfer_map */
+    nouveau_buffer_transfer_flush_region, /* transfer_flush_region */
+    nouveau_buffer_transfer_unmap,        /* transfer_unmap */
+-   u_default_transfer_inline_write    /* transfer_inline_write */
++   nouveau_buffer_transfer_inline_write  /* transfer_inline_write */
+ };
+ 
+ struct pipe_resource *
+-- 
+2.1.3
+

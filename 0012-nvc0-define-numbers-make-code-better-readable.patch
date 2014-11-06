@@ -1,0 +1,143 @@
+From f66edbb30fc8de75a0c0768d346b843c3a4251e1 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <e0425955@student.tuwien.ac.at>
+Date: Wed, 27 Aug 2014 01:36:18 +0200
+Subject: [PATCH 12/34] nvc0: define numbers, make code better readable
+
+Signed-off-by: David Heidelberger <david.heidelberger@ixit.cz>
+---
+ src/gallium/drivers/nouveau/nvc0/nvc0_screen.c      | 12 ++++++------
+ src/gallium/drivers/nouveau/nvc0/nvc0_screen.h      | 21 +++++++++++++++++++++
+ .../drivers/nouveau/nvc0/nvc0_state_validate.c      | 16 ++++++++--------
+ src/gallium/drivers/nouveau/nvc0/nvc0_tex.c         |  6 +++---
+ 4 files changed, 38 insertions(+), 17 deletions(-)
+
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c b/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c
+index 88fc926..fdbcc64 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c
+@@ -802,7 +802,7 @@ nvc0_screen_create(struct nouveau_device *dev)
+       PUSH_DATA (push, NVC0_3D_TEX_MISC_SEAMLESS_CUBE_MAP);
+    } else {
+       BEGIN_NVC0(push, NVE4_3D(TEX_CB_INDEX), 1);
+-      PUSH_DATA (push, 15);
++      PUSH_DATA (push, NVC0_CB_AUX_SLOT);
+    }
+    BEGIN_NVC0(push, NVC0_3D(CALL_LIMIT_LOG), 1);
+    PUSH_DATA (push, 8); /* 128 */
+@@ -857,9 +857,9 @@ nvc0_screen_create(struct nouveau_device *dev)
+ 
+    /* return { 0.0, 0.0, 0.0, 0.0 } for out-of-bounds vtxbuf access */
+    BEGIN_NVC0(push, NVC0_3D(CB_SIZE), 3);
+-   PUSH_DATA (push, 256);
+-   PUSH_DATAh(push, screen->uniform_bo->offset + (5 << 16) + (6 << 9));
+-   PUSH_DATA (push, screen->uniform_bo->offset + (5 << 16) + (6 << 9));
++   PUSH_DATA (push, NVC0_CB_AUX_UCP_OFFSET);
++   PUSH_DATAh(push, screen->uniform_bo->offset + NVC0_CB_AUX_BASE(6));
++   PUSH_DATA (push, screen->uniform_bo->offset + NVC0_CB_AUX_BASE(6));
+    BEGIN_1IC0(push, NVC0_3D(CB_POS), 5);
+    PUSH_DATA (push, 0);
+    PUSH_DATAf(push, 0.0f);
+@@ -867,8 +867,8 @@ nvc0_screen_create(struct nouveau_device *dev)
+    PUSH_DATAf(push, 0.0f);
+    PUSH_DATAf(push, 0.0f);
+    BEGIN_NVC0(push, NVC0_3D(VERTEX_RUNOUT_ADDRESS_HIGH), 2);
+-   PUSH_DATAh(push, screen->uniform_bo->offset + (5 << 16) + (6 << 9));
+-   PUSH_DATA (push, screen->uniform_bo->offset + (5 << 16) + (6 << 9));
++   PUSH_DATAh(push, screen->uniform_bo->offset + NVC0_CB_AUX_BASE(6));
++   PUSH_DATA (push, screen->uniform_bo->offset + NVC0_CB_AUX_BASE(6));
+ 
+    if (dev->drm_version >= 0x01000101) {
+       ret = nouveau_getparam(dev, NOUVEAU_GETPARAM_GRAPH_UNITS, &value);
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_screen.h b/src/gallium/drivers/nouveau/nvc0/nvc0_screen.h
+index 4802057..e700421 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_screen.h
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_screen.h
+@@ -18,6 +18,27 @@
+ #define NVC0_MAX_PIPE_CONSTBUFS         14
+ #define NVE4_MAX_PIPE_CONSTBUFS_COMPUTE  7
+ 
++/* auxiliary CB layout */
++#define NVC0_CB_AUX_SLOT               15
++#define NVC0_CB_AUX_STAGE_STRIDE      (1 << 9)
++#define NVC0_CB_AUX_BASE(s)           ((5 << 16) + ((s) << 9))
++#define NVC0_CB_AUX_SIZE               0x200
++#define NVE4_CB_AUX_TEX_BIND_OFFSET    0x020
++#define NVE4_CB_AUX_TEX_BIND_BASE(s)  (NVC0_CB_AUX_BASE(s) + 0x020)
++#define NVE4_CB_AUX_TEX_BIND_SIZE      0x80
++#define NVC0_CB_AUX_UCP_OFFSET         0x100
++#define NVC0_CB_AUX_UCP_BASE(s)       (NVC0_CB_AUX_BASE(s) + 0x100)
++#define NVC0_CB_AUX_UCP_SIZE           0x80
++#define NVC0_CB_AUX_MS_INFO_OFFSET     0x180
++#define NVC0_CB_AUX_MS_INFO_BASE      (NVC0_CB_AUX_BASE(s) + 0x180)
++#define NVC0_CB_AUX_MS_INFO_SIZE       0x70
++#define NVC0_CB_AUX_FCOORD_ADJ_OFFSET  0x1f0
++#define NVC0_CB_AUX_FCOORD_ADJ_BASE   (NVC0_CB_AUX_BASE(s) + 0x1f0)
++#define NVC0_CB_AUX_FCOORD_ADJ_SIZE    0x10
++#define NVE4_CB_AUX_SU_INFO_OFFSET     0x200
++#define NVE4_CB_AUX_SU_INFO_BASE      (NVC0_CB_AUX_BASE(s) + 0x200)
++#define NVE4_CB_AUX_SU_INFO_SIZE       0x400
++
+ #define NVC0_MAX_SURFACE_SLOTS 16
+ 
+ #define NVC0_MAX_VIEWPORTS 16
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_state_validate.c b/src/gallium/drivers/nouveau/nvc0/nvc0_state_validate.c
+index 25a3232..dd7201b 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_state_validate.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_state_validate.c
+@@ -182,11 +182,11 @@ nvc0_validate_fb(struct nvc0_context *nvc0)
+ 
+     ms = 1 << ms_mode;
+     BEGIN_NVC0(push, NVC0_3D(CB_SIZE), 3);
+-    PUSH_DATA (push, 512);
+-    PUSH_DATAh(push, nvc0->screen->uniform_bo->offset + (5 << 16) + (4 << 9));
+-    PUSH_DATA (push, nvc0->screen->uniform_bo->offset + (5 << 16) + (4 << 9));
++    PUSH_DATA (push, NVC0_CB_AUX_SIZE);
++    PUSH_DATAh(push, nvc0->screen->uniform_bo->offset + NVC0_CB_AUX_BASE(4));
++    PUSH_DATA (push, nvc0->screen->uniform_bo->offset + NVC0_CB_AUX_BASE(4));
+     BEGIN_1IC0(push, NVC0_3D(CB_POS), 1 + 2 * ms);
+-    PUSH_DATA (push, 256 + 128);
++    PUSH_DATA (push, NVC0_CB_AUX_UCP_OFFSET + 128);
+     for (i = 0; i < ms; i++) {
+        float xy[2];
+        nvc0->base.pipe.get_sample_position(&nvc0->base.pipe, ms, i, xy);
+@@ -316,11 +316,11 @@ nvc0_upload_uclip_planes(struct nvc0_context *nvc0, unsigned s)
+    struct nouveau_bo *bo = nvc0->screen->uniform_bo;
+ 
+    BEGIN_NVC0(push, NVC0_3D(CB_SIZE), 3);
+-   PUSH_DATA (push, 512);
+-   PUSH_DATAh(push, bo->offset + (5 << 16) + (s << 9));
+-   PUSH_DATA (push, bo->offset + (5 << 16) + (s << 9));
++   PUSH_DATA (push, NVC0_CB_AUX_SIZE);
++   PUSH_DATAh(push, bo->offset + NVC0_CB_AUX_BASE(s));
++   PUSH_DATA (push, bo->offset + NVC0_CB_AUX_BASE(s));
+    BEGIN_1IC0(push, NVC0_3D(CB_POS), PIPE_MAX_CLIP_PLANES * 4 + 1);
+-   PUSH_DATA (push, 256);
++   PUSH_DATA (push, NVC0_CB_AUX_UCP_OFFSET);
+    PUSH_DATAp(push, &nvc0->clip.ucp[0][0], PIPE_MAX_CLIP_PLANES * 4);
+ }
+ 
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_tex.c b/src/gallium/drivers/nouveau/nvc0/nvc0_tex.c
+index db6b603..3dec789 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_tex.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_tex.c
+@@ -497,14 +497,14 @@ nve4_set_tex_handles(struct nvc0_context *nvc0)
+ 
+    if (nvc0->screen->base.class_3d < NVE4_3D_CLASS)
+       return;
+-   address = nvc0->screen->uniform_bo->offset + (5 << 16);
++   address = nvc0->screen->uniform_bo->offset + NVC0_CB_AUX_BASE(0);
+ 
+-   for (s = 0; s < 5; ++s, address += (1 << 9)) {
++   for (s = 0; s < 5; ++s, address += NVC0_CB_AUX_STAGE_STRIDE) {
+       uint32_t dirty = nvc0->textures_dirty[s] | nvc0->samplers_dirty[s];
+       if (!dirty)
+          continue;
+       BEGIN_NVC0(push, NVC0_3D(CB_SIZE), 3);
+-      PUSH_DATA (push, 512);
++      PUSH_DATA (push, NVC0_CB_AUX_SIZE);
+       PUSH_DATAh(push, address);
+       PUSH_DATA (push, address);
+       do {
+-- 
+2.1.3
+

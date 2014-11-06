@@ -1,0 +1,34 @@
+From 1ce2d3d19bde4c935073f1d916dba5fd31124e23 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <christoph.bumiller@speed.at>
+Date: Sat, 15 Jun 2013 23:11:09 +0200
+Subject: [PATCH 26/34] nvc0: reset constant vertex attribute data after blit
+
+To make wine's test_vshader_input happy.
+---
+ src/gallium/drivers/nouveau/nvc0/nvc0_surface.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c b/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c
+index b470676..ac44b36 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c
+@@ -1205,7 +1205,15 @@ nvc0_blit_3d(struct nvc0_context *nvc0, const struct pipe_blit_info *info)
+    }
+    if (info->dst.box.z + info->dst.box.depth - 1)
+       IMMED_NVC0(push, NVC0_3D(LAYER), 0);
+-
++#if 1
++   /* reset constant vertex attribute (be nice to d3d9/st) */
++   BEGIN_NVC0(push, NVC0_3D(VTX_ATTR_DEFINE), 2);
++   PUSH_DATA (push, 0x21400);
++   PUSH_DATA (push, 0);
++   BEGIN_NVC0(push, NVC0_3D(VTX_ATTR_DEFINE), 2);
++   PUSH_DATA (push, 0x21401);
++   PUSH_DATA (push, 0);
++#endif
+    nvc0_blitctx_post_blit(blit);
+ 
+    /* restore viewport transform */
+-- 
+2.1.3
+

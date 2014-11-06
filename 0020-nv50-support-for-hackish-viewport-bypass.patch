@@ -1,0 +1,64 @@
+From a933101bc6a9d200ecce5a062ea79bd3d8923e51 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <e0425955@student.tuwien.ac.at>
+Date: Tue, 28 May 2013 21:39:07 +0200
+Subject: [PATCH 20/34] nv50: support for hackish viewport bypass
+
+---
+ src/gallium/drivers/nouveau/nv50/nv50_context.h        |  1 +
+ src/gallium/drivers/nouveau/nv50/nv50_state_validate.c | 10 ++++++----
+ src/gallium/drivers/nouveau/nv50/nv50_surface.c        |  6 ++++--
+ 3 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/src/gallium/drivers/nouveau/nv50/nv50_context.h b/src/gallium/drivers/nouveau/nv50/nv50_context.h
+index 047e089..e4f3831 100644
+--- a/src/gallium/drivers/nouveau/nv50/nv50_context.h
++++ b/src/gallium/drivers/nouveau/nv50/nv50_context.h
+@@ -117,6 +117,7 @@ struct nv50_context {
+       boolean rt_serialize;
+       boolean flushed;
+       boolean rasterizer_discard;
++      boolean vport_bypass;
+       uint8_t tls_required;
+       boolean new_tls_space;
+       uint8_t num_vtxbufs;
+diff --git a/src/gallium/drivers/nouveau/nv50/nv50_state_validate.c b/src/gallium/drivers/nouveau/nv50/nv50_state_validate.c
+index 7eb724c..15d5440 100644
+--- a/src/gallium/drivers/nouveau/nv50/nv50_state_validate.c
++++ b/src/gallium/drivers/nouveau/nv50/nv50_state_validate.c
+@@ -233,10 +233,12 @@ nv50_validate_scissor(struct nv50_context *nv50)
+          maxy = nv50->framebuffer.height;
+       }
+ 
+-      minx = MAX2(minx, (int)(vp->translate[0] - fabsf(vp->scale[0])));
+-      maxx = MIN2(maxx, (int)(vp->translate[0] + fabsf(vp->scale[0])));
+-      miny = MAX2(miny, (int)(vp->translate[1] - fabsf(vp->scale[1])));
+-      maxy = MIN2(maxy, (int)(vp->translate[1] + fabsf(vp->scale[1])));
++      if (!nv50->state.vport_bypass) {
++         minx = MAX2(minx, (int)(vp->translate[0] - fabsf(vp->scale[0])));
++         maxx = MIN2(maxx, (int)(vp->translate[0] + fabsf(vp->scale[0])));
++         miny = MAX2(miny, (int)(vp->translate[1] - fabsf(vp->scale[1])));
++         maxy = MIN2(maxy, (int)(vp->translate[1] + fabsf(vp->scale[1])));
++      }
+ 
+       minx = MIN2(minx, 8192);
+       maxx = MAX2(maxx, 0);
+diff --git a/src/gallium/drivers/nouveau/nv50/nv50_surface.c b/src/gallium/drivers/nouveau/nv50/nv50_surface.c
+index e1d2b26..56f81fb 100644
+--- a/src/gallium/drivers/nouveau/nv50/nv50_surface.c
++++ b/src/gallium/drivers/nouveau/nv50/nv50_surface.c
+@@ -1248,8 +1248,10 @@ nv50_blit_3d(struct nv50_context *nv50, const struct pipe_blit_info *info)
+ 
+    /* re-enable normally constant state */
+ 
+-   BEGIN_NV04(push, NV50_3D(VIEWPORT_TRANSFORM_EN), 1);
+-   PUSH_DATA (push, 1);
++   if (!nv50->state.vport_bypass) {
++      BEGIN_NV04(push, NV50_3D(VIEWPORT_TRANSFORM_EN), 1);
++      PUSH_DATA (push, 1);
++   }
+ 
+    nv50_blitctx_post_blit(blit);
+ }
+-- 
+2.1.3
+

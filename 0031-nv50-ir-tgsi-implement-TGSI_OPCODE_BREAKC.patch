@@ -1,0 +1,35 @@
+From 009f2fe412134ee8fbf30d79dc113f6ee04a34b2 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <christoph.bumiller@speed.at>
+Date: Fri, 5 Jul 2013 01:08:09 +0200
+Subject: [PATCH 31/34] nv50/ir/tgsi: implement TGSI_OPCODE_BREAKC
+
+---
+ src/gallium/drivers/nouveau/codegen/nv50_ir_from_tgsi.cpp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/src/gallium/drivers/nouveau/codegen/nv50_ir_from_tgsi.cpp b/src/gallium/drivers/nouveau/codegen/nv50_ir_from_tgsi.cpp
+index eef3508..75b085f 100644
+--- a/src/gallium/drivers/nouveau/codegen/nv50_ir_from_tgsi.cpp
++++ b/src/gallium/drivers/nouveau/codegen/nv50_ir_from_tgsi.cpp
+@@ -2784,6 +2784,18 @@ Converter::handleInstruction(const struct tgsi_full_instruction *insn)
+       bb->cfg.attach(&brkBB->cfg, Graph::Edge::CROSS);
+    }
+       break;
++   case TGSI_OPCODE_BREAKC:
++   {
++      if (bb->isTerminated())
++         break;
++      BasicBlock *nopBB = new BasicBlock(func);
++      BasicBlock *brkBB = reinterpret_cast<BasicBlock *>(breakBBs.peek().u.p);
++      mkFlow(OP_BREAK, brkBB, CC_P, fetchSrc(0, 0));
++      bb->cfg.attach(&brkBB->cfg, Graph::Edge::CROSS);
++      bb->cfg.attach(&nopBB->cfg, Graph::Edge::FORWARD);
++      setPosition(nopBB, true);
++   }
++      break;
+    case TGSI_OPCODE_CONT:
+    {
+       if (bb->isTerminated())
+-- 
+2.1.3
+

@@ -4,7 +4,7 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-%define git 20141028
+%define git 20141106
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 %define opengl_ver 3.0
@@ -58,6 +58,11 @@
 %define devglesv2	%mklibname %{glesv2name} -d
 
 %define devglesv3	%mklibname glesv3 -d
+
+%define d3dmajor	0
+%define d3dname		d3dadapter9
+%define libd3d		%mklibname %{d3dname} %{d3dmajor}
+%define devd3d		%mklibname %{d3dname} -d
 
 %define openvgmajor	1
 %define openvgname	openvg
@@ -178,6 +183,50 @@ Patch15: mesa-9.2-hardware-float.patch
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
+
+# Direct3D patchset -- https://wiki.ixit.cz/d3d9
+#
+# git clone git://anongit.freedesktop.org/git/mesa/mesa
+# git remote add ixit https://github.com/iXit/Mesa-3D
+# git fetch ixit
+# git checkout -b d3d9 ixit/master
+# git rebase origin/master
+# git format-patch origin/master
+# ( for i in 00*.patch; do PN=`echo $i |cut -b1-4 |sed 's,^0*,,g'`; echo Patch$((PN+1000)): $i; done ) >patchlist
+Patch1001: 0001-tgsi-ureg-add-ureg_UARL-shortcut-v2.patch
+Patch1002: 0002-winsys-sw-wrapper-implement-is_displaytarget_format_.patch
+Patch1003: 0003-gallium-auxiliary-implement-sw_probe_wrapped.patch
+Patch1004: 0004-gallium-auxiliary-add-inc-and-dec-alternative-with-r.patch
+Patch1005: 0005-gallium-auxiliary-add-contained-and-rect-checks-v3.patch
+Patch1006: 0006-gallium-auxiliary-add-dump-functions-for-bind-and-tr.patch
+Patch1007: 0007-nine-Add-state-tracker-nine-for-Direct3D9-v2.patch
+Patch1008: 0008-nine-Add-drirc-options-v2.patch
+Patch1009: 0009-nine-Implement-threadpool.patch
+Patch1010: 0010-gallium-auxiliary-Prefer-intrinsics-to-handrolled-at.patch
+Patch1011: 0011-gallium-draw-support-hack-to-disable-clipping-v2.patch
+Patch1012: 0012-nvc0-define-numbers-make-code-better-readable.patch
+Patch1013: 0013-mesa-gallium-API-settings-rasterization-rules.patch
+Patch1014: 0014-nvc0-use-API-settings-rasterization-rules.patch
+Patch1015: 0015-nv50-nvc0-handle-TGSI_PROPERTY_VS_WINDOW_SPACE_POSIT.patch
+Patch1016: 0016-nv50-nvc0-handle-NULL-vertex-elements-without-fallba.patch
+Patch1017: 0017-nv50-ir-tgsi-implement-TGSI_OPCODE_NRM-DP2A.patch
+Patch1018: 0018-hack-nv50-don-t-emit-buffer-for-skipped-vertex-eleme.patch
+Patch1019: 0019-hack-nvc0-avoid-fault-in-get_query_result-if-there-w.patch
+Patch1020: 0020-nv50-support-for-hackish-viewport-bypass.patch
+Patch1021: 0021-nv50-nvc0-d3d9-requires-transfer-stride-to-be-aligne.patch
+Patch1022: 0022-gallium-add-blending-to-pipe-blit.patch
+Patch1023: 0023-nvc0-use-blending-to-pipe-blit.patch
+Patch1024: 0024-nvc0-NULL-vertex-buffers-are-allowed.patch
+Patch1025: 0025-nv50-ir-tgsi-handle-TGSI_OPCODE_CND.patch
+Patch1026: 0026-nvc0-reset-constant-vertex-attribute-data-after-blit.patch
+Patch1027: 0027-nvc0-add-fast-path-for-constant-buffer-upload.patch
+Patch1028: 0028-nvc0-don-t-update-vbufs-that-aren-t-being-accessed.patch
+Patch1029: 0029-nv50-record-CB-slot-for-bound-constant-buffers.patch
+Patch1030: 0030-nv50-ir-tgsi-handle-TGSI_OPCODE_ARR.patch
+Patch1031: 0031-nv50-ir-tgsi-implement-TGSI_OPCODE_BREAKC.patch
+Patch1032: 0032-gallium-draw-allow-debug-code-only-when-specifically.patch
+Patch1033: 0033-Always-advertise-D3DCAPS3_ALPHA_FULLSCREEN_FLIP_OR_D.patch
+Patch1034: 0034-Nine-Remove-advanced-scheduling-settings-for-threadp.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -452,6 +501,25 @@ Provides:	glesv3-devel = %{version}-%{release}
 %description -n %{devglesv3}
 This package contains the headers needed to compile OpenGL ES 3 programs.
 
+%package -n %{libd3d}
+Summary:	Mesa Gallium Direct3D 9 state tracker
+Group:		System/Libraries
+
+%description -n %{libd3d}
+OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
+well-defined subset profiles of OpenGL.
+
+This package provides Direct3D 9 support.
+
+%package -n %{devd3d}
+Summary:	Development files for Direct3D 9 libs
+Group:		Development/C
+Requires:	%{libd3d} = %{version}-%{release}
+Provides:	d3d-devel = %{EVRD}
+
+%description -n %{devd3d}
+This package contains the headers needed to compile Direct3D 9 programs.
+
 %package -n %{libopenvg}
 Summary:	Files for MESA (OpenVG libs)
 Group:		System/Libraries
@@ -507,10 +575,17 @@ Group:		System/Libraries
 This packages provides a VPDAU plugin to enable video acceleration
 with the nouveau driver.
 
+%package -n	%{_lib}vdpau-driver-r300
+Summary:	VDPAU plugin for r300 driver
+Group:		System/Libraries
+
+%description -n %{_lib}vdpau-driver-r300
+This packages provides a VPDAU plugin to enable video acceleration
+with the r300 driver.
+
 %package -n	%{_lib}vdpau-driver-r600
 Summary:	VDPAU plugin for r600 driver
 Group:		System/Libraries
-Obsoletes:	%{_lib}vdpau-driver-r300 < %{EVRD}
 
 %description -n %{_lib}vdpau-driver-r600
 This packages provides a VPDAU plugin to enable video acceleration
@@ -579,6 +654,7 @@ Requires:	%{devegl} = %{version}-%{release}
 Requires:	%{devglapi} = %{version}-%{release}
 Requires:	%{devglesv1} = %{version}-%{release}
 Requires:	%{devglesv2} = %{version}-%{release}
+Suggests:	%{devd3d} = %{version}-%{release}
 
 %description common-devel
 Mesa common metapackage devel
@@ -628,6 +704,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--enable-dri \
 	--enable-glx \
 	--enable-glx-tls \
+	--enable-nine \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 	--with-clang-libdir=%{_prefix}/lib \
@@ -815,6 +892,9 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{libglesv2}
 %{_libdir}/libGLESv2.so.%{glesv2major}*
 
+%files -n %{libd3d}
+%{_libdir}/libd3dadapter9.so.%{d3dmajor}*
+
 %files -n %{libopenvg}
 %{_libdir}/libOpenVG.so.%{openvgmajor}*
 
@@ -872,6 +952,9 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{_lib}vdpau-driver-nouveau
 %{_libdir}/vdpau/libvdpau_nouveau.so.*
 
+%files -n %{_lib}vdpau-driver-r300
+%{_libdir}/vdpau/libvdpau_r300.so.*
+
 %files -n %{_lib}vdpau-driver-r600
 %{_libdir}/vdpau/libvdpau_r600.so.*
 
@@ -900,6 +983,10 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %files -n %{devglesv3}
 %{_includedir}/GLES3
+
+%files -n %{devd3d}
+%{_libdir}/libd3dadapter9.so
+%{_includedir}/d3dadapter
 
 %files -n %{devopenvg}
 %{_includedir}/VG

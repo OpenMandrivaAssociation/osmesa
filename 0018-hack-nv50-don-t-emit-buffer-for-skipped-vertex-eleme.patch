@@ -1,0 +1,32 @@
+From d4c4c5d5cd02569a0047d296c6f5b96e28e68736 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <e0425955@student.tuwien.ac.at>
+Date: Wed, 22 May 2013 22:25:56 +0200
+Subject: [PATCH 18/34] hack/nv50: don't emit buffer for skipped vertex
+ elements
+
+Grr, should forbid that and insert dummy elements in nine.
+---
+ src/gallium/drivers/nouveau/nv50/nv50_vbo.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/gallium/drivers/nouveau/nv50/nv50_vbo.c b/src/gallium/drivers/nouveau/nv50/nv50_vbo.c
+index d15975d..0b1d7f4 100644
+--- a/src/gallium/drivers/nouveau/nv50/nv50_vbo.c
++++ b/src/gallium/drivers/nouveau/nv50/nv50_vbo.c
+@@ -377,6 +377,13 @@ nv50_vertex_arrays_validate(struct nv50_context *nv50)
+       ve = &vertex->element[i];
+       vb = &nv50->vtxbuf[b];
+ 
++      if (ve->pipe.src_format == PIPE_FORMAT_NONE) {
++         /* skip */
++         BEGIN_NV04(push, NV50_3D(VERTEX_ARRAY_FETCH(i)), 1);
++         PUSH_DATA (push, 0);
++         continue;
++      }
++
+       if (unlikely(nv50->vbo_constant & (1 << b))) {
+          BEGIN_NV04(push, NV50_3D(VERTEX_ARRAY_FETCH(i)), 1);
+          PUSH_DATA (push, 0);
+-- 
+2.1.3
+

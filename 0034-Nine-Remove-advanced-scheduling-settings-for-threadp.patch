@@ -1,0 +1,56 @@
+From 949fcd81aaf201fe081faa3a9c940b689e493d6e Mon Sep 17 00:00:00 2001
+From: Axel Davy <axel.davy@ens.fr>
+Date: Wed, 5 Nov 2014 18:25:25 +0100
+Subject: [PATCH 34/34] Nine: Remove advanced scheduling settings for
+ threadpool.
+
+On some systems it works, but not on others.
+Thus drop it.
+
+Signed-off-by: Axel Davy <axel.davy@ens.fr>
+---
+ src/gallium/state_trackers/nine/threadpool.c | 21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
+
+diff --git a/src/gallium/state_trackers/nine/threadpool.c b/src/gallium/state_trackers/nine/threadpool.c
+index 2979fc7..2a96537 100644
+--- a/src/gallium/state_trackers/nine/threadpool.c
++++ b/src/gallium/state_trackers/nine/threadpool.c
+@@ -80,9 +80,6 @@ struct threadpool *
+ _mesa_threadpool_create(void)
+ {
+     struct threadpool *pool = calloc(1, sizeof(*pool));
+-    struct sched_param sched_param;
+-    pthread_attr_t attr;
+-    int s;
+ 
+     if (!pool)
+         return NULL;
+@@ -90,23 +87,7 @@ _mesa_threadpool_create(void)
+     pthread_mutex_init(&pool->m, NULL);
+     pthread_cond_init(&pool->new_work, NULL);
+ 
+-    /* we use only one thread to allow the execution order predictable.
+-     * We put maximum priority on it */
+-    s = pthread_attr_init(&attr);
+-    if (!s) {
+-        s |= pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+-        s |= pthread_attr_setschedpolicy(&attr, SCHED_RR);
+-        sched_param.sched_priority = 99;
+-        s |= pthread_attr_setschedparam(&attr, &sched_param);
+-        if (s != 0)
+-            pthread_attr_destroy(&attr);
+-    }
+-    if (s != 0)
+-        pthread_create(&pool->thread, NULL, threadpool_worker, pool);
+-    else {
+-        pthread_create(&pool->thread, &attr, threadpool_worker, pool);
+-        pthread_attr_destroy(&attr);
+-    }
++    pthread_create(&pool->thread, NULL, threadpool_worker, pool);
+ 
+     return pool;
+ }
+-- 
+2.1.3
+

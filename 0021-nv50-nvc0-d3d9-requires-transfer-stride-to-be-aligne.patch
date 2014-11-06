@@ -1,0 +1,38 @@
+From 0301e531216340decd29a106bdb3d4846d4c27d8 Mon Sep 17 00:00:00 2001
+From: Christoph Bumiller <e0425955@student.tuwien.ac.at>
+Date: Thu, 30 May 2013 14:22:34 +0200
+Subject: [PATCH 21/34] nv50,nvc0: d3d9 requires transfer stride to be aligned
+ to 4
+
+---
+ src/gallium/drivers/nouveau/nv50/nv50_transfer.c | 1 +
+ src/gallium/drivers/nouveau/nvc0/nvc0_transfer.c | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/gallium/drivers/nouveau/nv50/nv50_transfer.c b/src/gallium/drivers/nouveau/nv50/nv50_transfer.c
+index fc6b24a..96b2e42 100644
+--- a/src/gallium/drivers/nouveau/nv50/nv50_transfer.c
++++ b/src/gallium/drivers/nouveau/nv50/nv50_transfer.c
+@@ -287,6 +287,7 @@ nv50_miptree_transfer_map(struct pipe_context *pctx,
+    }
+ 
+    tx->base.stride = tx->nblocksx * util_format_get_blocksize(res->format);
++   tx->base.stride = align(tx->base.stride, 4); /* d3d9 */
+    tx->base.layer_stride = tx->nblocksy * tx->base.stride;
+ 
+    nv50_m2mf_rect_setup(&tx->rect[0], res, level, box->x, box->y, box->z);
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_transfer.c b/src/gallium/drivers/nouveau/nvc0/nvc0_transfer.c
+index 82f1ffc..4d4114a 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_transfer.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_transfer.c
+@@ -401,6 +401,7 @@ nvc0_miptree_transfer_map(struct pipe_context *pctx,
+    tx->nlayers = box->depth;
+ 
+    tx->base.stride = tx->nblocksx * util_format_get_blocksize(res->format);
++   tx->base.stride = align(tx->base.stride, 4);
+    tx->base.layer_stride = tx->nblocksy * tx->base.stride;
+ 
+    if (usage & PIPE_TRANSFER_MAP_DIRECTLY) {
+-- 
+2.1.3
+
