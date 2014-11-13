@@ -16,7 +16,7 @@
 %bcond_without hardware
 %bcond_with bootstrap
 %bcond_without vdpau
-%bcond_without va
+%bcond_with va
 %bcond_without wayland
 %bcond_without egl
 %bcond_without opencl
@@ -104,7 +104,7 @@
 #FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
-%define	dri_drivers_i386	"i915,i965,nouveau,r200,r300,r600,radeon,swrast"
+%define	dri_drivers_i386	"i915,i965,nouveau,r200,radeon,swrast"
 %define	dri_drivers_x86_64	%{dri_drivers_i386}
 %define	dri_drivers_ppc		"r200,radeon,swrast"
 %define	dri_drivers_ppc64	""
@@ -112,8 +112,8 @@
 %define	dri_drivers_alpha	"r200,radeon,swrast"
 %define	dri_drivers_sparc	"ffb,radeon,swrast"
 %define dri_drivers_mipsel	"r200,radeon,swrast"
-%define dri_drivers_arm		"nouveau,r200,radeon,swrast,freedreno"
-%define dri_drivers_aarch64	"nouveau,r200,radeon,swrast,freedreno"
+%define dri_drivers_arm		"nouveau,r200,radeon,swrast"
+%define dri_drivers_aarch64	"nouveau,r200,radeon,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 
 %define short_ver %(if [ `echo %{version} |cut -d. -f3` = "0" ]; then echo %{version} |cut -d. -f1-2; else echo %{version}; fi)
