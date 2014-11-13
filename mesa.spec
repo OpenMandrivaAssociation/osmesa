@@ -570,6 +570,7 @@ Development files for the OpenCL library
 %package -n	%{_lib}vdpau-driver-nouveau
 Summary:	VDPAU plugin for nouveau driver
 Group:		System/Libraries
+Requires:	%{_lib}vdpau1
 
 %description -n %{_lib}vdpau-driver-nouveau
 This packages provides a VPDAU plugin to enable video acceleration
@@ -578,6 +579,7 @@ with the nouveau driver.
 %package -n	%{_lib}vdpau-driver-r300
 Summary:	VDPAU plugin for r300 driver
 Group:		System/Libraries
+Requires:	%{_lib}vdpau1
 
 %description -n %{_lib}vdpau-driver-r300
 This packages provides a VPDAU plugin to enable video acceleration
@@ -586,6 +588,7 @@ with the r300 driver.
 %package -n	%{_lib}vdpau-driver-r600
 Summary:	VDPAU plugin for r600 driver
 Group:		System/Libraries
+Requires:	%{_lib}vdpau1
 
 %description -n %{_lib}vdpau-driver-r600
 This packages provides a VPDAU plugin to enable video acceleration
@@ -594,6 +597,7 @@ with the r600 driver.
 %package -n	%{_lib}vdpau-driver-radeonsi
 Summary:	VDPAU plugin for radeonsi driver
 Group:		System/Libraries
+Requires:	%{_lib}vdpau1
 
 %description -n %{_lib}vdpau-driver-radeonsi
 This packages provides a VPDAU plugin to enable video acceleration
@@ -602,6 +606,7 @@ with the radeonsi driver.
 %package -n	%{_lib}vdpau-driver-softpipe
 Summary:	VDPAU plugin for softpipe driver
 Group:		System/Libraries
+Requires:	%{_lib}vdpau1
 
 %description -n %{_lib}vdpau-driver-softpipe
 This packages provides a VPDAU plugin to enable video acceleration
