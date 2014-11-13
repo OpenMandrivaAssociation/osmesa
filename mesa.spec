@@ -7,7 +7,7 @@
 %define git 20141106
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define opengl_ver 3.0
+%define opengl_ver 3.3
 
 %define relc	0
 
@@ -118,7 +118,7 @@
 
 %define short_ver %(if [ `echo %{version} |cut -d. -f3` = "0" ]; then echo %{version} |cut -d. -f1-2; else echo %{version}; fi)
 
-Summary:	OpenGL 3.0 compatible 3D graphics library
+Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	10.4.0
 %if %{relc}
@@ -268,7 +268,7 @@ BuildRequires:	wayland-devel		>= 1.0.2
 Requires:	%{libgl} = %{version}-%{release}
 
 %description
-Mesa is an OpenGL 3.2 compatible 3D graphics library.
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 
 %libpackage XvMCgallium 1
 
@@ -365,7 +365,7 @@ Summary:	Mesa libVA video acceleration drivers
 Group:		System/Libraries
 
 %description -n %{libvadrivers}
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 libVA drivers for video acceleration
 %endif
 
@@ -380,7 +380,7 @@ Obsoletes:	%{_lib}mesagl1 < %{version}-%{release}
 Requires:	%{_lib}udev1
 
 %description -n %{libgl}
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 GL and GLX parts.
 
 %package -n	%{devgl}
@@ -400,7 +400,7 @@ Group:		System/Libraries
 Obsoletes:	%{_lib}mesaegl1 < 8.0
 
 %description -n %{libegl}
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 EGL parts.
 
 %package -n	%{devegl}
@@ -411,7 +411,7 @@ Obsoletes:	%{_lib}mesaegl1-devel < 8.0
 Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
 
 %description -n %{devegl}
-Mesa is an OpenGL 3.0 compatible 3D graphics library.
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 EGL development parts.
 %endif
 
@@ -737,7 +737,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--enable-xvmc \
 %if %{with vdpau}
 	--enable-vdpau \
-%else		
+%else
 	--disable-vdpau \
 %endif
 %if %{with va}
