@@ -265,7 +265,7 @@ BuildRequires:	wayland-devel		>= 1.0.2
 %endif
 
 # package mesa
-Requires:	%{libgl} = %{version}-%{release}
+Requires:	libGL.so.%{glmajor}%{_arch_tag_suffix}
 
 %description
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
@@ -386,7 +386,14 @@ GL and GLX parts.
 %package -n	%{devgl}
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
 Group:		Development/C
+%ifarch armv7hl
+# This will allow to install proprietary libGL library for ie. imx
+Requires:	libGL.so.%{glmajor}%{_arch_tag_suffix}
+# This is to prevent older version of being installed to satisfy dependency
+Conflicts:	%{libgl} < %{version}-%{release}
+%else
 Requires:	%{libgl} = %{version}-%{release}
+%endif
 Obsoletes:	%{_lib}mesagl1-devel < 8.0
 Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
 
@@ -791,6 +798,10 @@ mkdir -p %{buildroot}%{_libdir}/mesa
 pushd %{buildroot}%{_libdir}/mesa
 for l in ../libGL.so.*; do cp -a $l .; done
 popd
+
+%ifarch armv7hl
+ln -sf libGL.so.%{glmajor} %{buildroot}%{_libdir}/libGL.so
+%endif
 
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
