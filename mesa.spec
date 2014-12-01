@@ -131,7 +131,7 @@ Release:	0.rc%{relc}.1
 %if %{git}
 Release:	0.%{git}.1
 %else
-Release:	1
+Release:	2
 %endif
 %endif
 Group:		System/Libraries
@@ -560,7 +560,7 @@ It has been adopted by Intel, Advanced Micro Devices, Nvidia, and ARM Holdings.
 Summary:	Development files for OpenCL libs
 Group:		Development/Other
 Requires:	%{libcl} = %{version}-%{release}
-Provides:	lib%{libcl}-devel = %{version}-%{release}
+Provides:	%{clname}-devel = %{version}-%{release}
 
 %description -n %{devcl}
 Development files for the OpenCL library
