@@ -4,12 +4,12 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-%define git 20141106
+%define git 0
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 %define opengl_ver 3.3
 
-%define relc	0
+%define relc	4
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -21,6 +21,8 @@
 %bcond_without egl
 %bcond_without opencl
 %bcond_without tfloat
+# Broken as of 10.4.0-rc1 -- re-enable by default when fixed
+%bcond_with openvg
 %ifarch %arm mips sparc aarch64
 %bcond_with intel
 %else
@@ -59,7 +61,7 @@
 
 %define devglesv3	%mklibname glesv3 -d
 
-%define d3dmajor	0
+%define d3dmajor	1
 %define d3dname		d3dadapter9
 %define libd3d		%mklibname %{d3dname} %{d3dmajor}
 %define devd3d		%mklibname %{d3dname} -d
@@ -124,7 +126,7 @@ Version:	10.4.0
 %if %{relc}
 Release:	%{?relc:0.rc%{relc}}%{?git:.0.%{git}.}1
 %else
-Release:	%{?git:0.%{git}.}2
+Release:	%{?git:0.%{git}.}1
 %endif
 Group:		System/Libraries
 License:	MIT
@@ -133,7 +135,7 @@ Url:		http://www.mesa3d.org
 # (cg) Current commit ref: origin/mesa_7_5_branch
 Source0:	%{name}-%{git_branch}-%{git}.tar.xz
 %else
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{short_ver}/MesaLib-%{version}%{vsuffix}.tar.bz2
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/MesaLib-%{version}%{vsuffix}.tar.bz2
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
@@ -151,6 +153,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
+Patch2: Mesa-10.4.0-llvm-3.6.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -185,40 +188,8 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # git rebase origin/master
 # git format-patch origin/master
 # ( for i in 00*.patch; do PN=`echo $i |cut -b1-4 |sed 's,^0*,,g'`; echo Patch$((PN+1000)): $i; done ) >patchlist
-Patch1001: 0001-tgsi-ureg-add-ureg_UARL-shortcut-v2.patch
-Patch1002: 0002-winsys-sw-wrapper-implement-is_displaytarget_format_.patch
-Patch1003: 0003-gallium-auxiliary-implement-sw_probe_wrapped.patch
-Patch1004: 0004-gallium-auxiliary-add-inc-and-dec-alternative-with-r.patch
-Patch1005: 0005-gallium-auxiliary-add-contained-and-rect-checks-v3.patch
-Patch1006: 0006-gallium-auxiliary-add-dump-functions-for-bind-and-tr.patch
-Patch1007: 0007-nine-Add-state-tracker-nine-for-Direct3D9-v2.patch
-Patch1008: 0008-nine-Add-drirc-options-v2.patch
-Patch1009: 0009-nine-Implement-threadpool.patch
-Patch1010: 0010-gallium-auxiliary-Prefer-intrinsics-to-handrolled-at.patch
-Patch1011: 0011-gallium-draw-support-hack-to-disable-clipping-v2.patch
-Patch1012: 0012-nvc0-define-numbers-make-code-better-readable.patch
-Patch1013: 0013-mesa-gallium-API-settings-rasterization-rules.patch
-Patch1014: 0014-nvc0-use-API-settings-rasterization-rules.patch
-Patch1015: 0015-nv50-nvc0-handle-TGSI_PROPERTY_VS_WINDOW_SPACE_POSIT.patch
-Patch1016: 0016-nv50-nvc0-handle-NULL-vertex-elements-without-fallba.patch
-Patch1017: 0017-nv50-ir-tgsi-implement-TGSI_OPCODE_NRM-DP2A.patch
-Patch1018: 0018-hack-nv50-don-t-emit-buffer-for-skipped-vertex-eleme.patch
-Patch1019: 0019-hack-nvc0-avoid-fault-in-get_query_result-if-there-w.patch
-Patch1020: 0020-nv50-support-for-hackish-viewport-bypass.patch
-Patch1021: 0021-nv50-nvc0-d3d9-requires-transfer-stride-to-be-aligne.patch
-Patch1022: 0022-gallium-add-blending-to-pipe-blit.patch
-Patch1023: 0023-nvc0-use-blending-to-pipe-blit.patch
-Patch1024: 0024-nvc0-NULL-vertex-buffers-are-allowed.patch
-Patch1025: 0025-nv50-ir-tgsi-handle-TGSI_OPCODE_CND.patch
-Patch1026: 0026-nvc0-reset-constant-vertex-attribute-data-after-blit.patch
-Patch1027: 0027-nvc0-add-fast-path-for-constant-buffer-upload.patch
-Patch1028: 0028-nvc0-don-t-update-vbufs-that-aren-t-being-accessed.patch
-Patch1029: 0029-nv50-record-CB-slot-for-bound-constant-buffers.patch
-Patch1030: 0030-nv50-ir-tgsi-handle-TGSI_OPCODE_ARR.patch
-Patch1031: 0031-nv50-ir-tgsi-implement-TGSI_OPCODE_BREAKC.patch
-Patch1032: 0032-gallium-draw-allow-debug-code-only-when-specifically.patch
-Patch1033: 0033-Always-advertise-D3DCAPS3_ALPHA_FULLSCREEN_FLIP_OR_D.patch
-Patch1034: 0034-Nine-Remove-advanced-scheduling-settings-for-threadp.patch
+# Currently empty -- current D3D9 bits have been merged into 10.4.0-rc1
+# Leaving the infrastructure in place for future updates.
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -732,7 +703,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--enable-gles1 \
 	--enable-gles2 \
 	--enable-gles3 \
+%if %{with openvg}
 	--enable-openvg \
+%endif
 %if %{with opencl}
 	--enable-opencl \
 %endif
@@ -878,12 +851,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{libegl}
 %doc docs/COPYING
 %{_libdir}/libEGL.so.%{eglmajor}*
-%dir %{_libdir}/egl
-%if !%{with wayland}
-# st_GL, built only when shared glapi is not enabled
-%{_libdir}/egl/st_GL.so
-%endif
-%{_libdir}/egl/egl_gallium.so
 %endif
 
 %files -n %{libglapi}
@@ -901,10 +868,13 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/libGLESv2.so.%{glesv2major}*
 
 %files -n %{libd3d}
-%{_libdir}/libd3dadapter9.so.%{d3dmajor}*
+%dir %{_libdir}/d3d
+%{_libdir}/d3d/d3dadapter9.so.%{d3dmajor}*
 
+%if %{with openvg}
 %files -n %{libopenvg}
 %{_libdir}/libOpenVG.so.%{openvgmajor}*
+%endif
 
 %if %{with opencl}
 %files -n %{libcl}
@@ -914,7 +884,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %if %{with wayland}
 %files -n %{libgbm}
 %{_libdir}/libgbm.so.%{gbmmajor}*
-%{_libdir}/gbm/gbm_*.so
 
 %files -n %{libwaylandegl}
 %{_libdir}/libwayland-egl.so.%{waylandeglmajor}*
@@ -993,13 +962,16 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_includedir}/GLES3
 
 %files -n %{devd3d}
-%{_libdir}/libd3dadapter9.so
 %{_includedir}/d3dadapter
+%{_libdir}/d3d/d3dadapter9.so
+%{_libdir}/pkgconfig/d3d.pc
 
+%if %{with openvg}
 %files -n %{devopenvg}
 %{_includedir}/VG
 %{_libdir}/libOpenVG.so
 %{_libdir}/pkgconfig/vg.pc
+%endif
 
 %if %{with opencl}
 %files -n %{devcl}
