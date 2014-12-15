@@ -4,12 +4,12 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-%define git 0
+%define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 %define opengl_ver 3.3
 
-%define relc	4
+%define relc %{nil}
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -29,7 +29,7 @@
 %bcond_without intel
 %endif
 
-%if %{relc}
+%if "%{relc}" != ""
 %define vsuffix -rc%{relc}
 %else
 %define vsuffix %{nil}
@@ -123,16 +123,19 @@
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	10.4.0
-%if %{relc}
+%if "%{relc}%{git}" == ""
+Release:	1
+%else
+%if "%{relc}" != ""
 Release:	%{?relc:0.rc%{relc}}%{?git:.0.%{git}.}1
 %else
 Release:	%{?git:0.%{git}.}1
 %endif
+%endif
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
-%if %{git}
-# (cg) Current commit ref: origin/mesa_7_5_branch
+%if "%{git}" != ""
 Source0:	%{name}-%{git_branch}-%{git}.tar.xz
 %else
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/MesaLib-%{version}%{vsuffix}.tar.bz2
@@ -635,7 +638,7 @@ Suggests:	%{devd3d} = %{version}-%{release}
 Mesa common metapackage devel
 
 %prep
-%if %{git}
+%if "%{git}" != ""
 %setup -qn %{name}-%{git_branch}-%{git}
 %else
 %setup -qn Mesa-%{version}%{vsuffix}
