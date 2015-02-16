@@ -227,7 +227,8 @@ BuildRequires:	pkgconfig(vdpau)	>= 0.4.1
 BuildRequires:	pkgconfig(libva)	>= 0.31.0
 %endif
 %if %{with wayland}
-BuildRequires:	wayland-devel		>= 1.0.2
+BuildRequires:	pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(wayland-server)
 %endif
 
 # package mesa
