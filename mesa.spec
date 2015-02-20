@@ -157,6 +157,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: Mesa-10.4.0-llvm-3.6.patch
+Patch3: Mesa-10.4.4-compile-with-clang-3.6.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -841,7 +842,8 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %if %{with va}
 %files -n %{libvadrivers}
-%{_libdir}/va/lib*.so*
+#{_libdir}/va/lib*.so*
+%{_libdir}/dri/gallium_drv_video.so
 %endif
 
 %files -n %{libgl}
