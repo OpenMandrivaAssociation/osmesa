@@ -9,7 +9,7 @@
 
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 3
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -122,7 +122,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	10.4.5
+Version:	10.5.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -138,7 +138,7 @@ Url:		http://www.mesa3d.org
 %if "%{git}" != ""
 Source0:	%{name}-%{git_branch}-%{git}.tar.xz
 %else
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/MesaLib-%{version}%{vsuffix}.tar.bz2
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}%{vsuffix}.tar.xz
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
@@ -156,8 +156,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
-Patch2: Mesa-10.4.0-llvm-3.6.patch
-Patch3: Mesa-10.4.4-compile-with-clang-3.6.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -203,6 +201,7 @@ BuildRequires:	makedepend
 BuildRequires:	llvm-devel >= 3.3
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
+BuildRequires:	python2-mako
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
@@ -643,7 +642,7 @@ Mesa common metapackage devel
 %if "%{git}" != ""
 %setup -qn %{name}-%{git_branch}-%{git}
 %else
-%setup -qn Mesa-%{version}%{vsuffix}
+%setup -qn mesa-%{version}%{vsuffix}
 %endif
 sed -i -e 's,HAVE_COMPAT_SYMLINKS=yes,HAVE_COMPAT_SYMLINKS=no,g' configure.ac
 
