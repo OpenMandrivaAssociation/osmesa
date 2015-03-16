@@ -129,7 +129,7 @@ Release:	1
 %if "%{relc}" != ""
 Release:	%{?relc:0.rc%{relc}}%{?git:.0.%{git}.}1
 %else
-Release:	%{?git:0.%{git}.}1
+Release:	%{?git:0.%{git}.}2
 %endif
 %endif
 Group:		System/Libraries
@@ -665,8 +665,8 @@ export CFLAGS="%optflags -fno-optimize-sibling-calls"
 export CXXFLAGS="%optflags -fno-optimize-sibling-calls"
 # Using clang causes the r600 driver to crash on startup, and to complain
 # about "libGL: driver does not expose __driDriverGetExtensions_r600(): /usr/lib64/dri/r600_dri.so: undefined symbol: __driDriverGetExtensions_r600"
-export CC=gcc
-export CXX=g++
+#export CC=gcc
+#export CXX=g++
 
 GALLIUM_DRIVERS="swrast"
 %if %{with hardware}
