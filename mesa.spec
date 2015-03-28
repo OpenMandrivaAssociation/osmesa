@@ -672,7 +672,9 @@ GALLIUM_DRIVERS="swrast"
 %if %{with hardware}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,r600,radeonsi,nouveau"
 %if %{with intel}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,i915,ilo"
+# (tpg) i915 got removed as it does not load on wayland
+# http://wayland.freedesktop.org/building.html
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
@@ -689,7 +691,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--with-clang-libdir=%{_prefix}/lib \
 %if %{with egl}
 	--enable-egl \
-	--enable-gallium-egl \
+# (tpg) We disable building the egl_gallium loader (--disable-gallium-egl) so that on Intel 915 and 965 hardware we avoid harmless error messages at runtime \
+# http://wayland.freedesktop.org/building.html \
+	--disable-gallium-egl
 	--enable-gbm \
 	--enable-shared-glapi \
 %else
