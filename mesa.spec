@@ -692,7 +692,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--with-clang-libdir=%{_prefix}/lib \
 %if %{with egl}
 	--enable-egl \
-	--disable-gallium-egl
+	--disable-gallium-egl \
 	--enable-gbm \
 	--enable-shared-glapi \
 %else
