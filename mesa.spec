@@ -124,7 +124,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	10.5.1
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	3
 %else
 %if "%{relc}" != ""
 Release:	%{?relc:0.rc%{relc}}%{?git:.0.%{git}.}1
@@ -193,6 +193,10 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # Currently empty -- current D3D9 bits have been merged into 10.4.0-rc1
 # Leaving the infrastructure in place for future updates.
 
+# fix EGL on i915
+# https://bugs.freedesktop.org/show_bug.cgi?id=66897
+# https://bugs.freedesktop.org/show_bug.cgi?id=89689
+Patch202:	mesa-10.5.1-i965-Add-XRGB8888-format-to-intel_screen_make_configs.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	gccmakedep
