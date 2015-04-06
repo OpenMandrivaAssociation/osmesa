@@ -197,6 +197,8 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # https://bugs.freedesktop.org/show_bug.cgi?id=66897
 # https://bugs.freedesktop.org/show_bug.cgi?id=89689
 Patch202:	mesa-10.5.1-i965-Add-XRGB8888-format-to-intel_screen_make_configs.patch
+# https://bugs.freedesktop.org/show_bug.cgi?id=89599
+Patch203:	mesa-10.5.2-hide-few-symbols-to-workaround-clang.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	gccmakedep
