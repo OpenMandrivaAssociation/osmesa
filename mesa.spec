@@ -124,7 +124,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	10.5.3
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 Release:	%{?relc:0.rc%{relc}}%{?git:.0.%{git}.}1
@@ -680,7 +680,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,r600,radeonsi,nouveau"
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
 # http://wayland.freedesktop.org/building.html
-# --disable-gallium-egl also is needed
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
@@ -690,15 +689,16 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 
 %configure \
 	--enable-dri \
+    --enable-dri3 \
 	--enable-glx \
 	--enable-glx-tls \
 	--enable-nine \
+    --enable-gallium-osmesa \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 	--with-clang-libdir=%{_prefix}/lib \
 %if %{with egl}
 	--enable-egl \
-	--disable-gallium-egl \
 	--enable-gbm \
 	--enable-shared-glapi \
 %else
@@ -710,20 +710,16 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--with-egl-platforms=x11,drm,fbdev \
 %endif
 %if ! %{with bootstrap}
-	--enable-xorg \
 	--enable-xa \
 %endif
 	--enable-gles1 \
 	--enable-gles2 \
-	--enable-gles3 \
 %if %{with openvg}
 	--enable-openvg \
 %endif
 %if %{with opencl}
 	--enable-opencl \
 %endif
-	--enable-gallium-egl \
-	--enable-gallium-g3dvl \
 	--enable-xvmc \
 %if %{with vdpau}
 	--enable-vdpau \
