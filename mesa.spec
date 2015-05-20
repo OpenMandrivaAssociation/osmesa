@@ -9,7 +9,7 @@
 
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 1
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -122,7 +122,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	10.5.5
+Version:	10.6.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -193,10 +193,6 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # Currently empty -- current D3D9 bits have been merged into 10.4.0-rc1
 # Leaving the infrastructure in place for future updates.
 
-# fix EGL on i915
-# https://bugs.freedesktop.org/show_bug.cgi?id=66897
-# https://bugs.freedesktop.org/show_bug.cgi?id=89689
-Patch202:	mesa-10.5.1-i965-Add-XRGB8888-format-to-intel_screen_make_configs.patch
 # https://bugs.freedesktop.org/show_bug.cgi?id=89599
 Patch203:	mesa-10.5.2-hide-few-symbols-to-workaround-clang.patch
 BuildRequires:	flex
@@ -705,9 +701,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--disable-egl \
 %endif
 %if %{with wayland}
-	--with-egl-platforms=x11,wayland,drm,fbdev \
+	--with-egl-platforms=x11,wayland,drm \
 %else
-	--with-egl-platforms=x11,drm,fbdev \
+	--with-egl-platforms=x11,drm \
 %endif
 %if ! %{with bootstrap}
 	--enable-xa \
@@ -916,7 +912,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/pkgconfig/dri.pc
 
 #FIXME: check those headers
-%{_includedir}/GL/wmesa.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 
