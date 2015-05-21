@@ -127,7 +127,11 @@ Version:	10.6.0
 Release:	1
 %else
 %if "%{relc}" != ""
-Release:	%{?relc:0.rc%{relc}}%{?git:.0.%{git}.}1
+%if "%{git}" != ""
+Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
+%else
+Release:	%{?relc:0.rc%{relc}}.2
+%endif
 %else
 Release:	%{?git:0.%{git}.}1
 %endif
