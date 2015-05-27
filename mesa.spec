@@ -9,7 +9,7 @@
 
 %define opengl_ver 3.3
 
-%define relc 1
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -130,7 +130,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.2
+Release:	%{?relc:0.rc%{relc}}.1
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -160,6 +160,8 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
+
+Patch2: mesa-10.6-rc2-compile-with-llvm-3.7.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
