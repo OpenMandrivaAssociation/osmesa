@@ -9,7 +9,7 @@
 
 %define opengl_ver 3.3
 
-%define relc 2
+%define relc 3
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -691,14 +691,13 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 
 %configure \
 	--enable-dri \
-    --enable-dri3 \
+	--enable-dri3 \
 	--enable-glx \
 	--enable-glx-tls \
 	--enable-nine \
-    --enable-gallium-osmesa \
+	--enable-gallium-osmesa \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
-	--with-clang-libdir=%{_prefix}/lib \
 %if %{with egl}
 	--enable-egl \
 	--enable-gbm \
