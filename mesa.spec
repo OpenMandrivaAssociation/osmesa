@@ -28,6 +28,9 @@
 %else
 %bcond_without intel
 %endif
+# Sometimes it's necessary to disable r600 while bootstrapping
+# an LLVM change (such as the r600 -> AMDGPU rename)
+%bcond_with r600
 
 %if "%{relc}" != ""
 %define vsuffix -rc%{relc}
@@ -253,7 +256,9 @@ Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 %package -n	%{dridrivers}
 Summary:	Mesa DRI drivers
 Group:		System/Libraries
+%if %{with r600}
 Requires:	%{dridrivers}-radeon = %{EVRD}
+%endif
 %ifnarch %{armx}
 Requires:	%{dridrivers}-intel = %{EVRD}
 %endif
@@ -681,7 +686,10 @@ export CXXFLAGS="%optflags -fno-optimize-sibling-calls"
 
 GALLIUM_DRIVERS="swrast"
 %if %{with hardware}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,r600,radeonsi,nouveau"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,radeonsi,nouveau"
+%if %{with r600}
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600"
+%endif
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
 # http://wayland.freedesktop.org/building.html
@@ -808,8 +816,9 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %_libdir/dri/radeonsi_dri.so
 %_libdir/gallium-pipe/pipe_r?00.so
 %_libdir/gallium-pipe/pipe_radeonsi.so
+%if %{with r600}
 %_libdir/libXvMCr?00.so.*
-#% _libdir/libllvmradeon*.so
+%endif
 
 %files -n %{dridrivers}-vmwgfx
 %_libdir/dri/vmwgfx_dri.so
@@ -945,8 +954,10 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{_lib}vdpau-driver-r300
 %{_libdir}/vdpau/libvdpau_r300.so.*
 
+%if %{with r600}
 %files -n %{_lib}vdpau-driver-r600
 %{_libdir}/vdpau/libvdpau_r600.so.*
+%endif
 
 %files -n %{_lib}vdpau-driver-radeonsi
 %{_libdir}/vdpau/libvdpau_radeonsi.so.*
