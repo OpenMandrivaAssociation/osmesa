@@ -30,7 +30,7 @@
 %endif
 # Sometimes it's necessary to disable r600 while bootstrapping
 # an LLVM change (such as the r600 -> AMDGPU rename)
-%bcond_with r600
+%bcond_without r600
 
 %if "%{relc}" != ""
 %define vsuffix -rc%{relc}
@@ -127,7 +127,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	10.6.0
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	3
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
