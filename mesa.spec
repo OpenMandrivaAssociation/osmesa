@@ -686,9 +686,9 @@ export CXXFLAGS="%optflags -fno-optimize-sibling-calls"
 
 GALLIUM_DRIVERS="swrast"
 %if %{with hardware}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,radeonsi,nouveau"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,nouveau"
 %if %{with r600}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %endif
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
@@ -813,11 +813,11 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{dridrivers}-radeon
 %_libdir/dri/r?00_dri.so
 %_libdir/dri/radeon_dri.so
-%_libdir/dri/radeonsi_dri.so
 %_libdir/gallium-pipe/pipe_r?00.so
-%_libdir/gallium-pipe/pipe_radeonsi.so
 %if %{with r600}
 %_libdir/libXvMCr?00.so.*
+%_libdir/dri/radeonsi_dri.so
+%_libdir/gallium-pipe/pipe_radeonsi.so
 %endif
 
 %files -n %{dridrivers}-vmwgfx
@@ -957,10 +957,10 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %if %{with r600}
 %files -n %{_lib}vdpau-driver-r600
 %{_libdir}/vdpau/libvdpau_r600.so.*
-%endif
 
 %files -n %{_lib}vdpau-driver-radeonsi
 %{_libdir}/vdpau/libvdpau_radeonsi.so.*
+%endif
 
 %files -n %{_lib}vdpau-driver-softpipe
 %endif
