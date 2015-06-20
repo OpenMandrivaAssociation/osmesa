@@ -124,7 +124,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	10.6.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -162,6 +162,9 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 Patch1:	mesa-10.2-clang-compilefix.patch
 
 Patch2: mesa-10.6-rc2-compile-with-llvm-3.7.patch
+
+# Handle LLVM R600->AMDGPU rename
+Patch3: http://patchwork.freedesktop.org/patch/51706/raw
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
