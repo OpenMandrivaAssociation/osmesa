@@ -125,7 +125,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	10.6.5
+Version:	11.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -164,10 +164,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 
-Patch2: mesa-10.6-rc2-compile-with-llvm-3.7.patch
-
-# Handle LLVM R600->AMDGPU rename
-Patch3: http://patchwork.freedesktop.org/patch/51706/raw
+#Patch2: mesa-10.6-rc2-compile-with-llvm-3.7.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -677,12 +674,13 @@ mkdir -p build-osmesa
 cp -a $all build-osmesa
 
 %build
-export CFLAGS="%optflags -fno-optimize-sibling-calls"
-export CXXFLAGS="%optflags -fno-optimize-sibling-calls"
-# Using clang causes the r600 driver to crash on startup, and to complain
-# about "libGL: driver does not expose __driDriverGetExtensions_r600(): /usr/lib64/dri/r600_dri.so: undefined symbol: __driDriverGetExtensions_r600"
-#export CC=gcc
-#export CXX=g++
+export CFLAGS="%optflags -fno-optimize-sibling-calls -Ofast"
+export CXXFLAGS="%optflags -fno-optimize-sibling-calls -Ofast"
+%ifarch x86_64
+# Mesa uses SSSE3 asm instructions -- clang errors out if we don't allow them
+export CFLAGS="$CFLAGS -mssse3"
+export CXXFLAGS="$CXXFLAGS -mssse3"
+%endif
 
 GALLIUM_DRIVERS="swrast"
 %if %{with hardware}
@@ -767,6 +765,8 @@ pushd build-osmesa
 	--disable-glx \
 	--disable-egl \
 	--disable-shared-glapi \
+	--disable-gles1 \
+	--disable-gles2 \
 	--without-gallium-drivers
 popd
 
