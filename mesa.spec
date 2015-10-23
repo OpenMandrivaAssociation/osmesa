@@ -482,7 +482,7 @@ This package contains the headers needed to compile OpenGL ES 2 programs.
 %package -n %{devglesv3}
 Summary:	Development files for glesv3 libs
 Group:		Development/C
-# there is no pkgconfig 
+# there is no pkgconfig
 Provides:	glesv3-devel = %{version}-%{release}
 
 %description -n %{devglesv3}
@@ -674,8 +674,8 @@ mkdir -p build-osmesa
 cp -a $all build-osmesa
 
 %build
-export CFLAGS="%optflags -fno-optimize-sibling-calls -Ofast"
-export CXXFLAGS="%optflags -fno-optimize-sibling-calls -Ofast"
+export CFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
+export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 %ifarch x86_64
 # Mesa uses SSSE3 asm instructions -- clang errors out if we don't allow them
 export CFLAGS="$CFLAGS -mssse3"
@@ -715,9 +715,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--disable-egl \
 %endif
 %if %{with wayland}
-	--with-egl-platforms=x11,wayland,drm \
+	--with-egl-platforms=x11,wayland,drm,surfaceless \
 %else
-	--with-egl-platforms=x11,drm \
+	--with-egl-platforms=x11,drm,surfaceless \
 %endif
 %if ! %{with bootstrap}
 	--enable-xa \
@@ -744,6 +744,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--with-gallium-drivers=$GALLIUM_DRIVERS \
 %if %{with hardware}
 	--enable-gallium-llvm \
+	--enable-llvm-shared-libs \
 	--enable-r600-llvm-compiler \
 %else
 	--disable-gallium-llvm \
