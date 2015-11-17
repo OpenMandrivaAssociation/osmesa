@@ -600,7 +600,7 @@ This packages provides a VPDAU plugin to enable video acceleration
 with the softpipe driver.
 %endif
 
-%if %{with wayland}
+%if %{with egl}
 %package -n %{libgbm}
 Summary:	Files for Mesa (gbm libs)
 Group:		System/Libraries
@@ -617,7 +617,9 @@ Requires:	%{libgbm} = %{version}-%{release}
 %description -n %{devgbm}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 GBM (Graphics Buffer Manager) development parts.
+%endif
 
+%if %{with wayland}
 %package -n %{libwaylandegl}
 Summary:	Files for Mesa (Wayland EGL libs)
 Group:		System/Libraries
@@ -905,10 +907,12 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %_libdir/libOpenCL.so.%{clmajor}*
 %endif
 
-%if %{with wayland}
+%if %{with egl}
 %files -n %{libgbm}
 %{_libdir}/libgbm.so.%{gbmmajor}*
+%endif
 
+%if %{with wayland}
 %files -n %{libwaylandegl}
 %{_libdir}/libwayland-egl.so.%{waylandeglmajor}*
 %endif
@@ -1004,12 +1008,14 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %_libdir/libOpenCL.so
 %endif
 
-%if %{with wayland}
+%if %{with egl}
 %files -n %{devgbm}
 %{_includedir}/gbm.h
 %{_libdir}/libgbm.so
 %{_libdir}/pkgconfig/gbm.pc
+%endif
 
+%if %{with wayland}
 %files -n %{devwaylandegl}
 %{_libdir}/libwayland-egl.so
 %{_libdir}/pkgconfig/wayland-egl.pc
