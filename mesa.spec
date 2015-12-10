@@ -125,7 +125,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	11.0.6
+Version:	11.0.7
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
