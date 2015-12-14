@@ -678,12 +678,11 @@ cp -a $all build-osmesa
 %build
 export CFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
-# (tpg) disable this for now!!!
-#%ifarch x86_64
+%ifarch x86_64
 # Mesa uses SSSE3 asm instructions -- clang errors out if we don't allow them
-#export CFLAGS="$CFLAGS -mssse3"
-#export CXXFLAGS="$CXXFLAGS -mssse3"
-#%endif
+export CFLAGS="$CFLAGS -mssse3"
+export CXXFLAGS="$CXXFLAGS -mssse3"
+%endif
 
 GALLIUM_DRIVERS="swrast"
 %if %{with hardware}
