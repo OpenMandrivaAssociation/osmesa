@@ -7,6 +7,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
+# (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
 %define relc %{nil}
@@ -125,9 +126,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	11.0.7
+Version:	11.1.0
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
