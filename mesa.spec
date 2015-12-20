@@ -128,7 +128,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	11.1.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -685,7 +685,7 @@ export CFLAGS="$CFLAGS -mssse3"
 export CXXFLAGS="$CXXFLAGS -mssse3"
 %endif
 
-GALLIUM_DRIVERS="swrast"
+GALLIUM_DRIVERS="swrast,virgl"
 %if %{with hardware}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,nouveau"
 %if %{with r600}
@@ -706,8 +706,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--enable-dri3 \
 	--enable-glx \
 	--enable-glx-tls \
-	--enable-nine \
-	--enable-gallium-osmesa \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 %if %{with egl}
@@ -718,12 +716,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--disable-egl \
 %endif
 %if %{with wayland}
-	--with-egl-platforms=x11,wayland,drm,surfaceless \
+	--with-egl-platforms=x11,drm,wayland,surfaceless \
 %else
 	--with-egl-platforms=x11,drm,surfaceless \
-%endif
-%if ! %{with bootstrap}
-	--enable-xa \
 %endif
 	--enable-gles1 \
 	--enable-gles2 \
@@ -744,12 +739,17 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 %else
 	--disable-va \
 %endif
-	--with-gallium-drivers=$GALLIUM_DRIVERS \
 %if %{with hardware}
+	--with-gallium-drivers=$GALLIUM_DRIVERS \
+%if ! %{with bootstrap}
+	--enable-xa \
+%endif
+	--enable-nine \
 	--enable-gallium-llvm \
 	--enable-llvm-shared-libs \
 %else
 	--disable-gallium-llvm \
+	--with-gallium-drivers=swrast \
 %endif
 %if %{with tfloat}
 	--enable-texture-float  \
