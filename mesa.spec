@@ -858,7 +858,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/gallium-pipe/pipe_swrast.so
 
-%files -n %{dridrivers}-swrast
+%files -n %{dridrivers}-virtio
 %{_libdir}/dri/virtio_gpu_dri.so
 
 %ifarch %{armx}
