@@ -262,6 +262,7 @@ Requires:	%{dridrivers}-intel = %{EVRD}
 %endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
 Requires:	%{dridrivers}-swrast = %{EVRD}
+Requires:	%{dridrivers}-virtio = %{EVRD}
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 %endif
@@ -312,6 +313,14 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-swrast
 Generic DRI driver using CPU rendering
+
+%package -n	%{dridrivers}-virtio
+Summary:	DRI Drivers for virtual environments
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-virtio
+Generic DRI driver for virtual environments.
 
 %ifarch %{armx}
 %package -n	%{dridrivers}-freedreno
@@ -814,35 +823,38 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %doc docs/COPYING
 
 %files -n %{dridrivers}-radeon
-%_libdir/dri/r?00_dri.so
-%_libdir/dri/radeon_dri.so
-%_libdir/gallium-pipe/pipe_r?00.so
+%{_libdir}/dri/r?00_dri.so
+%{_libdir}/dri/radeon_dri.so
+%{_libdir}/gallium-pipe/pipe_r?00.so
 %if %{with r600}
-%_libdir/libXvMCr?00.so.*
-%_libdir/dri/radeonsi_dri.so
-%_libdir/gallium-pipe/pipe_radeonsi.so
+%{_libdir}/libXvMCr?00.so.*
+%{_libdir}/dri/radeonsi_dri.so
+%{_libdir}/gallium-pipe/pipe_radeonsi.so
 %endif
 
 %files -n %{dridrivers}-vmwgfx
-%_libdir/dri/vmwgfx_dri.so
-%_libdir/gallium-pipe/pipe_vmwgfx.so
+%{_libdir}/dri/vmwgfx_dri.so
+%{_libdir}/gallium-pipe/pipe_vmwgfx.so
 
 %ifnarch %{armx}
 %files -n %{dridrivers}-intel
-%_libdir/dri/i9?5_dri.so
-%_libdir/dri/ilo_dri.so
-%_libdir/gallium-pipe/pipe_i9?5.so
+%{_libdir}/dri/i9?5_dri.so
+%{_libdir}/dri/ilo_dri.so
+%{_libdir}/gallium-pipe/pipe_i9?5.so
 %endif
 
 %files -n %{dridrivers}-nouveau
-%_libdir/dri/nouveau*_dri.so
-%_libdir/gallium-pipe/pipe_nouveau.so
-%_libdir/libXvMCnouveau.so.*
+%{_libdir}/dri/nouveau*_dri.so
+%{_libdir}/gallium-pipe/pipe_nouveau.so
+%{_libdir}/libXvMCnouveau.so.*
 
 %files -n %{dridrivers}-swrast
-%_libdir/dri/swrast_dri.so
-%_libdir/dri/kms_swrast_dri.so
-%_libdir/gallium-pipe/pipe_swrast.so
+%{_libdir}/dri/swrast_dri.so
+%{_libdir}/dri/kms_swrast_dri.so
+%{_libdir}/gallium-pipe/pipe_swrast.so
+
+%files -n %{dridrivers}-swrast
+%{_libdir}/dri/virtio_gpu_dri.so
 
 %ifarch %{armx}
 %files -n %{dridrivers}-freedreno
@@ -862,7 +874,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %if %{with va}
 %files -n %{libvadrivers}
-#{_libdir}/va/lib*.so*
 %{_libdir}/dri/gallium_drv_video.so
 %endif
 
@@ -870,8 +881,8 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
 %{_libdir}/mesa/libGL.so.%{glmajor}*
-%dir %_libdir/dri
-%dir %_libdir/gallium-pipe
+%dir %{_libdir}/dri
+%dir %{_libdir}/gallium-pipe
 
 %if %{with egl}
 %files -n %{libegl}
@@ -904,7 +915,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %if %{with opencl}
 %files -n %{libcl}
-%_libdir/libOpenCL.so.%{clmajor}*
+%{_libdir}/libOpenCL.so.%{clmajor}*
 %endif
 
 %if %{with egl}
@@ -1004,8 +1015,8 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %if %{with opencl}
 %files -n %{devcl}
-%_includedir/CL
-%_libdir/libOpenCL.so
+%{_includedir}/CL
+%{_libdir}/libOpenCL.so
 %endif
 
 %if %{with egl}
