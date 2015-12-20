@@ -1,0 +1,11 @@
+--- mesa-11.1.0/src/gallium/include/pipe/p_config.h	2015-12-15 11:29:06.000000000 +0000
++++ mesa-11.1.0/src/gallium/include/pipe/p_config.h.tpg	2015-12-20 02:18:47.229518053 +0000
+@@ -100,7 +100,7 @@
+ #else
+ #define PIPE_ARCH_SSE
+ #endif
+-#if defined(PIPE_CC_GCC) && (__GNUC__ * 100 + __GNUC_MINOR__) < 409 && !defined(__SSSE3__)
++#if defined(PIPE_CC_GCC) && (__GNUC__ * 100 + __GNUC_MINOR__) < 409 || !defined(__SSSE3__)
+ /* #warning SSE3 support requires -msse3 compiler options before GCC 4.9 */
+ #else
+ #define PIPE_ARCH_SSSE3

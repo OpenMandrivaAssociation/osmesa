@@ -205,6 +205,9 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=89599
 Patch203:	mesa-10.5.2-hide-few-symbols-to-workaround-clang.patch
+# (tpg) https://bugs.freedesktop.org/show_bug.cgi?id=93454
+Patch204:	mesa-11.1.0-fix-SSSE3.patch
+
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	gccmakedep
@@ -690,8 +693,10 @@ export CFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 %ifarch x86_64
 # Mesa uses SSSE3 asm instructions -- clang errors out if we don't allow them
-export CFLAGS="$CFLAGS -mssse3"
-export CXXFLAGS="$CXXFLAGS -mssse3"
+# (tpg) disable for now
+# see bug https://bugs.freedesktop.org/show_bug.cgi?id=93454
+#export CFLAGS="$CFLAGS -mssse3"
+#export CXXFLAGS="$CXXFLAGS -mssse3"
 %endif
 
 GALLIUM_DRIVERS="swrast,virgl"
