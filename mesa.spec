@@ -3,8 +3,9 @@
 
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
+%define _disable_lto 1
 
-%define git %{nil}
+%define git 20160130
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
@@ -126,9 +127,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	11.1.1
+Version:	11.2.0
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -165,7 +166,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 
-#Patch2: mesa-10.6-rc2-compile-with-llvm-3.7.patch
+Patch2: mesa-11.1.1-clang-3.8.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch

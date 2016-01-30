@@ -1,0 +1,37 @@
+--- mesa-11.1.1/src/mapi/entry_x86-64_tls.h.omv~	2016-01-29 15:48:36.791222349 +0100
++++ mesa-11.1.1/src/mapi/entry_x86-64_tls.h	2016-01-29 15:48:41.937168131 +0100
+@@ -54,7 +54,7 @@ entry_patch_public(void)
+ {
+ }
+ 
+-static char
++extern char
+ x86_64_entry_start[];
+ 
+ mapi_func
+--- mesa-11.1.1/src/mapi/entry_x86_tls.h.omv~	2016-01-29 15:49:21.752750185 +0100
++++ mesa-11.1.1/src/mapi/entry_x86_tls.h	2016-01-29 15:49:30.661657032 +0100
+@@ -71,8 +71,8 @@ __asm__(".text");
+ extern unsigned long
+ x86_current_tls();
+ 
+-static char x86_entry_start[];
+-static char x86_entry_end[];
++extern char x86_entry_start[];
++extern char x86_entry_end[];
+ 
+ void
+ entry_patch_public(void)
+--- mesa-11.1.1/src/mapi/entry_x86_tsd.h.omv~	2016-01-29 15:49:01.379963701 +0100
++++ mesa-11.1.1/src/mapi/entry_x86_tsd.h	2016-01-29 15:49:13.616835370 +0100
+@@ -58,8 +58,8 @@ __asm__(".balign 32\n"
+ #include <string.h>
+ #include "u_execmem.h"
+ 
+-static const char x86_entry_start[];
+-static const char x86_entry_end[];
++extern const char x86_entry_start[];
++extern const char x86_entry_end[];
+ 
+ void
+ entry_patch_public(void)
