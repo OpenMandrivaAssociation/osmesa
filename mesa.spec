@@ -700,6 +700,10 @@ export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 #export CFLAGS="$CFLAGS -mssse3"
 #export CXXFLAGS="$CXXFLAGS -mssse3"
 %endif
+%ifarch %ix86
+export CC=gcc
+export CXX=g++
+%endif
 
 GALLIUM_DRIVERS="swrast,virgl"
 %if %{with hardware}
