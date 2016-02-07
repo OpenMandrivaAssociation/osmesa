@@ -1,0 +1,34 @@
+diff --git a/src/gallium/drivers/freedreno/ir3/ir3_ra.c b/src/gallium/drivers/freedreno/ir3/ir3_ra.c
+index 2ed7881..ad702a8 100644
+--- a/src/gallium/drivers/freedreno/ir3/ir3_ra.c
++++ b/src/gallium/drivers/freedreno/ir3/ir3_ra.c
+@@ -605,21 +605,17 @@ ra_block_compute_live_ranges(struct ir3_ra_ctx *ctx, struct ir3_block *block)
+ 	struct ir3_ra_block_data *bd;
+ 	unsigned bitset_words = BITSET_WORDS(ctx->alloc_count);
+ 
+-	void def(unsigned name, struct ir3_instruction *instr)
+-	{
+-		/* defined on first write: */
+-		if (!ctx->def[name])
+-			ctx->def[name] = instr->ip;
+-		ctx->use[name] = instr->ip;
++#define def(name, instr) \
++		/* defined on first write: */ \
++		if (!ctx->def[name]) \
++			ctx->def[name] = instr->ip; \
++		ctx->use[name] = instr->ip; \
+ 		BITSET_SET(bd->def, name);
+-	}
+ 
+-	void use(unsigned name, struct ir3_instruction *instr)
+-	{
+-		ctx->use[name] = MAX2(ctx->use[name], instr->ip);
+-		if (!BITSET_TEST(bd->def, name))
++#define use(name, instr) \
++		ctx->use[name] = MAX2(ctx->use[name], instr->ip); \
++		if (!BITSET_TEST(bd->def, name)) \
+ 			BITSET_SET(bd->use, name);
+-	}
+ 
+ 	bd = rzalloc(ctx->g, struct ir3_ra_block_data);
+ 

@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
-%define git 20160130
+%define git 20160207
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
@@ -209,6 +209,7 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # (tpg) this patch is only a workaround for https://bugs.freedesktop.org/show_bug.cgi?id=93454
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
+Patch205:	mesa-11.2-nested-functions.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
