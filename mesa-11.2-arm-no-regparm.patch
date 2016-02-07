@@ -1,0 +1,29 @@
+--- mesa-11.2-20160130/src/gallium/winsys/amdgpu/drm/addrlib/addrtypes.h.omv~	2016-02-07 20:18:24.176350717 +0100
++++ mesa-11.2-20160130/src/gallium/winsys/amdgpu/drm/addrlib/addrtypes.h	2016-02-07 20:19:16.601756524 +0100
+@@ -88,7 +88,11 @@ typedef int            INT;
+ 
+ #ifndef ADDR_FASTCALL
+     #if defined(__GNUC__)
+-        #define ADDR_FASTCALL __attribute__((regparm(0)))
++        #if defined(__AMD64__) || defined(__i386__)
++            #define ADDR_FASTCALL __attribute__((regparm(0)))
++        #else
++            #define ADDR_FASTCALL
++        #endif
+     #else
+         #define ADDR_FASTCALL __fastcall
+     #endif
+--- mesa-11.2-20160130/src/gallium/winsys/amdgpu/drm/addrlib/inc/lnx_common_defs.h.omv~	2016-02-07 20:15:12.253878807 +0100
++++ mesa-11.2-20160130/src/gallium/winsys/amdgpu/drm/addrlib/inc/lnx_common_defs.h	2016-02-07 20:18:11.680254198 +0100
+@@ -46,7 +46,11 @@ typedef int           __kernel_ptrdiff_t
+ 
+ 
+ #if !defined(ATI_API_CALL)
++#if defined(__x86_64__) || defined(__i386__)
+ #define ATI_API_CALL __attribute__((regparm(0)))
++#else
++#define ATI_API_CALL
++#endif
+ #endif
+ 
+ extern void * ATI_API_CALL __ke_memset(void* s, int c, __ke_size_t count);

@@ -210,6 +210,7 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 Patch205:	mesa-11.2-nested-functions.patch
+Patch206:	mesa-11.2-arm-no-regparm.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
