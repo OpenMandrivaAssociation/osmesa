@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
-%define git 20160207
+%define git 20160209
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
@@ -792,7 +792,15 @@ pushd build-osmesa
 popd
 
 %make
+%ifarch i686
+%make -C build-osmesa OSMESA_LIB_DEPS="-ldl -lpthread -L%{_libdir}/clang/$(clang --version |head -n1 |awk '{print $3;}')/lib/linux -lclang_rt.builtins-i686"
+%else
+%ifarch %{ix86}
+%make -C build-osmesa OSMESA_LIB_DEPS="-ldl -lpthread -L%{_libdir}/clang/$(clang --version |head -n1 |awk '{print $3;}')/lib/linux -lclang_rt.builtins-i386"
+%else
 %make -C build-osmesa
+%endif
+%endif
 
 %install
 %makeinstall_std -C build-osmesa
