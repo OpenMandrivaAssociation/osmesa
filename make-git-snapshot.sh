@@ -5,7 +5,8 @@
 # to make a snapshot of the given tag/branch.  Defaults to HEAD.
 # Point env var REF to a local mesa repo to reduce clone time.
 
-DIRNAME=mesa-$( date +%Y%m%d )
+VERSION="11.2"
+DIRNAME=mesa-${VERSION}-$( date +%Y%m%d )
 
 if [ -z "$REF" -a -d "mesa/.git" ]; then
 	  REF="mesa"
@@ -21,6 +22,6 @@ if [ -z "$REF" -a -d "mesa/.git" ]; then
 	  	git://git.freedesktop.org/git/mesa/mesa $DIRNAME
 
   GIT_DIR=$DIRNAME/.git git archive --format=tar --prefix=$DIRNAME/ ${1:-HEAD} \
-	  	| bzip2 > $DIRNAME.tar.bz2
+		| xz -vf > $DIRNAME.tar.xz
 
   # rm -rf $DIRNAME
