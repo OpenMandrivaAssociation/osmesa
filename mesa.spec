@@ -16,6 +16,7 @@
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
 %bcond_without hardware
+%bcond_with gcc
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
@@ -693,6 +694,10 @@ mkdir -p build-osmesa
 cp -a $all build-osmesa
 
 %build
+%if %{withgcc}
+export CC=gcc
+export CXX=g++
+%endif
 export CFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 %ifarch x86_64
