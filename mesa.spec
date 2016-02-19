@@ -694,7 +694,7 @@ mkdir -p build-osmesa
 cp -a $all build-osmesa
 
 %build
-%if %{withgcc}
+%if %{with gcc}
 export CC=gcc
 export CXX=g++
 %endif
