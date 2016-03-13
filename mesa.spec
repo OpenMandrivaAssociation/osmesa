@@ -134,12 +134,12 @@ Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
-Release:	%{?relc:0.rc%{relc}}.0.%{git}.2
+Release:	%{?relc:0.rc%{relc}}.0.%{git}.3
 %else
-Release:	%{?relc:0.rc%{relc}}.2
+Release:	%{?relc:0.rc%{relc}}.3
 %endif
 %else
-Release:	%{?git:0.%{git}.}2
+Release:	%{?git:0.%{git}.}3
 %endif
 %endif
 Group:		System/Libraries
@@ -726,6 +726,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 
 %configure \
 	--enable-dri \
+	--enable-dri3 \
 	--enable-glx \
 	--enable-glx-tls \
 	--with-dri-driverdir=%{driver_dir} \
