@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
-%define git 20160218
+%define git 20160318
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
