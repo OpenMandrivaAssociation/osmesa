@@ -5,7 +5,7 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
-%define git 20160318
+%define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
@@ -130,16 +130,16 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	11.2.0
 %if "%{relc}%{git}" == ""
-Release:	3
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
-Release:	%{?relc:0.rc%{relc}}.0.%{git}.3
+Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.3
+Release:	%{?relc:0.rc%{relc}}.1
 %endif
 %else
-Release:	%{?git:0.%{git}.}3
+Release:	%{?git:0.%{git}.}1
 %endif
 %endif
 Group:		System/Libraries
@@ -210,7 +210,6 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # (tpg) this patch is only a workaround for https://bugs.freedesktop.org/show_bug.cgi?id=93454
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
-#Patch205:	mesa-11.2-nested-functions.patch
 Patch206:	mesa-11.2-arm-no-regparm.patch
 
 BuildRequires:	flex
