@@ -11,7 +11,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -128,7 +128,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	11.2.2
+Version:	12.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -837,11 +837,10 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 
 %files
-%doc docs/COPYING docs/README.*
+%doc docs/README.*
 %config(noreplace) %{_sysconfdir}/drirc
 
 %files -n %{dridrivers}
-%doc docs/COPYING
 
 %files -n %{dridrivers}-radeon
 %{_libdir}/dri/r?00_dri.so
@@ -907,7 +906,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %if %{with egl}
 %files -n %{libegl}
-%doc docs/COPYING
 %{_libdir}/libEGL.so.%{eglmajor}*
 %endif
 
@@ -950,7 +948,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %endif
 
 %files -n %{devgl}
-%doc docs/COPYING
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glcorearb.h
@@ -960,6 +957,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
+%{_includedir}/GL/mesa_glinterop.h
 %{_libdir}/libGL.so
 %{_libdir}/libXvMC*.so
 %{_libdir}/pkgconfig/gl.pc
