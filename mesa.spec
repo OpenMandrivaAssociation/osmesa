@@ -11,7 +11,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc 2
+%define relc 4
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -847,8 +847,10 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/dri/radeon_dri.so
 %{_libdir}/gallium-pipe/pipe_r?00.so
 %if %{with r600}
+%{_libdir}/dri/r600_drv_video.so
 %{_libdir}/libXvMCr?00.so.*
 %{_libdir}/dri/radeonsi_dri.so
+%{_libdir}/dri/radeonsi_drv_video.so
 %{_libdir}/gallium-pipe/pipe_radeonsi.so
 %endif
 
@@ -865,6 +867,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %files -n %{dridrivers}-nouveau
 %{_libdir}/dri/nouveau*_dri.so
+%{_libdir}/dri/nouveau_drv_video.so
 %{_libdir}/gallium-pipe/pipe_nouveau.so
 %{_libdir}/libXvMCnouveau.so.*
 
@@ -894,7 +897,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %if %{with va}
 %files -n %{libvadrivers}
-%{_libdir}/dri/gallium_drv_video.so
 %endif
 
 %files -n %{libgl}
