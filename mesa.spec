@@ -136,7 +136,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.2
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -282,6 +282,7 @@ DRI and XvMC drivers.
 Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+Conflicts:	libva-vdpau-driver
 %define __noautoreq '.*llvmradeon.*'
 
 %description -n %{dridrivers}-radeon
@@ -299,6 +300,7 @@ DRI and XvMC drivers for VMWare guest Operating Systems.
 %package -n	%{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
+Conflicts:	libva-vdpau-driver
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-intel
@@ -308,6 +310,7 @@ DRI and XvMC drivers for Intel graphics chipsets
 %package -n	%{dridrivers}-nouveau
 Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
 Group:		System/Libraries
+Conflicts:	libva-vdpau-driver
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-nouveau
