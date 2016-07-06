@@ -136,7 +136,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.5
+Release:	%{?relc:0.rc%{relc}}.6
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -211,6 +211,7 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 Patch206:	mesa-11.2-arm-no-regparm.patch
+Patch207:	mesa-12.0-rc4-llvm-3.9.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
