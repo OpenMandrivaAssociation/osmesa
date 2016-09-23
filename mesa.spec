@@ -270,6 +270,7 @@ Requires:	%{dridrivers}-swrast = %{EVRD}
 Requires:	%{dridrivers}-virtio = %{EVRD}
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
+Requires:	%{dridrivers}-vc4 = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -332,12 +333,20 @@ Generic DRI driver for virtual environments.
 
 %ifarch %{armx}
 %package -n	%{dridrivers}-freedreno
-Summary:	DRI Drivers for software rendering
+Summary:	DRI Drivers for Adreno graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-freedreno
 DRI and XvMC drivers for Adreno graphics chipsets
+
+%package -n	%{dridrivers}-vc4
+Summary:	DRI Drivers for Broadcom VC4 graphics chipsets
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-vc4
+DRI and XvMC drivers for Broadcom VC4 graphics chips
 %endif
 
 %package -n	%{libosmesa}
@@ -720,7 +729,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 %endif
 %endif
 
@@ -885,6 +894,9 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
 %{_libdir}/gallium-pipe/pipe_msm.so
+
+%files -n %{dridrivers}-vc4
+%{_libdir}/dri/vc4_dri.so
 %endif
 
 %files -n %{libosmesa}
