@@ -900,7 +900,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/dri/ilo_dri.so
 %{_libdir}/gallium-pipe/pipe_i9?5.so
 %{_libdir}/libvulkan_intel.so
-%{_datadir}/vulkan/icd.d/intel_icd.json
+%{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
 
 %files -n %{dridrivers}-nouveau
