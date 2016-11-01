@@ -55,6 +55,8 @@
 %define libgl		%mklibname %{glname} %{glmajor}
 %define devgl		%mklibname %{glname} -d
 
+%define devvulkan	%mklibname vulkan -d
+
 %define glesv1major	1
 %define glesv1name	glesv1
 %define libglesv1	%mklibname %{glesv1name}_ %{glesv1major}
@@ -109,7 +111,7 @@
 %define mesasrcdir	%{_prefix}/src/Mesa/
 %define driver_dir	%{_libdir}/dri
 
-#FIXME: (for 386/485) unset SSE, MMX and 3dnow flags
+#FIXME: (for 386/486) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
 %define	dri_drivers_i386	"i915,i965,nouveau,r200,radeon,swrast"
@@ -123,14 +125,25 @@
 %define dri_drivers_arm		"nouveau,r200,radeon,swrast"
 %define dri_drivers_aarch64	"nouveau,r200,radeon,swrast"
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
+%define	vulkan_drivers_i386	"intel,radeon"
+%define	vulkan_drivers_x86_64	%{vulkan_drivers_i386}
+%define	vulkan_drivers_ppc	"radeon"
+%define	vulkan_drivers_ppc64	"radeon"
+%define	vulkan_drivers_ia64	"radeon"
+%define	vulkan_drivers_alpha	"radeon"
+%define	vulkan_drivers_sparc	"radeon"
+%define vulkan_drivers_mipsel	"radeon"
+%define vulkan_drivers_arm	"radeon"
+%define vulkan_drivers_aarch64	"radeon"
+%define	vulkan_drivers		%{expand:%{vulkan_drivers_%{_arch}}}
 
 %define short_ver %(if [ `echo %{version} |cut -d. -f3` = "0" ]; then echo %{version} |cut -d. -f1-2; else echo %{version}; fi)
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	12.0.3
+Version:	13.0.0
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -166,6 +179,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
+Patch2: mesa-13.0-compile.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -209,7 +223,6 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 Patch206:	mesa-11.2-arm-no-regparm.patch
-Patch207:	mesa-12.0-rc4-llvm-3.9.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -233,6 +246,7 @@ BuildRequires:	pkgconfig(xproto)
 BuildRequires:	pkgconfig(xt)		>= 1.0.5
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xshmfence)	>= 1.1
+BuildRequires:	pkgconfig(openssl)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel clang
@@ -271,6 +285,7 @@ Requires:	%{dridrivers}-swrast = %{EVRD}
 Requires:	%{dridrivers}-virtio = %{EVRD}
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
+Requires:	%{dridrivers}-vc4 = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -333,12 +348,20 @@ Generic DRI driver for virtual environments.
 
 %ifarch %{armx}
 %package -n	%{dridrivers}-freedreno
-Summary:	DRI Drivers for software rendering
+Summary:	DRI Drivers for Adreno graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-freedreno
 DRI and XvMC drivers for Adreno graphics chipsets
+
+%package -n	%{dridrivers}-vc4
+Summary:	DRI Drivers for Broadcom VC4 graphics chipsets
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-vc4
+DRI and XvMC drivers for Broadcom VC4 graphics chips
 %endif
 
 %package -n	%{libosmesa}
@@ -398,6 +421,13 @@ Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
 
 %description -n %{devgl}
 This package contains the headers needed to compile Mesa programs.
+
+%package -n	%{devvulkan}
+Summary:	Development files for Mesa (Vulkan compatible 3D lib)
+Group:		Development/C
+
+%description -n %{devvulkan}
+This package contains the headers needed to compile Vulkan programs.
 
 %if %{with egl}
 %package -n	%{libegl}
@@ -668,6 +698,7 @@ Requires:	%{devglapi} = %{version}-%{release}
 Requires:	%{devglesv1} = %{version}-%{release}
 Requires:	%{devglesv2} = %{version}-%{release}
 Suggests:	%{devd3d} = %{version}-%{release}
+Requires:	%{devvulkan} = %{version}-%{release}
 
 %description common-devel
 Mesa common metapackage devel
@@ -721,7 +752,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 %endif
 %endif
 
@@ -732,6 +763,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno"
 	--enable-glx-tls \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
+	--with-vulkan-drivers="%{vulkan_drivers}" \
 %if %{with egl}
 	--enable-egl \
 	--enable-gbm \
@@ -858,6 +890,8 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_radeonsi.so
 %endif
+%{_libdir}/libvulkan_radeon.so
+%{_datadir}/vulkan/icd.d/radeon_icd.json
 %endif
 
 %files -n %{dridrivers}-vmwgfx
@@ -872,6 +906,8 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/dri/ilo_dri.so
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_i9?5.so
+%{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
 %endif
 
@@ -899,6 +935,9 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/dri/msm_dri.so
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_msm.so
+
+%files -n %{dridrivers}-vc4
+%{_libdir}/dri/vc4_dri.so
 %endif
 %endif
 
@@ -973,11 +1012,9 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_includedir}/GL/glcorearb.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
-%{_includedir}/GL/wglext.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
-%{_includedir}/GL/mesa_glinterop.h
 %{_libdir}/libGL.so
 %{_libdir}/libXvMC*.so
 %{_libdir}/pkgconfig/gl.pc
@@ -1070,3 +1107,8 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/libwayland-egl.so
 %{_libdir}/pkgconfig/wayland-egl.pc
 %endif
+
+%files -n %{devvulkan}
+%{_includedir}/vulkan
+%dir %{_datadir}/vulkan
+%dir %{_datadir}/vulkan/icd.d
