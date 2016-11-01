@@ -246,6 +246,7 @@ BuildRequires:	pkgconfig(xproto)
 BuildRequires:	pkgconfig(xt)		>= 1.0.5
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xshmfence)	>= 1.1
+BuildRequires:	pkgconfig(openssl)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel clang
