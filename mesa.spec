@@ -143,7 +143,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	13.0.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -246,7 +246,11 @@ BuildRequires:	pkgconfig(xproto)
 BuildRequires:	pkgconfig(xt)		>= 1.0.5
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xshmfence)	>= 1.1
-BuildRequires:	pkgconfig(openssl)
+# (tpg) with openssl a steam crashes
+# Program received signal SIGSEGV, Segmentation fault.
+# 0xf63db8d5 in OPENSSL_ia32_cpuid () from /lib/libcrypto.so.1.0.0
+# crypto is needed for shader cache which uses the SHA-1
+BuildRequires:	pkgconfig(nettle)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel clang
@@ -764,6 +768,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 	--with-vulkan-drivers="%{vulkan_drivers}" \
+	--with-sha1=libnettle \
 %if %{with egl}
 	--enable-egl \
 	--enable-gbm \
