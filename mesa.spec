@@ -896,7 +896,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_libdir}/gallium-pipe/pipe_radeonsi.so
 %endif
 %{_libdir}/libvulkan_radeon.so
-%{_datadir}/vulkan/icd.d/radeon_icd.json
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
 
 %files -n %{dridrivers}-vmwgfx
