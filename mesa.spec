@@ -141,9 +141,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	13.0.0
+Version:	13.0.1
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -222,7 +222,7 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # (tpg) this patch is only a workaround for https://bugs.freedesktop.org/show_bug.cgi?id=93454
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
-Patch206:	mesa-11.2-arm-no-regparm.patch
+#Patch206:	mesa-11.2-arm-no-regparm.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
