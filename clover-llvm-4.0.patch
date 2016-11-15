@@ -1,0 +1,12 @@
+--- mesa-13.0.0/src/gallium/state_trackers/clover/llvm/codegen/bitcode.cpp.omv~	2016-11-11 19:02:02.234615271 +0100
++++ mesa-13.0.0/src/gallium/state_trackers/clover/llvm/codegen/bitcode.cpp	2016-11-11 19:04:18.253532585 +0100
+@@ -37,7 +37,8 @@
+ #include "util/algorithm.hpp"
+ 
+ #include <map>
+-#include <llvm/Bitcode/ReaderWriter.h>
++#include <llvm/Bitcode/BitcodeReader.h>
++#include <llvm/Bitcode/BitcodeWriter.h>
+ #include <llvm/Support/raw_ostream.h>
+ 
+ using namespace clover;
