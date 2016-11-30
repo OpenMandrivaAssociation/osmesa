@@ -180,7 +180,9 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: mesa-13.0-compile.patch
+%if %mdvver > 3000000
 Patch3: clover-llvm-4.0.patch
+%endif
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
