@@ -5,6 +5,10 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
+# (tpg) needed for nouveau multi-threading patches
+# remove if patches were merged
+%define _default_patch_fuzz 2
+
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
@@ -227,7 +231,7 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 #Patch206:	mesa-11.2-arm-no-regparm.patch
 
-# (tpg) fix nVidia graphic card locking when using multithreadong OGL
+# (tpg) fix nVidia graphic card locking when using multi-threading OGL
 # https://github.com/imirkin/mesa/tree/locking
 Patch300:	0000-WIP-nouveau-add-locking.patch
 Patch301:	0001-nouveau-more-locking-make-sure-that-fence-work-is-al.patch
