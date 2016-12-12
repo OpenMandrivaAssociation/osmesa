@@ -147,7 +147,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	13.0.2
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	3
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -230,12 +230,6 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 #Patch206:	mesa-11.2-arm-no-regparm.patch
-
-# (tpg) fix nVidia graphic card locking when using multi-threading OGL
-# https://github.com/imirkin/mesa/tree/locking
-Patch300:	0000-WIP-nouveau-add-locking.patch
-Patch301:	0001-nouveau-more-locking-make-sure-that-fence-work-is-al.patch
-Patch302:	0002-nv30-locking-fixes.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
