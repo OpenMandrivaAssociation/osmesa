@@ -436,6 +436,8 @@ This package contains the headers needed to compile Mesa programs.
 %package -n	%{devvulkan}
 Summary:	Development files for Mesa (Vulkan compatible 3D lib)
 Group:		Development/C
+Provides:	vulkan-devel = %{EVRD}
+Provides:	libvulkan-devel = %{EVRD}
 
 %description -n %{devvulkan}
 This package contains the headers needed to compile Vulkan programs.
