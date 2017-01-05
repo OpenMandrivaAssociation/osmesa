@@ -89,6 +89,7 @@
 %define devglapi	%mklibname %{glapiname} -d
 
 %define dridrivers	%mklibname dri-drivers
+%define vdpaudrivers	%mklibname vdpau-drivers
 
 %define gbmmajor	1
 %define gbmname		gbm
@@ -295,17 +296,6 @@ Requires:	%{dridrivers}-nouveau = %{EVRD}
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
-%endif
-%if %{with vdpau}
-%ifnarch %{armx}
-Requires:	%{_lib}vdpau-driver-nouveau
-Requires:	%{_lib}vdpau-driver-r300
-Requires:	%{_lib}vdpau-driver-radeonsi
-%if %{with r600}
-Requires:	%{_lib}vdpau-driver-r600
-%endif
-%endif
-Requires:	%{_lib}vdpau-driver-softpipe
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -626,6 +616,26 @@ Development files for the OpenCL library
 %endif
 
 %if %{with vdpau}
+%package -n	%{vdpaurivers}
+Summary:	Mesa VDPAU drivers
+Group:		System/Libraries
+Requires:	%{dridrivers} = %{EVRD}
+%if %{with vdpau}
+%ifnarch %{armx}
+Requires:	%{_lib}vdpau-driver-nouveau
+Requires:	%{_lib}vdpau-driver-r300
+Requires:	%{_lib}vdpau-driver-radeonsi
+%if %{with r600}
+Requires:	%{_lib}vdpau-driver-r600
+%endif
+%endif
+Requires:	%{_lib}vdpau-driver-softpipe
+%endif
+Provides:	vdpau-drivers = %{EVRD}
+
+%description -n %{vdpaudrivers}
+VDPAU drivers.
+
 %package -n	%{_lib}vdpau-driver-nouveau
 Summary:	VDPAU plugin for nouveau driver
 Group:		System/Libraries
