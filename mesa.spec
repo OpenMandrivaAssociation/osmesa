@@ -145,9 +145,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	13.0.2
+Version:	13.0.3
 %if "%{relc}%{git}" == ""
-Release:	3
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -224,8 +224,6 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # Currently empty -- current D3D9 bits have been merged into 10.4.0-rc1
 # Leaving the infrastructure in place for future updates.
 
-# https://bugs.freedesktop.org/show_bug.cgi?id=89599
-#Patch203:	mesa-10.5.2-hide-few-symbols-to-workaround-clang.patch
 # (tpg) this patch is only a workaround for https://bugs.freedesktop.org/show_bug.cgi?id=93454
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
@@ -285,18 +283,29 @@ Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 %package -n	%{dridrivers}
 Summary:	Mesa DRI drivers
 Group:		System/Libraries
+Requires:	%{dridrivers}-swrast = %{EVRD}
+Requires:	%{dridrivers}-virtio = %{EVRD}
+%ifnarch %{armx}
 %if %{with r600}
 Requires:	%{dridrivers}-radeon = %{EVRD}
 %endif
-%ifnarch %{armx}
 Requires:	%{dridrivers}-intel = %{EVRD}
-%endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
-Requires:	%{dridrivers}-swrast = %{EVRD}
-Requires:	%{dridrivers}-virtio = %{EVRD}
+%endif
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
+%endif
+%if %{with vdpau}
+%ifnarch %{armx}
+Requires:	%{_lib}vdpau-driver-nouveau
+Requires:	%{_lib}vdpau-driver-r300
+Requires:	%{_lib}vdpau-driver-radeonsi
+%if %{with r600}
+Requires:	%{_lib}vdpau-driver-r600
+%endif
+%endif
+Requires:	%{_lib}vdpau-driver-softpipe
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -336,6 +345,7 @@ DRI and XvMC drivers for Intel graphics chipsets
 Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
 Group:		System/Libraries
 Conflicts:	libva-vdpau-driver
+
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-nouveau
