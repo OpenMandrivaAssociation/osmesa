@@ -15,7 +15,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 1
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -146,7 +146,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	13.0.3
+Version:	17.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -186,8 +186,9 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: mesa-13.0-compile.patch
 %if %mdvver > 3000000
-Patch3: clover-llvm-4.0.patch
+#Patch3: clover-llvm-4.0.patch
 %endif
+Patch4: mesa-17.0-no-clang-specific-flags-for-gcc.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -616,7 +617,7 @@ Development files for the OpenCL library
 %endif
 
 %if %{with vdpau}
-%package -n	%{vdpaurivers}
+%package -n	%{vdpaudrivers}
 Summary:	Mesa VDPAU drivers
 Group:		System/Libraries
 Requires:	%{dridrivers} = %{EVRD}
@@ -855,6 +856,7 @@ pushd build-osmesa
 %configure \
 	--enable-osmesa \
 	--disable-dri \
+	--disable-gbm \
 	--disable-glx \
 	--disable-egl \
 	--disable-shared-glapi \
