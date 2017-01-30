@@ -15,7 +15,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc 1
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -862,7 +862,7 @@ pushd build-osmesa
 	--disable-shared-glapi \
 	--disable-gles1 \
 	--disable-gles2 \
-	--without-gallium-drivers
+	--with-gallium-drivers=swrast
 popd
 
 %make
