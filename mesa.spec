@@ -89,6 +89,7 @@
 %define devglapi	%mklibname %{glapiname} -d
 
 %define dridrivers	%mklibname dri-drivers
+%define vdpaudrivers	%mklibname vdpau-drivers
 
 %define gbmmajor	1
 %define gbmname		gbm
@@ -145,7 +146,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	13.0.3
+Version:	17.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -185,8 +186,9 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: mesa-13.0-compile.patch
 %if %mdvver > 3000000
-Patch3: clover-llvm-4.0.patch
+#Patch3: clover-llvm-4.0.patch
 %endif
+Patch4: mesa-17.0-no-clang-specific-flags-for-gcc.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -295,17 +297,6 @@ Requires:	%{dridrivers}-nouveau = %{EVRD}
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
-%endif
-%if %{with vdpau}
-%ifnarch %{armx}
-Requires:	%{_lib}vdpau-driver-nouveau
-Requires:	%{_lib}vdpau-driver-r300
-Requires:	%{_lib}vdpau-driver-radeonsi
-%if %{with r600}
-Requires:	%{_lib}vdpau-driver-r600
-%endif
-%endif
-Requires:	%{_lib}vdpau-driver-softpipe
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -626,6 +617,26 @@ Development files for the OpenCL library
 %endif
 
 %if %{with vdpau}
+%package -n	%{vdpaudrivers}
+Summary:	Mesa VDPAU drivers
+Group:		System/Libraries
+Requires:	%{dridrivers} = %{EVRD}
+%if %{with vdpau}
+%ifnarch %{armx}
+Requires:	%{_lib}vdpau-driver-nouveau
+Requires:	%{_lib}vdpau-driver-r300
+Requires:	%{_lib}vdpau-driver-radeonsi
+%if %{with r600}
+Requires:	%{_lib}vdpau-driver-r600
+%endif
+%endif
+Requires:	%{_lib}vdpau-driver-softpipe
+%endif
+Provides:	vdpau-drivers = %{EVRD}
+
+%description -n %{vdpaudrivers}
+VDPAU drivers.
+
 %package -n	%{_lib}vdpau-driver-nouveau
 Summary:	VDPAU plugin for nouveau driver
 Group:		System/Libraries
@@ -845,12 +856,13 @@ pushd build-osmesa
 %configure \
 	--enable-osmesa \
 	--disable-dri \
+	--disable-gbm \
 	--disable-glx \
 	--disable-egl \
 	--disable-shared-glapi \
 	--disable-gles1 \
 	--disable-gles2 \
-	--without-gallium-drivers
+	--with-gallium-drivers=swrast
 popd
 
 %make
