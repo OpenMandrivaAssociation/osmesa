@@ -5,10 +5,6 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
-# (tpg) needed for nouveau multi-threading patches
-# remove if patches were merged
-%define _default_patch_fuzz 2
-
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
@@ -185,10 +181,9 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: mesa-13.0-compile.patch
-%if %mdvver > 3000000
+#if %mdvver > 3000000
 #Patch3: clover-llvm-4.0.patch
-%endif
-Patch4: mesa-17.0-no-clang-specific-flags-for-gcc.patch
+#endif
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -766,13 +761,6 @@ export CXX=g++
 %endif
 export CFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
-%ifarch x86_64
-# Mesa uses SSSE3 asm instructions -- clang errors out if we don't allow them
-# (tpg) disable for now
-# see bug https://bugs.freedesktop.org/show_bug.cgi?id=93454
-#export CFLAGS="$CFLAGS -mssse3"
-#export CXXFLAGS="$CXXFLAGS -mssse3"
-%endif
 
 GALLIUM_DRIVERS="swrast,virgl"
 %if %{with hardware}
