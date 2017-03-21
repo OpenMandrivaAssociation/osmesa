@@ -142,7 +142,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	17.0.1
+Version:	17.0.2
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -484,7 +484,7 @@ Group:		System/Libraries
 
 %description -n %{libxatracker}
 This package provides the xatracker shared library used by gallium.
- 
+
 %package -n %{devxatracker}
 Summary:	Development files for xatracker libs
 Group:		Development/C
