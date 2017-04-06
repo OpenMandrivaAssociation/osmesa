@@ -142,7 +142,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	17.0.2
+Version:	17.0.3
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -162,7 +162,7 @@ Url:		http://www.mesa3d.org
 %if "%{git}" != ""
 Source0:	%{name}-%{git_branch}-%{git}.tar.xz
 %else
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}%{vsuffix}.tar.xz
+Source0:	https://mesa.freedesktop.org/archive/mesa-%{version}%{vsuffix}.tar.xz
 %endif
 Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
