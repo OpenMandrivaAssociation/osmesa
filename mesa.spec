@@ -11,7 +11,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 1
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -142,7 +142,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	17.0.3
+Version:	17.1.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -180,7 +180,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
-Patch2: mesa-13.0-compile.patch
 #if %mdvver > 3000000
 #Patch3: clover-llvm-4.0.patch
 #endif
@@ -771,7 +770,8 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
 # http://wayland.freedesktop.org/building.html
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
+# ilo is gone as of 17.1-rc1 
+# GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
@@ -795,9 +795,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 	--disable-egl \
 %endif
 %if %{with wayland}
-	--with-egl-platforms=x11,drm,wayland,surfaceless \
+	--with-platforms=x11,drm,wayland,surfaceless \
 %else
-	--with-egl-platforms=x11,drm,surfaceless \
+	--with-platforms=x11,drm,surfaceless \
 %endif
 	--enable-gles1 \
 	--enable-gles2 \
@@ -824,10 +824,10 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 	--enable-xa \
 %endif
 	--enable-nine \
-	--enable-gallium-llvm \
+	--enable-llvm \
 	--enable-llvm-shared-libs \
 %else
-	--disable-gallium-llvm \
+	--disable-llvm \
 	--with-gallium-drivers=swrast \
 %endif
 %if %{with tfloat}
@@ -927,9 +927,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %ifnarch %{armx}
 %files -n %{dridrivers}-intel
 %{_libdir}/dri/i9?5_dri.so
-%{_libdir}/dri/ilo_dri.so
 %if %{with opencl}
-%{_libdir}/gallium-pipe/pipe_i9?5.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
