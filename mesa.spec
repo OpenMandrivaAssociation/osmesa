@@ -11,7 +11,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc 1
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -24,8 +24,6 @@
 %bcond_without egl
 %bcond_without opencl
 %bcond_without tfloat
-# Broken as of 10.4.0-rc1 -- re-enable by default when fixed
-%bcond_with openvg
 %ifarch %arm mips sparc aarch64
 %bcond_with intel
 %else
@@ -73,11 +71,6 @@
 %define d3dname		d3dadapter9
 %define libd3d		%mklibname %{d3dname} %{d3dmajor}
 %define devd3d		%mklibname %{d3dname} -d
-
-%define openvgmajor	1
-%define openvgname	openvg
-%define libopenvg	%mklibname %{openvgname} %{openvgmajor}
-%define devopenvg	%mklibname %{openvgname} -d
 
 %define glapimajor	0
 %define glapiname	glapi
@@ -564,25 +557,6 @@ Provides:	d3d-devel = %{EVRD}
 %description -n %{devd3d}
 This package contains the headers needed to compile Direct3D 9 programs.
 
-%package -n %{libopenvg}
-Summary:	Files for MESA (OpenVG libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaopenvg1 < 8.0
-
-%description -n %{libopenvg}
-OpenVG is a royalty-free, cross-platform API that provides a low-level hardware
-acceleration interface for vector graphics libraries such as Flash and SVG.
-
-%package -n %{devopenvg}
-Summary:	Development files for OpenVG libs
-Group:		Development/C
-Requires:	%{libopenvg} = %{version}-%{release}
-Requires:	%{devegl} = %{version}-%{release}
-Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
-
-%description -n %{devopenvg}
-Development files for OpenVG library.
-
 %if %{with opencl}
 %package -n %{libcl}
 Summary:	OpenCL libs
@@ -801,9 +775,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 %endif
 	--enable-gles1 \
 	--enable-gles2 \
-%if %{with openvg}
-	--enable-openvg \
-%endif
 %if %{with opencl}
 	--enable-opencl \
 %endif
@@ -1008,11 +979,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %dir %{_libdir}/d3d
 %{_libdir}/d3d/d3dadapter9.so.%{d3dmajor}*
 
-%if %{with openvg}
-%files -n %{libopenvg}
-%{_libdir}/libOpenVG.so.%{openvgmajor}*
-%endif
-
 %if %{with opencl}
 %files -n %{libcl}
 %{_libdir}/libOpenCL.so.%{clmajor}*
@@ -1103,13 +1069,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_includedir}/d3dadapter
 %{_libdir}/d3d/d3dadapter9.so
 %{_libdir}/pkgconfig/d3d.pc
-
-%if %{with openvg}
-%files -n %{devopenvg}
-%{_includedir}/VG
-%{_libdir}/libOpenVG.so
-%{_libdir}/pkgconfig/vg.pc
-%endif
 
 %if %{with opencl}
 %files -n %{devcl}
