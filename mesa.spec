@@ -24,8 +24,6 @@
 %bcond_without egl
 %bcond_without opencl
 %bcond_without tfloat
-# Broken as of 10.4.0-rc1 -- re-enable by default when fixed
-%bcond_with openvg
 %ifarch %arm mips sparc aarch64
 %bcond_with intel
 %else
@@ -73,11 +71,6 @@
 %define d3dname		d3dadapter9
 %define libd3d		%mklibname %{d3dname} %{d3dmajor}
 %define devd3d		%mklibname %{d3dname} -d
-
-%define openvgmajor	1
-%define openvgname	openvg
-%define libopenvg	%mklibname %{openvgname} %{openvgmajor}
-%define devopenvg	%mklibname %{openvgname} -d
 
 %define glapimajor	0
 %define glapiname	glapi
@@ -142,7 +135,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	17.0.3
+Version:	17.1.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -180,7 +173,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
-Patch2: mesa-13.0-compile.patch
 #if %mdvver > 3000000
 #Patch3: clover-llvm-4.0.patch
 #endif
@@ -565,25 +557,6 @@ Provides:	d3d-devel = %{EVRD}
 %description -n %{devd3d}
 This package contains the headers needed to compile Direct3D 9 programs.
 
-%package -n %{libopenvg}
-Summary:	Files for MESA (OpenVG libs)
-Group:		System/Libraries
-Obsoletes:	%{_lib}mesaopenvg1 < 8.0
-
-%description -n %{libopenvg}
-OpenVG is a royalty-free, cross-platform API that provides a low-level hardware
-acceleration interface for vector graphics libraries such as Flash and SVG.
-
-%package -n %{devopenvg}
-Summary:	Development files for OpenVG libs
-Group:		Development/C
-Requires:	%{libopenvg} = %{version}-%{release}
-Requires:	%{devegl} = %{version}-%{release}
-Obsoletes:	%{_lib}mesaopenvg1-devel < 8.0
-
-%description -n %{devopenvg}
-Development files for OpenVG library.
-
 %if %{with opencl}
 %package -n %{libcl}
 Summary:	OpenCL libs
@@ -771,7 +744,8 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
 # http://wayland.freedesktop.org/building.html
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
+# ilo is gone as of 17.1-rc1 
+# GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
@@ -795,15 +769,12 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 	--disable-egl \
 %endif
 %if %{with wayland}
-	--with-egl-platforms=x11,drm,wayland,surfaceless \
+	--with-platforms=x11,drm,wayland,surfaceless \
 %else
-	--with-egl-platforms=x11,drm,surfaceless \
+	--with-platforms=x11,drm,surfaceless \
 %endif
 	--enable-gles1 \
 	--enable-gles2 \
-%if %{with openvg}
-	--enable-openvg \
-%endif
 %if %{with opencl}
 	--enable-opencl \
 %endif
@@ -824,10 +795,10 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 	--enable-xa \
 %endif
 	--enable-nine \
-	--enable-gallium-llvm \
+	--enable-llvm \
 	--enable-llvm-shared-libs \
 %else
-	--disable-gallium-llvm \
+	--disable-llvm \
 	--with-gallium-drivers=swrast \
 %endif
 %if %{with tfloat}
@@ -927,9 +898,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %ifnarch %{armx}
 %files -n %{dridrivers}-intel
 %{_libdir}/dri/i9?5_dri.so
-%{_libdir}/dri/ilo_dri.so
 %if %{with opencl}
-%{_libdir}/gallium-pipe/pipe_i9?5.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
@@ -1009,11 +978,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{libd3d}
 %dir %{_libdir}/d3d
 %{_libdir}/d3d/d3dadapter9.so.%{d3dmajor}*
-
-%if %{with openvg}
-%files -n %{libopenvg}
-%{_libdir}/libOpenVG.so.%{openvgmajor}*
-%endif
 
 %if %{with opencl}
 %files -n %{libcl}
@@ -1105,13 +1069,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_includedir}/d3dadapter
 %{_libdir}/d3d/d3dadapter9.so
 %{_libdir}/pkgconfig/d3d.pc
-
-%if %{with openvg}
-%files -n %{devopenvg}
-%{_includedir}/VG
-%{_libdir}/libOpenVG.so
-%{_libdir}/pkgconfig/vg.pc
-%endif
 
 %if %{with opencl}
 %files -n %{devcl}
