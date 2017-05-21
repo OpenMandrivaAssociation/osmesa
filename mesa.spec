@@ -5,6 +5,10 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
+%ifarch aarch64
+%global optflags %{optflags} -fuse-ld=bfd
+%endif
+
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
