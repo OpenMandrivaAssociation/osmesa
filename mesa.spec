@@ -1105,6 +1105,10 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %endif
 
 %files -n %{devvulkan}
+%ifnarch aarch64
+# FIXME This ifarch statement needs to go away when an aarch64 compatible
+# driver starts supporting vulkan
 %{_includedir}/vulkan
+%endif
 %dir %{_datadir}/vulkan
 %dir %{_datadir}/vulkan/icd.d
