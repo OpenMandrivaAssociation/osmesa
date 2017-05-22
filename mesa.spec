@@ -144,7 +144,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	17.1.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -868,6 +868,18 @@ ln -sf libGL.so.%{glmajor} %{buildroot}%{_libdir}/libGL.so
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
 
+# FIXME workaround for Vulkan headers not being installed
+if [ -e %{buildroot}%{_includedir}/vulkan/vulkan.h ]; then
+	echo Vulkan headers are being installed correctly now. Please remove the workaround.
+	exit 1
+else
+	mkdir -p %{buildroot}%{_includedir}/vulkan
+	cp -af include/vulkan/* %{buildroot}%{_includedir}/vulkan/
+%ifnarch %{ix86} x86_64
+	rm -f %{buildroot}%{_includedir}/vulkan/vulkan_intel.h
+%endif
+fi
+
 # .so files are not needed by vdpau
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
 
@@ -1105,10 +1117,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %endif
 
 %files -n %{devvulkan}
-%ifnarch aarch64
-# FIXME This ifarch statement needs to go away when an aarch64 compatible
-# driver starts supporting vulkan
 %{_includedir}/vulkan
-%endif
 %dir %{_datadir}/vulkan
 %dir %{_datadir}/vulkan/icd.d
