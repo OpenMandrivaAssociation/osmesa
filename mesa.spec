@@ -7,6 +7,9 @@
 
 %ifarch aarch64
 %global optflags %{optflags} -fuse-ld=bfd
+%bcond_with osmesa
+%else
+%bcond_without osmesa
 %endif
 
 %define git %{nil}
@@ -725,11 +728,13 @@ chmod +x %{SOURCE5}
 
 autoreconf -vfi
 
+%if %{with osmesa}
 # Duplicate source tree for OSMesa, since building both versions out-of-tree
 # would break build. - Anssi 12/2012
 all=$(ls)
 mkdir -p build-osmesa
 cp -a $all build-osmesa
+%endif
 
 %build
 %if %{with gcc}
@@ -810,6 +815,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 %endif
 	# end of configure options
 
+%if %{with osmesa}
 # Build OSMesa separately, since we want to build OSMesa without shared-glapi,
 # since doing that causes OSMesa to miss the OpenGL symbols.
 # See e.g. https://bugs.launchpad.net/ubuntu/+source/mesa/+bug/1066599
@@ -838,9 +844,12 @@ popd
 %make -C build-osmesa
 %endif
 %endif
+%endif
 
 %install
+%if %{with osmesa}
 %makeinstall_std -C build-osmesa
+%endif
 %makeinstall_std
 
 # FIXME: strip will likely break the hardlink
@@ -938,6 +947,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %endif
 %endif
 
+%if %{with osmesa}
 %files -n %{libosmesa}
 %{_libdir}/libOSMesa.so.%{osmesamajor}*
 
@@ -946,6 +956,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_includedir}/GL/osmesa.h
 %{_libdir}/libOSMesa.so
 %{_libdir}/pkgconfig/osmesa.pc
+%endif
 
 %if %{with va}
 %files -n %{libvadrivers}
