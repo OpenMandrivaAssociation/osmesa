@@ -5,6 +5,13 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 
+%ifarch aarch64
+%global optflags %{optflags} -fuse-ld=bfd
+%bcond_with osmesa
+%else
+%bcond_without osmesa
+%endif
+
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
@@ -135,7 +142,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	17.1.0
+Version:	17.1.1
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -721,11 +728,13 @@ chmod +x %{SOURCE5}
 
 autoreconf -vfi
 
+%if %{with osmesa}
 # Duplicate source tree for OSMesa, since building both versions out-of-tree
 # would break build. - Anssi 12/2012
 all=$(ls)
 mkdir -p build-osmesa
 cp -a $all build-osmesa
+%endif
 
 %build
 %if %{with gcc}
@@ -806,6 +815,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 %endif
 	# end of configure options
 
+%if %{with osmesa}
 # Build OSMesa separately, since we want to build OSMesa without shared-glapi,
 # since doing that causes OSMesa to miss the OpenGL symbols.
 # See e.g. https://bugs.launchpad.net/ubuntu/+source/mesa/+bug/1066599
@@ -834,9 +844,12 @@ popd
 %make -C build-osmesa
 %endif
 %endif
+%endif
 
 %install
+%if %{with osmesa}
 %makeinstall_std -C build-osmesa
+%endif
 %makeinstall_std
 
 # FIXME: strip will likely break the hardlink
@@ -854,6 +867,18 @@ ln -sf libGL.so.%{glmajor} %{buildroot}%{_libdir}/libGL.so
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
+
+# FIXME workaround for Vulkan headers not being installed
+if [ -e %{buildroot}%{_includedir}/vulkan/vulkan.h ]; then
+	echo Vulkan headers are being installed correctly now. Please remove the workaround.
+	exit 1
+else
+	mkdir -p %{buildroot}%{_includedir}/vulkan
+	cp -af include/vulkan/* %{buildroot}%{_includedir}/vulkan/
+%ifnarch %{ix86} x86_64
+	rm -f %{buildroot}%{_includedir}/vulkan/vulkan_intel.h
+%endif
+fi
 
 # .so files are not needed by vdpau
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
@@ -934,6 +959,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %endif
 %endif
 
+%if %{with osmesa}
 %files -n %{libosmesa}
 %{_libdir}/libOSMesa.so.%{osmesamajor}*
 
@@ -942,6 +968,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %{_includedir}/GL/osmesa.h
 %{_libdir}/libOSMesa.so
 %{_libdir}/pkgconfig/osmesa.pc
+%endif
 
 %if %{with va}
 %files -n %{libvadrivers}
