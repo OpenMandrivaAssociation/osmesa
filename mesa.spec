@@ -765,12 +765,12 @@ export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
 
 GALLIUM_DRIVERS="swrast,virgl"
 %if %{with hardware}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,nouveau"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r300,nouveau"
 %if %{with r600}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %endif
 %ifarch %{ix86} x86_64
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,swr"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,swr"
 %endif
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
