@@ -12,7 +12,7 @@
 %bcond_without osmesa
 %endif
 
-%define git %{nil}
+%define git 20170618
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
@@ -97,6 +97,14 @@
 %define libxatracker	%mklibname %xatrackername %{xatrackermajor}
 %define devxatracker	%mklibname %xatrackername -d
 
+%define swravxmajor	0
+%define swravxname	swravx
+%define libswravx	%mklibname %swravxname %{swravxmajor}
+
+%define swravx2major	0
+%define swravx2name	swravx2
+%define libswravx2	%mklibname %swravx2name %{swravx2major}
+
 %define clmajor		1
 %define clname		opencl
 %define libcl		%mklibname %clname %clmajor
@@ -142,7 +150,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	17.1.2
+Version:	17.2.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -180,9 +188,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
-#if %mdvver > 3000000
-#Patch3: clover-llvm-4.0.patch
-#endif
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -494,6 +499,20 @@ This package contains the headers needed to compile programs against
 the xatracker shared library.
 %endif
 
+%package -n %{libswravx}
+Summary:	AVX Software rendering library for Mesa
+Group:		System/Libraries
+
+%description -n %{libswravx}
+AVX Software rendering library for Mesa
+
+%package -n %{libswravx2}
+Summary:	AVX2 Software rendering library for Mesa
+Group:		System/Libraries
+
+%description -n %{libswravx2}
+AVX2 Software rendering library for Mesa
+
 %package -n %{libglesv1}
 Summary:	Files for Mesa (glesv1 libs)
 Group:		System/Libraries
@@ -750,6 +769,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,r300,nouveau"
 %if %{with r600}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %endif
+%ifarch %{ix86} x86_64
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,swr"
+%endif
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
 # http://wayland.freedesktop.org/building.html
@@ -757,7 +779,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 # GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 %endif
 %endif
 
@@ -823,7 +845,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4"
 
 pushd build-osmesa
 %configure \
-	--enable-osmesa \
+	--enable-gallium-osmesa \
 	--disable-dri \
 	--disable-gbm \
 	--disable-glx \
@@ -831,7 +853,7 @@ pushd build-osmesa
 	--disable-shared-glapi \
 	--disable-gles1 \
 	--disable-gles2 \
-	--with-gallium-drivers=swrast
+	--with-gallium-drivers=swr,swrast
 popd
 
 %make
@@ -994,6 +1016,16 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %if ! %{with bootstrap}
 %files -n %{libxatracker}
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
+%endif
+
+%ifarch %{ix86} x86_64
+%files -n %{libswravx}
+%{_libdir}/libswrAVX.so
+%{_libdir}/libswrAVX.so.%{swravxmajor}*
+
+%files -n %{libswravx2}
+%{_libdir}/libswrAVX2.so
+%{_libdir}/libswrAVX2.so.%{swravxmajor}*
 %endif
 
 %files -n %{libglesv1}
