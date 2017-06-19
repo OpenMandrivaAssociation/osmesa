@@ -296,6 +296,9 @@ Requires:	%{dridrivers}-nouveau = %{EVRD}
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
+Requires:	%{dridrivers}-etnaviv = %{EVRD}
+Requires:	%{dridrivers}-imx = %{EVRD}
+Requires:	%{dridrivers}-pl111 = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -373,6 +376,30 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-vc4
 DRI and XvMC drivers for Broadcom VC4 graphics chips
+
+%package -n	%{dridrivers}-etnaviv
+Summary:	DRI Drivers for Vivante graphics chipsets
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-etnaviv
+DRI and XvMC drivers for Vivante graphics chips
+
+%package -n	%{dridrivers}-imx
+Summary:	DRI Drivers for i.MX graphics chipsets
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-imx
+DRI and XvMC drivers for i.MX graphics chips
+
+%package -n	%{dridrivers}-pl111
+Summary:	DRI Drivers for ARM PL111 displays
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-pl111
+DRI and XvMC drivers for ARM PL111 displays
 %endif
 
 %package -n	%{libosmesa}
@@ -978,6 +1005,15 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %files -n %{dridrivers}-vc4
 %{_libdir}/dri/vc4_dri.so
+
+%files -n %{dridrivers}-etnaviv
+%{_libdir}/dri/etnaviv_dri.so
+
+%files -n %{dridrivers}-imx
+%{_libdir}/dri/imx-drm_dri.so
+
+%files -n %{dridrivers}-pl111
+%{_libdir}/dri/pl111_dri.so
 %endif
 %endif
 
