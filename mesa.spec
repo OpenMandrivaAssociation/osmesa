@@ -942,9 +942,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_vmwgfx.so
 %endif
-%endif
 
-%ifnarch %{armx}
 %files -n %{dridrivers}-intel
 %{_libdir}/dri/i9?5_dri.so
 %if %{with opencl}
