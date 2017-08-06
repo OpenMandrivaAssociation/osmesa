@@ -272,6 +272,7 @@ BuildRequires:	pkgconfig(libva)	>= 0.31.0
 %if %{with wayland}
 BuildRequires:	pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-server)
+BuildRequires:  pkgconfig(wayland-protocols) >= 1.8
 %endif
 
 # package mesa
