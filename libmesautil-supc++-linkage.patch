@@ -1,0 +1,11 @@
+--- mesa-17.2.0-rc2/src/util/Makefile.am.omv~	2017-08-06 11:48:35.614937288 +0200
++++ mesa-17.2.0-rc2/src/util/Makefile.am	2017-08-06 11:48:58.800124597 +0200
+@@ -44,7 +44,7 @@ libmesautil_la_SOURCES = \
+ 	$(MESA_UTIL_FILES) \
+ 	$(MESA_UTIL_GENERATED_FILES)
+ 
+-libmesautil_la_LIBADD = $(ZLIB_LIBS)
++libmesautil_la_LIBADD = $(ZLIB_LIBS) -lsupc++
+ 
+ roundeven_test_LDADD = -lm
+ 

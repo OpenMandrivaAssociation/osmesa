@@ -12,13 +12,13 @@
 %bcond_without osmesa
 %endif
 
-%define git 20170618
+%define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -188,6 +188,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
+Patch2: libmesautil-supc++-linkage.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
