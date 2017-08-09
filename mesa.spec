@@ -18,7 +18,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc 2
+%define relc 3
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -189,6 +189,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: libmesautil-supc++-linkage.patch
+Patch3: mesa-17.2-rc3-llvm-5.0.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -253,6 +254,8 @@ BuildRequires:	pkgconfig(xproto)
 BuildRequires:	pkgconfig(xt)		>= 1.0.5
 BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
 BuildRequires:	pkgconfig(xshmfence)	>= 1.1
+# for libsupc++.a
+BuildRequires:	stdc++-static-devel
 # (tpg) with openssl a steam crashes
 # Program received signal SIGSEGV, Segmentation fault.
 # 0xf63db8d5 in OPENSSL_ia32_cpuid () from /lib/libcrypto.so.1.0.0
