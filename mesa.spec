@@ -18,7 +18,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc 3
+%define relc 4
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -231,6 +231,10 @@ Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 #Patch206:	mesa-11.2-arm-no-regparm.patch
+
+# Forward-port of reverting commit f50aa21456d82c8cb6fbaa565835f1acc1720a5d
+# because of https://bugs.freedesktop.org/show_bug.cgi?id=101832
+Patch205:	mesa-17.2.0-rc4-revert-crash-on-startup.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
