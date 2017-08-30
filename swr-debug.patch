@@ -14,7 +14,7 @@ index 2f4c47a..9726cae 100644
  void KnobBase::autoExpandEnvironmentVariables(std::string &text)
  {
 +    std::cerr << "SWR_DEBUG env " << text << std::endl;
- #if (__GNUC__) && (GCC_VERSION < 409000)
+ #if 1 //(__GNUC__) && (GCC_VERSION < 409000)
      // <regex> isn't implemented prior to gcc-4.9.0
      // unix style variable replacement
 @@ -51,6 +53,8 @@ void KnobBase::autoExpandEnvironmentVariables(std::string &text)

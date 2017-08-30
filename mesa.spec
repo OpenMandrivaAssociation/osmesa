@@ -24,7 +24,7 @@
 # (which in turn requires mesa to build)
 %bcond_without hardware
 %bcond_without gcc
-%bcond_with bootstrap
+%bcond_without bootstrap
 %bcond_without vdpau
 %bcond_without va
 %bcond_without wayland
@@ -158,7 +158,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.2
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -234,8 +234,7 @@ Patch204:	mesa-11.1.0-fix-SSSE3.patch
 
 # Forward-port of reverting commit f50aa21456d82c8cb6fbaa565835f1acc1720a5d
 # because of https://bugs.freedesktop.org/show_bug.cgi?id=101832
-Patch205:	mesa-17.2.0-rc4-revert-crash-on-startup.patch
-Patch206: swr-debug.patch
+Patch205:	mesa-17.2.0-rc5-crash-on-startup.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
