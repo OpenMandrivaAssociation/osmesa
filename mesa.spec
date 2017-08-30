@@ -24,7 +24,7 @@
 # (which in turn requires mesa to build)
 %bcond_without hardware
 %bcond_without gcc
-%bcond_without bootstrap
+%bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
 %bcond_without wayland
@@ -158,7 +158,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.2
+Release:	%{?relc:0.rc%{relc}}.3
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
