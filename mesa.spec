@@ -23,7 +23,7 @@
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
 %bcond_without hardware
-%bcond_without gcc
+%bcond_with gcc
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
@@ -189,7 +189,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: libmesautil-supc++-linkage.patch
-Patch3: mesa-17.2-rc3-llvm-5.0.patch
+#Patch3: mesa-17.2-rc3-llvm-5.0.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -765,7 +765,7 @@ Suggests:	%{devd3d} = %{version}-%{release}
 Requires:	%{devvulkan} = %{version}-%{release}
 
 %description common-devel
-Mesa common metapackage devel
+Mesa common metapackage devel.
 
 %prep
 %if "%{git}" != ""
