@@ -189,7 +189,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: libmesautil-supc++-linkage.patch
-#Patch3: mesa-17.2-rc3-llvm-5.0.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
