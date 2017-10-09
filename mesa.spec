@@ -208,11 +208,13 @@ Patch15: mesa-9.2-hardware-float.patch
 
 # Cherry picks
 # git format-patch --start-number 200 mesa_7_5_branch..mdv-cherry-picks
+# https://cgit.freedesktop.org/~ajax/mesa/log/?h=mesa-17.2-s3tc
+Patch100:	0001-mesa-Squash-merge-of-S3TC-support.patch
 
 # Mandriva & Mageia patches
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
-Patch201: 0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
+Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 
 # Direct3D patchset -- https://wiki.ixit.cz/d3d9
 #
@@ -775,10 +777,15 @@ Mesa common metapackage devel.
 sed -i -e 's,HAVE_COMPAT_SYMLINKS=yes,HAVE_COMPAT_SYMLINKS=no,g' configure.ac
 
 %apply_patches
+
 chmod +x %{SOURCE5}
 
 #sed -i 's/CFLAGS="$CFLAGS -Werror=implicit-function-declaration"//g' configure.ac
 #sed -i 's/CFLAGS="$CFLAGS -Werror=missing-prototypes"//g' configure.ac
+
+# this is a hack for S3TC support. r200_screen.c is symlinked to
+# radeon_screen.c in git, but is its own file in the tarball.
+cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c
 
 autoreconf -vfi
 
