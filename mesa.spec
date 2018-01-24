@@ -18,7 +18,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -150,7 +150,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	17.3.3
+Version:	18.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -189,8 +189,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: libmesautil-supc++-linkage.patch
-Patch3: mesa-17.3.0-llvm-6.0.patch
-Patch4: mesa-17.3.2-llvm-6.0.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -619,6 +617,13 @@ This package contains the headers needed to compile Direct3D 9 programs.
 %package -n %{libcl}
 Summary:	OpenCL libs
 Group:		System/Libraries
+%define libmesacl	%mklibname mesaopencl %clmajor
+Provides:	%{libmesacl} = %{EVRD}
+%if "%{_lib}" == "lib64"
+Provides:	libOpenCL.so.1()(64bit)
+%else
+Provides:	libOpenCL.so.1
+%endif
 
 %description -n %{libcl}
 Open Computing Language (OpenCL) is a framework for writing programs that
@@ -939,11 +944,23 @@ else
 %endif
 fi
 
+# FIXME workaround for OpenCL headers not being installed
+if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
+	echo OpenCL headers are being installed correctly now. Please remove the workaround.
+	exit 1
+else
+	cp -af include/CL %{buildroot}%{_includedir}/
+fi
+
 # .so files are not needed by vdpau
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
 
 # .la files are not needed by mesa
 find %{buildroot} -name '*.la' |xargs rm -f
+
+# For compatibility...
+ln -s libMesaOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so.1
+ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
 
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
@@ -1086,6 +1103,8 @@ find %{buildroot} -name '*.la' |xargs rm -f
 
 %if %{with opencl}
 %files -n %{libcl}
+%{_sysconfdir}/OpenCL
+%{_libdir}/libMesaOpenCL.so.%{clmajor}*
 %{_libdir}/libOpenCL.so.%{clmajor}*
 %endif
 
@@ -1179,6 +1198,7 @@ find %{buildroot} -name '*.la' |xargs rm -f
 %files -n %{devcl}
 %{_includedir}/CL
 %{_libdir}/libOpenCL.so
+%{_libdir}/libMesaOpenCL.so
 %endif
 
 %if %{with egl}
