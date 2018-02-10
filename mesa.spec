@@ -30,7 +30,6 @@
 %bcond_without wayland
 %bcond_without egl
 %bcond_without opencl
-%bcond_without tfloat
 %ifarch %arm mips sparc aarch64
 %bcond_with intel
 %else
@@ -114,8 +113,6 @@
 %define waylandeglname	wayland-egl
 %define libwaylandegl	%mklibname %{waylandeglname} %{waylandeglmajor}
 %define devwaylandegl	%mklibname %{waylandeglname} -d
-
-%define libvadrivers	%mklibname va-drivers
 
 %define mesasrcdir	%{_prefix}/src/Mesa/
 %define driver_dir	%{_libdir}/dri
@@ -312,7 +309,7 @@ DRI and XvMC drivers.
 Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
-Conflicts:	libva-vdpau-driver
+Conflicts:	libva-vdpau-driver < 17.3.0
 %define __noautoreq '.*llvmradeon.*'
 
 %description -n %{dridrivers}-radeon
@@ -330,7 +327,7 @@ DRI and XvMC drivers for VMWare guest Operating Systems.
 %package -n	%{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
-Conflicts:	libva-vdpau-driver
+Conflicts:	libva-vdpau-driver < 17.3.0
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-intel
@@ -340,8 +337,7 @@ DRI and XvMC drivers for Intel graphics chipsets
 %package -n	%{dridrivers}-nouveau
 Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
 Group:		System/Libraries
-Conflicts:	libva-vdpau-driver
-
+Conflicts:	libva-vdpau-driver < 17.3.0
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-nouveau
@@ -422,23 +418,10 @@ Requires:	%{libosmesa} = %{version}-%{release}
 This package contains the headers needed to compile programs against
 the Mesa offscreen rendering library.
 
-%if %{with va}
-%package -n	%{libvadrivers}
-Summary:	Mesa libVA video acceleration drivers
-Group:		System/Libraries
-
-%description -n %{libvadrivers}
-Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
-libVA drivers for video acceleration
-%endif
-
 %package -n	%{libgl}
 Summary:	Files for Mesa (GL and GLX libs)
 Group:		System/Libraries
 Suggests:	%{dridrivers} >= %{version}-%{release}
-%if %{with tfloat}
-Requires:	%mklibname txc-dxtn
-%endif
 Obsoletes:	%{_lib}mesagl1 < %{version}-%{release}
 Requires:	%{_lib}udev1
 
@@ -652,7 +635,6 @@ Development files for the OpenCL library
 Summary:	Mesa VDPAU drivers
 Group:		System/Libraries
 Requires:	%{dridrivers} = %{EVRD}
-%if %{with vdpau}
 %ifnarch %{armx}
 Requires:	%{_lib}vdpau-driver-nouveau
 Requires:	%{_lib}vdpau-driver-r300
@@ -662,7 +644,6 @@ Requires:	%{_lib}vdpau-driver-r600
 %endif
 %endif
 Requires:	%{_lib}vdpau-driver-softpipe
-%endif
 Provides:	vdpau-drivers = %{EVRD}
 
 %description -n %{vdpaudrivers}
@@ -874,10 +855,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 	--disable-llvm \
 	--with-gallium-drivers=swrast \
 %endif
-%if %{with tfloat}
-	--enable-texture-float  \
-%endif
-	# end of configure options
+	--enable-texture-float
 
 %if %{with osmesa}
 # Build OSMesa separately, since we want to build OSMesa without shared-glapi,
@@ -934,22 +912,22 @@ mkdir -p %{buildroot}%{_prefix}/lib/dri
 
 # FIXME workaround for Vulkan headers not being installed
 if [ -e %{buildroot}%{_includedir}/vulkan/vulkan.h ]; then
-	echo Vulkan headers are being installed correctly now. Please remove the workaround.
-	exit 1
+    echo Vulkan headers are being installed correctly now. Please remove the workaround.
+    exit 1
 else
-	mkdir -p %{buildroot}%{_includedir}/vulkan
-	cp -af include/vulkan/* %{buildroot}%{_includedir}/vulkan/
+    mkdir -p %{buildroot}%{_includedir}/vulkan
+    cp -af include/vulkan/* %{buildroot}%{_includedir}/vulkan/
 %ifnarch %{ix86} x86_64
-	rm -f %{buildroot}%{_includedir}/vulkan/vulkan_intel.h
+    rm -f %{buildroot}%{_includedir}/vulkan/vulkan_intel.h
 %endif
 fi
 
 # FIXME workaround for OpenCL headers not being installed
 if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
-	echo OpenCL headers are being installed correctly now. Please remove the workaround.
-	exit 1
+    echo OpenCL headers are being installed correctly now. Please remove the workaround.
+    exit 1
 else
-	cp -af include/CL %{buildroot}%{_includedir}/
+    cp -af include/CL %{buildroot}%{_includedir}/
 fi
 
 # .so files are not needed by vdpau
@@ -1055,10 +1033,6 @@ ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
 %{_libdir}/pkgconfig/osmesa.pc
 %endif
 
-%if %{with va}
-%files -n %{libvadrivers}
-%endif
-
 %files -n %{libgl}
 %{_libdir}/libGL.so.*
 %dir %{_libdir}/mesa
@@ -1152,6 +1126,8 @@ ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
 
 #vdpau enblaed
 %if %{with vdpau}
+%files -n %{vdpaudrivers}
+
 %files -n %{_lib}vdpau-driver-nouveau
 %{_libdir}/vdpau/libvdpau_nouveau.so.*
 
