@@ -798,7 +798,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,swr"
 %if %{with intel}
 # (tpg) i915 got removed as it does not load on wayland
 # http://wayland.freedesktop.org/building.html
-# ilo is gone as of 17.1-rc1 
+# ilo is gone as of 17.1-rc1
 # GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
 %endif
 %ifarch %{armx}
@@ -985,7 +985,9 @@ ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
 
 %files -n %{dridrivers}-nouveau
 %{_libdir}/dri/nouveau*_dri.so
+%if %{with va}
 %{_libdir}/dri/nouveau_drv_video.so
+%endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_nouveau.so
 %endif
