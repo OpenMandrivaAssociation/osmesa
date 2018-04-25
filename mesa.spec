@@ -957,10 +957,14 @@ ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
 %{_libdir}/gallium-pipe/pipe_r?00.so
 %endif
 %if %{with r600}
+%if %{with va}
 %{_libdir}/dri/r600_drv_video.so
+%endif
 %{_libdir}/libXvMCr?00.so.*
 %{_libdir}/dri/radeonsi_dri.so
+%if %{with va}
 %{_libdir}/dri/radeonsi_drv_video.so
+%endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_radeonsi.so
 %endif
