@@ -867,6 +867,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 pushd build-osmesa
 %configure \
 	--enable-gallium-osmesa \
+	--enable-llvm \
 	--disable-dri \
 	--disable-gbm \
 	--disable-glx \
