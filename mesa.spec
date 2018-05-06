@@ -867,7 +867,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 pushd build-osmesa
 %configure \
 	--enable-gallium-osmesa \
-	--enable-llvm \
 	--disable-dri \
 	--disable-gbm \
 	--disable-glx \
@@ -875,7 +874,12 @@ pushd build-osmesa
 	--disable-shared-glapi \
 	--disable-gles1 \
 	--disable-gles2 \
+%ifarch %{ix86} x86_64 aarch64
+	--enable-llvm \
 	--with-gallium-drivers=swr,swrast
+%else
+	--with-gallium-drivers=swrast
+%endif
 popd
 
 %make
