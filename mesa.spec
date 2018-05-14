@@ -18,7 +18,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc 3
+%define relc 4
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -27,7 +27,6 @@
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
-%bcond_without wayland
 %bcond_without egl
 %bcond_without opencl
 %ifarch %arm mips sparc aarch64
@@ -108,11 +107,6 @@
 %define clname		opencl
 %define libcl		%mklibname %clname %clmajor
 %define devcl		%mklibname %clname -d
-
-%define waylandeglmajor	1
-%define waylandeglname	wayland-egl
-%define libwaylandegl	%mklibname %{waylandeglname} %{waylandeglmajor}
-%define devwaylandegl	%mklibname %{waylandeglname} -d
 
 %define mesasrcdir	%{_prefix}/src/Mesa/
 %define driver_dir	%{_libdir}/dri
@@ -267,11 +261,6 @@ BuildRequires:	pkgconfig(vdpau)	>= 0.4.1
 %endif
 %if %{with va}
 BuildRequires:	pkgconfig(libva)	>= 0.31.0
-%endif
-%if %{with wayland}
-BuildRequires:	pkgconfig(wayland-client)
-BuildRequires:  pkgconfig(wayland-server)
-BuildRequires:  pkgconfig(wayland-protocols) >= 1.8
 %endif
 
 # package mesa
@@ -715,25 +704,6 @@ Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 GBM (Graphics Buffer Manager) development parts.
 %endif
 
-%if %{with wayland}
-%package -n %{libwaylandegl}
-Summary:	Files for Mesa (Wayland EGL libs)
-Group:		System/Libraries
-
-%description -n %{libwaylandegl}
-Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
-Wayland EGL platform parts.
-
-%package -n %{devwaylandegl}
-Summary:	Development files for Mesa (Wayland EGL libs)
-Group:		Development/C
-Requires:	%{libwaylandegl} = %{version}-%{release}
-
-%description -n %{devwaylandegl}
-Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
-Wayland EGL platform development parts.
-%endif
-
 %package	common-devel
 Summary:	Meta package for mesa devel
 Group:		Development/C
@@ -796,12 +766,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %ifarch %{ix86} x86_64
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,swr"
 %endif
-%if %{with intel}
-# (tpg) i915 got removed as it does not load on wayland
-# http://wayland.freedesktop.org/building.html
-# ilo is gone as of 17.1-rc1
-# GALLIUM_DRIVERS="$GALLIUM_DRIVERS,ilo"
-%endif
 %ifarch %{armx}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 %endif
@@ -823,11 +787,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 %else
 	--disable-egl \
 %endif
-%if %{with wayland}
-	--with-platforms=x11,drm,wayland,surfaceless \
-%else
 	--with-platforms=x11,drm,surfaceless \
-%endif
 	--enable-gles1 \
 	--enable-gles2 \
 %if %{with opencl}
@@ -1099,11 +1059,6 @@ ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
 %{_libdir}/libgbm.so.%{gbmmajor}*
 %endif
 
-%if %{with wayland}
-%files -n %{libwaylandegl}
-%{_libdir}/libwayland-egl.so.%{waylandeglmajor}*
-%endif
-
 %files -n %{devgl}
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
@@ -1194,12 +1149,6 @@ ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
 %{_includedir}/gbm.h
 %{_libdir}/libgbm.so
 %{_libdir}/pkgconfig/gbm.pc
-%endif
-
-%if %{with wayland}
-%files -n %{devwaylandegl}
-%{_libdir}/libwayland-egl.so
-%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{devvulkan}

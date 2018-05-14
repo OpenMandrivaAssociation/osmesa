@@ -105,3 +105,15 @@ diff -up mesa-18.1.0-rc1/src/gallium/drivers/swr/rasterizer/jitter/streamout_jit
  
  using namespace llvm;
  using namespace SwrJit;
+diff -up mesa-18.1.0-rc4/src/gallium/drivers/swr/rasterizer/jitter/gen_builder.hpp.omv~ mesa-18.1.0-rc4/src/gallium/drivers/swr/rasterizer/jitter/gen_builder.hpp
+--- mesa-18.1.0-rc4/src/gallium/drivers/swr/rasterizer/jitter/gen_builder.hpp.omv~	2018-05-14 12:03:39.808374700 +0200
++++ mesa-18.1.0-rc4/src/gallium/drivers/swr/rasterizer/jitter/gen_builder.hpp	2018-05-14 12:03:54.228045023 +0200
+@@ -918,7 +918,7 @@ Value* PTR_DIFF(Value *LHS, Value *RHS,
+ 
+ Value* INVARIANT_GROUP_BARRIER(Value *Ptr)
+ {
+-    return IRB()->CreateInvariantGroupBarrier(Ptr);
++    return IRB()->CreateLaunderInvariantGroup(Ptr);
+ }
+ 
+ Value* VECTOR_SPLAT(unsigned NumElts, Value *V, const Twine &Name = "")
