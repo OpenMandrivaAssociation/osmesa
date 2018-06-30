@@ -141,7 +141,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	18.1.2
+Version:	18.1.3
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -222,6 +222,7 @@ Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 Patch205:	mesa-18.1.0-fix-build-with-latest-llvm.patch
 #Patch206:	mesa-11.2-arm-no-regparm.patch
+Patch207:	mesa-18.1.3-llvm-7.0.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
