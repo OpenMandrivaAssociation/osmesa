@@ -12,7 +12,7 @@
 %bcond_without osmesa
 %endif
 
-%define git %{nil}
+%define git 20180707
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
@@ -141,7 +141,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	18.1.3
+Version:	18.2.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -180,7 +180,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:	mesa-10.2-clang-compilefix.patch
 Patch2: libmesautil-supc++-linkage.patch
-Patch3: mesa-18.1.0-rc1-swr-llvm-7.0.patch
 
 # fedora patches
 Patch15: mesa-9.2-hardware-float.patch
@@ -220,7 +219,6 @@ Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # (tpg) this patch is only a workaround for https://bugs.freedesktop.org/show_bug.cgi?id=93454
 # real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
-Patch205:	mesa-18.1.0-fix-build-with-latest-llvm.patch
 #Patch206:	mesa-11.2-arm-no-regparm.patch
 Patch207:	mesa-18.1.3-llvm-7.0.patch
 
@@ -739,7 +737,7 @@ chmod +x %{SOURCE5}
 
 # this is a hack for S3TC support. r200_screen.c is symlinked to
 # radeon_screen.c in git, but is its own file in the tarball.
-cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c
+cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c || :
 
 autoreconf -vfi
 
