@@ -12,7 +12,7 @@
 %bcond_without osmesa
 %endif
 
-%define git 20180707
+%define git 20180708
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
@@ -147,12 +147,12 @@ Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
-Release:	%{?relc:1.rc%{relc}}.0.%{git}.1
+Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:1.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.1
 %endif
 %else
-Release:	%{?git:1.%{git}.}1
+Release:	%{?git:0.%{git}.}1
 %endif
 %endif
 Group:		System/Libraries
