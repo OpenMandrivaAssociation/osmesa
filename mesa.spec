@@ -12,13 +12,13 @@
 %bcond_without osmesa
 %endif
 
-%define git 20180708
+%define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 1
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -116,6 +116,7 @@
 #       SSE seems to have problem on some apps (gtulpas) for probing.
 %define	dri_drivers_i386	"i915,i965,nouveau,r200,radeon,swrast"
 %define	dri_drivers_x86_64	%{dri_drivers_i386}
+%define	dri_drivers_znver1	%{dri_drivers_x86_64}
 %define	dri_drivers_ppc		"r200,radeon,swrast"
 %define	dri_drivers_ppc64	""
 %define	dri_drivers_ia64	"i915,i965,mga,r200,radeon,swrast"
