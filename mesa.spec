@@ -128,6 +128,7 @@
 %define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
 %define	vulkan_drivers_i386	"intel,radeon"
 %define	vulkan_drivers_x86_64	%{vulkan_drivers_i386}
+%define	vulkan_drivers_znver1	%{vulkan_drivers_x86_64}
 %define	vulkan_drivers_ppc	"radeon"
 %define	vulkan_drivers_ppc64	"radeon"
 %define	vulkan_drivers_ia64	"radeon"
@@ -222,6 +223,7 @@ Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 Patch204:	mesa-11.1.0-fix-SSSE3.patch
 #Patch206:	mesa-11.2-arm-no-regparm.patch
 Patch207:	mesa-18.1.3-llvm-7.0.patch
+Patch208:	mesa-18.2.0-rc1-llvm-7.0.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -770,7 +772,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r300,nouveau"
 %if %{with r600}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %endif
-%ifarch %{ix86} x86_64
+%ifarch %{ix86} %{x86_64}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,swr"
 %endif
 %ifarch %{armx}
@@ -841,7 +843,7 @@ pushd build-osmesa
 	--disable-shared-glapi \
 	--disable-gles1 \
 	--disable-gles2 \
-%ifarch %{ix86} x86_64 aarch64
+%ifarch %{ix86} %{x86_64} aarch64
 	--enable-llvm \
 	--with-gallium-drivers=swr,swrast
 %else
@@ -890,7 +892,7 @@ if [ -e %{buildroot}%{_includedir}/vulkan/vulkan.h ]; then
 else
     mkdir -p %{buildroot}%{_includedir}/vulkan
     cp -af include/vulkan/* %{buildroot}%{_includedir}/vulkan/
-%ifnarch %{ix86} x86_64
+%ifnarch %{ix86} %{x86_64}
     rm -f %{buildroot}%{_includedir}/vulkan/vulkan_intel.h
 %endif
 fi
@@ -948,7 +950,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
 
-%ifarch %{ix86} x86_64
+%ifarch %{ix86} %{x86_64}
 %files -n %{dridrivers}-vmwgfx
 %{_libdir}/dri/vmwgfx_dri.so
 %if %{with opencl}
@@ -1037,7 +1039,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
 %endif
 
-%ifarch %{ix86} x86_64
+%ifarch %{ix86} %{x86_64}
 %files -n %{libswravx}
 %{_libdir}/libswrAVX.so
 %{_libdir}/libswrAVX.so.%{swravxmajor}*
