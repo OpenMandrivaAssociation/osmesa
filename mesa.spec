@@ -773,7 +773,10 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r300,nouveau"
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
 %endif
 %ifarch %{ix86} %{x86_64}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga,swr"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga"
+%endif
+%ifarch %{x86_64}
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,swr"
 %endif
 %ifarch %{armx}
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
@@ -843,8 +846,8 @@ pushd build-osmesa
 	--disable-shared-glapi \
 	--disable-gles1 \
 	--disable-gles2 \
-%ifarch %{ix86} %{x86_64} aarch64
 	--enable-llvm \
+%ifarch %{x86_64} %{aarch64}
 	--with-gallium-drivers=swr,swrast
 %else
 	--with-gallium-drivers=swrast
@@ -1039,7 +1042,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
 %endif
 
-%ifarch %{ix86} %{x86_64}
+%ifarch %{x86_64}
 %files -n %{libswravx}
 %{_libdir}/libswrAVX.so
 %{_libdir}/libswrAVX.so.%{swravxmajor}*
