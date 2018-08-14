@@ -104,7 +104,7 @@
 %define libswravx2	%mklibname %swravx2name %{swravx2major}
 
 %define clmajor		1
-%define clname		opencl
+%define clname		mesaopencl
 %define libcl		%mklibname %clname %clmajor
 %define devcl		%mklibname %clname -d
 
@@ -149,9 +149,9 @@ Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
-Release:	%{?relc:0.rc%{relc}}.0.%{git}.2
+Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.2
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -597,15 +597,10 @@ This package contains the headers needed to compile Direct3D 9 programs.
 
 %if %{with opencl}
 %package -n %{libcl}
-Summary:	OpenCL libs
+Summary:	Mesa OpenCL libs
 Group:		System/Libraries
-%define libmesacl	%mklibname mesaopencl %clmajor
-Provides:	%{libmesacl} = %{EVRD}
-%if "%{_lib}" == "lib64"
-Provides:	libOpenCL.so.1()(64bit)
-%else
-Provides:	libOpenCL.so.1
-%endif
+Provides:	mesa-libOpenCL = %{EVRD}
+Provides:	mesa-opencl = %{EVRD}
 
 %description -n %{libcl}
 Open Computing Language (OpenCL) is a framework for writing programs that
@@ -624,6 +619,8 @@ Summary:	Development files for OpenCL libs
 Group:		Development/Other
 Requires:	%{libcl} = %{version}-%{release}
 Provides:	%{clname}-devel = %{version}-%{release}
+Provides:	mesa-libOpenCL-devel = %{EVRD}
+Provides:	mesa-opencl-devel = %{EVRD}
 
 %description -n %{devcl}
 Development files for the OpenCL library
@@ -914,10 +911,6 @@ rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
 # .la files are not needed by mesa
 find %{buildroot} -name '*.la' |xargs rm -f
 
-# For compatibility...
-ln -s libMesaOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so.1
-ln -s libOpenCL.so.1 %{buildroot}%{_libdir}/libOpenCL.so
-
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
 
@@ -1066,7 +1059,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{libcl}
 %{_sysconfdir}/OpenCL
 %{_libdir}/libMesaOpenCL.so.%{clmajor}*
-%{_libdir}/libOpenCL.so.%{clmajor}*
 %endif
 
 %if %{with egl}
@@ -1155,7 +1147,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with opencl}
 %files -n %{devcl}
 %{_includedir}/CL
-%{_libdir}/libOpenCL.so
 %{_libdir}/libMesaOpenCL.so
 %endif
 
