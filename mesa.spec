@@ -18,7 +18,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc 4
+%define relc 5
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -48,25 +48,25 @@
 %define libosmesa	%mklibname osmesa %{osmesamajor}
 %define devosmesa	%mklibname osmesa -d
 
-%define eglmajor	1
-%define eglname		egl
+%define eglmajor	0
+%define eglname		EGL_mesa
 %define libegl		%mklibname %{eglname} %{eglmajor}
 %define devegl		%mklibname %{eglname} -d
 
-%define glmajor		1
-%define glname		gl
+%define glmajor		0
+%define glname		GLX_mesa
 %define libgl		%mklibname %{glname} %{glmajor}
-%define devgl		%mklibname %{glname} -d
+%define devgl		%mklibname GL -d
 
 %define devvulkan	%mklibname vulkan -d
 
 %define glesv1major	1
-%define glesv1name	glesv1
-%define libglesv1	%mklibname %{glesv1name}_ %{glesv1major}
+%define glesv1name	GLESv1_CM
+%define libglesv1	%mklibname %{glesv1name} %{glesv1major}
 %define devglesv1	%mklibname %{glesv1name} -d
 
 %define glesv2major	2
-%define glesv2name	glesv2
+%define glesv2name	GLESv2
 %define libglesv2	%mklibname %{glesv2name}_ %{glesv2major}
 %define devglesv2	%mklibname %{glesv2name} -d
 
@@ -237,6 +237,7 @@ BuildRequires:	python2-mako
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
+BuildRequires:	pkgconfig(libglvnd)
 BuildRequires:	pkgconfig(x11)		>= 1.3.3
 BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
 BuildRequires:	pkgconfig(xext)		>= 1.1.1
@@ -273,7 +274,7 @@ BuildRequires:	pkgconfig(wayland-server)
 BuildRequires:	pkgconfig(wayland-protocols) >= 1.8
 
 # package mesa
-Requires:	libGL.so.%{glmajor}%{_arch_tag_suffix}
+Requires:	libGL.so.1%{_arch_tag_suffix}
 
 %description
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
@@ -423,6 +424,11 @@ Group:		System/Libraries
 Suggests:	%{dridrivers} >= %{version}-%{release}
 Obsoletes:	%{_lib}mesagl1 < %{version}-%{release}
 Requires:	%{_lib}udev1
+Requires:	%{_lib}GL1%{?_isa}
+Provides:	mesa-libGL%{?_isa} = %{EVRD}
+Requires:	%mklibname GL 1
+%define oldglname %mklibname gl 1
+%rename %oldglname
 
 %description -n %{libgl}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
@@ -433,7 +439,7 @@ Summary:	Development files for Mesa (OpenGL compatible 3D lib)
 Group:		Development/C
 %ifarch armv7hl
 # This will allow to install proprietary libGL library for ie. imx
-Requires:	libGL.so.%{glmajor}%{_arch_tag_suffix}
+Requires:	libGL.so.1%{_arch_tag_suffix}
 # This is to prevent older version of being installed to satisfy dependency
 Conflicts:	%{libgl} < %{version}-%{release}
 %else
@@ -441,6 +447,8 @@ Requires:	%{libgl} = %{version}-%{release}
 %endif
 Obsoletes:	%{_lib}mesagl1-devel < 8.0
 Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
+%define oldlibgl %mklibname gl -d
+%rename %oldlibgl
 
 %description -n %{devgl}
 This package contains the headers needed to compile Mesa programs.
@@ -459,6 +467,8 @@ This package contains the headers needed to compile Vulkan programs.
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaegl1 < 8.0
+%define oldegl %mklibname egl 1
+%rename %oldegl
 
 %description -n %{libegl}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
@@ -470,6 +480,8 @@ Group:		Development/C
 Requires:	%{libegl} = %{version}-%{release}
 Obsoletes:	%{_lib}mesaegl1-devel < 8.0
 Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
+%define olddevegl %mklibname egl -d
+%rename %olddevegl
 
 %description -n %{devegl}
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
@@ -539,7 +551,7 @@ This package provides the OpenGL ES library version 1.
 %package -n %{devglesv1}
 Summary:	Development files for glesv1 libs
 Group:		Development/C
-Requires:	%{libglesv1} = %{version}-%{release}
+Requires:	%{libglesv1}
 Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
 Obsoletes:	%{_lib}glesv1_1-devel < %{version}-%{release}
 
@@ -560,7 +572,7 @@ This package provides the OpenGL ES library version 2.
 %package -n %{devglesv2}
 Summary:	Development files for glesv2 libs
 Group:		Development/C
-Requires:	%{libglesv2} = %{version}-%{release}
+Requires:	%{libglesv2}
 Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
 Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
 
@@ -785,6 +797,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 	--enable-dri3 \
 	--enable-glx \
 	--enable-glx-tls \
+	--enable-libglvnd \
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 	--with-vulkan-drivers="%{vulkan_drivers}" \
@@ -799,6 +812,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 	--with-platforms=x11,drm,wayland,surfaceless \
 	--enable-gles1 \
 	--enable-gles2 \
+	--enable-gles3 \
 %if %{with opencl}
 	--enable-opencl \
 %endif
@@ -869,18 +883,6 @@ popd
 %endif
 %makeinstall_std
 
-# FIXME: strip will likely break the hardlink
-# (blino) hardlink libGL files in %{_libdir}/mesa
-# to prevent proprietary driver installers from removing them
-mkdir -p %{buildroot}%{_libdir}/mesa
-pushd %{buildroot}%{_libdir}/mesa
-for l in ../libGL.so.*; do cp -a $l .; done
-popd
-
-%ifarch armv7hl
-ln -sf libGL.so.%{glmajor} %{buildroot}%{_libdir}/libGL.so
-%endif
-
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
@@ -907,6 +909,10 @@ fi
 
 # .so files are not needed by vdpau
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
+
+# We get those from libglvnd
+rm -f	%{buildroot}%{_libdir}/libGLESv1_CM.so.%{glesv1major}* \
+	%{buildroot}%{_libdir}/libGLESv2.so.%{glesv2major}*
 
 # .la files are not needed by mesa
 find %{buildroot} -name '*.la' |xargs rm -f
@@ -1014,9 +1020,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{libgl}
-%{_libdir}/libGL.so.*
-%dir %{_libdir}/mesa
-%{_libdir}/mesa/libGL.so.%{glmajor}*
+%{_datadir}/glvnd/egl_vendor.d/50_mesa.json
+%{_libdir}/libGLX_mesa.so.0*
 %dir %{_libdir}/dri
 %if %{with opencl}
 %dir %{_libdir}/gallium-pipe
@@ -1024,7 +1029,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %if %{with egl}
 %files -n %{libegl}
-%{_libdir}/libEGL.so.%{eglmajor}*
+%{_libdir}/libEGL_mesa.so.%{eglmajor}*
 %endif
 
 %files -n %{libglapi}
@@ -1045,11 +1050,13 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libswrAVX2.so.%{swravxmajor}*
 %endif
 
+%if 0
 %files -n %{libglesv1}
 %{_libdir}/libGLESv1_CM.so.%{glesv1major}*
 
 %files -n %{libglesv2}
 %{_libdir}/libGLESv2.so.%{glesv2major}*
+%endif
 
 %files -n %{libd3d}
 %dir %{_libdir}/d3d
@@ -1075,8 +1082,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
-%{_libdir}/libGL.so
 %{_libdir}/libXvMC*.so
+%{_libdir}/libGLX_mesa.so
 %{_libdir}/pkgconfig/gl.pc
 %{_libdir}/pkgconfig/dri.pc
 
@@ -1091,7 +1098,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{devegl}
 %{_includedir}/EGL
 %{_includedir}/KHR
-%{_libdir}/libEGL.so
+%{_libdir}/libEGL_mesa.so
 %{_libdir}/pkgconfig/egl.pc
 %endif
 
