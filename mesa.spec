@@ -483,7 +483,6 @@ Group:		Development/C
 Requires:	%{libegl} = %{version}-%{release}
 Obsoletes:	%{_lib}mesaegl1-devel < 8.0
 Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
-Requires:	libglvnd-EGL
 %define olddevegl %mklibname egl -d
 %rename %olddevegl
 
