@@ -469,7 +469,7 @@ This package contains the headers needed to compile Vulkan programs.
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaegl1 < 8.0
-Requires:	libglvnd-EGL
+Requires:	libglvnd-egl
 %define oldegl %mklibname egl 1
 %rename %oldegl
 
