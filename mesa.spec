@@ -145,7 +145,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	18.2.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -427,6 +427,7 @@ Requires:	%{_lib}udev1
 Requires:	%{_lib}GL1%{?_isa}
 Provides:	mesa-libGL%{?_isa} = %{EVRD}
 Requires:	%mklibname GL 1
+Requires:	libglvnd-GL
 %define oldglname %mklibname gl 1
 %rename %oldglname
 
@@ -468,6 +469,7 @@ This package contains the headers needed to compile Vulkan programs.
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaegl1 < 8.0
+Requires:	libglvnd-EGL
 %define oldegl %mklibname egl 1
 %rename %oldegl
 
@@ -481,6 +483,7 @@ Group:		Development/C
 Requires:	%{libegl} = %{version}-%{release}
 Obsoletes:	%{_lib}mesaegl1-devel < 8.0
 Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
+Requires:	libglvnd-EGL
 %define olddevegl %mklibname egl -d
 %rename %olddevegl
 
@@ -553,6 +556,7 @@ This package provides the OpenGL ES library version 1.
 Summary:	Development files for glesv1 libs
 Group:		Development/C
 Requires:	%{libglesv1}
+Requires:	libglvnd-GLESv1_CM
 Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
 Obsoletes:	%{_lib}glesv1_1-devel < %{version}-%{release}
 
@@ -574,6 +578,7 @@ This package provides the OpenGL ES library version 2.
 Summary:	Development files for glesv2 libs
 Group:		Development/C
 Requires:	%{libglesv2}
+Requires:	libglvnd-GLESv2
 Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
 Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
 
@@ -735,6 +740,7 @@ Requires:	%{devglesv1} = %{version}-%{release}
 Requires:	%{devglesv2} = %{version}-%{release}
 Suggests:	%{devd3d} = %{version}-%{release}
 Requires:	%{devvulkan} = %{version}-%{release}
+Requires:	pkgconfig(libglvnd)
 
 %description common-devel
 Mesa common metapackage devel.
