@@ -145,13 +145,13 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	18.2.0
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	3
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.2
+Release:	%{?relc:0.rc%{relc}}.1
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -559,6 +559,8 @@ Requires:	%{libglesv1}
 Requires:	libglvnd-GLESv1_CM
 Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
 Obsoletes:	%{_lib}glesv1_1-devel < %{version}-%{release}
+# For libGLESv1_CM.so symlink
+Requires:	pkgconfig(libglvnd)
 
 %description -n %{devglesv1}
 This package contains the headers needed to compile OpenGL ES 1 programs.
@@ -567,6 +569,8 @@ This package contains the headers needed to compile OpenGL ES 1 programs.
 Summary:	Files for Mesa (glesv2 libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaglesv2_2 < 8.0
+# For libGLESv2.so symlink
+Requires:	pkgconfig(libglvnd)
 
 %description -n %{libglesv2}
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
@@ -918,8 +922,8 @@ fi
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
 
 # We get those from libglvnd
-rm -f	%{buildroot}%{_libdir}/libGLESv1_CM.so.%{glesv1major}* \
-	%{buildroot}%{_libdir}/libGLESv2.so.%{glesv2major}*
+rm -f	%{buildroot}%{_libdir}/libGLESv1_CM.so* \
+	%{buildroot}%{_libdir}/libGLESv2.so*
 
 # .la files are not needed by mesa
 find %{buildroot} -name '*.la' |xargs rm -f
@@ -1142,12 +1146,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{devglesv1}
 %{_includedir}/GLES
-%{_libdir}/libGLESv1_CM.so
 %{_libdir}/pkgconfig/glesv1_cm.pc
 
 %files -n %{devglesv2}
 %{_includedir}/GLES2
-%{_libdir}/libGLESv2.so
 %{_libdir}/pkgconfig/glesv2.pc
 
 %files -n %{devglesv3}
