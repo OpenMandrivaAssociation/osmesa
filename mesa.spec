@@ -44,108 +44,108 @@
 %define vsuffix %{nil}
 %endif
 
-%define osmesamajor	8
-%define libosmesa	%mklibname osmesa %{osmesamajor}
-%define devosmesa	%mklibname osmesa -d
+%define osmesamajor 8
+%define libosmesa %mklibname osmesa %{osmesamajor}
+%define devosmesa %mklibname osmesa -d
 
-%define eglmajor	0
-%define eglname		EGL_mesa
-%define libegl		%mklibname %{eglname} %{eglmajor}
-%define devegl		%mklibname %{eglname} -d
+%define eglmajor 0
+%define eglname EGL_mesa
+%define libegl %mklibname %{eglname} %{eglmajor}
+%define devegl %mklibname %{eglname} -d
 
-%define glmajor		0
-%define glname		GLX_mesa
-%define libgl		%mklibname %{glname} %{glmajor}
-%define devgl		%mklibname GL -d
+%define glmajor 0
+%define glname GLX_mesa
+%define libgl %mklibname %{glname} %{glmajor}
+%define devgl %mklibname GL -d
 
-%define devvulkan	%mklibname vulkan -d
+%define devvulkan %mklibname vulkan -d
 
-%define glesv1major	1
-%define glesv1name	GLESv1_CM
-%define libglesv1	%mklibname %{glesv1name} %{glesv1major}
-%define devglesv1	%mklibname %{glesv1name} -d
+%define glesv1major 1
+%define glesv1name GLESv1_CM
+%define libglesv1 %mklibname %{glesv1name} %{glesv1major}
+%define devglesv1 %mklibname %{glesv1name} -d
 
-%define glesv2major	2
-%define glesv2name	GLESv2
-%define libglesv2	%mklibname %{glesv2name}_ %{glesv2major}
-%define devglesv2	%mklibname %{glesv2name} -d
+%define glesv2major 2
+%define glesv2name GLESv2
+%define libglesv2 %mklibname %{glesv2name}_ %{glesv2major}
+%define devglesv2 %mklibname %{glesv2name} -d
 
-%define devglesv3	%mklibname glesv3 -d
+%define devglesv3 %mklibname glesv3 -d
 
-%define d3dmajor	1
-%define d3dname		d3dadapter9
-%define libd3d		%mklibname %{d3dname} %{d3dmajor}
-%define devd3d		%mklibname %{d3dname} -d
+%define d3dmajor 1
+%define d3dname d3dadapter9
+%define libd3d %mklibname %{d3dname} %{d3dmajor}
+%define devd3d %mklibname %{d3dname} -d
 
-%define glapimajor	0
-%define glapiname	glapi
-%define libglapi	%mklibname %{glapiname} %{glapimajor}
-%define devglapi	%mklibname %{glapiname} -d
+%define glapimajor 0
+%define glapiname glapi
+%define libglapi %mklibname %{glapiname} %{glapimajor}
+%define devglapi %mklibname %{glapiname} -d
 
-%define dridrivers	%mklibname dri-drivers
-%define vdpaudrivers	%mklibname vdpau-drivers
+%define dridrivers %mklibname dri-drivers
+%define vdpaudrivers %mklibname vdpau-drivers
 
-%define gbmmajor	1
-%define gbmname		gbm
-%define libgbm		%mklibname %{gbmname} %{gbmmajor}
-%define devgbm		%mklibname %{gbmname} -d
+%define gbmmajor 1
+%define gbmname gbm
+%define libgbm %mklibname %{gbmname} %{gbmmajor}
+%define devgbm %mklibname %{gbmname} -d
 
-%define xatrackermajor	2
-%define xatrackername	xatracker
-%define libxatracker	%mklibname %xatrackername %{xatrackermajor}
-%define devxatracker	%mklibname %xatrackername -d
+%define xatrackermajor 2
+%define xatrackername xatracker
+%define libxatracker %mklibname %xatrackername %{xatrackermajor}
+%define devxatracker %mklibname %xatrackername -d
 
-%define swravxmajor	0
-%define swravxname	swravx
-%define libswravx	%mklibname %swravxname %{swravxmajor}
+%define swravxmajor 0
+%define swravxname swravx
+%define libswravx %mklibname %swravxname %{swravxmajor}
 
-%define swravx2major	0
-%define swravx2name	swravx2
-%define libswravx2	%mklibname %swravx2name %{swravx2major}
+%define swravx2major 0
+%define swravx2name swravx2
+%define libswravx2 %mklibname %swravx2name %{swravx2major}
 
-%define clmajor		1
-%define clname		mesaopencl
-%define libcl		%mklibname %clname %clmajor
-%define devcl		%mklibname %clname -d
+%define clmajor 1
+%define clname mesaopencl
+%define libcl %mklibname %clname %clmajor
+%define devcl %mklibname %clname -d
 
-%define mesasrcdir	%{_prefix}/src/Mesa/
-%define driver_dir	%{_libdir}/dri
+%define mesasrcdir %{_prefix}/src/Mesa/
+%define driver_dir %{_libdir}/dri
 
 #FIXME: (for 386/486) unset SSE, MMX and 3dnow flags
 #FIXME: (for >=i586)  disable sse
 #       SSE seems to have problem on some apps (gtulpas) for probing.
-%define	dri_drivers_i386	"i915,i965,nouveau,r200,radeon,swrast"
-%define	dri_drivers_x86_64	%{dri_drivers_i386}
-%define	dri_drivers_znver1	%{dri_drivers_x86_64}
-%define	dri_drivers_ppc		"r200,radeon,swrast"
-%define	dri_drivers_ppc64	""
-%define	dri_drivers_ia64	"i915,i965,mga,r200,radeon,swrast"
-%define	dri_drivers_alpha	"r200,radeon,swrast"
-%define	dri_drivers_sparc	"ffb,radeon,swrast"
-%define dri_drivers_mipsel	"r200,radeon,swrast"
-%define dri_drivers_arm		"nouveau,r200,radeon,swrast"
-%define dri_drivers_aarch64	"nouveau,r200,radeon,swrast"
-%define	dri_drivers		%{expand:%{dri_drivers_%{_arch}}}
-%define	vulkan_drivers_i386	"intel,radeon"
-%define	vulkan_drivers_x86_64	%{vulkan_drivers_i386}
-%define	vulkan_drivers_znver1	%{vulkan_drivers_x86_64}
-%define	vulkan_drivers_ppc	"radeon"
-%define	vulkan_drivers_ppc64	"radeon"
-%define	vulkan_drivers_ia64	"radeon"
-%define	vulkan_drivers_alpha	"radeon"
-%define	vulkan_drivers_sparc	"radeon"
-%define vulkan_drivers_mipsel	"radeon"
-%define vulkan_drivers_arm	"radeon"
-%define vulkan_drivers_aarch64	"radeon"
-%define	vulkan_drivers		%{expand:%{vulkan_drivers_%{_arch}}}
+%define dri_drivers_i386 "i915,i965,nouveau,r200,radeon,swrast"
+%define dri_drivers_x86_64 %{dri_drivers_i386}
+%define dri_drivers_znver1 %{dri_drivers_x86_64}
+%define dri_drivers_ppc "r200,radeon,swrast"
+%define dri_drivers_ppc64 ""
+%define dri_drivers_ia64 "i915,i965,mga,r200,radeon,swrast"
+%define dri_drivers_alpha "r200,radeon,swrast"
+%define dri_drivers_sparc "ffb,radeon,swrast"
+%define dri_drivers_mipsel "r200,radeon,swrast"
+%define dri_drivers_arm "nouveau,r200,radeon,swrast"
+%define dri_drivers_aarch64 "nouveau,r200,radeon,swrast"
+%define dri_drivers %{expand:%{dri_drivers_%{_arch}}}
+%define vulkan_drivers_i386 "intel,radeon"
+%define vulkan_drivers_x86_64 %{vulkan_drivers_i386}
+%define vulkan_drivers_znver1 %{vulkan_drivers_x86_64}
+%define vulkan_drivers_ppc "radeon"
+%define vulkan_drivers_ppc64 "radeon"
+%define vulkan_drivers_ia64 "radeon"
+%define vulkan_drivers_alpha "radeon"
+%define vulkan_drivers_sparc "radeon"
+%define vulkan_drivers_mipsel "radeon"
+%define vulkan_drivers_arm "radeon"
+%define vulkan_drivers_aarch64 "radeon"
+%define vulkan_drivers %{expand:%{vulkan_drivers_%{_arch}}}
 
 %define short_ver %(if [ `echo %{version} |cut -d. -f3` = "0" ]; then echo %{version} |cut -d. -f1-2; else echo %{version}; fi)
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	18.2.0
+Version:	18.2.1
 %if "%{relc}%{git}" == ""
-Release:	3
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -169,10 +169,11 @@ Source3:	make-git-snapshot.sh
 Source5:	mesa-driver-install
 Source100:	%{name}.rpmlintrc
 
-%define dricoremajor	1
-%define dricorename	dricore
-%define devdricore	%mklibname %{dricorename} -d
-%define libdricore	%mklibname %{dricorename} 9
+%define dricoremajor 1
+%define dricorename dricore
+%define devdricore %mklibname %{dricorename} -d
+%define libdricore %mklibname %{dricorename} 9
+
 Obsoletes:	%{libdricore} < %{EVRD}
 Obsoletes:	%{devdricore} < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers < %{EVRD}
@@ -180,11 +181,11 @@ Obsoletes:	%{name}-xorg-drivers-radeon < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
-Patch1:	mesa-10.2-clang-compilefix.patch
-Patch2: libmesautil-supc++-linkage.patch
+Patch1:		mesa-10.2-clang-compilefix.patch
+Patch2:		libmesautil-supc++-linkage.patch
 
 # fedora patches
-Patch15: mesa-9.2-hardware-float.patch
+Patch15:	mesa-9.2-hardware-float.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -238,16 +239,16 @@ BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
 BuildRequires:	pkgconfig(libglvnd)
-BuildRequires:	pkgconfig(x11)		>= 1.3.3
-BuildRequires:	pkgconfig(xdamage)	>= 1.1.1
-BuildRequires:	pkgconfig(xext)		>= 1.1.1
-BuildRequires:	pkgconfig(xfixes)	>= 4.0.3
-BuildRequires:	pkgconfig(xi)		>= 1.3
-BuildRequires:	pkgconfig(xmu)		>= 1.0.3
+BuildRequires:	pkgconfig(x11) >= 1.3.3
+BuildRequires:	pkgconfig(xdamage) >= 1.1.1
+BuildRequires:	pkgconfig(xext) >= 1.1.1
+BuildRequires:	pkgconfig(xfixes) >= 4.0.3
+BuildRequires:	pkgconfig(xi) >= 1.3
+BuildRequires:	pkgconfig(xmu) >= 1.0.3
 BuildRequires:	pkgconfig(xproto)
-BuildRequires:	pkgconfig(xt)		>= 1.0.5
-BuildRequires:	pkgconfig(xxf86vm)	>= 1.1.0
-BuildRequires:	pkgconfig(xshmfence)	>= 1.1
+BuildRequires:	pkgconfig(xt) >= 1.0.5
+BuildRequires:	pkgconfig(xxf86vm) >= 1.1.0
+BuildRequires:	pkgconfig(xshmfence) >= 1.1
 BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
@@ -264,10 +265,10 @@ BuildRequires:	clang-devel clang
 %endif
 BuildRequires:	pkgconfig(xvmc)
 %if %{with vdpau}
-BuildRequires:	pkgconfig(vdpau)	>= 0.4.1
+BuildRequires:	pkgconfig(vdpau) >= 0.4.1
 %endif
 %if %{with va}
-BuildRequires:	pkgconfig(libva)	>= 0.31.0
+BuildRequires:	pkgconfig(libva) >= 0.31.0
 %endif
 BuildRequires:	pkgconfig(wayland-client)
 BuildRequires:	pkgconfig(wayland-server)
@@ -281,7 +282,7 @@ Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 
 %libpackage XvMCgallium 1
 
-%package -n	%{dridrivers}
+%package -n %{dridrivers}
 Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Requires:	%{dridrivers}-swrast = %{EVRD}
@@ -305,7 +306,7 @@ Provides:	dri-drivers = %{EVRD}
 %description -n %{dridrivers}
 DRI and XvMC drivers.
 
-%package -n	%{dridrivers}-radeon
+%package -n %{dridrivers}-radeon
 Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -315,7 +316,7 @@ Conflicts:	libva-vdpau-driver < 17.3.0
 %description -n %{dridrivers}-radeon
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
 
-%package -n	%{dridrivers}-vmwgfx
+%package -n %{dridrivers}-vmwgfx
 Summary:	DRI Drivers for VMWare guest OS
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -324,7 +325,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 DRI and XvMC drivers for VMWare guest Operating Systems.
 
 %ifnarch %arm
-%package -n	%{dridrivers}-intel
+%package -n %{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
 Conflicts:	libva-vdpau-driver < 17.3.0
@@ -334,7 +335,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 DRI and XvMC drivers for Intel graphics chipsets
 %endif
 
-%package -n	%{dridrivers}-nouveau
+%package -n %{dridrivers}-nouveau
 Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver
 Group:		System/Libraries
 Conflicts:	libva-vdpau-driver < 17.3.0
@@ -343,7 +344,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-nouveau
 DRI and XvMC drivers for Nvidia graphics chipsets
 
-%package -n	%{dridrivers}-swrast
+%package -n %{dridrivers}-swrast
 Summary:	DRI Drivers for software rendering
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -351,7 +352,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-swrast
 Generic DRI driver using CPU rendering
 
-%package -n	%{dridrivers}-virtio
+%package -n %{dridrivers}-virtio
 Summary:	DRI Drivers for virtual environments
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -360,7 +361,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 Generic DRI driver for virtual environments.
 
 %ifarch %{armx}
-%package -n	%{dridrivers}-freedreno
+%package -n %{dridrivers}-freedreno
 Summary:	DRI Drivers for Adreno graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -368,7 +369,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-freedreno
 DRI and XvMC drivers for Adreno graphics chipsets
 
-%package -n	%{dridrivers}-vc4
+%package -n %{dridrivers}-vc4
 Summary:	DRI Drivers for Broadcom VC4 graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -376,7 +377,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-vc4
 DRI and XvMC drivers for Broadcom VC4 graphics chips
 
-%package -n	%{dridrivers}-etnaviv
+%package -n %{dridrivers}-etnaviv
 Summary:	DRI Drivers for Vivante graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -384,7 +385,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-etnaviv
 DRI and XvMC drivers for Vivante graphics chips
 
-%package -n	%{dridrivers}-imx
+%package -n %{dridrivers}-imx
 Summary:	DRI Drivers for i.MX graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -392,7 +393,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-imx
 DRI and XvMC drivers for i.MX graphics chips
 
-%package -n	%{dridrivers}-pl111
+%package -n %{dridrivers}-pl111
 Summary:	DRI Drivers for ARM PL111 displays
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
@@ -401,7 +402,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 DRI and XvMC drivers for ARM PL111 displays
 %endif
 
-%package -n	%{libosmesa}
+%package -n %{libosmesa}
 Summary:	Mesa offscreen rendering library
 Group:		System/Libraries
 
@@ -409,7 +410,7 @@ Group:		System/Libraries
 Mesa offscreen rendering libraries for rendering OpenGL into
 application-allocated blocks of memory.
 
-%package -n	%{devosmesa}
+%package -n %{devosmesa}
 Summary:	Development files for libosmesa
 Group:		Development/C
 Requires:	%{libosmesa} = %{version}-%{release}
@@ -418,7 +419,7 @@ Requires:	%{libosmesa} = %{version}-%{release}
 This package contains the headers needed to compile programs against
 the Mesa offscreen rendering library.
 
-%package -n	%{libgl}
+%package -n %{libgl}
 Summary:	Files for Mesa (GL and GLX libs)
 Group:		System/Libraries
 Suggests:	%{dridrivers} >= %{version}-%{release}
@@ -435,7 +436,7 @@ Requires:	libglvnd-GL
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 GL and GLX parts.
 
-%package -n	%{devgl}
+%package -n %{devgl}
 Summary:	Development files for Mesa (OpenGL compatible 3D lib)
 Group:		Development/C
 %ifarch armv7hl
@@ -455,7 +456,7 @@ Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
 %description -n %{devgl}
 This package contains the headers needed to compile Mesa programs.
 
-%package -n	%{devvulkan}
+%package -n %{devvulkan}
 Summary:	Development files for Mesa (Vulkan compatible 3D lib)
 Group:		Development/C
 Provides:	vulkan-devel = %{EVRD}
@@ -465,10 +466,11 @@ Provides:	libvulkan-devel = %{EVRD}
 This package contains the headers needed to compile Vulkan programs.
 
 %if %{with egl}
-%package -n	%{libegl}
+%package -n %{libegl}
 Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaegl1 < 8.0
+Provides:	mesa-libEGL%{?_isa} = %{EVRD}
 Requires:	libglvnd-egl
 %define oldegl %mklibname egl 1
 %rename %oldegl
@@ -477,7 +479,7 @@ Requires:	libglvnd-egl
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 EGL parts.
 
-%package -n	%{devegl}
+%package -n %{devegl}
 Summary:	Development files for Mesa (EGL libs)
 Group:		Development/C
 Requires:	%{libegl} = %{version}-%{release}
@@ -648,7 +650,7 @@ Development files for the OpenCL library
 %endif
 
 %if %{with vdpau}
-%package -n	%{vdpaudrivers}
+%package -n %{vdpaudrivers}
 Summary:	Mesa VDPAU drivers
 Group:		System/Libraries
 Requires:	%{dridrivers} = %{EVRD}
@@ -666,7 +668,7 @@ Provides:	vdpau-drivers = %{EVRD}
 %description -n %{vdpaudrivers}
 VDPAU drivers.
 
-%package -n	%{_lib}vdpau-driver-nouveau
+%package -n %{_lib}vdpau-driver-nouveau
 Summary:	VDPAU plugin for nouveau driver
 Group:		System/Libraries
 Requires:	%{_lib}vdpau1
@@ -675,7 +677,7 @@ Requires:	%{_lib}vdpau1
 This packages provides a VPDAU plugin to enable video acceleration
 with the nouveau driver.
 
-%package -n	%{_lib}vdpau-driver-r300
+%package -n %{_lib}vdpau-driver-r300
 Summary:	VDPAU plugin for r300 driver
 Group:		System/Libraries
 Requires:	%{_lib}vdpau1
@@ -684,7 +686,7 @@ Requires:	%{_lib}vdpau1
 This packages provides a VPDAU plugin to enable video acceleration
 with the r300 driver.
 
-%package -n	%{_lib}vdpau-driver-r600
+%package -n %{_lib}vdpau-driver-r600
 Summary:	VDPAU plugin for r600 driver
 Group:		System/Libraries
 Requires:	%{_lib}vdpau1
@@ -693,7 +695,7 @@ Requires:	%{_lib}vdpau1
 This packages provides a VPDAU plugin to enable video acceleration
 with the r600 driver.
 
-%package -n	%{_lib}vdpau-driver-radeonsi
+%package -n %{_lib}vdpau-driver-radeonsi
 Summary:	VDPAU plugin for radeonsi driver
 Group:		System/Libraries
 Requires:	%{_lib}vdpau1
@@ -702,7 +704,7 @@ Requires:	%{_lib}vdpau1
 This packages provides a VPDAU plugin to enable video acceleration
 with the radeonsi driver.
 
-%package -n	%{_lib}vdpau-driver-softpipe
+%package -n %{_lib}vdpau-driver-softpipe
 Summary:	VDPAU plugin for softpipe driver
 Group:		System/Libraries
 Requires:	%{_lib}vdpau1
@@ -731,7 +733,7 @@ Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 GBM (Graphics Buffer Manager) development parts.
 %endif
 
-%package	common-devel
+%package common-devel
 Summary:	Meta package for mesa devel
 Group:		Development/C
 Requires:	pkgconfig(glu)
