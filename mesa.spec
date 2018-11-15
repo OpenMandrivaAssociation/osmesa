@@ -29,10 +29,10 @@
 %bcond_without va
 %bcond_without egl
 %bcond_without opencl
-%ifarch %arm mips sparc aarch64
-%bcond_with intel
-%else
+%ifarch %{ix86} %{x86_64}
 %bcond_without intel
+%else
+%bcond_with intel
 %endif
 # Sometimes it's necessary to disable r600 while bootstrapping
 # an LLVM change (such as the r600 -> AMDGPU rename)
@@ -143,7 +143,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	18.2.4
+Version:	18.2.5
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -203,6 +203,7 @@ Patch15:	mesa-9.2-hardware-float.patch
 # Cherry picks
 
 # Mandriva & Mageia patches
+Patch200:	mesa-18.2.5-swr-llvm-7.0.patch
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
@@ -289,7 +290,9 @@ Requires:	%{dridrivers}-virtio = %{EVRD}
 %if %{with r600}
 Requires:	%{dridrivers}-radeon = %{EVRD}
 %endif
+%ifarch %{ix86} %{x86_64}
 Requires:	%{dridrivers}-intel = %{EVRD}
+%endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
 %endif
 %ifarch %{armx}
@@ -322,12 +325,13 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-vmwgfx
 DRI and XvMC drivers for VMWare guest Operating Systems.
 
-%ifnarch %arm
+%ifarch %{ix86} %{x86_64}
 %package -n %{dridrivers}-intel
 Summary:	DRI Drivers for Intel graphics chipsets
 Group:		System/Libraries
 Conflicts:	libva-vdpau-driver < 17.3.0
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+Suggests:	libvdpau-va-gl
 
 %description -n %{dridrivers}-intel
 DRI and XvMC drivers for Intel graphics chipsets
