@@ -18,7 +18,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 3.3
 
-%define relc %{nil}
+%define relc 3
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -143,18 +143,18 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	18.2.5
+Version:	18.3.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
-Release:	%{?relc:1.rc%{relc}}.0.%{git}.1
+Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:1.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.1
 %endif
 %else
-Release:	%{?git:1.%{git}.}1
+Release:	%{?git:0.%{git}.}1
 %endif
 %endif
 Group:		System/Libraries
@@ -233,7 +233,7 @@ BuildRequires:	makedepend
 BuildRequires:	llvm-devel >= 3.3
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
-BuildRequires:	python2-mako
+BuildRequires:	python-mako >= 0.8.0
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
@@ -940,7 +940,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files
 %doc docs/README.*
-%config(noreplace) %{_sysconfdir}/drirc
+%{_datadir}/drirc.d
 
 %files -n %{dridrivers}
 
