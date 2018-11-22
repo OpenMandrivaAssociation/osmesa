@@ -786,8 +786,8 @@ cp -a $all build-osmesa
 export CC=gcc
 export CXX=g++
 %endif
-export CFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
-export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls -Ofast"
+export CFLAGS="%{optflags} -fno-optimize-sibling-calls"
+export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls"
 
 GALLIUM_DRIVERS="swrast,virgl"
 %if %{with hardware}
@@ -815,7 +815,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 	--with-dri-driverdir=%{driver_dir} \
 	--with-dri-drivers="%{dri_drivers}" \
 	--with-vulkan-drivers="%{vulkan_drivers}" \
-	--with-sha1=libnettle \
 %if %{with egl}
 	--enable-egl \
 	--enable-gbm \
@@ -826,7 +825,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 	--with-platforms=x11,drm,wayland,surfaceless \
 	--enable-gles1 \
 	--enable-gles2 \
-	--enable-gles3 \
 %if %{with opencl}
 	--enable-opencl \
 %endif
@@ -853,7 +851,9 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 	--disable-llvm \
 	--with-gallium-drivers=swrast \
 %endif
-	--enable-texture-float
+%ifarch %{x86_64}
+	--with-swr-archs=avx,avx2
+%endif
 
 %if %{with osmesa}
 # Build OSMesa separately, since we want to build OSMesa without shared-glapi,
