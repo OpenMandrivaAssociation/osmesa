@@ -23,7 +23,10 @@
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
 %bcond_without hardware
-%bcond_with gcc
+# With clang 7.0, X crashes on startup on machines without AVX.
+# Apparently AVX instructions make it into the drivers even when
+# targeting generic CPUs.
+%bcond_without gcc
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
@@ -219,11 +222,6 @@ Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 # ( for i in 00*.patch; do PN=`echo $i |cut -b1-4 |sed 's,^0*,,g'`; echo Patch$((PN+1000)): $i; done ) >patchlist
 # Currently empty -- current D3D9 bits have been merged into 10.4.0-rc1
 # Leaving the infrastructure in place for future updates.
-
-# (tpg) this patch is only a workaround for https://bugs.freedesktop.org/show_bug.cgi?id=93454
-# real fix is in one of millions commits in llvm git related to https://llvm.org/bugs/show_bug.cgi?id=24990
-Patch204:	mesa-11.1.0-fix-SSSE3.patch
-#Patch206:	mesa-11.2-arm-no-regparm.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -786,8 +784,6 @@ cp -a $all build-osmesa
 export CC=gcc
 export CXX=g++
 %endif
-export CFLAGS="%{optflags} -fno-optimize-sibling-calls"
-export CXXFLAGS="%{optflags} -fno-optimize-sibling-calls"
 
 GALLIUM_DRIVERS="swrast,virgl"
 %if %{with hardware}
@@ -850,9 +846,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 %else
 	--disable-llvm \
 	--with-gallium-drivers=swrast \
-%endif
-%ifarch %{x86_64}
-	--with-swr-archs=avx,avx2
 %endif
 
 %if %{with osmesa}
