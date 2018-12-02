@@ -154,7 +154,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.2
+Release:	%{?relc:0.rc%{relc}}.3
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -448,6 +448,8 @@ Conflicts:	%{libgl} < %{version}-%{release}
 Requires:	%{libgl} = %{version}-%{release}
 %endif
 Requires:	pkgconfig(libglvnd)
+# GL/glext.h uses KHR/khrplatform.h
+Requires:	%{devegl}  = %{EVRD}
 Obsoletes:	%{_lib}mesagl1-devel < 8.0
 Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
 %define oldlibgl %mklibname gl -d
