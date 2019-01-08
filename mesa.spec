@@ -16,7 +16,7 @@
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
-%define opengl_ver 3.3
+%define opengl_ver 4.5
 
 %define relc %{nil}
 
@@ -26,7 +26,11 @@
 # With clang 7.0, X crashes on startup on machines without AVX.
 # Apparently AVX instructions make it into the drivers even when
 # targeting generic CPUs.
+%ifarch %{ix86} x86_64
 %bcond_without gcc
+%else
+%bcond_with gcc
+%endif
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
@@ -148,7 +152,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	18.3.1
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
