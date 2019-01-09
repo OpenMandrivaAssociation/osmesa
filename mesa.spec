@@ -3,7 +3,8 @@
 
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
-
+# (tpg) 2019-01-09 with LLVM/clang-7.0.1 still segfaults
+%define _disable_lto 1
 
 %ifarch aarch64
 %global optflags %{optflags} -fuse-ld=bfd
@@ -152,7 +153,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	18.3.1
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	3
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
