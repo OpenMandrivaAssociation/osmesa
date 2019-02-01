@@ -151,18 +151,18 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	18.3.1
+Version:	18.3.3
 %if "%{relc}%{git}" == ""
-Release:	3
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
-Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
+Release:	%{?relc:1.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.3
+Release:	%{?relc:1.rc%{relc}}.3
 %endif
 %else
-Release:	%{?git:0.%{git}.}1
+Release:	%{?git:1.%{git}.}1
 %endif
 %endif
 Group:		System/Libraries
