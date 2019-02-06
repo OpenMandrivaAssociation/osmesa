@@ -19,7 +19,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.5
 
-%define relc %{nil}
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -151,7 +151,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	18.3.3
+Version:	19.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -211,7 +211,6 @@ Patch15:	mesa-9.2-hardware-float.patch
 # Cherry picks
 
 # Mandriva & Mageia patches
-Patch200:	mesa-18.2.5-swr-llvm-7.0.patch
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
@@ -810,6 +809,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 %endif
 
 %configure \
+	--enable-autotools \
 	--enable-dri \
 	--enable-dri3 \
 	--enable-glx \
@@ -863,6 +863,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 
 pushd build-osmesa
 %configure \
+	--enable-autotools \
 	--enable-gallium-osmesa \
 	--disable-dri \
 	--disable-gbm \
