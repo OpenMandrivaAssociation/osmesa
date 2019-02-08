@@ -302,7 +302,7 @@ Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
 Requires:	%{dridrivers}-etnaviv = %{EVRD}
 Requires:	%{dridrivers}-imx = %{EVRD}
-Requires:	%{dridrivers}-pl111 = %{EVRD}
+Requires:	%{dridrivers}-kmsro = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -397,13 +397,14 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-imx
 DRI and XvMC drivers for i.MX graphics chips
 
-%package -n %{dridrivers}-pl111
-Summary:	DRI Drivers for ARM PL111 displays
+%package -n %{dridrivers}-kmsro
+Summary:	DRI Drivers for KMS-only devices
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+%rename %{dridrivers}-pl111
 
-%description -n %{dridrivers}-pl111
-DRI and XvMC drivers for ARM PL111 displays
+%description -n %{dridrivers}-kmsro
+DRI and XvMC drivers for KMS renderonly layer devices
 %endif
 
 %package -n %{libosmesa}
@@ -804,7 +805,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga"
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,swr"
 %endif
 %ifarch %{armx}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,kmsro,imx"
 %endif
 %endif
 
@@ -1018,8 +1019,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-imx
 %{_libdir}/dri/imx-drm_dri.so
 
-%files -n %{dridrivers}-pl111
-%{_libdir}/dri/pl111_dri.so
+%files -n %{dridrivers}-kmsro
+%{_libdir}/dri/kmsro_dri.so
 %endif
 %endif
 
