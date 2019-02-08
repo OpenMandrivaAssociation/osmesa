@@ -301,7 +301,6 @@ Requires:	%{dridrivers}-nouveau = %{EVRD}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
 Requires:	%{dridrivers}-etnaviv = %{EVRD}
-Requires:	%{dridrivers}-imx = %{EVRD}
 Requires:	%{dridrivers}-kmsro = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
@@ -389,19 +388,12 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-etnaviv
 DRI and XvMC drivers for Vivante graphics chips
 
-%package -n %{dridrivers}-imx
-Summary:	DRI Drivers for i.MX graphics chipsets
-Group:		System/Libraries
-Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
-
-%description -n %{dridrivers}-imx
-DRI and XvMC drivers for i.MX graphics chips
-
 %package -n %{dridrivers}-kmsro
 Summary:	DRI Drivers for KMS-only devices
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %rename %{dridrivers}-pl111
+%rename %{dridrivers}-imx
 
 %description -n %{dridrivers}-kmsro
 DRI and XvMC drivers for KMS renderonly layer devices
@@ -805,7 +797,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga"
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,swr"
 %endif
 %ifarch %{armx}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,kmsro,imx"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,kmsro"
 %endif
 %endif
 
@@ -1015,9 +1007,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-etnaviv
 %{_libdir}/dri/etnaviv_dri.so
-
-%files -n %{dridrivers}-imx
-%{_libdir}/dri/imx-drm_dri.so
 
 %files -n %{dridrivers}-kmsro
 %{_libdir}/dri/kmsro_dri.so
