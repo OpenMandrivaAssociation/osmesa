@@ -302,7 +302,7 @@ Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
 Requires:	%{dridrivers}-etnaviv = %{EVRD}
 Requires:	%{dridrivers}-imx = %{EVRD}
-Obsoletes:	%{dridrivers}-pl111 < %{EVRD}
+Requires:	%{dridrivers}-pl111 = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
 
@@ -396,6 +396,14 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-imx
 DRI and XvMC drivers for i.MX graphics chips
+
+%package -n %{dridrivers}-pl111
+Summary:	DRI Drivers for ARM PL111 displays
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-pl111
+DRI and XvMC drivers for ARM PL111 displays
 %endif
 
 %package -n %{libosmesa}
@@ -796,7 +804,7 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga"
 GALLIUM_DRIVERS="$GALLIUM_DRIVERS,swr"
 %endif
 %ifarch %{armx}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,imx"
+GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,pl111,imx"
 %endif
 %endif
 
@@ -1009,6 +1017,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-imx
 %{_libdir}/dri/imx-drm_dri.so
+
+%files -n %{dridrivers}-pl111
+%{_libdir}/dri/pl111_dri.so
 %endif
 %endif
 
