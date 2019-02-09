@@ -232,6 +232,7 @@ BuildRequires:	bison
 BuildRequires:	gccmakedep
 BuildRequires:	libxml2-python
 BuildRequires:	makedepend
+BuildRequires:	meson
 BuildRequires:	llvm-devel >= 3.3
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
@@ -281,8 +282,6 @@ Requires:	libGL.so.1%{_arch_tag_suffix}
 %description
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 
-%libpackage XvMCgallium 1
-
 %package -n %{dridrivers}
 Summary:	Mesa DRI drivers
 Group:		System/Libraries
@@ -304,6 +303,7 @@ Requires:	%{dridrivers}-etnaviv = %{EVRD}
 Requires:	%{dridrivers}-kmsro = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
+Obsoletes:	%{_lib}XvMCgallium1 < %{EVRD}
 
 %description -n %{dridrivers}
 DRI and XvMC drivers.
@@ -351,6 +351,8 @@ DRI and XvMC drivers for Nvidia graphics chipsets
 Summary:	DRI Drivers for software rendering
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+Obsoletes:	%{libswravx} < %{EVRD}
+Obsoletes:	%{libswravx2} < %{EVRD}
 
 %description -n %{dridrivers}-swrast
 Generic DRI driver using CPU rendering
@@ -749,34 +751,24 @@ Requires:	pkgconfig(libglvnd)
 %description common-devel
 Mesa common metapackage devel.
 
+%package tools
+Summary:	Tools for debugging Mesa drivers
+Group:		Development/Tools
+
+%description tools
+Tools for debugging Mesa drivers
+
 %prep
 %if "%{git}" != ""
-%setup -qn %{name}-%{git_branch}-%{git}
+%autosetup -p1 -n %{name}-%{git_branch}-%{git}
 %else
-%setup -qn mesa-%{version}%{vsuffix}
+%autosetup -p1 -n mesa-%{version}%{vsuffix}
 %endif
-sed -i -e 's,HAVE_COMPAT_SYMLINKS=yes,HAVE_COMPAT_SYMLINKS=no,g' configure.ac
-
-%apply_patches
-
 chmod +x %{SOURCE5}
-
-#sed -i 's/CFLAGS="$CFLAGS -Werror=implicit-function-declaration"//g' configure.ac
-#sed -i 's/CFLAGS="$CFLAGS -Werror=missing-prototypes"//g' configure.ac
 
 # this is a hack for S3TC support. r200_screen.c is symlinked to
 # radeon_screen.c in git, but is its own file in the tarball.
 cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c || :
-
-autoreconf -vfi
-
-%if %{with osmesa}
-# Duplicate source tree for OSMesa, since building both versions out-of-tree
-# would break build. - Anssi 12/2012
-all=$(ls)
-mkdir -p build-osmesa
-cp -a $all build-osmesa
-%endif
 
 %build
 %if %{with gcc}
@@ -801,95 +793,44 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,kmsro"
 %endif
 %endif
 
-%configure \
-	--enable-autotools \
-	--enable-dri \
-	--enable-dri3 \
-	--enable-glx \
-	--enable-glx-tls \
-	--enable-libglvnd \
-	--with-dri-driverdir=%{driver_dir} \
-	--with-dri-drivers="%{dri_drivers}" \
-	--with-vulkan-drivers="%{vulkan_drivers}" \
-%if %{with egl}
-	--enable-egl \
-	--enable-gbm \
-	--enable-shared-glapi \
-%else
-	--disable-egl \
-%endif
-	--with-platforms=x11,drm,wayland,surfaceless \
-	--enable-gles1 \
-	--enable-gles2 \
-%if %{with opencl}
-	--enable-opencl \
-%endif
-	--enable-xvmc \
-%if %{with vdpau}
-	--enable-vdpau \
-%else
-	--disable-vdpau \
-%endif
-%if %{with va}
-	--enable-va \
-%else
-	--disable-va \
-%endif
-%if %{with hardware}
-	--with-gallium-drivers=$GALLIUM_DRIVERS \
-%if ! %{with bootstrap}
-	--enable-xa \
-%endif
-	--enable-nine \
-	--enable-llvm \
-	--enable-llvm-shared-libs \
-%else
-	--disable-llvm \
-	--with-gallium-drivers=swrast \
-%endif
+%meson \
+	-Dc_std=c11 \
+	-Dcpp_std=c++17 \
+	-Dasm=true \
+	-Ddri-drivers=auto \
+	-Ddri3=true \
+	-Degl=true \
+	-Dgallium-drivers=auto \
+	-Dgallium-opencl=icd \
+	-Dgallium-va=true \
+	-Dgallium-vdpau=true \
+	-Dgallium-xa=true \
+	-Dgallium-xvmc=true \
+	-Dgallium-nine=true \
+	-Dgbm=true \
+	-Dgles1=true \
+	-Dgles2=true \
+	-Dglvnd=true \
+	-Dglx=auto \
+	-Dglx-direct=true \
+	-Dllvm=true \
+	-Dlmsensors=true \
+	-Dopengl=true \
+	-Dosmesa=none \
+	-Dplatforms=auto \
+	-Dshader-cache=true \
+	-Dshared-glapi=true \
+	-Dshared-llvm=true \
+	-Dswr-arches=avx,avx2,knl,skx \
+	-Dtools=all \
+	-Dvulkan-drivers=auto \
+	-Dxlib-lease=auto \
+	-Dosmesa=gallium
 
-%if %{with osmesa}
-# Build OSMesa separately, since we want to build OSMesa without shared-glapi,
-# since doing that causes OSMesa to miss the OpenGL symbols.
-# See e.g. https://bugs.launchpad.net/ubuntu/+source/mesa/+bug/1066599
-# -Anssi 12/2012
-
-pushd build-osmesa
-%configure \
-	--enable-autotools \
-	--enable-gallium-osmesa \
-	--disable-dri \
-	--disable-gbm \
-	--disable-glx \
-	--disable-egl \
-	--disable-shared-glapi \
-	--disable-gles1 \
-	--disable-gles2 \
-	--enable-llvm \
-%ifarch %{x86_64} %{aarch64}
-	--with-gallium-drivers=swr,swrast
-%else
-	--with-gallium-drivers=swrast
-%endif
-popd
-
-%make
-%ifarch i686
-%make -C build-osmesa OSMESA_LIB_DEPS="-ldl -lpthread -L%{_libdir}/clang/$(clang --version |head -n1 |awk '{print $3;}')/lib/linux -lclang_rt.builtins-i686"
-%else
-%ifarch %{ix86}
-%make -C build-osmesa OSMESA_LIB_DEPS="-ldl -lpthread -L%{_libdir}/clang/$(clang --version |head -n1 |awk '{print $3;}')/lib/linux -lclang_rt.builtins-i386"
-%else
-%make -C build-osmesa
-%endif
-%endif
-%endif
+%ninja_build -C build/
 
 %install
-%if %{with osmesa}
-%makeinstall_std -C build-osmesa
-%endif
-%makeinstall_std
+%ninja_install -C build/
 
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
@@ -948,7 +889,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with va}
 %{_libdir}/dri/r600_drv_video.so
 %endif
-%{_libdir}/libXvMCr?00.so.*
+%{_libdir}/libXvMCgallium.so
+%{_libdir}/libXvMCr?00.so
 %{_libdir}/dri/radeonsi_dri.so
 %if %{with va}
 %{_libdir}/dri/radeonsi_drv_video.so
@@ -983,7 +925,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_nouveau.so
 %endif
-%{_libdir}/libXvMCnouveau.so.*
+%{_libdir}/libXvMCnouveau.so
 
 %files -n %{dridrivers}-swrast
 %{_libdir}/dri/swrast_dri.so
@@ -1043,16 +985,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if ! %{with bootstrap}
 %files -n %{libxatracker}
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
-%endif
-
-%ifarch %{x86_64}
-%files -n %{libswravx}
-%{_libdir}/libswrAVX.so
-%{_libdir}/libswrAVX.so.%{swravxmajor}*
-
-%files -n %{libswravx2}
-%{_libdir}/libswrAVX2.so
-%{_libdir}/libswrAVX2.so.%{swravxmajor}*
 %endif
 
 %if 0
@@ -1171,3 +1103,23 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_includedir}/vulkan
 %dir %{_datadir}/vulkan
 %dir %{_datadir}/vulkan/icd.d
+
+%files tools
+%{_bindir}/aubinator
+%{_bindir}/aubinator_error_decode
+%{_bindir}/glsl_compiler
+%{_bindir}/glsl_test
+%{_bindir}/i965_disasm
+%{_bindir}/intel_dump_gpu
+%{_bindir}/intel_error2aub
+%{_bindir}/intel_sanitize_gpu
+%{_bindir}/nouveau_compiler
+%{_bindir}/spirv2nir
+%{_bindir}/xvmc_bench
+%{_bindir}/xvmc_blocks
+%{_bindir}/xvmc_context
+%{_bindir}/xvmc_rendering
+%{_bindir}/xvmc_subpicture
+%{_bindir}/xvmc_surface
+%{_libexecdir}/libintel_dump_gpu.so
+%{_libexecdir}/libintel_sanitize_gpu.so
