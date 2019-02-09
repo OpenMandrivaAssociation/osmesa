@@ -6,11 +6,8 @@
 # (tpg) 2019-01-09 with LLVM/clang-7.0.1 still segfaults
 %define _disable_lto 1
 
-%ifarch aarch64
+%ifarch %{aarch64}
 %global optflags %{optflags} -fuse-ld=bfd
-%bcond_with osmesa
-%else
-%bcond_without osmesa
 %endif
 
 %define git %{nil}
@@ -119,34 +116,6 @@
 %define mesasrcdir %{_prefix}/src/Mesa/
 %define driver_dir %{_libdir}/dri
 
-#FIXME: (for 386/486) unset SSE, MMX and 3dnow flags
-#FIXME: (for >=i586)  disable sse
-#       SSE seems to have problem on some apps (gtulpas) for probing.
-%define dri_drivers_i386 "i915,i965,nouveau,r200,radeon,swrast"
-%define dri_drivers_x86_64 %{dri_drivers_i386}
-%define dri_drivers_znver1 %{dri_drivers_x86_64}
-%define dri_drivers_ppc "r200,radeon,swrast"
-%define dri_drivers_ppc64 ""
-%define dri_drivers_ia64 "i915,i965,mga,r200,radeon,swrast"
-%define dri_drivers_alpha "r200,radeon,swrast"
-%define dri_drivers_sparc "ffb,radeon,swrast"
-%define dri_drivers_mipsel "r200,radeon,swrast"
-%define dri_drivers_arm "nouveau,r200,radeon,swrast"
-%define dri_drivers_aarch64 "nouveau,r200,radeon,swrast"
-%define dri_drivers %{expand:%{dri_drivers_%{_arch}}}
-%define vulkan_drivers_i386 "intel,radeon"
-%define vulkan_drivers_x86_64 %{vulkan_drivers_i386}
-%define vulkan_drivers_znver1 %{vulkan_drivers_x86_64}
-%define vulkan_drivers_ppc "radeon"
-%define vulkan_drivers_ppc64 "radeon"
-%define vulkan_drivers_ia64 "radeon"
-%define vulkan_drivers_alpha "radeon"
-%define vulkan_drivers_sparc "radeon"
-%define vulkan_drivers_mipsel "radeon"
-%define vulkan_drivers_arm "radeon"
-%define vulkan_drivers_aarch64 "radeon"
-%define vulkan_drivers %{expand:%{vulkan_drivers_%{_arch}}}
-
 %define short_ver %(if [ `echo %{version} |cut -d. -f3` = "0" ]; then echo %{version} |cut -d. -f1-2; else echo %{version}; fi)
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
@@ -191,6 +160,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:		mesa-10.2-clang-compilefix.patch
 Patch2:		libmesautil-supc++-linkage.patch
+Patch3:		mesa-19.0.0-rc2-more-ARM-drivers.patch
 
 # fedora patches
 Patch15:	mesa-9.2-hardware-float.patch
@@ -233,6 +203,7 @@ BuildRequires:	gccmakedep
 BuildRequires:	libxml2-python
 BuildRequires:	makedepend
 BuildRequires:	meson
+BuildRequires:	lm_sensors-devel
 BuildRequires:	llvm-devel >= 3.3
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
@@ -299,7 +270,9 @@ Requires:	%{dridrivers}-nouveau = %{EVRD}
 %ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
+Requires:	%{dridrivers}-v3d = %{EVRD}
 Requires:	%{dridrivers}-etnaviv = %{EVRD}
+Requires:	%{dridrivers}-tegra = %{EVRD}
 Requires:	%{dridrivers}-kmsro = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
@@ -382,6 +355,13 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-vc4
 DRI and XvMC drivers for Broadcom VC4 graphics chips
 
+%package -n %{dridrivers}-v3d
+Summary:	DRI Drivers for Broadcom VC5 graphics chipsets
+Group:		System/Libraries
+
+%description -n %{dridrivers}-v3d
+DRI and XvMC drivers for Broadcom VC5 graphics chips
+
 %package -n %{dridrivers}-etnaviv
 Summary:	DRI Drivers for Vivante graphics chipsets
 Group:		System/Libraries
@@ -389,6 +369,14 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-etnaviv
 DRI and XvMC drivers for Vivante graphics chips
+
+%package -n %{dridrivers}-tegra
+Summary:	DRI Drivers for Tegra graphics chipsets
+Group:		System/Libraries
+Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
+
+%description -n %{dridrivers}-tegra
+DRI and XvMC drivers for Tegra graphics chips
 
 %package -n %{dridrivers}-kmsro
 Summary:	DRI Drivers for KMS-only devices
@@ -776,23 +764,6 @@ export CC=gcc
 export CXX=g++
 %endif
 
-GALLIUM_DRIVERS="swrast,virgl"
-%if %{with hardware}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r300,nouveau"
-%if %{with r600}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600,radeonsi"
-%endif
-%ifarch %{ix86} %{x86_64}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga"
-%endif
-%ifarch %{x86_64}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,swr"
-%endif
-%ifarch %{armx}
-GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,kmsro"
-%endif
-%endif
-
 %meson \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
@@ -816,7 +787,6 @@ GALLIUM_DRIVERS="$GALLIUM_DRIVERS,freedreno,vc4,etnaviv,kmsro"
 	-Dllvm=true \
 	-Dlmsensors=true \
 	-Dopengl=true \
-	-Dosmesa=none \
 	-Dplatforms=auto \
 	-Dshader-cache=true \
 	-Dshared-glapi=true \
@@ -947,15 +917,22 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-vc4
 %{_libdir}/dri/vc4_dri.so
 
+%files -n %{dridrivers}-v3d
+%{_libdir}/dri/v3d_dri.so
+
 %files -n %{dridrivers}-etnaviv
 %{_libdir}/dri/etnaviv_dri.so
 
+%files -n %{dridrivers}-tegra
+%{_libdir}/dri/tegra_dri.so
+
 %files -n %{dridrivers}-kmsro
-%{_libdir}/dri/kmsro_dri.so
+%{_libdir}/dri/pl111_dri.so
+%{_libdir}/dri/hx8357d_dri.so
+%{_libdir}/dri/imx-drm_dri.so
 %endif
 %endif
 
-%if %{with osmesa}
 %files -n %{libosmesa}
 %{_libdir}/libOSMesa.so.%{osmesamajor}*
 
@@ -964,7 +941,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_includedir}/GL/osmesa.h
 %{_libdir}/libOSMesa.so
 %{_libdir}/pkgconfig/osmesa.pc
-%endif
 
 %files -n %{libgl}
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
@@ -1105,14 +1081,22 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %dir %{_datadir}/vulkan/icd.d
 
 %files tools
+%ifarch %{ix86} %{x86_64}
 %{_bindir}/aubinator
 %{_bindir}/aubinator_error_decode
-%{_bindir}/glsl_compiler
-%{_bindir}/glsl_test
 %{_bindir}/i965_disasm
 %{_bindir}/intel_dump_gpu
 %{_bindir}/intel_error2aub
 %{_bindir}/intel_sanitize_gpu
+%{_libexecdir}/libintel_dump_gpu.so
+%{_libexecdir}/libintel_sanitize_gpu.so
+%endif
+%ifarch %{arm} %{armx}
+%{_bindir}/etnaviv_compiler
+%{_bindir}/ir3_compiler
+%endif
+%{_bindir}/glsl_compiler
+%{_bindir}/glsl_test
 %{_bindir}/nouveau_compiler
 %{_bindir}/spirv2nir
 %{_bindir}/xvmc_bench
@@ -1121,5 +1105,3 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/xvmc_rendering
 %{_bindir}/xvmc_subpicture
 %{_bindir}/xvmc_surface
-%{_libexecdir}/libintel_dump_gpu.so
-%{_libexecdir}/libintel_sanitize_gpu.so

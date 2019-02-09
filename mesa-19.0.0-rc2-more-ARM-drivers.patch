@@ -1,0 +1,32 @@
+diff -up mesa-19.0.0-rc2/meson.build.omv~ mesa-19.0.0-rc2/meson.build
+--- mesa-19.0.0-rc2/meson.build.omv~	2019-02-09 20:13:13.597415238 +0000
++++ mesa-19.0.0-rc2/meson.build	2019-02-09 20:17:45.572553731 +0000
+@@ -98,7 +98,7 @@ if _drivers.contains('auto')
+     if ['x86', 'x86_64'].contains(host_machine.cpu_family())
+       _drivers = ['i915', 'i965', 'r100', 'r200', 'nouveau']
+     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+-      _drivers = []
++      _drivers = ['r100', 'r200', 'nouveau']
+     else
+       error('Unknown architecture @0@. Please pass -Ddri-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+             host_machine.cpu_family()))
+@@ -131,8 +131,8 @@ if _drivers.contains('auto')
+       ]
+     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+       _drivers = [
+-        'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau',
+-        'tegra', 'virgl', 'swrast',
++        'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'r300', 'r600',
++        'radeonsi', 'nouveau', 'tegra', 'panfrost', 'virgl', 'swrast',
+       ]
+     else
+       error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+@@ -185,7 +185,7 @@ if _vulkan_drivers.contains('auto')
+     if host_machine.cpu_family().startswith('x86')
+       _vulkan_drivers = ['amd', 'intel']
+     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+-      _vulkan_drivers = []
++      _vulkan_drivers = ['amd']
+     else
+       error('Unknown architecture @0@. Please pass -Dvulkan-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+             host_machine.cpu_family()))
