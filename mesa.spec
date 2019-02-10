@@ -128,7 +128,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:1.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:1.rc%{relc}}.3
+Release:	%{?relc:1.rc%{relc}}.4
 %endif
 %else
 Release:	%{?git:1.%{git}.}1
