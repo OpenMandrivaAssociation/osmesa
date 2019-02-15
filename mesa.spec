@@ -16,7 +16,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.5
 
-%define relc 3
+%define relc 4
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -128,7 +128,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:1.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:1.rc%{relc}}.4
+Release:	%{?relc:1.rc%{relc}}.1
 %endif
 %else
 Release:	%{?git:1.%{git}.}1
