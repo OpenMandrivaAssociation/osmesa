@@ -24,7 +24,8 @@
 # With clang 7.0, X crashes on startup on machines without AVX.
 # Apparently AVX instructions make it into the drivers even when
 # targeting generic CPUs.
-%ifarch %{ix86} x86_64
+# clang 7.0.1 on arm32 triggers a segfault while building.
+%ifarch %{ix86} x86_64 %{arm}
 %bcond_without gcc
 %else
 %bcond_with gcc
