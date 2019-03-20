@@ -211,6 +211,7 @@ BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
 BuildRequires:	pkgconfig(libglvnd)
+BuildRequires:	pkgconfig(vulkan)
 BuildRequires:	pkgconfig(x11) >= 1.3.3
 BuildRequires:	pkgconfig(xdamage) >= 1.1.1
 BuildRequires:	pkgconfig(xext) >= 1.1.1
