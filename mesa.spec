@@ -64,6 +64,8 @@
 %define libgl %mklibname %{glname} %{glmajor}
 %define devgl %mklibname GL -d
 
+%define devvulkan %mklibname vulkan-intel -d
+
 %define glesv1major 1
 %define glesv1name GLESv1_CM
 %define libglesv1 %mklibname %{glesv1name} %{glesv1major}
@@ -125,12 +127,12 @@ Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
-Release:	%{?relc:1.rc%{relc}}.0.%{git}.1
+Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:1.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.1
 %endif
 %else
-Release:	%{?git:1.%{git}.}1
+Release:	%{?git:0.%{git}.}1
 %endif
 %endif
 Group:		System/Libraries
@@ -444,6 +446,16 @@ Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
 
 %description -n %{devgl}
 This package contains the headers needed to compile Mesa programs.
+
+%package -n %{devvulkan}
+Summary:	Development files for the Intel Vulkan driver
+Group:		Development/C
+Requires:	pkgconfig(vulkan)
+Provides:	vulkan-intel-devel = %{EVRD}
+
+%description -n %{devvulkan}
+This package contains the headers needed to compile applications
+that use Intel Vulkan driver extras
 
 %if %{with egl}
 %package -n %{libegl}
@@ -1051,6 +1063,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libgbm.so
 %{_libdir}/pkgconfig/gbm.pc
 %endif
+
+%files -n %{devvulkan}
+%{_includedir}/vulkan/vulkan_intel.h
 
 %files tools
 %ifarch %{ix86} %{x86_64}
