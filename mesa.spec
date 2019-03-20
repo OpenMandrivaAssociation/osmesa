@@ -64,8 +64,6 @@
 %define libgl %mklibname %{glname} %{glmajor}
 %define devgl %mklibname GL -d
 
-%define devvulkan %mklibname vulkan -d
-
 %define glesv1major 1
 %define glesv1name GLESv1_CM
 %define libglesv1 %mklibname %{glesv1name} %{glesv1major}
@@ -123,7 +121,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	19.0.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -446,15 +444,6 @@ Obsoletes:	%{_lib}gl1-devel < %{version}-%{release}
 %description -n %{devgl}
 This package contains the headers needed to compile Mesa programs.
 
-%package -n %{devvulkan}
-Summary:	Development files for Mesa (Vulkan compatible 3D lib)
-Group:		Development/C
-Provides:	vulkan-devel = %{EVRD}
-Provides:	libvulkan-devel = %{EVRD}
-
-%description -n %{devvulkan}
-This package contains the headers needed to compile Vulkan programs.
-
 %if %{with egl}
 %package -n %{libegl}
 Summary:	Files for Mesa (EGL libs)
@@ -734,7 +723,6 @@ Requires:	%{devglapi} = %{version}-%{release}
 Requires:	%{devglesv1} = %{version}-%{release}
 Requires:	%{devglesv2} = %{version}-%{release}
 Suggests:	%{devd3d} = %{version}-%{release}
-Requires:	%{devvulkan} = %{version}-%{release}
 Requires:	pkgconfig(libglvnd)
 
 %description common-devel
@@ -806,18 +794,6 @@ export CXX=g++
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
-
-# FIXME workaround for Vulkan headers not being installed
-if [ -e %{buildroot}%{_includedir}/vulkan/vulkan.h ]; then
-    echo Vulkan headers are being installed correctly now. Please remove the workaround.
-    exit 1
-else
-    mkdir -p %{buildroot}%{_includedir}/vulkan
-    cp -af include/vulkan/* %{buildroot}%{_includedir}/vulkan/
-%ifnarch %{ix86} %{x86_64}
-    rm -f %{buildroot}%{_includedir}/vulkan/vulkan_intel.h
-%endif
-fi
 
 # FIXME workaround for OpenCL headers not being installed
 if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
@@ -1074,11 +1050,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libgbm.so
 %{_libdir}/pkgconfig/gbm.pc
 %endif
-
-%files -n %{devvulkan}
-%{_includedir}/vulkan
-%dir %{_datadir}/vulkan
-%dir %{_datadir}/vulkan/icd.d
 
 %files tools
 %ifarch %{ix86} %{x86_64}
