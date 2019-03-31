@@ -1065,8 +1065,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/pkgconfig/gbm.pc
 %endif
 
+%ifarch %{ix86} %{x86_64}
 %files -n %{devvulkan}
 %{_includedir}/vulkan/vulkan_intel.h
+%endif
 
 %files tools
 %ifarch %{ix86} %{x86_64}
