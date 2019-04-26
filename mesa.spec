@@ -3,8 +3,6 @@
 
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
-# (tpg) 2019-01-09 with LLVM/clang-7.0.1 still segfaults
-%define _disable_lto 1
 
 %ifarch %{aarch64}
 %global optflags %{optflags} -fuse-ld=bfd
@@ -25,7 +23,7 @@
 # Apparently AVX instructions make it into the drivers even when
 # targeting generic CPUs.
 # clang 7.0.1 on arm32 triggers a segfault while building.
-%ifarch %{ix86} x86_64 %{arm} %{armx}
+%ifarch %{ix86} %{arm} %{armx}
 %bcond_without gcc
 %else
 %bcond_with gcc
@@ -121,9 +119,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	19.0.2
+Version:	19.0.3
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
