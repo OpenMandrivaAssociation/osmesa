@@ -23,8 +23,9 @@
 # Apparently AVX instructions make it into the drivers even when
 # targeting generic CPUs.
 # clang 7.0.1 on arm32 triggers a segfault while building.
-%ifarch %{ix86} %{arm} %{armx}
+%ifarch %{ix86}
 %bcond_without gcc
+%define _disable_lto 1
 %else
 %bcond_with gcc
 %endif
