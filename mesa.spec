@@ -19,16 +19,10 @@
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
 %bcond_without hardware
-# With clang 7.0, X crashes on startup on machines without AVX.
-# Apparently AVX instructions make it into the drivers even when
-# targeting generic CPUs.
-# clang 7.0.1 on arm32 triggers a segfault while building.
 %ifarch %{ix86}
-%bcond_without gcc
 %define _disable_lto 1
-%else
-%bcond_with gcc
 %endif
+%bcond_with gcc
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
