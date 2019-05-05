@@ -201,6 +201,9 @@ BuildRequires:	lm_sensors-devel
 BuildRequires:	llvm-devel >= 3.3
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
+%ifarch %{ix86}
+BuildRequires:	libatomic-devel
+%endif
 BuildRequires:	python-mako >= 0.8.0
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
