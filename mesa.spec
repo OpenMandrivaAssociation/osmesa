@@ -14,7 +14,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.5
 
-%define relc %{nil}
+%define relc 2
 
 # bootstrap option: Build without requiring an X server
 # (which in turn requires mesa to build)
@@ -114,7 +114,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	19.0.4
+Version:	19.1.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -153,7 +153,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:		mesa-10.2-clang-compilefix.patch
-Patch2:		libmesautil-supc++-linkage.patch
+Patch2:		mesa-19.1.0-compile-bug-110709.patch
 Patch3:		mesa-19.0.0-rc2-more-ARM-drivers.patch
 
 # fedora patches
@@ -823,6 +823,22 @@ rm -f	%{buildroot}%{_libdir}/libGLESv1_CM.so* \
 
 # .la files are not needed by mesa
 find %{buildroot} -name '*.la' |xargs rm -f
+
+# Used to be present in 19.0.x, and some packages rely on it
+cat >%{buildroot}%{_libdir}/pkgconfig/glesv1_cm.pc <<'EOF'
+Name: glesv1_cm
+Description: Mesa OpenGL ES 1.1 CM library
+Version: %{version}
+Libs: -lGLESv1_CM
+Libs.private: -lpthread -pthread -lm -ldl
+EOF
+cat >%{buildroot}%{_libdir}/pkgconfig/glesv2.pc <<'EOF'
+Name: glesv2
+Description: Mesa OpenGL ES 2.0 library
+Version: %{version}
+Libs: -lGLESv2
+Libs.private: -lpthread -pthread -lm -ldl
+EOF
 
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
