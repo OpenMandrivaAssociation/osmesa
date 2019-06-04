@@ -792,9 +792,14 @@ export CXX=g++
 	-Dgallium-xa=true \
 	-Dgallium-xvmc=true \
 	-Dgallium-nine=true \
+	-Dglx=auto \
+	-Dplatforms=auto \
+	-Dvulkan-drivers=auto \
+	-Dxlib-lease=auto \
 %else
 	-Ddri-drivers=swrast \
 	-Dgallium-drivers= \
+	-Dvulkan-drivers= \
 %endif
 %if %{with glvnd}
 	-Dglvnd=true \
@@ -804,19 +809,15 @@ export CXX=g++
 	-Dgbm=true \
 	-Dgles1=true \
 	-Dgles2=true \
-	-Dglx=auto \
 	-Dglx-direct=true \
 	-Dllvm=true \
 	-Dlmsensors=true \
 	-Dopengl=true \
-	-Dplatforms=auto \
 	-Dshader-cache=true \
 	-Dshared-glapi=true \
 	-Dshared-llvm=true \
 	-Dswr-arches=avx,avx2,knl,skx \
 	-Dtools=all \
-	-Dvulkan-drivers=auto \
-	-Dxlib-lease=auto \
 	-Dosmesa=gallium
 
 %ninja_build -C build/
