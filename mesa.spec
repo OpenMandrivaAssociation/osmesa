@@ -26,6 +26,7 @@
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
+%bcond_without glvnd
 %bcond_without egl
 %bcond_without opencl
 %ifarch %{ix86} %{x86_64}
@@ -208,7 +209,9 @@ BuildRequires:	python-mako >= 0.8.0
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(talloc)
+%if %{with glvnd}
 BuildRequires:	pkgconfig(libglvnd)
+%endif
 BuildRequires:	pkgconfig(vulkan)
 BuildRequires:	pkgconfig(x11) >= 1.3.3
 BuildRequires:	pkgconfig(xdamage) >= 1.1.1
@@ -433,7 +436,9 @@ Conflicts:	%{libgl} < %{version}-%{release}
 %else
 Requires:	%{libgl} = %{version}-%{release}
 %endif
+%if %{with glvnd}
 Requires:	pkgconfig(libglvnd)
+%endif
 # GL/glext.h uses KHR/khrplatform.h
 Requires:	%{devegl}  = %{EVRD}
 Obsoletes:	%{_lib}mesagl1-devel < 8.0
@@ -460,7 +465,9 @@ Summary:	Files for Mesa (EGL libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaegl1 < 8.0
 Provides:	mesa-libEGL%{?_isa} = %{EVRD}
+%if %{with glvnd}
 Requires:	libglvnd-egl
+%endif
 %define oldegl %mklibname egl 1
 %rename %oldegl
 
@@ -546,11 +553,13 @@ This package provides the OpenGL ES library version 1.
 Summary:	Development files for glesv1 libs
 Group:		Development/C
 Requires:	%{libglesv1}
+%if %{with glvnd}
 Requires:	libglvnd-GLESv1_CM
-Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
-Obsoletes:	%{_lib}glesv1_1-devel < %{version}-%{release}
 # For libGLESv1_CM.so symlink
 Requires:	pkgconfig(libglvnd)
+%endif
+Obsoletes:	%{_lib}mesaglesv1_1-devel < 8.0
+Obsoletes:	%{_lib}glesv1_1-devel < %{version}-%{release}
 
 %description -n %{devglesv1}
 This package contains the headers needed to compile OpenGL ES 1 programs.
@@ -559,8 +568,10 @@ This package contains the headers needed to compile OpenGL ES 1 programs.
 Summary:	Files for Mesa (glesv2 libs)
 Group:		System/Libraries
 Obsoletes:	%{_lib}mesaglesv2_2 < 8.0
+%if %{with glvnd}
 # For libGLESv2.so symlink
 Requires:	pkgconfig(libglvnd)
+%endif
 
 %description -n %{libglesv2}
 OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
@@ -572,7 +583,9 @@ This package provides the OpenGL ES library version 2.
 Summary:	Development files for glesv2 libs
 Group:		Development/C
 Requires:	%{libglesv2}
+%if %{with glvnd}
 Requires:	libglvnd-GLESv2
+%endif
 Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
 Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
 
@@ -733,7 +746,9 @@ Requires:	%{devglapi} = %{version}-%{release}
 Requires:	%{devglesv1} = %{version}-%{release}
 Requires:	%{devglesv2} = %{version}-%{release}
 Suggests:	%{devd3d} = %{version}-%{release}
+%if %{with glvnd}
 Requires:	pkgconfig(libglvnd)
+%endif
 
 %description common-devel
 Mesa common metapackage devel.
@@ -781,7 +796,9 @@ export CXX=g++
 	-Dgbm=true \
 	-Dgles1=true \
 	-Dgles2=true \
+%if %{with glvnd}
 	-Dglvnd=true \
+%endif
 	-Dglx=auto \
 	-Dglx-direct=true \
 	-Dllvm=true \
@@ -817,9 +834,11 @@ fi
 # .so files are not needed by vdpau
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
 
+%if %{with glvnd}
 # We get those from libglvnd
 rm -f	%{buildroot}%{_libdir}/libGLESv1_CM.so* \
 	%{buildroot}%{_libdir}/libGLESv2.so*
+%endif
 
 # .la files are not needed by mesa
 find %{buildroot} -name '*.la' |xargs rm -f
@@ -947,7 +966,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/pkgconfig/osmesa.pc
 
 %files -n %{libgl}
+%if %{with glvnd}
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
+%endif
 %{_libdir}/libGLX_mesa.so.0*
 %dir %{_libdir}/dri
 %if %{with opencl}
