@@ -783,9 +783,8 @@ export CXX=g++
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
 	-Dasm=true \
+%ifarch %{ix86} %{x86_64} %{armx}
 	-Ddri-drivers=auto \
-	-Ddri3=true \
-	-Degl=true \
 	-Dgallium-drivers=auto \
 	-Dgallium-opencl=icd \
 	-Dgallium-va=true \
@@ -793,12 +792,18 @@ export CXX=g++
 	-Dgallium-xa=true \
 	-Dgallium-xvmc=true \
 	-Dgallium-nine=true \
-	-Dgbm=true \
-	-Dgles1=true \
-	-Dgles2=true \
+%else
+	-Ddri-drivers=swrast \
+	-Dgallium-drivers= \
+%endif
 %if %{with glvnd}
 	-Dglvnd=true \
 %endif
+	-Ddri3=true \
+	-Degl=true \
+	-Dgbm=true \
+	-Dgles1=true \
+	-Dgles2=true \
 	-Dglx=auto \
 	-Dglx-direct=true \
 	-Dllvm=true \
