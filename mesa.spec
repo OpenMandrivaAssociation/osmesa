@@ -801,6 +801,7 @@ export CXX=g++
 	-Dgallium-drivers= \
 	-Dvulkan-drivers= \
 	-Dlibunwind=false \
+	-Dosmesa=gallium \
 %endif
 %if %{with glvnd}
 	-Dglvnd=true \
@@ -818,8 +819,7 @@ export CXX=g++
 	-Dshared-glapi=true \
 	-Dshared-llvm=true \
 	-Dswr-arches=avx,avx2,knl,skx \
-	-Dtools=all \
-	-Dosmesa=gallium
+	-Dtools=all
 
 %ninja_build -C build/
 
