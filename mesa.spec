@@ -920,14 +920,16 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{dridrivers}-nouveau
+%ifnarch %{riscv}
 %{_libdir}/dri/nouveau*_dri.so
+%{_libdir}/libXvMCnouveau.so
+%endif
 %if %{with va}
 %{_libdir}/dri/nouveau_drv_video.so
 %endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_nouveau.so
 %endif
-%{_libdir}/libXvMCnouveau.so
 
 %files -n %{dridrivers}-swrast
 %{_libdir}/dri/swrast_dri.so
