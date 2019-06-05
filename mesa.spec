@@ -800,6 +800,7 @@ export CXX=g++
 	-Ddri-drivers=swrast \
 	-Dgallium-drivers= \
 	-Dvulkan-drivers= \
+	-Dlibunwind=false \
 %endif
 %if %{with glvnd}
 	-Dglvnd=true \
