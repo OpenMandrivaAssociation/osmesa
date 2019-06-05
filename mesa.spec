@@ -796,12 +796,12 @@ export CXX=g++
 	-Dplatforms=auto \
 	-Dvulkan-drivers=auto \
 	-Dxlib-lease=auto \
+	-Dosmesa=gallium \
 %else
 	-Ddri-drivers=swrast \
 	-Dgallium-drivers= \
 	-Dvulkan-drivers= \
 	-Dlibunwind=false \
-	-Dosmesa=gallium \
 %endif
 %if %{with glvnd}
 	-Dglvnd=true \
