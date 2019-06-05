@@ -796,7 +796,7 @@ export CXX=g++
 	-Dplatforms=auto \
 	-Dvulkan-drivers=auto \
 	-Dxlib-lease=auto \
-	-Dosmesa=gallium
+	-Dosmesa=gallium \
 %else
 	-Ddri-drivers=swrast \
 	-Dgallium-drivers= \
