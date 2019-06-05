@@ -933,7 +933,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-swrast
 %{_libdir}/dri/swrast_dri.so
+%ifnarch %{riscv}
 %{_libdir}/dri/kms_swrast_dri.so
+%endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_swrast.so
 %endif
