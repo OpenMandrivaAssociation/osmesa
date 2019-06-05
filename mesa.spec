@@ -24,11 +24,11 @@
 %endif
 %bcond_with gcc
 %bcond_with bootstrap
-%bcond_without vdpau
-%bcond_without va
-%bcond_without glvnd
+%bcond_with vdpau
+%bcond_with va
+%bcond_with glvnd
 %bcond_without egl
-%bcond_without opencl
+%bcond_with opencl
 %ifarch %{ix86} %{x86_64}
 %bcond_without intel
 %else
@@ -796,6 +796,7 @@ export CXX=g++
 	-Dplatforms=auto \
 	-Dvulkan-drivers=auto \
 	-Dxlib-lease=auto \
+	-Dosmesa=gallium
 %else
 	-Ddri-drivers=swrast \
 	-Dgallium-drivers= \
@@ -818,8 +819,7 @@ export CXX=g++
 	-Dshared-glapi=true \
 	-Dshared-llvm=true \
 	-Dswr-arches=avx,avx2,knl,skx \
-	-Dtools=all \
-	-Dosmesa=gallium
+	-Dtools=all
 
 %ninja_build -C build/
 
@@ -880,8 +880,15 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}
 
 %files -n %{dridrivers}-radeon
+%ifnarch %{riscv}
 %{_libdir}/dri/r?00_dri.so
 %{_libdir}/dri/radeon_dri.so
+%{_libdir}/libXvMCgallium.so
+%{_libdir}/libXvMCr?00.so
+%{_libdir}/dri/radeonsi_dri.so
+%{_libdir}/libvulkan_radeon.so
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
+%endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_r?00.so
 %endif
@@ -889,17 +896,12 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with va}
 %{_libdir}/dri/r600_drv_video.so
 %endif
-%{_libdir}/libXvMCgallium.so
-%{_libdir}/libXvMCr?00.so
-%{_libdir}/dri/radeonsi_dri.so
 %if %{with va}
 %{_libdir}/dri/radeonsi_drv_video.so
 %endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_radeonsi.so
 %endif
-%{_libdir}/libvulkan_radeon.so
-%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
 
 %ifarch %{ix86} %{x86_64}
