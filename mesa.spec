@@ -24,11 +24,19 @@
 %endif
 %bcond_with gcc
 %bcond_with bootstrap
+%ifarch riscv64
 %bcond_with vdpau
 %bcond_with va
 %bcond_with glvnd
-%bcond_without egl
+%bcond_with egl
 %bcond_with opencl
+%else
+%bcond_without vdpau
+%bcond_without va
+%bcond_without glvnd
+%bcond_without egl
+%bcond_without opencl
+%endif
 %ifarch %{ix86} %{x86_64}
 %bcond_without intel
 %else
@@ -417,7 +425,9 @@ Requires:	%{_lib}udev1
 Requires:	%{_lib}GL1%{?_isa}
 Provides:	mesa-libGL%{?_isa} = %{EVRD}
 Requires:	%mklibname GL 1
+%if %{with glvnd}
 Requires:	libglvnd-GL
+%endif
 %define oldglname %mklibname gl 1
 %rename %oldglname
 
