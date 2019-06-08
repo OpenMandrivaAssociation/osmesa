@@ -918,10 +918,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-intel
 %{_libdir}/dri/i9?5_dri.so
-%if %{with opencl}
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
-%endif
 %endif
 
 %files -n %{dridrivers}-nouveau
