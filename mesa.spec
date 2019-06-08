@@ -22,13 +22,18 @@
 %ifarch %{ix86}
 %define _disable_lto 1
 %endif
+%ifarch %{riscv}
 %bcond_without gcc
+%bcond_with opencl
+%else
+%bcond_with gcc
+%bcond_without opencl
+%endif
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
 %bcond_without glvnd
 %bcond_without egl
-%bcond_with opencl
 %ifarch %{ix86} %{x86_64}
 %bcond_without intel
 %else
