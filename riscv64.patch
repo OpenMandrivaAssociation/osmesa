@@ -1,26 +1,27 @@
-diff --git a/meson.build b/meson.build
-index 55d70dd..1394669 100644
---- a/meson.build
-+++ b/meson.build
+diff -up mesa-19.1.0-rc5/meson.build.6~ mesa-19.1.0-rc5/meson.build
+--- mesa-19.1.0-rc5/meson.build.6~	2019-06-08 17:32:01.123490981 +0200
++++ mesa-19.1.0-rc5/meson.build	2019-06-08 17:39:22.799495469 +0200
 @@ -115,7 +115,7 @@ if dri_drivers.contains('auto')
      # TODO: PPC, Sparc
      if ['x86', 'x86_64'].contains(host_machine.cpu_family())
        dri_drivers = ['i915', 'i965', 'r100', 'r200', 'nouveau']
 -    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
-+    elif ['arm', 'aarch64', 'riscv64'].contains(host_machine.cpu_family())
++    elif ['arm', 'aarch64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
        dri_drivers = ['r100', 'r200', 'nouveau']
      else
        error('Unknown architecture @0@. Please pass -Ddri-drivers to set driver options. Patches gladly accepted to fix this.'.format(
-@@ -147,7 +147,7 @@ if gallium_drivers.contains('auto')
-       gallium_drivers = [
-         'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'svga', 'swrast'
-       ]
--    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
-+    elif ['arm', 'aarch64', 'riscv64'].contains(host_machine.cpu_family())
-       gallium_drivers = [
-         'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'r300',
+@@ -153,6 +153,10 @@ if gallium_drivers.contains('auto')
          'r600', 'radeonsi', 'nouveau',
-@@ -206,7 +206,7 @@ if _vulkan_drivers.contains('auto')
+         'tegra', 'panfrost', 'virgl', 'lima', 'swrast'
+       ]
++    elif ['riscv32', 'riscv64'].contains(host_machine.cpu_family())
++      gallium_drivers = [
++        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'swrast'
++      ]
+     else
+       error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+             host_machine.cpu_family()))
+@@ -206,7 +210,7 @@ if _vulkan_drivers.contains('auto')
    if system_has_kms_drm
      if host_machine.cpu_family().startswith('x86')
        _vulkan_drivers = ['amd', 'intel']

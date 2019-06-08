@@ -795,6 +795,8 @@ export CXX=g++
 	-Dgallium-drivers=auto \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
+%else
+	-Dgallium-opencl=disabled \
 %endif
 	-Dgallium-va=true \
 	-Dgallium-vdpau=true \
@@ -841,6 +843,8 @@ if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
 else
     cp -af include/CL %{buildroot}%{_includedir}/
 fi
+%else
+rm -rf %{buildroot}%{_includedir}/CL
 %endif
 
 # .so files are not needed by vdpau
