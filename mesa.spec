@@ -22,21 +22,13 @@
 %ifarch %{ix86}
 %define _disable_lto 1
 %endif
-%bcond_with gcc
+%bcond_without gcc
 %bcond_with bootstrap
-%ifarch riscv64
-%bcond_with vdpau
-%bcond_with va
-%bcond_with glvnd
-%bcond_with egl
-%bcond_with opencl
-%else
 %bcond_without vdpau
 %bcond_without va
 %bcond_without glvnd
 %bcond_without egl
-%bcond_without opencl
-%endif
+%bcond_with opencl
 %ifarch %{ix86} %{x86_64}
 %bcond_without intel
 %else
@@ -187,6 +179,7 @@ Patch15:	mesa-9.2-hardware-float.patch
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
+Patch202:	riscv64.patch
 
 # Direct3D patchset -- https://wiki.ixit.cz/d3d9
 #
@@ -268,7 +261,7 @@ Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Requires:	%{dridrivers}-swrast = %{EVRD}
 Requires:	%{dridrivers}-virtio = %{EVRD}
-%ifnarch %{armx}
+%ifnarch %{armx} %{riscv}
 %if %{with r600}
 Requires:	%{dridrivers}-radeon = %{EVRD}
 %endif
@@ -277,7 +270,7 @@ Requires:	%{dridrivers}-intel = %{EVRD}
 %endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
 %endif
-%ifarch %{armx}
+%ifarch %{armx} %{riscv}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
 Requires:	%{dridrivers}-v3d = %{EVRD}
@@ -348,7 +341,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-virtio
 Generic DRI driver for virtual environments.
 
-%ifarch %{armx}
+%ifarch %{armx} %{riscv}
 %package -n %{dridrivers}-freedreno
 Summary:	DRI Drivers for Adreno graphics chipsets
 Group:		System/Libraries
@@ -666,7 +659,7 @@ Development files for the OpenCL library
 Summary:	Mesa VDPAU drivers
 Group:		System/Libraries
 Requires:	%{dridrivers} = %{EVRD}
-%ifnarch %{armx}
+%ifnarch %{armx} %{riscv}
 Requires:	%{_lib}vdpau-driver-nouveau
 Requires:	%{_lib}vdpau-driver-r300
 Requires:	%{_lib}vdpau-driver-radeonsi
@@ -793,10 +786,11 @@ export CXX=g++
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
 	-Dasm=true \
-%ifarch %{ix86} %{x86_64} %{armx}
 	-Ddri-drivers=auto \
 	-Dgallium-drivers=auto \
+%if %{with opencl}
 	-Dgallium-opencl=icd \
+%endif
 	-Dgallium-va=true \
 	-Dgallium-vdpau=true \
 	-Dgallium-xa=true \
@@ -807,12 +801,6 @@ export CXX=g++
 	-Dvulkan-drivers=auto \
 	-Dxlib-lease=auto \
 	-Dosmesa=gallium \
-%else
-	-Ddri-drivers=swrast \
-	-Dgallium-drivers= \
-	-Dvulkan-drivers= \
-	-Dlibunwind=false \
-%endif
 %if %{with glvnd}
 	-Dglvnd=true \
 %endif
@@ -840,6 +828,7 @@ export CXX=g++
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
 
+%if %{with opencl}
 # FIXME workaround for OpenCL headers not being installed
 if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
     echo OpenCL headers are being installed correctly now. Please remove the workaround.
@@ -847,6 +836,7 @@ if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
 else
     cp -af include/CL %{buildroot}%{_includedir}/
 fi
+%endif
 
 # .so files are not needed by vdpau
 rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
@@ -890,7 +880,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}
 
 %files -n %{dridrivers}-radeon
-%ifnarch %{riscv}
 %{_libdir}/dri/r?00_dri.so
 %{_libdir}/dri/radeon_dri.so
 %{_libdir}/libXvMCgallium.so
@@ -898,7 +887,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/radeonsi_dri.so
 %{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
-%endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_r?00.so
 %endif
@@ -930,10 +918,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{dridrivers}-nouveau
-%ifnarch %{riscv}
 %{_libdir}/dri/nouveau*_dri.so
 %{_libdir}/libXvMCnouveau.so
-%endif
 %if %{with va}
 %{_libdir}/dri/nouveau_drv_video.so
 %endif
@@ -943,9 +929,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-swrast
 %{_libdir}/dri/swrast_dri.so
-%ifnarch %{riscv}
 %{_libdir}/dri/kms_swrast_dri.so
-%endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_swrast.so
 %endif
@@ -953,12 +937,13 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-virtio
 %{_libdir}/dri/virtio_gpu_dri.so
 
-%ifarch %{armx}
+%ifarch %{armx} %{riscv}
 %files -n %{dridrivers}-freedreno
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_msm.so
+%endif
 
 %files -n %{dridrivers}-vc4
 %{_libdir}/dri/vc4_dri.so
@@ -976,7 +961,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/pl111_dri.so
 %{_libdir}/dri/hx8357d_dri.so
 %{_libdir}/dri/imx-drm_dri.so
-%endif
 %endif
 
 %files -n %{libosmesa}
@@ -1138,7 +1122,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
-%ifarch %{arm} %{armx}
+%ifarch %{armx} %{riscv}
 %{_bindir}/etnaviv_compiler
 %{_bindir}/ir3_compiler
 %endif
