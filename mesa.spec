@@ -942,7 +942,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-virtio
 %{_libdir}/dri/virtio_gpu_dri.so
 
-%ifarch %{armx} %{riscv}
+%ifarch %{armx}
 %files -n %{dridrivers}-freedreno
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
@@ -1127,7 +1127,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
-%ifarch %{armx} %{riscv}
+%ifarch %{armx}
 %{_bindir}/etnaviv_compiler
 %{_bindir}/ir3_compiler
 %endif
