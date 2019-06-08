@@ -843,8 +843,6 @@ if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
 else
     cp -af include/CL %{buildroot}%{_includedir}/
 fi
-%else
-rm -rf %{buildroot}%{_includedir}/CL
 %endif
 
 # .so files are not needed by vdpau
