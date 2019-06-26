@@ -120,9 +120,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	19.1.0
+Version:	19.1.1
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -159,7 +159,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 Patch1:		mesa-10.2-clang-compilefix.patch
-Patch2:		mesa-19.1.0-compile-bug-110709.patch
 Patch3:		mesa-19.0.0-rc2-more-ARM-drivers.patch
 
 # fedora patches
