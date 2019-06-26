@@ -283,6 +283,8 @@ Requires:	%{dridrivers}-vc4 = %{EVRD}
 Requires:	%{dridrivers}-v3d = %{EVRD}
 Requires:	%{dridrivers}-etnaviv = %{EVRD}
 Requires:	%{dridrivers}-tegra = %{EVRD}
+Requires:	%{dridrivers}-lima = %{EVRD}
+Requires:	%{dridrivers}-panfrost = %{EVRD}
 Requires:	%{dridrivers}-kmsro = %{EVRD}
 %endif
 Provides:	dri-drivers = %{EVRD}
@@ -387,6 +389,20 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-tegra
 DRI and XvMC drivers for Tegra graphics chips
+
+%package -n %{dridrivers}-lima
+Summary:	DRI Drivers for Mali Utgard devices
+Group:		System/Libraries
+
+%description -n %{dridrivers}-lima
+DRI drivers for Mali Utgard devices
+
+%package -n %{dridrivers}-panfrost
+Summary:	DRI Drivers for Mali Midgard and Bifrost devices
+Group:		System/Libraries
+
+%description -n %{dridrivers}-panfrost
+DRI drivers for Mali Midgard and Bifrost devices
 
 %package -n %{dridrivers}-kmsro
 Summary:	DRI Drivers for KMS-only devices
@@ -964,10 +980,26 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-tegra
 %{_libdir}/dri/tegra_dri.so
 
+%files -n %{dridrivers}-lima
+%{_libdir}/dri/lima_dri.so
+
+%files -n %{dridrivers}-panfrost
+%{_libdir}/dri/panfrost_dri.so
+
 %files -n %{dridrivers}-kmsro
-%{_libdir}/dri/pl111_dri.so
+%{_libdir}/dri/armada-drm_dri.so
+%{_libdir}/dri/exynos_dri.so
 %{_libdir}/dri/hx8357d_dri.so
+%{_libdir}/dri/ili9???_dri.so
 %{_libdir}/dri/imx-drm_dri.so
+%{_libdir}/dri/meson_dri.so
+%{_libdir}/dri/mi0283qt_dri.so
+%{_libdir}/dri/pl111_dri.so
+%{_libdir}/dri/repaper_dri.so
+%{_libdir}/dri/rockchip_dri.so
+%{_libdir}/dri/st7586_dri.so
+%{_libdir}/dri/st7735r_dri.so
+%{_libdir}/dri/sun4i-drm_dri.so
 %endif
 
 %files -n %{libosmesa}
