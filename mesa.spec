@@ -805,7 +805,7 @@ export CC=gcc
 export CXX=g++
 %endif
 
-%meson \
+if ! %meson \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
@@ -843,7 +843,10 @@ export CXX=g++
 	-Dshared-glapi=true \
 	-Dshared-llvm=true \
 	-Dswr-arches=avx,avx2,knl,skx \
-	-Dtools=all
+	-Dtools=all; then
+
+	cat build/meson-logs/meson-log.txt >/dev/stderr
+fi
 
 %ninja_build -C build/
 
