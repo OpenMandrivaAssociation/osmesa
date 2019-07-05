@@ -217,7 +217,6 @@ BuildRequires:	libatomic-devel
 BuildRequires:	python-mako >= 0.8.0
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
-BuildRequires:	pkgconfig(talloc)
 %if %{with glvnd}
 BuildRequires:	pkgconfig(libglvnd)
 %endif
