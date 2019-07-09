@@ -121,9 +121,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	19.1.1
+Version:	19.1.2
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -187,7 +187,7 @@ Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
 Patch202:	riscv64.patch
 # https://bugs.freedesktop.org/show_bug.cgi?id=110783
 # https://gitlab.freedesktop.org/mesa/mesa/merge_requests/1084
-Patch203:	https://gitlab.freedesktop.org/mesa/mesa/merge_requests/1084.diff
+#Patch203:	https://gitlab.freedesktop.org/mesa/mesa/merge_requests/1084.diff
 
 # Direct3D patchset -- https://wiki.ixit.cz/d3d9
 #
