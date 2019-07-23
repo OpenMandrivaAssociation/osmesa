@@ -27,7 +27,7 @@
 %bcond_without gcc
 %bcond_with opencl
 %else
-%bcond_with gcc
+%bcond_without gcc
 %bcond_without opencl
 %endif
 %bcond_with bootstrap
@@ -121,7 +121,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	19.1.2
+Version:	19.1.3
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
