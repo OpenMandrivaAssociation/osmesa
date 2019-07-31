@@ -6,8 +6,8 @@
 
 # LLD fails because of https://bugs.llvm.org/show_bug.cgi?id=42447
 # BFD fails because it can't handle clang LTO bitcode in static libraries
-%global optflags %{optflags} -fuse-ld=gold
-%global ldflags %{ldflags} -fuse-ld=gold
+%global optflags %{optflags} -O3 -fuse-ld=gold
+%global ldflags %{ldflags} -O3 -fuse-ld=gold
 
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
