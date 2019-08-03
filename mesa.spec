@@ -3,7 +3,6 @@
 
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
-%define _disable_ld_as_needed 1
 
 # LLD fails because of https://bugs.llvm.org/show_bug.cgi?id=42447
 # BFD fails because it can't handle clang LTO bitcode in static libraries
@@ -18,9 +17,6 @@
 
 %define relc %{nil}
 
-# bootstrap option: Build without requiring an X server
-# (which in turn requires mesa to build)
-%bcond_without hardware
 %ifarch %{ix86}
 %define _disable_lto 1
 %endif
@@ -28,7 +24,7 @@
 %bcond_without gcc
 %bcond_with opencl
 %else
-%bcond_without gcc
+%bcond_with gcc
 %bcond_without opencl
 %endif
 %bcond_with bootstrap
@@ -245,7 +241,8 @@ BuildRequires:	stdc++-static-devel
 BuildRequires:	pkgconfig(libssl) >= 1.1.1b-5
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
-BuildRequires:	clang-devel clang
+BuildRequires:	clang-devel
+BuildRequires:	clang
 %endif
 BuildRequires:	pkgconfig(xvmc)
 %if %{with vdpau}
@@ -299,7 +296,6 @@ Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets
 Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 Conflicts:	libva-vdpau-driver < 17.3.0
-%define __noautoreq '.*llvmradeon.*'
 
 %description -n %{dridrivers}-radeon
 DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
