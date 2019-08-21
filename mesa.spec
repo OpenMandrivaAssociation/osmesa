@@ -15,7 +15,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.5
 
-%define relc %{nil}
+%define relc 1
 
 %ifarch %{ix86}
 %define _disable_lto 1
@@ -118,7 +118,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	19.1.4
+Version:	19.2.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
