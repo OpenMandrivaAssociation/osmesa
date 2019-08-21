@@ -156,7 +156,7 @@ Obsoletes:	%{name}-xorg-drivers-radeon < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
-Patch1:		mesa-10.2-clang-compilefix.patch
+#Patch1:		mesa-10.2-clang-compilefix.patch
 #Patch3:		mesa-19.0.0-rc2-more-ARM-drivers.patch
 
 # fedora patches
