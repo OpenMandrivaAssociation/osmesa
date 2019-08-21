@@ -160,7 +160,7 @@ Patch1:		mesa-10.2-clang-compilefix.patch
 #Patch3:		mesa-19.0.0-rc2-more-ARM-drivers.patch
 
 # fedora patches
-Patch15:	mesa-9.2-hardware-float.patch
+#Patch15:	mesa-9.2-hardware-float.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
