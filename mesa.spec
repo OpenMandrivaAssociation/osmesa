@@ -233,6 +233,7 @@ BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	pkgconfig(valgrind)
+BuildRequires:	pkgconfig(gtk+-3.0)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
 # (tpg) with openssl a steam crashes
