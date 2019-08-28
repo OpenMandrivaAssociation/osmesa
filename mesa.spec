@@ -893,10 +893,24 @@ Libs: -lGLESv2
 Libs.private: -lpthread -pthread -lm -ldl
 EOF
 
+# Used to be present in 19.1.x, and some packages rely on it
+cat >%{buildroot}%{_libdir}/pkgconfig/egl.pc <<'EOF'
+prefix=%{_prefix}
+libdir=${prefix}/%{_libdir}
+includedir=${prefix}/include
+Name: egl
+Description: Mesa EGL Library
+Version: %{version}
+Requires.private: x11, xext, xdamage >=  1.1, xfixes, x11-xcb, xcb, xcb-glx >=  1.8.1, xcb-dri2 >=  1.8, xxf86vm, libdrm >=  2.4.75
+Libs: -L${libdir} -lEGL
+Libs.private: -lpthread -pthread -lm -ldl
+Cflags: -I${includedir}
+EOF
+
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
 
-# (tpg) remove wayland files as they are not part of wayland package
+# (tpg) remove wayland files as they are now part of wayland package
 rm -rf %{buildroot}%{_libdir}/libwayland-egl.so*
 rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
