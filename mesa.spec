@@ -232,6 +232,7 @@ BuildRequires:	pkgconfig(xshmfence) >= 1.1
 BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
+BuildRequires:	pkgconfig(valgrind)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
 # (tpg) with openssl a steam crashes
@@ -806,7 +807,6 @@ if ! %meson \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
-	-Dasm=true \
 	-Ddri-drivers=auto \
 	-Dgallium-drivers=auto \
 %if %{with opencl}
