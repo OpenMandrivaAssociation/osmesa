@@ -6,8 +6,8 @@
 
 # LLD fails because of https://bugs.llvm.org/show_bug.cgi?id=42447
 # BFD fails because it can't handle clang LTO bitcode in static libraries
-%global optflags %{optflags} -O3 -fuse-ld=gold
-%global ldflags %{ldflags} -fuse-ld=gold
+%global optflags %{optflags} -O3
+#global ldflags %{ldflags} -fuse-ld=gold
 
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
@@ -784,7 +784,7 @@ Summary:	Tools for debugging Mesa drivers
 Group:		Development/Tools
 
 %description tools
-Tools for debugging Mesa drivers
+Tools for debugging Mesa drivers.
 
 %prep
 %if "%{git}" != ""
@@ -841,6 +841,8 @@ if ! %meson \
 	-Dshared-glapi=true \
 	-Dshared-llvm=true \
 	-Dswr-arches=avx,avx2,knl,skx \
+	-Dselinux=false \
+	-Dbuild-tests=false \
 	-Dtools=all; then
 
 	cat build/meson-logs/meson-log.txt >/dev/stderr
@@ -870,8 +872,7 @@ rm -f %{buildroot}%{_libdir}/vdpau/libvdpau_*.so
 
 %if %{with glvnd}
 # We get those from libglvnd
-rm -f	%{buildroot}%{_libdir}/libGLESv1_CM.so* \
-	%{buildroot}%{_libdir}/libGLESv2.so*
+rm -f %{buildroot}%{_libdir}/libGLESv1_CM.so* %{buildroot}%{_libdir}/libGLESv2.so*
 %endif
 
 # .la files are not needed by mesa
@@ -1170,6 +1171,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %ifarch %{ix86} %{x86_64}
 %{_bindir}/aubinator
 %{_bindir}/aubinator_error_decode
+%{_bindir}/aubinator_viewer
+%{_bindir}/i965_asm
 %{_bindir}/i965_disasm
 %{_bindir}/intel_dump_gpu
 %{_bindir}/intel_error2aub
