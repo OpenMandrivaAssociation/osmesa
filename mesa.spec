@@ -4,11 +4,12 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
-# LLD fails because of https://bugs.llvm.org/show_bug.cgi?id=42447
-# BFD fails because it can't handle clang LTO bitcode in static libraries
-# 2019-08-29 still occurs with LLD, and BFD fails on znver1
-%global optflags %{optflags} -O3 -fuse-ld=gold
-%global ldflags %{ldflags} -fuse-ld=gold
+# We disable LTO because of a compile error in the Intel Vulkan driver
+# last seen with Mesa 19.2.0-rc1 and (interestingly) both gcc 9.2 and clang 9.0-rc2
+# -fno-strict-aliasing is added because of numerous warnings, strict
+# aliasing might generate broekn code.
+%global optflags %{optflags} -O3 -fno-lto -fno-strict-aliasing
+%global ldflags %{ldflags} -fno-strict-aliasing
 
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
@@ -18,14 +19,11 @@
 
 %define relc 1
 
-%ifarch %{ix86}
-%define _disable_lto 1
-%endif
 %ifarch %{riscv}
 %bcond_without gcc
 %bcond_with opencl
 %else
-%bcond_with gcc
+%bcond_without gcc
 %bcond_without opencl
 %endif
 %bcond_with bootstrap
