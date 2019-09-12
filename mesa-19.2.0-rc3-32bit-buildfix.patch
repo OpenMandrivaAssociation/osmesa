@@ -1,0 +1,11 @@
+diff -up mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.omv~ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c
+--- mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.omv~	2019-09-12 22:11:24.989515351 +0200
++++ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c	2019-09-12 22:16:08.242911771 +0200
+@@ -528,5 +528,7 @@ mmap(void *addr, size_t length, int prot
+ 
+    return real_mmap(addr, length, prot, flags, fd, offset);
+ }
++#if __BITS_PER_LONG > 32 /* on 32bit, we get a slightly different version of mmap64 from sys/mman.h */
+ PUBLIC void *mmap64(void*, size_t, int, int, int, off_t)
+    __attribute__((alias("mmap")));
++#endif
