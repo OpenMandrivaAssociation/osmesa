@@ -9,3 +9,15 @@ diff -up mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.omv~ mesa-19.2.0-rc3/src/drm-sh
  PUBLIC void *mmap64(void*, size_t, int, int, int, off_t)
     __attribute__((alias("mmap")));
 +#endif
+diff -up mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.omv~ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp
+--- mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.omv~	2019-09-12 23:09:14.532044112 +0200
++++ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp	2019-09-12 23:09:28.121714985 +0200
+@@ -601,7 +601,7 @@ display_pml4_window(struct window *win)
+ {
+    struct pml4_window *window = (struct pml4_window *) win;
+ 
+-   ImGui::Text("pml4: %lx", window->mem->pml4);
++   ImGui::Text("pml4: %llx", window->mem->pml4);
+    ImGui::BeginChild(ImGui::GetID("##block"));
+    display_pml4_level(window->mem, window->mem->pml4, 0, 4);
+    ImGui::EndChild();

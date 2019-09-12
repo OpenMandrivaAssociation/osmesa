@@ -1,0 +1,18 @@
+diff -up mesa-19.2.0-rc3/meson.build.omv~ mesa-19.2.0-rc3/meson.build
+--- mesa-19.2.0-rc3/meson.build.omv~	2019-09-12 23:11:02.611578974 +0200
++++ mesa-19.2.0-rc3/meson.build	2019-09-12 23:12:32.271262737 +0200
+@@ -160,7 +160,13 @@ if gallium_drivers.contains('auto')
+     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+         'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau',
+-        'tegra', 'virgl', 'lima', 'panfrost', 'swrast'
++        'tegra', 'virgl', 'lima', 'panfrost', 'swrast',
++        'r300', 'r600', 'radeonsi'
++      ]
++    elif ['riscv', 'riscv64'].contains(host_machine.cpu_family())
++      gallium_drivers = [
++        'nouveau', 'swrast',
++        'r300', 'r600', 'radeonsi'
+       ]
+     else
+       error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
