@@ -1,6 +1,6 @@
-diff -up mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.omv~ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c
---- mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.omv~	2019-09-12 22:11:24.989515351 +0200
-+++ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c	2019-09-12 22:16:08.242911771 +0200
+diff -up mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.1~ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c
+--- mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.1~	2019-09-11 18:23:36.000000000 +0200
++++ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c	2019-09-12 23:33:41.585578089 +0200
 @@ -528,5 +528,7 @@ mmap(void *addr, size_t length, int prot
  
     return real_mmap(addr, length, prot, flags, fd, offset);
@@ -9,9 +9,54 @@ diff -up mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.omv~ mesa-19.2.0-rc3/src/drm-sh
  PUBLIC void *mmap64(void*, size_t, int, int, int, off_t)
     __attribute__((alias("mmap")));
 +#endif
-diff -up mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.omv~ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp
---- mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.omv~	2019-09-12 23:09:14.532044112 +0200
-+++ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp	2019-09-12 23:09:28.121714985 +0200
+diff -up mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.1~ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp
+--- mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.1~	2019-09-11 18:23:36.000000000 +0200
++++ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp	2019-09-12 23:34:38.603273380 +0200
+@@ -443,7 +443,7 @@ new_urb_window(struct aub_viewer_decode_
+    struct urb_window *window = xtzalloc(*window);
+ 
+    snprintf(window->base.name, sizeof(window->base.name),
+-            "URB view (0x%lx)##%p", address, window);
++            "URB view (0x%llx)##%p", address, window);
+ 
+    list_inithead(&window->base.parent_link);
+    window->base.position = ImVec2(-1, -1);
+@@ -495,7 +495,7 @@ display_edit_window(struct window *win)
+                                   window->address);
+       ImGui::EndChild();
+    } else {
+-      ImGui::Text("Memory view at 0x%lx not available", window->address);
++      ImGui::Text("Memory view at 0x%llx not available", window->address);
+    }
+ }
+ 
+@@ -515,7 +515,7 @@ new_edit_window(struct aub_mem *mem, uin
+    struct edit_window *window = xtzalloc(*window);
+ 
+    snprintf(window->base.name, sizeof(window->base.name),
+-            "Editing aub at 0x%lx##%p", address, window);
++            "Editing aub at 0x%llx##%p", address, window);
+ 
+    list_inithead(&window->base.parent_link);
+    window->base.position = ImVec2(-1, -1);
+@@ -577,7 +577,7 @@ display_pml4_level(struct aub_mem *mem,
+          uint64_t entry_virt_addr = table_virt_addr + e * addr_increment;
+          if (!available)
+             continue;
+-         ImGui::Text("Entry%03i - phys_addr=0x%lx - virt_addr=0x%lx",
++         ImGui::Text("Entry%03i - phys_addr=0x%llx - virt_addr=0x%llx",
+                      e, table[e], entry_virt_addr);
+       }
+    } else {
+@@ -587,7 +587,7 @@ display_pml4_level(struct aub_mem *mem,
+          if (available &&
+              ImGui::TreeNodeEx(&table[e],
+                                available ? ImGuiTreeNodeFlags_Framed : 0,
+-                               "Entry%03i - phys_addr=0x%lx - virt_addr=0x%lx",
++                               "Entry%03i - phys_addr=0x%llx - virt_addr=0x%llx",
+                                e, table[e], entry_virt_addr)) {
+             display_pml4_level(mem, table[e] & ~0xffful, entry_virt_addr, level -1);
+             ImGui::TreePop();
 @@ -601,7 +601,7 @@ display_pml4_window(struct window *win)
  {
     struct pml4_window *window = (struct pml4_window *) win;
