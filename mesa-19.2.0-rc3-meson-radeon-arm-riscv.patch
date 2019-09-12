@@ -1,6 +1,6 @@
 diff -up mesa-19.2.0-rc3/meson.build.2~ mesa-19.2.0-rc3/meson.build
 --- mesa-19.2.0-rc3/meson.build.2~	2019-09-11 18:23:35.000000000 +0200
-+++ mesa-19.2.0-rc3/meson.build	2019-09-12 23:37:05.223378318 +0200
++++ mesa-19.2.0-rc3/meson.build	2019-09-12 23:44:30.761619344 +0200
 @@ -125,7 +125,7 @@ if dri_drivers.contains('auto')
      # TODO: PPC, Sparc
      if ['x86', 'x86_64'].contains(host_machine.cpu_family())
@@ -25,3 +25,14 @@ diff -up mesa-19.2.0-rc3/meson.build.2~ mesa-19.2.0-rc3/meson.build
        ]
      else
        error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+@@ -215,8 +221,8 @@ if _vulkan_drivers.contains('auto')
+   if system_has_kms_drm
+     if host_machine.cpu_family().startswith('x86')
+       _vulkan_drivers = ['amd', 'intel']
+-    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+-      _vulkan_drivers = []
++    elif ['arm', 'aarch64', 'riscv64'].contains(host_machine.cpu_family())
++      _vulkan_drivers = ['amd']
+     else
+       error('Unknown architecture @0@. Please pass -Dvulkan-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+             host_machine.cpu_family()))
