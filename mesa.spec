@@ -982,6 +982,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-freedreno
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
+%{_libdir}/libfreedreno_noop_drm_shim.so
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_msm.so
 %endif
@@ -991,6 +992,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-v3d
 %{_libdir}/dri/v3d_dri.so
+%{_libdir}/libv3d_noop_drm_shim.so
 
 %files -n %{dridrivers}-etnaviv
 %{_libdir}/dri/etnaviv_dri.so
@@ -999,6 +1001,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/tegra_dri.so
 
 %files -n %{dridrivers}-lima
+%{_bindir}/lima_compiler
 %{_libdir}/dri/lima_dri.so
 
 %files -n %{dridrivers}-panfrost
@@ -1012,11 +1015,13 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/imx-drm_dri.so
 %{_libdir}/dri/meson_dri.so
 %{_libdir}/dri/mi0283qt_dri.so
+%{_libdir}/dri/mxsfb-drm_dri.so
 %{_libdir}/dri/pl111_dri.so
 %{_libdir}/dri/repaper_dri.so
 %{_libdir}/dri/rockchip_dri.so
 %{_libdir}/dri/st7586_dri.so
 %{_libdir}/dri/st7735r_dri.so
+%{_libdir}/dri/stm_dri.so
 %{_libdir}/dri/sun4i-drm_dri.so
 %endif
 
