@@ -269,7 +269,9 @@ Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
 Summary:	Mesa DRI drivers
 Group:		System/Libraries
 Requires:	%{dridrivers}-swrast = %{EVRD}
+%ifnarch %{riscv}
 Requires:	%{dridrivers}-virtio = %{EVRD}
+%endif
 %ifnarch %{armx} %{riscv}
 %if %{with r600}
 Requires:	%{dridrivers}-radeon = %{EVRD}
@@ -975,8 +977,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/gallium-pipe/pipe_swrast.so
 %endif
 
+%ifnarch %{riscv}
 %files -n %{dridrivers}-virtio
 %{_libdir}/dri/virtio_gpu_dri.so
+%endif
 
 %ifarch %{armx}
 %files -n %{dridrivers}-freedreno
