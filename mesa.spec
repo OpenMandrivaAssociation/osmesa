@@ -281,7 +281,7 @@ Requires:	%{dridrivers}-intel = %{EVRD}
 %endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
 %endif
-%ifarch %{armx} %{riscv}
+%ifarch %{armx}
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 Requires:	%{dridrivers}-vc4 = %{EVRD}
 Requires:	%{dridrivers}-v3d = %{EVRD}
