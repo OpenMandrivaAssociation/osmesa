@@ -1,6 +1,6 @@
 diff -up mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.1~ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c
 --- mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.1~	2019-09-11 18:23:36.000000000 +0200
-+++ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c	2019-09-12 23:33:41.585578089 +0200
++++ mesa-19.2.0-rc3/src/drm-shim/drm_shim.c	2019-09-13 02:06:52.695041445 +0200
 @@ -528,5 +528,7 @@ mmap(void *addr, size_t length, int prot
  
     return real_mmap(addr, length, prot, flags, fd, offset);
@@ -11,7 +11,16 @@ diff -up mesa-19.2.0-rc3/src/drm-shim/drm_shim.c.1~ mesa-19.2.0-rc3/src/drm-shim
 +#endif
 diff -up mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.1~ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp
 --- mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp.1~	2019-09-11 18:23:36.000000000 +0200
-+++ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp	2019-09-12 23:34:38.603273380 +0200
++++ mesa-19.2.0-rc3/src/intel/tools/aubinator_viewer.cpp	2019-09-13 02:07:10.640791175 +0200
+@@ -380,7 +380,7 @@ new_shader_window(struct aub_mem *mem, u
+    struct shader_window *window = xtzalloc(*window);
+ 
+    snprintf(window->base.name, sizeof(window->base.name),
+-            "%s (0x%lx)##%p", desc, address, window);
++            "%s (0x%llx)##%p", desc, address, window);
+ 
+    list_inithead(&window->base.parent_link);
+    window->base.position = ImVec2(-1, -1);
 @@ -443,7 +443,7 @@ new_urb_window(struct aub_viewer_decode_
     struct urb_window *window = xtzalloc(*window);
  
