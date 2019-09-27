@@ -237,6 +237,8 @@ BuildRequires:	pkgconfig(xshmfence) >= 1.1
 BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
+BuildRequires:	pkgconfig(xv)
+BuildRequires:	pkgconfig(xvmc)
 #BuildRequires:	pkgconfig(valgrind)
 BuildRequires:	pkgconfig(gtk+-3.0)
 # for libsupc++.a
