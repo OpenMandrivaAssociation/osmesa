@@ -17,7 +17,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.5
 
-%define relc 4
+%define relc %{nil}
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -157,6 +157,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # https://bugs.freedesktop.org/show_bug.cgi?id=74098
 #Patch1:		mesa-10.2-clang-compilefix.patch
 #Patch3:		mesa-19.0.0-rc2-more-ARM-drivers.patch
+Patch1:		mesa-19.2.0-fix-linkage.patch
 %ifarch %{ix86}
 Patch4:		mesa-19.2.0-rc3-32bit-buildfix.patch
 %endif
