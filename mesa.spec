@@ -119,7 +119,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	19.2.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -778,11 +778,15 @@ Requires:	pkgconfig(glut)
 Requires:	%{devgl} = %{version}-%{release}
 Requires:	%{devegl} = %{version}-%{release}
 Requires:	%{devglapi} = %{version}-%{release}
+%if ! %{with glvnd}
 Requires:	%{devglesv1} = %{version}-%{release}
 Requires:	%{devglesv2} = %{version}-%{release}
+%endif
 Suggests:	%{devd3d} = %{version}-%{release}
 %if %{with glvnd}
 Requires:	pkgconfig(libglvnd)
+Requires:	pkgconfig(glesv1_cm)
+Requires:	pkgconfig(glesv2)
 %endif
 
 %description common-devel
@@ -862,6 +866,19 @@ fi
 %install
 %ninja_install -C build/
 
+%if %{with glvnd}
+rm -rf	%{buildroot}%{_includedir}/GL/gl.h \
+	%{buildroot}%{_includedir}/GL/glcorearb.h \
+	%{buildroot}%{_includedir}/GL/glext.h \
+	%{buildroot}%{_includedir}/GL/glx.h \
+	%{buildroot}%{_includedir}/GL/glxext.h \
+	%{buildroot}%{_includedir}/EGL \
+	%{buildroot}%{_includedir}/KHR \
+	%{buildroot}%{_includedir}/GLES \
+	%{buildroot}%{_includedir}/GLES2 \
+	%{buildroot}%{_includedir}/GLES3
+%endif
+
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
@@ -887,6 +904,7 @@ rm -f %{buildroot}%{_libdir}/libGLESv1_CM.so* %{buildroot}%{_libdir}/libGLESv2.s
 # .la files are not needed by mesa
 find %{buildroot} -name '*.la' |xargs rm -f
 
+%if ! %{with glvnd}
 # Used to be present in 19.0.x, and some packages rely on it
 cat >%{buildroot}%{_libdir}/pkgconfig/glesv1_cm.pc <<'EOF'
 Name: glesv1_cm
@@ -916,6 +934,7 @@ Libs: -L${libdir} -lEGL
 Libs.private: -lpthread -pthread -lm -ldl
 Cflags: -I${includedir}
 EOF
+%endif
 
 # use swrastg if built (Anssi 12/2011)
 [ -e %{buildroot}%{_libdir}/dri/swrastg_dri.so ] && mv %{buildroot}%{_libdir}/dri/swrast{g,}_dri.so
@@ -1039,7 +1058,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libOSMesa.so.%{osmesamajor}*
 
 %files -n %{devosmesa}
-%dir %{_includedir}/GL
 %{_includedir}/GL/osmesa.h
 %{_libdir}/libOSMesa.so
 %{_libdir}/pkgconfig/osmesa.pc
@@ -1091,13 +1109,15 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{devgl}
+%if ! %{with glvnd}
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glcorearb.h
 %{_includedir}/GL/glext.h
-%{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
+%endif
+%{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glx_mangle.h
 %{_libdir}/libGLX_mesa.so
 %{_libdir}/pkgconfig/gl.pc
@@ -1112,10 +1132,12 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %if %{with egl}
 %files -n %{devegl}
+%if ! %{with glvnd}
 %{_includedir}/EGL
 %{_includedir}/KHR
-%{_libdir}/libEGL_mesa.so
 %{_libdir}/pkgconfig/egl.pc
+%endif
+%{_libdir}/libEGL_mesa.so
 %endif
 
 %files -n %{devglapi}
@@ -1149,6 +1171,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/pkgconfig/xatracker.pc
 %endif
 
+%if ! %{with glvnd}
 %files -n %{devglesv1}
 %{_includedir}/GLES
 %{_libdir}/pkgconfig/glesv1_cm.pc
@@ -1159,6 +1182,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{devglesv3}
 %{_includedir}/GLES3
+%endif
 
 %files -n %{devd3d}
 %{_includedir}/d3dadapter
