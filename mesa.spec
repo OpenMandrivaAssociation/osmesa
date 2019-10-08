@@ -872,11 +872,14 @@ rm -rf	%{buildroot}%{_includedir}/GL/gl.h \
 	%{buildroot}%{_includedir}/GL/glext.h \
 	%{buildroot}%{_includedir}/GL/glx.h \
 	%{buildroot}%{_includedir}/GL/glxext.h \
-	%{buildroot}%{_includedir}/EGL \
+	%{buildroot}%{_includedir}/EGL/eglext.h \
+	%{buildroot}%{_includedir}/EGL/egl.h \
+	%{buildroot}%{_includedir}/EGL/eglplatform.h \
 	%{buildroot}%{_includedir}/KHR \
 	%{buildroot}%{_includedir}/GLES \
 	%{buildroot}%{_includedir}/GLES2 \
-	%{buildroot}%{_includedir}/GLES3
+	%{buildroot}%{_includedir}/GLES3 \
+	%{buildroot}%{_libdir}/pkgconfig/egl.pc
 %endif
 
 %ifarch %{x86_64}
@@ -1136,6 +1139,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_includedir}/EGL
 %{_includedir}/KHR
 %{_libdir}/pkgconfig/egl.pc
+%else
+%{_includedir}/EGL/eglextchromium.h
+%{_includedir}/EGL/eglmesaext.h
 %endif
 %{_libdir}/libEGL_mesa.so
 %endif
