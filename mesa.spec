@@ -512,6 +512,7 @@ EGL parts.
 %package -n %{devegl}
 Summary:	Development files for Mesa (EGL libs)
 Group:		Development/C
+Provides:	egl-devel = %{version}-%{release}
 Requires:	%{libegl} = %{version}-%{release}
 Obsoletes:	%{_lib}mesaegl1-devel < 8.0
 Obsoletes:	%{_lib}egl1-devel < %{version}-%{release}
