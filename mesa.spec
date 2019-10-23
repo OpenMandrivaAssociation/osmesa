@@ -1124,10 +1124,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_libdir}/pkgconfig/gl.pc
+%{_libdir}/libGLX_mesa.so
 %endif
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glx_mangle.h
-%{_libdir}/libGLX_mesa.so
 %{_libdir}/pkgconfig/dri.pc
 
 #FIXME: check those headers
