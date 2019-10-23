@@ -224,6 +224,7 @@ BuildRequires:	pkgconfig(libglvnd)
 %ifnarch %{armx} %{riscv}
 # needed only for intel binaries
 BuildRequires:	pkgconfig(epoxy)
+BuildRequires:	pkgconfig(gtk+-3.0)
 %endif
 BuildRequires:	pkgconfig(vulkan)
 BuildRequires:	pkgconfig(x11) >= 1.3.3
@@ -242,7 +243,6 @@ BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	pkgconfig(xv)
 BuildRequires:	pkgconfig(xvmc)
 #BuildRequires:	pkgconfig(valgrind)
-BuildRequires:	pkgconfig(gtk+-3.0)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
 # (tpg) with openssl a steam crashes
