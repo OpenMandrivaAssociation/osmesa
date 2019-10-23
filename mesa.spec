@@ -221,7 +221,10 @@ BuildRequires:	pkgconfig(libudev) >= 186
 %if %{with glvnd}
 BuildRequires:	pkgconfig(libglvnd)
 %endif
+%ifnarch %{armx} %{riscv}
+# needed only for intel binaries
 BuildRequires:	pkgconfig(epoxy)
+%endif
 BuildRequires:	pkgconfig(vulkan)
 BuildRequires:	pkgconfig(x11) >= 1.3.3
 BuildRequires:	pkgconfig(xdamage) >= 1.1.1
