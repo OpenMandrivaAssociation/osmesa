@@ -1125,8 +1125,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_includedir}/GL/glxext.h
 %{_libdir}/pkgconfig/gl.pc
 %endif
-%{_includedir}/GL/gl_mangle.h
-%{_includedir}/GL/glx_mangle.h
 %if %{with glvnd}
 %{_libdir}/libGLX_mesa.so
 %endif
