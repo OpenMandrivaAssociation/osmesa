@@ -119,7 +119,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	19.3.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -1040,7 +1040,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-lima
 %{_bindir}/lima_compiler
+%{_bindir}/lima_disasm
 %{_libdir}/dri/lima_dri.so
+%{_libdir}/gallium-pipe/pipe_kmsro.so
+
 
 %files -n %{dridrivers}-panfrost
 %{_libdir}/dri/panfrost_dri.so
