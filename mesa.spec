@@ -1040,7 +1040,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-lima
 %{_bindir}/lima_compiler
+%{_bindir}/lima_disasm
 %{_libdir}/dri/lima_dri.so
+%{_libdir}/gallium-pipe/pipe_kmsro.so
+
 
 %files -n %{dridrivers}-panfrost
 %{_libdir}/dri/panfrost_dri.so
