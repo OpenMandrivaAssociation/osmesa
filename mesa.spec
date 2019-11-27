@@ -23,7 +23,11 @@
 %bcond_without gcc
 %bcond_with opencl
 %else
+%ifarch %{aarch64}
+%bcond_with gcc
+%else
 %bcond_without gcc
+%endif
 %bcond_without opencl
 %endif
 %bcond_with bootstrap
@@ -820,6 +824,8 @@ cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c || :
 %if %{with gcc}
 export CC=gcc
 export CXX=g++
+%else
+%global ldflags %{ldflags} -fuse-ld=bfd
 %endif
 
 if ! %meson \
