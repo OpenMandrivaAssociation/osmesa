@@ -17,7 +17,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.5
 
-%define relc %{nil}
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -121,7 +121,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	19.3.3
+Version:	20.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -996,6 +996,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-intel
 %{_libdir}/dri/i9?5_dri.so
+%{_libdir}/dri/iris_dri.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
