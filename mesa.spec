@@ -1041,7 +1041,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-etnaviv
 %{_libdir}/dri/etnaviv_dri.so
-%{_libdir}/dri/libetnaviv_noop_drm_shim.so
+%{_libdir}/libetnaviv_noop_drm_shim.so
 
 %files -n %{dridrivers}-tegra
 %{_libdir}/dri/tegra_dri.so
