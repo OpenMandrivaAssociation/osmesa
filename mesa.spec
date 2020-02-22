@@ -6,9 +6,10 @@
 
 # We disable LTO because of a compile error in the Intel Vulkan driver
 # last seen with Mesa 19.2.0-rc1 and (interestingly) both gcc 9.2 and clang 9.0-rc2
+# Use BFD as ith LLD this errors occurs ld: error: TLS attribute mismatch: _glapi_tls_Dispatch
 # -fno-strict-aliasing is added because of numerous warnings, strict
 # aliasing might generate broekn code.
-%global optflags %{optflags} -O3 -fno-strict-aliasing
+%global optflags %{optflags} -O3 -fno-strict-aliasing -fuse-ld=bfd
 %global ldflags %{ldflags} -fno-strict-aliasing
 
 %define git %{nil}
