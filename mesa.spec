@@ -8,7 +8,7 @@
 # last seen with Mesa 19.2.0-rc1 and (interestingly) both gcc 9.2 and clang 9.0-rc2
 # -fno-strict-aliasing is added because of numerous warnings, strict
 # aliasing might generate broekn code.
-%global optflags %{optflags} -O3 -fno-lto -fno-strict-aliasing
+%global optflags %{optflags} -O3 -fno-strict-aliasing
 %global ldflags %{ldflags} -fno-strict-aliasing
 
 %define git %{nil}
@@ -23,13 +23,10 @@
 %bcond_without gcc
 %bcond_with opencl
 %else
-%ifarch %{aarch64}
 %bcond_with gcc
-%else
-%bcond_without gcc
-%endif
 %bcond_without opencl
 %endif
+
 %bcond_with bootstrap
 %bcond_without vdpau
 %bcond_without va
@@ -123,7 +120,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	20.0.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -232,6 +229,7 @@ BuildRequires:	pkgconfig(libglvnd)
 BuildRequires:	pkgconfig(epoxy)
 BuildRequires:	pkgconfig(gtk+-3.0)
 %endif
+BuildRequires:	pkgconfig(libzstd)
 BuildRequires:	pkgconfig(vulkan)
 BuildRequires:	pkgconfig(x11) >= 1.3.3
 BuildRequires:	pkgconfig(xdamage) >= 1.1.1
