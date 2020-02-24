@@ -9,7 +9,7 @@
 # Use BFD as ith LLD this errors occurs ld: error: TLS attribute mismatch: _glapi_tls_Dispatch
 # -fno-strict-aliasing is added because of numerous warnings, strict
 # aliasing might generate broekn code.
-%global optflags %{optflags} -O3 -fno-strict-aliasing -fuse-ld=bfd
+%global optflags %{optflags} -O3 -fno-strict-aliasing -fuse-ld=gold
 %global ldflags %{ldflags} -fno-strict-aliasing
 
 %define git %{nil}
@@ -167,6 +167,8 @@ Patch4:		mesa-19.2.0-rc3-32bit-buildfix.patch
 %ifarch %{armx} riscv64
 Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
 %endif
+# https://gitlab.freedesktop.org/mesa/mesa/merge_requests/3449
+Patch6:		https://gitlab.freedesktop.org/mesa/mesa/merge_requests/3449.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 
@@ -824,7 +826,7 @@ cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c || :
 export CC=gcc
 export CXX=g++
 %else
-%global ldflags %{ldflags} -fuse-ld=bfd
+%global ldflags %{ldflags} -fuse-ld=gold
 %endif
 
 if ! %meson \
@@ -1061,6 +1063,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/hx8357d_dri.so
 %{_libdir}/dri/ili9???_dri.so
 %{_libdir}/dri/imx-drm_dri.so
+%{_libdir}/dri/imx-dcss_dri.so
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/meson_dri.so
