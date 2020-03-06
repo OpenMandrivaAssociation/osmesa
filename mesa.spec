@@ -119,9 +119,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	20.0.0
+Version:	20.0.1
 %if "%{relc}%{git}" == ""
-Release:	3
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -186,7 +186,7 @@ Patch6:		https://gitlab.freedesktop.org/mesa/mesa/merge_requests/3449.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-Patch400:	0001-iris-handle-the-failure-of-converting-unsupported-yu.patch
+
 # Mandriva & Mageia patches
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
