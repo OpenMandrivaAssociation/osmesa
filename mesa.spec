@@ -121,7 +121,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	20.0.2
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -460,7 +460,7 @@ Requires:	%{_lib}GL1%{?_isa}
 Provides:	mesa-libGL%{?_isa} = %{EVRD}
 Requires:	%mklibname GL 1
 %if %{with glvnd}
-Requires:	libglvnd-GL
+Requires:	libglvnd-GL%{?_isa}
 %endif
 %define oldglname %mklibname gl 1
 %rename %oldglname
@@ -510,7 +510,7 @@ Group:		System/Libraries
 Obsoletes:	%{_lib}mesaegl1 < 8.0
 Provides:	mesa-libEGL%{?_isa} = %{EVRD}
 %if %{with glvnd}
-Requires:	libglvnd-egl
+Requires:	libglvnd-egl%{?_isa}
 %endif
 %define oldegl %mklibname egl 1
 %rename %oldegl
@@ -599,7 +599,7 @@ Summary:	Development files for glesv1 libs
 Group:		Development/C
 Requires:	%{libglesv1}
 %if %{with glvnd}
-Requires:	libglvnd-GLESv1_CM
+Requires:	libglvnd-GLESv1_CM%{?_isa}
 # For libGLESv1_CM.so symlink
 Requires:	pkgconfig(libglvnd)
 %endif
@@ -629,7 +629,7 @@ Summary:	Development files for glesv2 libs
 Group:		Development/C
 Requires:	%{libglesv2}
 %if %{with glvnd}
-Requires:	libglvnd-GLESv2
+Requires:	libglvnd-GLESv2%{?_isa}
 %endif
 Obsoletes:	%{_lib}mesaglesv2_2-devel < 8.0
 Obsoletes:	%{_lib}glesv2_2-devel < %{version}-%{release}
