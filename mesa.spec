@@ -156,11 +156,7 @@ Obsoletes:	%{name}-xorg-drivers < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-radeon < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
-# https://bugs.freedesktop.org/show_bug.cgi?id=74098
-#Patch1:		mesa-10.2-clang-compilefix.patch
-#Patch3:		mesa-19.0.0-rc2-more-ARM-drivers.patch
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
-#Patch2:		mesa-20.0.0-rc1-amd-non-x86.patch
 %ifarch %{ix86}
 Patch4:		mesa-19.2.0-rc3-32bit-buildfix.patch
 %endif
