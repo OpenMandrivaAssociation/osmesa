@@ -158,9 +158,6 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.0.3-amd-non-x86.patch
-%ifarch %{ix86}
-Patch4:		mesa-19.2.0-rc3-32bit-buildfix.patch
-%endif
 %ifarch %{armx} riscv64
 Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
 %endif
