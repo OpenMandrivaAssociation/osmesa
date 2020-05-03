@@ -1020,6 +1020,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %ifarch %{armx}
 %files -n %{dridrivers}-freedreno
+%{_bindir}/computerator
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
 %{_libdir}/libfreedreno_noop_drm_shim.so
