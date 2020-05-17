@@ -16,9 +16,9 @@
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
-%define opengl_ver 4.5
+%define opengl_ver 4.6
 
-%define relc 2
+%define relc 3
 
 %ifarch %{riscv}
 %bcond_without gcc
