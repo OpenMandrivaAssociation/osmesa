@@ -180,8 +180,6 @@ Patch6:		https://gitlab.freedesktop.org/mesa/mesa/merge_requests/3449.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-# Drop it with Mesa 20.1.1 or when merged by upstream (angry)
-Patch50:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/d12f2c88427b466aa4944901a700a2d6ecb24a52.patch
 
 # Mandriva & Mageia patches
 
