@@ -1,0 +1,12 @@
+diff -up mesa-20.1.0-rc4/src/gallium/auxiliary/util/u_debug_stack.c.omv~ mesa-20.1.0-rc4/src/gallium/auxiliary/util/u_debug_stack.c
+--- mesa-20.1.0-rc4/src/gallium/auxiliary/util/u_debug_stack.c.omv~	2020-05-28 04:22:47.724685959 +0200
++++ mesa-20.1.0-rc4/src/gallium/auxiliary/util/u_debug_stack.c	2020-05-28 04:23:02.093837627 +0200
+@@ -94,7 +94,7 @@ debug_backtrace_capture(struct debug_sta
+    unw_proc_info_t pip;
+    unsigned i = 0;
+ 
+-   pip.unwind_info = NULL;
++   pip.unwind_info = (intptr_t)NULL;
+ 
+    unw_getcontext(&context);
+    unw_init_local(&cursor, &context);

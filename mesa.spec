@@ -4,6 +4,13 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
+# Mesa is used by wine and steam
+%ifarch %{x86_64}
+%bcond_without compat32
+%else
+%bcond_with compat32
+%endif
+
 # We disable LTO because of a compile error in the Intel Vulkan driver
 # last seen with Mesa 19.2.0-rc1 and (interestingly) both gcc 9.2 and clang 9.0-rc2
 # Use BFD as ith LLD this errors occurs ld: error: TLS attribute mismatch: _glapi_tls_Dispatch
@@ -51,66 +58,92 @@
 %define osmesamajor 8
 %define libosmesa %mklibname osmesa %{osmesamajor}
 %define devosmesa %mklibname osmesa -d
+%define lib32osmesa libosmesa%{osmesamajor}
+%define dev32osmesa libosmesa-devel
 
 %define eglmajor 0
 %define eglname EGL_mesa
 %define libegl %mklibname %{eglname} %{eglmajor}
 %define devegl %mklibname %{eglname} -d
+%define lib32egl lib%{eglname}%{eglmajor}
+%define dev32egl lib%{eglname}-devel
 
 %define glmajor 0
 %define glname GLX_mesa
 %define libgl %mklibname %{glname} %{glmajor}
 %define devgl %mklibname GL -d
+%define lib32gl lib%{glname}%{glmajor}
+%define dev32gl libGL-devel
 
 %define devvulkan %mklibname vulkan-intel -d
+%define dev32vulkan libvulkan-intel-devel
 
 %define glesv1major 1
 %define glesv1name GLESv1_CM
 %define libglesv1 %mklibname %{glesv1name} %{glesv1major}
 %define devglesv1 %mklibname %{glesv1name} -d
+%define lib32glesv1 lib%{glesv1name}%{glesv1major}
+%define dev32glesv1 lib%{glesv1name}-devel
 
 %define glesv2major 2
 %define glesv2name GLESv2
 %define libglesv2 %mklibname %{glesv2name}_ %{glesv2major}
 %define devglesv2 %mklibname %{glesv2name} -d
+%define lib32glesv2 lib%{glesv2name}_%{glesv2major}
+%define dev32glesv2 lib%{glesv2name}-devel
 
 %define devglesv3 %mklibname glesv3 -d
+%define dev32glesv3 libglesv3-devel
 
 %define d3dmajor 1
 %define d3dname d3dadapter9
 %define libd3d %mklibname %{d3dname} %{d3dmajor}
 %define devd3d %mklibname %{d3dname} -d
+%define lib32d3d lib%{d3dname}%{d3dmajor}
+%define dev32d3d lib%{d3dname}-devel
 
 %define glapimajor 0
 %define glapiname glapi
 %define libglapi %mklibname %{glapiname} %{glapimajor}
 %define devglapi %mklibname %{glapiname} -d
+%define lib32glapi lib%{glapiname}%{glapimajor}
+%define dev32glapi lib%{glapiname}-devel
 
 %define dridrivers %mklibname dri-drivers
 %define vdpaudrivers %mklibname vdpau-drivers
+%define dridrivers32 libdri-drivers
+%define vdpaudrivers32 libvdpau-drivers
 
 %define gbmmajor 1
 %define gbmname gbm
 %define libgbm %mklibname %{gbmname} %{gbmmajor}
 %define devgbm %mklibname %{gbmname} -d
+%define lib32gbm lib%{gbmname}%{gbmmajor}
+%define dev32gbm lib%{gbmname}-devel
 
 %define xatrackermajor 2
 %define xatrackername xatracker
 %define libxatracker %mklibname %xatrackername %{xatrackermajor}
 %define devxatracker %mklibname %xatrackername -d
+%define lib32xatracker lib%{xatrackername}%{xatrackermajor}
+%define dev32xatracker lib%{xatrackername}-devel
 
 %define swravxmajor 0
 %define swravxname swravx
 %define libswravx %mklibname %swravxname %{swravxmajor}
+%define lib32swravx lib%{swravxname}%{swravxmajor}
 
 %define swravx2major 0
 %define swravx2name swravx2
 %define libswravx2 %mklibname %swravx2name %{swravx2major}
+%define lib32swravx2 lib%{swravx2name}%{swravx2major}
 
 %define clmajor 1
 %define clname mesaopencl
 %define libcl %mklibname %clname %clmajor
 %define devcl %mklibname %clname -d
+%define lib32cl lib%{clname}%{clmajor}
+%define dev32cl lib%{clname}-devel
 
 %define mesasrcdir %{_prefix}/src/Mesa/
 %define driver_dir %{_libdir}/dri
@@ -149,6 +182,8 @@ Source100:	%{name}.rpmlintrc
 %define dricorename dricore
 %define devdricore %mklibname %{dricorename} -d
 %define libdricore %mklibname %{dricorename} 9
+%define dev32dricore lib%{dricorename}-devel
+%define lib32dricore lib%{dricorename}9
 
 Obsoletes:	%{libdricore} < %{EVRD}
 Obsoletes:	%{devdricore} < %{EVRD}
@@ -158,6 +193,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.0.3-amd-non-x86.patch
+Patch3:		mesa-20.1-rc4-compile.patch
 %ifarch %{armx} riscv64
 Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
 %endif
@@ -270,6 +306,46 @@ BuildRequires:	pkgconfig(wayland-protocols) >= 1.8
 
 # package mesa
 Requires:	libGL.so.1%{_arch_tag_suffix}
+
+%if %{with compat32}
+BuildRequires:	devel(libdrm)
+BuildRequires:	devel(libX11)
+BuildRequires:	devel(libXdamage)
+BuildRequires:	devel(libXext)
+BuildRequires:	devel(libXfixes)
+BuildRequires:	devel(libXi)
+BuildRequires:	devel(libXmu)
+BuildRequires:	devel(libXt)
+BuildRequires:	devel(libXxf86vm)
+BuildRequires:	devel(libxshmfence)
+BuildRequires:	devel(libXrandr)
+BuildRequires:	devel(libxcb-dri3)
+BuildRequires:	devel(libxcb-present)
+BuildRequires:	devel(libXv)
+BuildRequires:	devel(libXvMC)
+BuildRequires:	devel(libsensors)
+BuildRequires:	libsensors.so.5
+BuildRequires:	devel(libLLVMCore)
+BuildRequires:	devel(libclangCodeGen)
+BuildRequires:	devel(libclangFrontendTool)
+BuildRequires:	devel(libclangFrontend)
+BuildRequires:	devel(libclangDriver)
+BuildRequires:	devel(libclangSerialization)
+BuildRequires:	devel(libclangParse)
+BuildRequires:	devel(libclangSema)
+BuildRequires:	devel(libclangAnalysis)
+BuildRequires:	devel(libclangAST)
+BuildRequires:	devel(libclangASTMatchers)
+BuildRequires:	devel(libclangEdit)
+BuildRequires:	devel(libclangLex)
+BuildRequires:	devel(libclangBasic)
+BuildRequires:	devel(libPolly)
+BuildRequires:	devel(libzstd)
+BuildRequires:	devel(libwayland-client)
+BuildRequires:	devel(libwayland-server)
+BuildRequires:	devel(libunwind)
+BuildRequires:	devel(libva)
+%endif
 
 %description
 Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
@@ -659,6 +735,207 @@ Provides:	d3d-devel = %{EVRD}
 %description -n %{devd3d}
 This package contains the headers needed to compile Direct3D 9 programs.
 
+%if %{with compat32}
+%package -n %{lib32gl}
+Summary:	Files for Mesa (GL and GLX libs) (32-bit)
+Group:		System/Libraries
+Suggests:	%{dridrivers32} >= %{version}-%{release}
+
+%description -n %{lib32gl}
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
+GL and GLX parts.
+
+%package -n %{dev32gl}
+Summary:	Development files for Mesa (OpenGL compatible 3D lib) (32-bit)
+Group:		Development/C
+%if %{with glvnd}
+Requires:	devel(libglvnd)
+%endif
+Requires:	%{dev32egl}  = %{EVRD}
+Requires:	%{devgl}  = %{EVRD}
+
+%description -n %{dev32gl}
+This package contains the headers needed to compile Mesa programs.
+
+%package -n %{lib32glapi}
+Summary:	Files for mesa (glapi libs) (32-bit)
+Group:		System/Libraries
+
+%description -n %{lib32glapi}
+This package provides the glapi shared library used by gallium.
+
+%package -n %{dev32glapi}
+Summary:	Development files for glapi libs (32-bit)
+Group:		Development/C
+Requires:	%{devglapi} = %{version}-%{release}
+Requires:	%{lib32glapi} = %{version}-%{release}
+
+%description -n %{dev32glapi}
+This package contains the headers needed to compile programs against
+the glapi shared library.
+
+%package -n %{lib32gbm}
+Summary:	Files for Mesa (gbm libs) (32-bit)
+Group:		System/Libraries
+
+%description -n %{lib32gbm}
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
+GBM (Graphics Buffer Manager) parts.
+
+%package -n %{dev32gbm}
+Summary:	Development files for Mesa (gbm libs) (32-bit)
+Group:		Development/C
+Requires:	%{devgbm} = %{version}-%{release}
+Requires:	%{lib32gbm} = %{version}-%{release}
+
+%description -n %{dev32gbm}
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
+GBM (Graphics Buffer Manager) development parts.
+
+%package -n %{lib32xatracker}
+Summary:	Files for mesa (xatracker libs) (32-bit)
+Group:		System/Libraries
+
+%description -n %{lib32xatracker}
+This package provides the xatracker shared library used by gallium.
+
+%package -n %{dev32xatracker}
+Summary:	Development files for xatracker libs (32-bit)
+Group:		Development/C
+Requires:	%{lib32xatracker} = %{version}-%{release}
+Requires:	%{devxatracker} = %{version}-%{release}
+
+%description -n %{dev32xatracker}
+This package contains the headers needed to compile programs against
+the xatracker shared library.
+
+%package -n %{lib32osmesa}
+Summary:	Mesa offscreen rendering library (32-bit)
+Group:		System/Libraries
+
+%description -n %{lib32osmesa}
+Mesa offscreen rendering libraries for rendering OpenGL into
+application-allocated blocks of memory.
+
+%package -n %{dev32osmesa}
+Summary:	Development files for libosmesa (32-bit)
+Group:		Development/C
+Requires:	%{lib32osmesa} = %{version}-%{release}
+Requires:	%{devosmesa} = %{version}-%{release}
+
+%description -n %{dev32osmesa}
+This package contains the headers needed to compile programs against
+the Mesa offscreen rendering library.
+
+%package -n %{lib32d3d}
+Summary:	Mesa Gallium Direct3D 9 state tracker (32-bit)
+Group:		System/Libraries
+
+%description -n %{lib32d3d}
+OpenGL ES is a low-level, lightweight API for advanced embedded graphics using
+well-defined subset profiles of OpenGL.
+
+This package provides Direct3D 9 support.
+
+%package -n %{dev32d3d}
+Summary:	Development files for Direct3D 9 libs
+Group:		Development/C
+Requires:	%{devd3d} = %{version}-%{release}
+Requires:	%{lib32d3d} = %{version}-%{release}
+
+%description -n %{dev32d3d}
+This package contains the headers needed to compile Direct3D 9 programs.
+
+%package -n %{lib32egl}
+Summary:	Files for Mesa (EGL libs) (32-bit)
+Group:		System/Libraries
+%if %{with glvnd}
+Requires:	libglvnd-egl%{?_isa}
+%endif
+
+%description -n %{lib32egl}
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
+EGL parts.
+
+%package -n %{dev32egl}
+Summary:	Development files for Mesa (EGL libs) (32-bit)
+Group:		Development/C
+Requires:	%{lib32egl} = %{version}-%{release}
+Requires:	%{devegl} = %{version}-%{release}
+
+%description -n %{dev32egl}
+Mesa is an OpenGL %{opengl_ver} compatible 3D graphics library.
+EGL development parts.
+
+%package -n %{dridrivers32}-intel
+Summary:	DRI Drivers for Intel graphics chipsets (32-bit)
+Group:		System/Libraries
+
+%description -n %{dridrivers32}-intel
+DRI and XvMC drivers for Intel graphics chipsets
+
+
+%package -n %{dridrivers32}-radeon
+Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets (32-bit)
+Group:		System/Libraries
+
+%description -n %{dridrivers32}-radeon
+DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+
+%package -n %{dridrivers32}-nouveau
+Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver (32-bit)
+Group:		System/Libraries
+
+%description -n %{dridrivers32}-nouveau
+DRI and XvMC drivers for Nvidia graphics chipsets
+
+%package -n %{dridrivers32}-swrast
+Summary:	DRI Drivers for software rendering (32-bit)
+Group:		System/Libraries
+
+%description -n %{dridrivers32}-swrast
+Generic DRI driver using CPU rendering
+
+%package -n %{dridrivers32}-virtio
+Summary:	DRI Drivers for virtual environments
+Group:		System/Libraries
+
+%description -n %{dridrivers32}-virtio
+Generic DRI driver for virtual environments.
+
+%package -n %{dridrivers32}-vmwgfx
+Summary:	DRI Drivers for VMWare guest OS
+Group:		System/Libraries
+
+%description -n %{dridrivers32}-vmwgfx
+DRI and XvMC drivers for VMWare guest Operating Systems.
+
+%package -n %{lib32cl}
+Summary:	Mesa OpenCL libs (32-bit)
+Group:		System/Libraries
+
+%description -n %{lib32cl}
+Open Computing Language (OpenCL) is a framework for writing programs that
+execute across heterogeneous platforms consisting of central processing units
+(CPUs), graphics processing units (GPUs), DSPs and other processors.
+
+OpenCL includes a language (based on C99) for writing kernels (functions that
+execute on OpenCL devices), plus application programming interfaces (APIs) that
+are used to define and then control the platforms. OpenCL provides parallel
+computing using task-based and data-based parallelism. OpenCL is an open
+standard maintained by the non-profit technology consortium Khronos Group.
+It has been adopted by Intel, Advanced Micro Devices, Nvidia, and ARM Holdings.
+
+%package -n %{dev32cl}
+Summary:	Development files for OpenCL libs (32-bit)
+Group:		Development/Other
+Requires:	%{lib32cl} = %{version}-%{release}
+Requires:	%{devcl} = %{version}-%{release}
+
+%description -n %{dev32cl}
+Development files for the OpenCL library
+%endif
+
 %if %{with opencl}
 %package -n %{libcl}
 Summary:	Mesa OpenCL libs
@@ -823,6 +1100,75 @@ export CXX=g++
 %global ldflags %{ldflags} -fuse-ld=gold
 %endif
 
+%if %{with compat32}
+cat >llvm-config <<EOF
+#!/bin/sh
+/usr/bin/llvm-config "\$@" |sed -e 's,lib64,lib,g'
+EOF
+chmod +x llvm-config
+export PATH="$(pwd):${PATH}"
+
+cat >i686.cross <<EOF
+[binaries]
+pkgconfig = 'pkg-config'
+cmake = 'cmake'
+
+[host_machine]
+system = 'linux'
+cpu_family = 'x86'
+cpu = 'i686'
+endian = 'little'
+EOF
+
+if ! %meson32 \
+	--cross-file=i686.cross \
+	-Db_ndebug=true \
+	-Dc_std=c11 \
+	-Dcpp_std=c++17 \
+	-Ddri-drivers=auto \
+	-Dgallium-drivers=auto \
+%if %{with opencl}
+	-Dgallium-opencl=icd \
+%else
+	-Dgallium-opencl=disabled \
+%endif
+	-Dgallium-va=true \
+	-Dgallium-vdpau=true \
+	-Dgallium-xa=true \
+	-Dgallium-xvmc=true \
+	-Dgallium-nine=true \
+	-Dglx=auto \
+	-Dplatforms=auto \
+	-Dvulkan-drivers=auto \
+	-Dxlib-lease=auto \
+	-Dosmesa=gallium \
+%if %{with glvnd}
+	-Dglvnd=true \
+%endif
+	-Ddri3=true \
+	-Degl=true \
+	-Dgbm=true \
+	-Dgles1=true \
+	-Dgles2=true \
+	-Dglx-direct=true \
+	-Dllvm=true \
+	-Dlmsensors=true \
+	-Dopengl=true \
+	-Dshader-cache=true \
+	-Dshared-glapi=true \
+	-Dshared-llvm=true \
+	-Dswr-arches=avx,avx2,knl,skx \
+	-Dselinux=false \
+	-Dbuild-tests=false \
+	-Dtools=""; then
+
+	cat build32/meson-logs/meson-log.txt >/dev/stderr
+fi
+
+%ninja_build -C build32/
+rm llvm-config
+%endif
+
 if ! %meson \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
@@ -870,6 +1216,9 @@ fi
 %ninja_build -C build/
 
 %install
+%if %{with compat32}
+%ninja_install -C build32/
+%endif
 %ninja_install -C build/
 
 %if %{with glvnd}
@@ -994,6 +1343,13 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/iris_dri.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
+
+%if %{with compat32}
+%files -n %{dridrivers32}-intel
+%{_prefix}/lib/dri/i9?5_dri.so
+%{_prefix}/lib/dri/iris_dri.so
+%{_prefix}/lib/libvulkan_intel.so
+%endif
 %endif
 
 %files -n %{dridrivers}-nouveau
@@ -1256,3 +1612,95 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/xvmc_rendering
 %{_bindir}/xvmc_subpicture
 %{_bindir}/xvmc_surface
+
+%if %{with compat32}
+%files -n %{lib32d3d}
+%dir %{_prefix}/lib/d3d
+%{_prefix}/lib/d3d/d3dadapter9.so.%{d3dmajor}*
+
+%files -n %{dev32d3d}
+%{_prefix}/lib/d3d/d3dadapter9.so
+%{_prefix}/lib/pkgconfig/d3d.pc
+
+%files -n %{dridrivers32}-swrast
+%{_prefix}/lib/dri/swrast_dri.so
+%{_prefix}/lib/dri/kms_swrast_dri.so
+%{_prefix}/lib/gallium-pipe/pipe_swrast.so
+
+%files -n %{lib32egl}
+%{_prefix}/lib/libEGL_mesa.so.%{eglmajor}*
+
+%files -n %{dev32egl}
+%{_prefix}/lib/libEGL_mesa.so
+
+%files -n %{dridrivers32}-nouveau
+%{_prefix}/lib/dri/nouveau*_dri.so
+%{_prefix}/lib/libXvMCnouveau.so
+%{_prefix}/lib/dri/nouveau_drv_video.so
+%{_prefix}/lib/gallium-pipe/pipe_nouveau.so
+%{_prefix}/lib/vdpau/libvdpau_nouveau.so*
+
+%files -n %{dridrivers32}-radeon
+%{_prefix}/lib/dri/r?00_dri.so
+%{_prefix}/lib/dri/radeon_dri.so
+%{_prefix}/lib/libXvMCgallium.so
+%{_prefix}/lib/libXvMCr?00.so
+%{_prefix}/lib/dri/radeonsi_dri.so
+%{_prefix}/lib/libvulkan_radeon.so
+%{_prefix}/lib/gallium-pipe/pipe_r?00.so
+%{_prefix}/lib/dri/r600_drv_video.so
+%{_prefix}/lib/dri/radeonsi_drv_video.so
+%{_prefix}/lib/gallium-pipe/pipe_radeonsi.so
+%{_prefix}/lib/vdpau/libvdpau_r?00.so*
+%{_prefix}/lib/vdpau/libvdpau_radeonsi.so*
+%{_prefix}/lib/libXvMCr600.so
+
+%files -n %{dridrivers32}-virtio
+%{_prefix}/lib/dri/virtio_gpu_dri.so
+
+%files -n %{dridrivers32}-vmwgfx
+%{_prefix}/lib/dri/vmwgfx_dri.so
+%{_prefix}/lib/gallium-pipe/pipe_vmwgfx.so
+
+%files -n %{lib32gl}
+%{_prefix}/lib/libGLX_mesa.so.0*
+%dir %{_prefix}/lib/dri
+%dir %{_prefix}/lib/gallium-pipe
+
+%files -n %{dev32gl}
+%{_prefix}/lib/pkgconfig/dri.pc
+%{_prefix}/lib/libGLX_mesa.so
+
+%files -n %{lib32cl}
+%{_prefix}/lib/libMesaOpenCL.so.*
+
+%files -n %{dev32cl}
+%{_prefix}/lib/libMesaOpenCL.so
+
+%files -n %{lib32osmesa}
+%{_prefix}/lib/libOSMesa.so.%{osmesamajor}*
+
+%files -n %{dev32osmesa}
+%{_prefix}/lib/libOSMesa.so
+%{_prefix}/lib/pkgconfig/osmesa.pc
+
+%files -n %{lib32xatracker}
+%{_prefix}/lib/libxatracker.so.*
+
+%files -n %{dev32xatracker}
+%{_prefix}/lib/libxatracker.so
+%{_prefix}/lib/pkgconfig/xatracker.pc
+
+%files -n %{lib32gbm}
+%{_prefix}/lib/libgbm.so.*
+
+%files -n %{dev32gbm}
+%{_prefix}/lib/libgbm.so
+%{_prefix}/lib/pkgconfig/gbm.pc
+
+%files -n %{lib32glapi}
+%{_prefix}/lib/libglapi.so.*
+
+%files -n %{dev32glapi}
+%{_prefix}/lib/libglapi.so
+%endif
