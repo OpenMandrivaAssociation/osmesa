@@ -343,8 +343,11 @@ BuildRequires:	devel(libPolly)
 BuildRequires:	devel(libzstd)
 BuildRequires:	devel(libwayland-client)
 BuildRequires:	devel(libwayland-server)
+BuildRequires:	devel(libelf)
 BuildRequires:	devel(libunwind)
 BuildRequires:	devel(libva)
+BuildRequires:	devel(libz)
+BuildRequires:	devel(libexpat)
 %endif
 
 %description
@@ -749,7 +752,7 @@ GL and GLX parts.
 Summary:	Development files for Mesa (OpenGL compatible 3D lib) (32-bit)
 Group:		Development/C
 %if %{with glvnd}
-Requires:	devel(libglvnd)
+Requires:	devel(libGL)
 %endif
 Requires:	%{dev32egl}  = %{EVRD}
 Requires:	%{devgl}  = %{EVRD}
