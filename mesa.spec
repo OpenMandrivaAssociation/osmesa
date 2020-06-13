@@ -348,6 +348,7 @@ BuildRequires:	devel(libunwind)
 BuildRequires:	devel(libva)
 BuildRequires:	devel(libz)
 BuildRequires:	devel(libexpat)
+BuildRequires:	devel(libvdpau)
 %endif
 
 %description
