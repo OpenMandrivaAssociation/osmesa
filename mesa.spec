@@ -154,7 +154,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	20.1.1
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -190,6 +190,16 @@ Obsoletes:	%{devdricore} < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-radeon < %{EVRD}
 Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
+
+# Without this patch, the OpenCL ICD calls into MesaOpenCL,
+# which for some reason calls back into the OpenCL ICD instead
+# of calling its own function by the same name.
+Patch0:		mesa-20.1.1-fix-opencl.patch
+# Not used in the spec; this is a test case to verify patch0
+# is still needed. If this code works without the patch, the
+# patch can be removed. If it crashes/takes forever (infinite
+# loop), the patch is still needed.
+Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.0.3-amd-non-x86.patch
