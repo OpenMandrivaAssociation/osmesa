@@ -154,7 +154,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	20.1.2
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -758,6 +758,34 @@ Provides:	d3d-devel = %{EVRD}
 This package contains the headers needed to compile Direct3D 9 programs.
 
 %if %{with compat32}
+%package -n %{dridrivers32}
+Summary:	Mesa DRI drivers (32-bit)
+Group:		System/Libraries
+Requires:	%{dridrivers32}-swrast = %{EVRD}
+%if %{with r600}
+Requires:	%{dridrivers32}-radeon = %{EVRD}
+%endif
+Requires:	%{dridrivers32}-intel = %{EVRD}
+Requires:	%{dridrivers32}-nouveau = %{EVRD}
+
+%description -n %{dridrivers32}
+DRI and XvMC drivers.
+
+%package -n %{vdpaudrivers32}
+Summary:	Mesa VDPAU drivers
+Group:		System/Libraries
+Requires:	%{dridrivers32} = %{EVRD}
+Requires:	libvdpau-driver-nouveau
+Requires:	libvdpau-driver-r300
+Requires:	libvdpau-driver-radeonsi
+%if %{with r600}
+Requires:	libvdpau-driver-r600
+%endif
+Requires:	libvdpau-driver-softpipe
+
+%description -n %{vdpaudrivers32}
+VDPAU drivers.
+
 %package -n %{lib32gl}
 Summary:	Files for Mesa (GL and GLX libs) (32-bit)
 Group:		System/Libraries
@@ -1725,4 +1753,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dev32glapi}
 %{_prefix}/lib/libglapi.so
+
+%files -n %{dridrivers32}
+
+%files -n %{vdpaudrivers32}
 %endif
