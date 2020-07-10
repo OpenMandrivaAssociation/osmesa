@@ -1361,7 +1361,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-radeon
 %{_libdir}/dri/r?00_dri.so
 %{_libdir}/dri/radeon_dri.so
-%{_libdir}/libXvMCgallium.so
+#{_libdir}/libXvMCgallium.so
 %{_libdir}/libXvMCr?00.so
 %{_libdir}/dri/radeonsi_dri.so
 %{_libdir}/libvulkan_radeon.so
@@ -1693,7 +1693,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers32}-radeon
 %{_prefix}/lib/dri/r?00_dri.so
 %{_prefix}/lib/dri/radeon_dri.so
-%{_prefix}/lib/libXvMCgallium.so
+#{_prefix}/lib/libXvMCgallium.so
 %{_prefix}/lib/libXvMCr?00.so
 %{_prefix}/lib/dri/radeonsi_dri.so
 %{_prefix}/lib/libvulkan_radeon.so
