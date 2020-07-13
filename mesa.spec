@@ -1362,7 +1362,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/r?00_dri.so
 %{_libdir}/dri/radeon_dri.so
 #{_libdir}/libXvMCgallium.so
+%{_libdir}/libXvMCgallium.so.1
 %{_libdir}/libXvMCr?00.so
+%{_libdir}/libXvMCr?00.so.1*
 %{_libdir}/dri/radeonsi_dri.so
 %{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
@@ -1405,6 +1407,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}-nouveau
 %{_libdir}/dri/nouveau*_dri.so
 %{_libdir}/libXvMCnouveau.so
+%{_libdir}/libXvMCnouveau.so.1*
 %if %{with va}
 %{_libdir}/dri/nouveau_drv_video.so
 %endif
@@ -1686,6 +1689,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers32}-nouveau
 %{_prefix}/lib/dri/nouveau*_dri.so
 %{_prefix}/lib/libXvMCnouveau.so
+%{_prefix}/lib/libXvMCnouveau.so.1*
 %{_prefix}/lib/dri/nouveau_drv_video.so
 %{_prefix}/lib/gallium-pipe/pipe_nouveau.so
 %{_prefix}/lib/vdpau/libvdpau_nouveau.so*
@@ -1694,7 +1698,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/dri/r?00_dri.so
 %{_prefix}/lib/dri/radeon_dri.so
 #{_prefix}/lib/libXvMCgallium.so
+%{_prefix}/lib/libXvMCgallium.so.1
 %{_prefix}/lib/libXvMCr?00.so
+%{_prefix}/lib/libXvMCr?00.so.1*
 %{_prefix}/lib/dri/radeonsi_dri.so
 %{_prefix}/lib/libvulkan_radeon.so
 %{_prefix}/lib/gallium-pipe/pipe_r?00.so
