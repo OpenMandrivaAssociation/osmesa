@@ -1698,7 +1698,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/dri/r?00_dri.so
 %{_prefix}/lib/dri/radeon_dri.so
 #{_prefix}/lib/libXvMCgallium.so
-%{_prefix}/libXvMCgallium.so.1
+%{_prefix}/lib/libXvMCgallium.so.1
 %{_prefix}/lib/libXvMCr?00.so
 %{_prefix}/lib/libXvMCr?00.so.1*
 %{_prefix}/lib/dri/radeonsi_dri.so
