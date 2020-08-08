@@ -6,7 +6,7 @@
 
 # Mesa is used by wine and steam
 %ifarch %{x86_64}
-%bcond_without compat32
+%bcond_with compat32
 %else
 %bcond_with compat32
 %endif
@@ -25,7 +25,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc %{nil}
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -152,7 +152,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	20.1.5
+Version:	20.2.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -203,7 +203,7 @@ Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.0.3-amd-non-x86.patch
-Patch3:		mesa-20.1-rc4-compile.patch
+Patch3:		mesa-20.2-llvm-unwind.patch
 %ifarch %{armx} riscv64
 Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
 %endif
@@ -1381,12 +1381,14 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/iris_dri.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
+%{_libdir}/libintel_noop_drm_shim.so
 
 %if %{with compat32}
 %files -n %{dridrivers32}-intel
 %{_prefix}/lib/dri/i9?5_dri.so
 %{_prefix}/lib/dri/iris_dri.so
 %{_prefix}/lib/libvulkan_intel.so
+%{_prefix}/lib/libintel_noop_drm_shim.so
 %endif
 %endif
 
@@ -1634,6 +1636,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/intel_dump_gpu
 %{_bindir}/intel_error2aub
 %{_bindir}/intel_sanitize_gpu
+%{_bindir}/intel_stub_gpu
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
