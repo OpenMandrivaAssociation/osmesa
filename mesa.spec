@@ -203,7 +203,6 @@ Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.0.3-amd-non-x86.patch
-Patch3:		mesa-20.2-llvm-unwind.patch
 %ifarch %{armx} riscv64
 Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
 %endif
