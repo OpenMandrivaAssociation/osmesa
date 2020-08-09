@@ -1388,7 +1388,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/dri/i9?5_dri.so
 %{_prefix}/lib/dri/iris_dri.so
 %{_prefix}/lib/libvulkan_intel.so
-%{_prefix}/lib/libintel_noop_drm_shim.so
 %endif
 %endif
 
