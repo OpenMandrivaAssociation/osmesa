@@ -6,7 +6,7 @@
 
 # Mesa is used by wine and steam
 %ifarch %{x86_64}
-%bcond_with compat32
+%bcond_without compat32
 %else
 %bcond_with compat32
 %endif
