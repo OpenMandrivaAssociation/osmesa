@@ -160,7 +160,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.2
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
