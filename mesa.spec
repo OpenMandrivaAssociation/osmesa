@@ -292,12 +292,6 @@ BuildRequires:	pkgconfig(xvmc)
 #BuildRequires:	pkgconfig(valgrind)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
-# (tpg) with openssl a steam crashes
-# Program received signal SIGSEGV, Segmentation fault.
-# 0xf63db8d5 in OPENSSL_ia32_cpuid () from /lib/libcrypto.so.1.0.0
-# crypto is needed for shader cache which uses the SHA-1
-# (tpg) strting from 2019-04-15 and openssl-1.1.1b-5 this is fixed
-BuildRequires:	pkgconfig(libssl) >= 1.1.1b-5
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel
