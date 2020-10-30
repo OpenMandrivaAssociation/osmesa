@@ -154,7 +154,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	20.2.1
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -204,6 +204,8 @@ Source50:	test.c
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.0.3-amd-non-x86.patch
 Patch3:		mesa-20.2.0-rc1-llvm-libunwind.patch
+# Zen optimizations from 20.3
+Patch4:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7054.patch
 %ifarch %{armx} riscv64
 Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
 %endif
@@ -1142,6 +1144,7 @@ cat >i686.cross <<EOF
 [binaries]
 pkgconfig = 'pkg-config'
 cmake = 'cmake'
+llvm-config = '$(pwd)/llvm-config'
 
 [host_machine]
 system = 'linux'
@@ -1160,10 +1163,10 @@ if ! %meson32 \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 %else
-	-Dgallium-opencl=disabled \
+	-Dgallium-opencl=false \
 %endif
 	-Dgallium-va=true \
-	-Dgallium-vdpau=true \
+	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=true \
 	-Dgallium-xvmc=true \
 	-Dgallium-nine=true \
@@ -1175,18 +1178,18 @@ if ! %meson32 \
 %if %{with glvnd}
 	-Dglvnd=true \
 %endif
-	-Ddri3=true \
-	-Degl=true \
-	-Dgbm=true \
-	-Dgles1=true \
-	-Dgles2=true \
+	-Ddri3=enabled \
+	-Degl=enabled \
+	-Dgbm=enabled \
+	-Dgles1=enabled \
+	-Dgles2=enabled \
 	-Dglx-direct=true \
-	-Dllvm=true \
+	-Dllvm=enabled \
 	-Dlmsensors=true \
 	-Dopengl=true \
 	-Dshader-cache=true \
-	-Dshared-glapi=true \
-	-Dshared-llvm=true \
+	-Dshared-glapi=enabled \
+	-Dshared-llvm=enabled \
 	-Dswr-arches=avx,avx2,knl,skx \
 	-Dselinux=false \
 	-Dbuild-tests=false \
@@ -1208,10 +1211,10 @@ if ! %meson \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 %else
-	-Dgallium-opencl=disabled \
+	-Dgallium-opencl=false \
 %endif
 	-Dgallium-va=true \
-	-Dgallium-vdpau=true \
+	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=true \
 	-Dgallium-xvmc=true \
 	-Dgallium-nine=true \
@@ -1223,18 +1226,18 @@ if ! %meson \
 %if %{with glvnd}
 	-Dglvnd=true \
 %endif
-	-Ddri3=true \
-	-Degl=true \
-	-Dgbm=true \
-	-Dgles1=true \
-	-Dgles2=true \
+	-Ddri3=enabled \
+	-Degl=enabled \
+	-Dgbm=enabled \
+	-Dgles1=enabled \
+	-Dgles2=enabled \
 	-Dglx-direct=true \
-	-Dllvm=true \
+	-Dllvm=enabled \
 	-Dlmsensors=true \
 	-Dopengl=true \
 	-Dshader-cache=true \
-	-Dshared-glapi=true \
-	-Dshared-llvm=true \
+	-Dshared-glapi=enabled \
+	-Dshared-llvm=enabled \
 	-Dswr-arches=avx,avx2,knl,skx \
 	-Dselinux=false \
 	-Dbuild-tests=false \
