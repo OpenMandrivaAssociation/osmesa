@@ -11,13 +11,10 @@
 %bcond_with compat32
 %endif
 
-# We disable LTO because of a compile error in the Intel Vulkan driver
-# last seen with Mesa 19.2.0-rc1 and (interestingly) both gcc 9.2 and clang 9.0-rc2
-# Use BFD as ith LLD this errors occurs ld: error: TLS attribute mismatch: _glapi_tls_Dispatch
 # -fno-strict-aliasing is added because of numerous warnings, strict
-# aliasing might generate broekn code.
-%global optflags %{optflags} -O3 -fno-strict-aliasing -fuse-ld=gold
-%global ldflags %{ldflags} -fno-strict-aliasing
+# aliasing might generate broken code.
+%global optflags %{optflags} -O3 -fno-strict-aliasing
+%global ldflags %{build_ldflags} -fno-strict-aliasing
 
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
@@ -152,9 +149,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	20.2.1
+Version:	20.2.2
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -1128,8 +1125,6 @@ cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c || :
 %if %{with gcc}
 export CC=gcc
 export CXX=g++
-%else
-%global ldflags %{ldflags} -fuse-ld=gold
 %endif
 
 %if %{with compat32}
@@ -1165,9 +1160,9 @@ if ! %meson32 \
 %else
 	-Dgallium-opencl=false \
 %endif
-	-Dgallium-va=true \
+	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
-	-Dgallium-xa=true \
+	-Dgallium-xa=enabled \
 	-Dgallium-xvmc=true \
 	-Dgallium-nine=true \
 	-Dglx=auto \
@@ -1213,9 +1208,9 @@ if ! %meson \
 %else
 	-Dgallium-opencl=false \
 %endif
-	-Dgallium-va=true \
+	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
-	-Dgallium-xa=true \
+	-Dgallium-xa=enabled \
 	-Dgallium-xvmc=true \
 	-Dgallium-nine=true \
 	-Dglx=auto \
