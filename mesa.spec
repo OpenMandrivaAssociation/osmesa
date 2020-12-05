@@ -1654,7 +1654,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 %ifarch %{armx}
 %{_bindir}/etnaviv_compiler
-%{_bindir}/ir3_compiler
 %endif
 %{_bindir}/glsl_compiler
 %{_bindir}/glsl_test
