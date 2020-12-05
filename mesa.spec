@@ -1171,7 +1171,7 @@ if ! %meson32 \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 %else
-	-Dgallium-opencl=false \
+	-Dgallium-opencl=disabled \
 %endif
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
@@ -1219,7 +1219,7 @@ if ! %meson \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 %else
-	-Dgallium-opencl=false \
+	-Dgallium-opencl=disabled \
 %endif
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
