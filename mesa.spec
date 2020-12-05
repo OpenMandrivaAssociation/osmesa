@@ -149,7 +149,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	20.2.3
+Version:	20.3.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -199,15 +199,10 @@ Patch0:		mesa-20.1.1-fix-opencl.patch
 Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
-Patch2:		mesa-20.0.3-amd-non-x86.patch
 Patch3:		mesa-20.2.0-rc1-llvm-libunwind.patch
-# Zen optimizations from 20.3
-Patch4:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7054.patch
 %ifarch %{armx} riscv64
 Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
 %endif
-# https://gitlab.freedesktop.org/mesa/mesa/merge_requests/3449
-Patch6:		https://gitlab.freedesktop.org/mesa/mesa/merge_requests/3449.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 
@@ -424,6 +419,20 @@ Suggests:	libvdpau-va-gl
 
 %description -n %{dridrivers}-intel
 DRI and XvMC drivers for Intel graphics chipsets
+
+This is the old-style driver - if you have a recent Intel GPU,
+you may also be interested in the more modern (but currently
+probably less stable) %{dridrivers}-iris package.
+
+%package -n %{dridrivers}-iris
+Summary:	More modern DRI Drivers for Intel graphics chips
+Group:		System/Libraries
+
+%description -n %{dridrivers}-iris
+A modern driver for Intel Gen 8+ graphics chipsets.
+
+This driver supports GPUs also supported by %{dridrivers}-intel.
+The -intel driver is (for now) more stable.
 %endif
 
 %package -n %{dridrivers}-nouveau
@@ -903,6 +912,12 @@ Group:		System/Libraries
 %description -n %{dridrivers32}-intel
 DRI and XvMC drivers for Intel graphics chipsets
 
+%package -n %{dridrivers32}-iris
+Summary:	Modern DRI Drivers for Intel graphics chipsets (32-bit)
+Group:		System/Libraries
+
+%description -n %{dridrivers32}-iris
+Modern DRI and XvMC drivers for Intel graphics chipsets
 
 %package -n %{dridrivers32}-radeon
 Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets (32-bit)
@@ -1370,16 +1385,22 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-intel
 %{_libdir}/dri/i9?5_dri.so
-%{_libdir}/dri/iris_dri.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %{_libdir}/libintel_noop_drm_shim.so
 
+%files -n %{dridrivers}-iris
+%{_libdir}/dri/iris_dri.so
+%{_libdir}/gallium-pipe/pipe_iris.so
+
 %if %{with compat32}
 %files -n %{dridrivers32}-intel
 %{_prefix}/lib/dri/i9?5_dri.so
-%{_prefix}/lib/dri/iris_dri.so
 %{_prefix}/lib/libvulkan_intel.so
+
+%files -n %{dridrivers32}-iris
+%{_prefix}/lib/dri/iris_dri.so
+%{_prefix}/lib/gallium-pipe/pipe_iris.so
 %endif
 %endif
 
@@ -1400,6 +1421,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_swrast.so
 %endif
+%{_libdir}/libvulkan_lvp.so
+%{_datadir}/vulkan/icd.d/lvp_icd.*.json
 
 %ifnarch %{riscv}
 %files -n %{dridrivers}-virtio
@@ -1659,6 +1682,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/dri/swrast_dri.so
 %{_prefix}/lib/dri/kms_swrast_dri.so
 %{_prefix}/lib/gallium-pipe/pipe_swrast.so
+%{_prefix}/lib/libvulkan_lvp.so
 
 %files -n %{lib32egl}
 %{_prefix}/lib/libEGL_mesa.so.%{eglmajor}*
