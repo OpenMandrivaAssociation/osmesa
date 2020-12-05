@@ -200,9 +200,7 @@ Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch3:		mesa-20.2.0-rc1-llvm-libunwind.patch
-%ifarch %{armx} riscv64
-Patch5:		mesa-19.2.0-rc3-meson-radeon-arm-riscv.patch
-%endif
+Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 

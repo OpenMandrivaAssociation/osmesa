@@ -1,0 +1,39 @@
+diff -up mesa-20.3.0/meson.build.4~ mesa-20.3.0/meson.build
+--- mesa-20.3.0/meson.build.4~	2020-12-05 18:08:39.527130070 +0100
++++ mesa-20.3.0/meson.build	2020-12-05 18:13:26.131270428 +0100
+@@ -161,8 +161,8 @@ if dri_drivers.contains('auto')
+     # TODO: PPC, Sparc
+     if ['x86', 'x86_64'].contains(host_machine.cpu_family())
+       dri_drivers = ['i915', 'i965', 'r100', 'r200', 'nouveau']
+-    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+-      dri_drivers = []
++    elif ['arm', 'aarch64', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
++      dri_drivers = ['r100', 'r200', 'nouveau']
+     elif ['mips', 'mips64'].contains(host_machine.cpu_family())
+       dri_drivers = ['r100', 'r200', 'nouveau']
+     else
+@@ -199,7 +199,12 @@ if gallium_drivers.contains('auto')
+     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+         'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau',
+-        'tegra', 'virgl', 'lima', 'panfrost', 'swrast'
++        'tegra', 'virgl', 'lima', 'panfrost', 'swrast',
++	'r300', 'r600', 'radeonsi'
++      ]
++    elif ['riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
++      gallium_drivers = [
++        'nouveau', 'swrast', 'r300', 'r600', 'radeonsi'
+       ]
+     elif ['mips', 'mips64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+@@ -251,8 +256,8 @@ if _vulkan_drivers.contains('auto')
+   if system_has_kms_drm
+     if host_machine.cpu_family().startswith('x86')
+       _vulkan_drivers = ['amd', 'intel', 'swrast']
+-    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+-      _vulkan_drivers = ['swrast']
++    elif ['arm', 'aarch64', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
++      _vulkan_drivers = ['amd', 'swrast']
+     elif ['mips', 'mips64'].contains(host_machine.cpu_family())
+       _vulkan_drivers = ['amd', 'swrast']
+     else
