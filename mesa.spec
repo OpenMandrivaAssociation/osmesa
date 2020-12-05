@@ -1470,6 +1470,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/imx-dcss_dri.so
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/mcde_dri.so
+%{_libdir}/dri/mediatek_dri.so
 %{_libdir}/dri/meson_dri.so
 %{_libdir}/dri/mi0283qt_dri.so
 %{_libdir}/dri/mxsfb-drm_dri.so
