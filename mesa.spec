@@ -1176,7 +1176,7 @@ if ! %meson32 \
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=enabled \
-	-Dgallium-xvmc=true \
+	-Dgallium-xvmc=enabled \
 	-Dgallium-nine=true \
 	-Dglx=auto \
 	-Dplatforms=auto \
@@ -1193,9 +1193,9 @@ if ! %meson32 \
 	-Dgles2=enabled \
 	-Dglx-direct=true \
 	-Dllvm=enabled \
-	-Dlmsensors=true \
+	-Dlmsensors=enabled \
 	-Dopengl=true \
-	-Dshader-cache=true \
+	-Dshader-cache=enabled \
 	-Dshared-glapi=enabled \
 	-Dshared-llvm=enabled \
 	-Dswr-arches=avx,avx2,knl,skx \
@@ -1224,7 +1224,7 @@ if ! %meson \
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=enabled \
-	-Dgallium-xvmc=true \
+	-Dgallium-xvmc=enabled \
 	-Dgallium-nine=true \
 	-Dglx=auto \
 	-Dplatforms=auto \
