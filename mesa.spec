@@ -151,7 +151,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	20.3.1
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -371,6 +371,7 @@ Requires:	%{dridrivers}-radeon = %{EVRD}
 %endif
 %ifarch %{ix86} %{x86_64}
 Requires:	%{dridrivers}-intel = %{EVRD}
+Requires:	%{dridrivers}-iris = %{EVRD}
 %endif
 Requires:	%{dridrivers}-nouveau = %{EVRD}
 %endif
