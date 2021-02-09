@@ -1,0 +1,18 @@
+diff -up mesa-20.3.4/src/drm-shim/drm_shim.c.omv~ mesa-20.3.4/src/drm-shim/drm_shim.c
+--- mesa-20.3.4/src/drm-shim/drm_shim.c.omv~	2021-02-09 14:39:58.055731064 +0100
++++ mesa-20.3.4/src/drm-shim/drm_shim.c	2021-02-09 15:27:35.348154741 +0100
+@@ -65,6 +65,14 @@ bool drm_shim_debug;
+  */
+ DIR *fake_dev_dri = (void *)&opendir_set;
+ 
++/* These are no longer exposed by glibc 2.33 headers...
++ * (but they implementations are still present in the libc binaries)
++ */
++int __xstat(int vers, const char *name, struct stat *buf);
++int __xstat64(int vers, const char *name, struct stat64 *buf);
++int __fxstat(int vers, int fd, struct stat *buf);
++int __fxstat64(int vers, int fd, struct stat64 *buf);
++
+ /* XXX: implement REAL_FUNCTION_POINTER(close); */
+ REAL_FUNCTION_POINTER(closedir);
+ REAL_FUNCTION_POINTER(dup);

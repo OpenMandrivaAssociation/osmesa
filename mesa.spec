@@ -151,7 +151,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	20.3.4
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -199,6 +199,7 @@ Patch0:		mesa-20.1.1-fix-opencl.patch
 Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
+Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
