@@ -1,0 +1,12 @@
+diff -up mesa-21.0.0-rc4/meson.build.omv~ mesa-21.0.0-rc4/meson.build
+--- mesa-21.0.0-rc4/meson.build.omv~	2021-02-09 20:19:44.899383369 +0100
++++ mesa-21.0.0-rc4/meson.build	2021-02-09 20:19:49.645439084 +0100
+@@ -303,7 +303,6 @@ endif
+ dep_clang = dependency(
+-  'clang',
++  'Clang',
+   method : 'cmake',
+-  static : true,
+   modules : [
+     'clangBasic', 'clangCodeGen', 'clangDriver', 'clangFrontend', 'clangFrontendTool',
+     'clangHandleCXX', 'clangHandleLLVM',

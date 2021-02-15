@@ -1,0 +1,23 @@
+diff -up mesa-21.0.0-rc4/src/gallium/targets/opencl/meson.build.omv~ mesa-21.0.0-rc4/src/gallium/targets/opencl/meson.build
+--- mesa-21.0.0-rc4/src/gallium/targets/opencl/meson.build.omv~	2021-02-14 22:32:26.415872357 +0100
++++ mesa-21.0.0-rc4/src/gallium/targets/opencl/meson.build	2021-02-14 22:55:42.776218305 +0100
+@@ -18,10 +18,19 @@
+ # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ # SOFTWARE.
+ 
++
+ opencl_link_args = []
+ opencl_link_deps = []
+ opencl_version = '1'
+ 
++opencl_link_arches = ['AArch64', 'ARM', 'AVR', 'BPF', 'Hexagon', 'Lanai', 'Mips', 'MSP430', 'PowerPC', 'RISCV', 'Sparc', 'SystemZ', 'WebAssembly', 'X86', 'XCore']
++foreach arch : opencl_link_arches
++  opencl_link_args += ['-lLLVM@0@CodeGen'.format(arch), '-lLLVM@0@Desc'.format(arch), '-lLLVM@0@Info'.format(arch)]
++  if arch != 'XCore'
++    opencl_link_args += '-lLLVM@0@AsmParser'.format(arch)
++  endif
++endforeach
++
+ if with_ld_version_script
+   opencl_link_args += [
+     '-Wl,--version-script', join_paths(meson.current_source_dir(), 'opencl.sym')

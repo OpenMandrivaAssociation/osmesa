@@ -22,7 +22,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc %{nil}
+%define relc 4
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,9 +149,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	20.3.4
+Version:	21.0.0
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -200,6 +200,8 @@ Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.3.4-glibc-2.33.patch
+Patch3:		mesa-21.0-no-static-clang.patch
+Patch4:		mesa-21.0.0-rc4-issue-4302.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
@@ -248,6 +250,7 @@ BuildRequires:	makedepend
 BuildRequires:	meson
 BuildRequires:	lm_sensors-devel
 BuildRequires:	llvm-devel >= 3.3
+BuildRequires:	pkgconfig(LLVMSPIRVLib)
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
 %ifarch %{ix86}
@@ -325,6 +328,7 @@ BuildRequires:	devel(libXdmcp)
 BuildRequires:	devel(libsensors)
 BuildRequires:	libsensors.so.5
 BuildRequires:	devel(libLLVMCore)
+BuildRequires:	devel(libLLVMSPIRVLib)
 BuildRequires:	devel(libclangCodeGen)
 BuildRequires:	devel(libclangFrontendTool)
 BuildRequires:	devel(libclangFrontend)
@@ -1164,12 +1168,20 @@ endian = 'little'
 EOF
 
 if ! %meson32 \
+	-Dmicrosoft-clc=disabled \
 	--cross-file=i686.cross \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
 	-Ddri-drivers=auto \
-	-Dgallium-drivers=auto \
+	-Dglx=auto \
+	-Dplatforms=auto \
+	-Dvulkan-drivers=auto \
+	-Dxlib-lease=auto \
+	-Dosmesa=true \
+%if %{with glvnd}
+	-Dglvnd=true \
+%endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 %else
@@ -1180,14 +1192,7 @@ if ! %meson32 \
 	-Dgallium-xa=enabled \
 	-Dgallium-xvmc=enabled \
 	-Dgallium-nine=true \
-	-Dglx=auto \
-	-Dplatforms=auto \
-	-Dvulkan-drivers=auto \
-	-Dxlib-lease=auto \
-	-Dosmesa=gallium \
-%if %{with glvnd}
-	-Dglvnd=true \
-%endif
+	-Dgallium-drivers=auto \
 	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
@@ -1213,6 +1218,7 @@ rm llvm-config
 %endif
 
 if ! %meson \
+	-Dmicrosoft-clc=disabled \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
@@ -1232,7 +1238,7 @@ if ! %meson \
 	-Dplatforms=auto \
 	-Dvulkan-drivers=auto \
 	-Dxlib-lease=auto \
-	-Dosmesa=gallium \
+	-Dosmesa=true \
 %if %{with glvnd}
 	-Dglvnd=true \
 %endif
@@ -1408,6 +1414,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/nouveau*_dri.so
 %{_libdir}/libXvMCnouveau.so
 %{_libdir}/libXvMCnouveau.so.1*
+%{_libdir}/libnouveau_noop_drm_shim.so
 %if %{with va}
 %{_libdir}/dri/nouveau_drv_video.so
 %endif
@@ -1713,7 +1720,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/gallium-pipe/pipe_radeonsi.so
 %{_prefix}/lib/vdpau/libvdpau_r?00.so*
 %{_prefix}/lib/vdpau/libvdpau_radeonsi.so*
-%{_prefix}/lib/libXvMCr600.so
 
 %files -n %{dridrivers32}-virtio
 %{_prefix}/lib/dri/virtio_gpu_dri.so
