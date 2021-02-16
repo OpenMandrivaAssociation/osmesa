@@ -157,7 +157,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}}.0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}}.1
+Release:	%{?relc:0.rc%{relc}}.2
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -203,6 +203,10 @@ Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch3:		mesa-21.0-no-static-clang.patch
 Patch4:		mesa-21.0.0-rc4-issue-4302.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
+# LLVM 12 support
+Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8543.patch
+# Fix i915 crash
+Patch7:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8970.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 
