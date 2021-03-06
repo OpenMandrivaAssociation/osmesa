@@ -1456,7 +1456,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/gallium-pipe/pipe_msm.so
 %endif
 
-%package -n freedreno-tools
+%files -n freedreno-tools
 %{_bindir}/afuc-asm
 %{_bindir}/afuc-disasm
 %{_bindir}/computerator
