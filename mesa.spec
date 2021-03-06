@@ -480,7 +480,7 @@ DRI and XvMC drivers for Adreno graphics chipsets
 
 %package -n freedreno-tools
 Summary:	Tools for debugging the Freedreno graphics driver
-Requires:	%{dridrivers-freedreno} = %{EVRD}
+Requires:	%{dridrivers}-freedreno = %{EVRD}
 
 %description -n freedreno-tools
 Tools for debugging the Freedreno graphics driver
