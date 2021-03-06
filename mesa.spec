@@ -291,6 +291,7 @@ BuildRequires:	pkgconfig(xvmc)
 #BuildRequires:	pkgconfig(valgrind)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
+BuildRequires:	polly-devel
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel
