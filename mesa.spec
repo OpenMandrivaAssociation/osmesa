@@ -478,6 +478,13 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %description -n %{dridrivers}-freedreno
 DRI and XvMC drivers for Adreno graphics chipsets
 
+%package -n freedreno-tools
+Summary:	Tools for debugging the Freedreno graphics driver
+Requires:	%{dridrivers-freedreno} = %{EVRD}
+
+%description -n freedreno-tools
+Tools for debugging the Freedreno graphics driver
+
 %package -n %{dridrivers}-vc4
 Summary:	DRI Drivers for Broadcom VC4 graphics chipsets
 Group:		System/Libraries
@@ -1442,13 +1449,19 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %ifarch %{armx}
 %files -n %{dridrivers}-freedreno
-%{_bindir}/computerator
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
 %{_libdir}/libfreedreno_noop_drm_shim.so
 %if %{with opencl}
 %{_libdir}/gallium-pipe/pipe_msm.so
 %endif
+
+%package -n freedreno-tools
+%{_bindir}/afuc-asm
+%{_bindir}/afuc-disasm
+%{_bindir}/computerator
+%{_bindir}/crashdec
+%{_datadir}/freedreno
 
 %files -n %{dridrivers}-vc4
 %{_libdir}/dri/vc4_dri.so
