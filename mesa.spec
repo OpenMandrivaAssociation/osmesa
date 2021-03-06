@@ -292,6 +292,7 @@ BuildRequires:	pkgconfig(xvmc)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
 BuildRequires:	llvm-polly-devel
+BuildRequires:	pkgconfig(libxml-2.0)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel
