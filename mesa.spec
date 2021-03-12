@@ -205,8 +205,6 @@ Patch4:		mesa-21.0.0-rc4-issue-4302.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # LLVM 12 support
 Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8543.patch
-# Fix i915 crash
-Patch7:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8970.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 
