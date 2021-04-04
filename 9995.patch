@@ -1,0 +1,36 @@
+From 8bf8b2b74238b546836d48e9fce9dc7e7b98fab4 Mon Sep 17 00:00:00 2001
+From: Boyuan Zhang <boyuan.zhang@amd.com>
+Date: Mon, 18 Jan 2021 19:21:35 -0500
+Subject: [PATCH] frontend/va/image: add pipe flush for vlVaPutImage
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+To fix synchronization issue between multimedia queue and gfx queue.
+Adding flush call will let multimedia queue to wait for the content of gfx
+command buffer to be executed, for the case where there is dependency
+between these two queues.
+
+Fixes: 2f50dea2188c ("radeonsi: always use a staging texture for linear 1D textures in VRAM")
+Signed-off-by: Boyuan Zhang <boyuan.zhang@amd.com>
+Reviewed-by: Marek OlÅ¡Ã¡k <marek.olsak@amd.com>
+(cherry picked from commit 27209e63ea816762708deef4b4fbec0dfbf4a331)
+---
+ src/gallium/frontends/va/image.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/gallium/frontends/va/image.c b/src/gallium/frontends/va/image.c
+index 7a0d391e470..e54cb699b75 100644
+--- a/src/gallium/frontends/va/image.c
++++ b/src/gallium/frontends/va/image.c
+@@ -696,6 +696,7 @@ vlVaPutImage(VADriverContextP ctx, VASurfaceID surface, VAImageID image,
+          }
+       }
+    }
++   drv->pipe->flush(drv->pipe, NULL, 0);
+    mtx_unlock(&drv->mutex);
+ 
+    return VA_STATUS_SUCCESS;
+-- 
+GitLab
+
