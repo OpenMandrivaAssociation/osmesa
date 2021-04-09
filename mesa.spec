@@ -151,7 +151,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	21.0.2
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -222,7 +222,8 @@ Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8543.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-
+#(tpg) add missing CAP from master branch
+Patch100:	mesa-21.0.2-gallium-panfrost-add-missing-capabilities.patch
 # Mandriva & Mageia patches
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
