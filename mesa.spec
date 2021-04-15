@@ -22,7 +22,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc %{nil}
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,9 +149,9 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	21.0.2
+Version:	21.1.0
 %if "%{relc}%{git}" == ""
-Release:	2
+Release:	1
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -203,8 +203,6 @@ Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch3:		mesa-21.0-no-static-clang.patch
 Patch4:		mesa-21.0.0-rc4-issue-4302.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
-# LLVM 12 support
-Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8543.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 
@@ -222,8 +220,7 @@ Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8543.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-#(tpg) add missing CAP from master branch
-Patch100:	mesa-21.0.2-gallium-panfrost-add-missing-capabilities.patch
+
 # Mandriva & Mageia patches
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
@@ -1663,7 +1660,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %ifarch %{ix86} %{x86_64}
 %files -n %{devvulkan}
-%{_includedir}/vulkan/vulkan_intel.h
 %endif
 
 %files tools
@@ -1673,6 +1669,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/aubinator_viewer
 %{_bindir}/i965_asm
 %{_bindir}/i965_disasm
+%{_bindir}/intel_device_info
 %{_bindir}/intel_dump_gpu
 %{_bindir}/intel_error2aub
 %{_bindir}/intel_sanitize_gpu
