@@ -1463,6 +1463,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-vc4
 %{_libdir}/dri/vc4_dri.so
+%{_libdir}/libvc4_noop_drm_shim.so
 
 %files -n %{dridrivers}-v3d
 %{_libdir}/dri/v3d_dri.so
