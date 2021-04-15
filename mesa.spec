@@ -266,6 +266,7 @@ BuildRequires:	pkgconfig(libglvnd)
 # needed only for intel binaries
 BuildRequires:	pkgconfig(epoxy)
 BuildRequires:	pkgconfig(gtk+-3.0)
+BuildRequires:	pkgconfig(pciaccess)
 %endif
 BuildRequires:	pkgconfig(libzstd)
 BuildRequires:	pkgconfig(vulkan)
@@ -328,6 +329,7 @@ BuildRequires:	devel(libxcb)
 BuildRequires:	devel(libXau)
 BuildRequires:	devel(libXdmcp)
 BuildRequires:	devel(libsensors)
+BuildRequires:	devel(libpciaccess)
 BuildRequires:	libsensors.so.5
 BuildRequires:	devel(libLLVMCore)
 BuildRequires:	devel(libLLVMSPIRVLib)
