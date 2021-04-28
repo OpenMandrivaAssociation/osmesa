@@ -22,7 +22,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc 2
+%define relc 3
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -1258,9 +1258,9 @@ if ! %meson \
 	-Dgles2=enabled \
 	-Dglx-direct=true \
 	-Dllvm=enabled \
-	-Dlmsensors=true \
+	-Dlmsensors=enabled \
 	-Dopengl=true \
-	-Dshader-cache=true \
+	-Dshader-cache=enabled \
 	-Dshared-glapi=enabled \
 	-Dshared-llvm=enabled \
 	-Dswr-arches=avx,avx2,knl,skx \
