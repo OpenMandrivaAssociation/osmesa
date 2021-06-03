@@ -242,7 +242,6 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # Currently empty -- current D3D9 bits have been merged into 10.4.0-rc1
 # Leaving the infrastructure in place for future updates.
 
-Patch500:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/10943.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	gccmakedep
