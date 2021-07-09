@@ -151,7 +151,7 @@ Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
 Version:	21.1.4
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -304,6 +304,7 @@ BuildRequires:	pkgconfig(libva) >= 0.31.0
 BuildRequires:	pkgconfig(wayland-client)
 BuildRequires:	pkgconfig(wayland-server)
 BuildRequires:	pkgconfig(wayland-protocols) >= 1.8
+BuildRequires:	hardlink
 
 # package mesa
 Requires:	libGL.so.1%{_arch_tag_suffix}
@@ -1359,6 +1360,12 @@ EOF
 # (tpg) remove wayland files as they are now part of wayland package
 rm -rf %{buildroot}%{_libdir}/libwayland-egl.so*
 rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
+
+# (tpg) hardlink same files
+%{_sbindir}/hardlink -vc %{buildroot}%{_libdir}/dri/*.so
+%if %{with compat32}
+%{_sbindir}/hardlink -vc %{buildroot}%{prefix}/lib/dri/*.so
+%endif
 
 %files
 %doc docs/README.*
