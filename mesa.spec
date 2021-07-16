@@ -22,7 +22,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc %{nil}
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,7 +149,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	21.1.4
+Version:	21.2.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -1399,6 +1399,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{dridrivers}-intel
+%{_libdir}/dri/i830_dri.so
 %{_libdir}/dri/i9?5_dri.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
@@ -1410,6 +1411,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %if %{with compat32}
 %files -n %{dridrivers32}-intel
+%{_prefix}/lib/dri/i830_dri.so
 %{_prefix}/lib/dri/i9?5_dri.so
 %{_prefix}/lib/libvulkan_intel.so
 
@@ -1670,7 +1672,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/aubinator_viewer
 %{_bindir}/i965_asm
 %{_bindir}/i965_disasm
-%{_bindir}/intel_device_info
+%{_bindir}/intel_dev_info
 %{_bindir}/intel_dump_gpu
 %{_bindir}/intel_error2aub
 %{_bindir}/intel_sanitize_gpu

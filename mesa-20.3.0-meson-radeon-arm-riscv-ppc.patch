@@ -1,39 +1,27 @@
-diff -up mesa-21.1.0-rc1/meson.build.6~ mesa-21.1.0-rc1/meson.build
---- mesa-21.1.0-rc1/meson.build.6~	2021-04-15 04:31:54.477172502 +0200
-+++ mesa-21.1.0-rc1/meson.build	2021-04-15 04:33:48.213016165 +0200
-@@ -162,8 +162,8 @@ if dri_drivers.contains('auto')
+diff -up mesa-21.2.0-rc1/meson.build.6~ mesa-21.2.0-rc1/meson.build
+--- mesa-21.2.0-rc1/meson.build.6~	2021-07-15 13:36:11.730577757 +0200
++++ mesa-21.2.0-rc1/meson.build	2021-07-15 13:38:48.267939395 +0200
+@@ -172,9 +172,7 @@ if dri_drivers.contains('auto')
      # TODO: PPC, Sparc
      if ['x86', 'x86_64'].contains(host_machine.cpu_family())
        dri_drivers = ['i915', 'i965', 'r100', 'r200', 'nouveau']
 -    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
 -      dri_drivers = []
-+    elif ['arm', 'aarch64', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
-+      dri_drivers = ['r100', 'r200', 'nouveau']
-     elif ['mips', 'mips64'].contains(host_machine.cpu_family())
+-    elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
++    elif ['arm', 'aarch64', 'mips', 'mips64', 'riscv32', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
        dri_drivers = ['r100', 'r200', 'nouveau']
      else
-@@ -199,7 +199,12 @@ if gallium_drivers.contains('auto')
+       error('Unknown architecture @0@. Please pass -Ddri-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+@@ -209,9 +207,10 @@ if gallium_drivers.contains('auto')
      elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
        gallium_drivers = [
          'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau',
 -        'tegra', 'virgl', 'lima', 'panfrost', 'swrast'
 +        'tegra', 'virgl', 'lima', 'panfrost', 'swrast',
-+        'r300', 'r600', 'radeonsi'
-+      ]
-+    elif ['riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
-+      gallium_drivers = [
-+        'nouveau', 'swrast', 'r300', 'r600', 'radeonsi'
++	'r300', 'r600', 'radeonsi'
        ]
-     elif ['mips', 'mips64'].contains(host_machine.cpu_family())
+-    elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
++    elif ['mips', 'mips64', 'riscv32', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
        gallium_drivers = [
-@@ -252,8 +257,8 @@ if _vulkan_drivers.contains('auto')
-   if system_has_kms_drm
-     if host_machine.cpu_family().startswith('x86')
-       _vulkan_drivers = ['amd', 'intel', 'swrast']
--    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
--      _vulkan_drivers = ['swrast']
-+    elif ['arm', 'aarch64', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
-+      _vulkan_drivers = ['amd', 'swrast']
-     elif ['mips', 'mips64'].contains(host_machine.cpu_family())
-       _vulkan_drivers = ['amd', 'swrast']
-     else
+         'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'swrast'
+       ]
