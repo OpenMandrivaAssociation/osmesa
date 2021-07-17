@@ -287,8 +287,10 @@ BuildRequires:	pkgconfig(xvmc)
 #BuildRequires:	pkgconfig(valgrind)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
-BuildRequires:	llvm-polly-devel
+BuildRequires:	cmake(Polly)
 BuildRequires:	pkgconfig(libxml-2.0)
+BuildRequires:	pkgconfig(libarchive)
+BuildRequires:	pkgconfig(lua)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel
