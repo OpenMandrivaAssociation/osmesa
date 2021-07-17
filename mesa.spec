@@ -291,6 +291,7 @@ BuildRequires:	cmake(Polly)
 BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	pkgconfig(libarchive)
 BuildRequires:	pkgconfig(lua)
+BuildRequires:	pkgconfig(libconfig)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	clang-devel
@@ -406,7 +407,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 Conflicts:	libva-vdpau-driver < 17.3.0
 
 %description -n %{dridrivers}-radeon
-DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets.
 
 %package -n %{dridrivers}-vmwgfx
 Summary:	DRI Drivers for VMWare guest OS
@@ -449,7 +450,7 @@ Conflicts:	libva-vdpau-driver < 17.3.0
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-nouveau
-DRI and XvMC drivers for Nvidia graphics chipsets
+DRI and XvMC drivers for Nvidia graphics chipsets.
 
 %package -n %{dridrivers}-swrast
 Summary:	DRI Drivers for software rendering
@@ -459,7 +460,7 @@ Obsoletes:	%{libswravx} < %{EVRD}
 Obsoletes:	%{libswravx2} < %{EVRD}
 
 %description -n %{dridrivers}-swrast
-Generic DRI driver using CPU rendering
+Generic DRI driver using CPU rendering.
 
 %package -n %{dridrivers}-virtio
 Summary:	DRI Drivers for virtual environments
@@ -476,14 +477,14 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-freedreno
-DRI and XvMC drivers for Adreno graphics chipsets
+DRI and XvMC drivers for Adreno graphics chipsets.
 
 %package -n freedreno-tools
 Summary:	Tools for debugging the Freedreno graphics driver
 Requires:	%{dridrivers}-freedreno = %{EVRD}
 
 %description -n freedreno-tools
-Tools for debugging the Freedreno graphics driver
+Tools for debugging the Freedreno graphics driver.
 
 %package -n %{dridrivers}-vc4
 Summary:	DRI Drivers for Broadcom VC4 graphics chipsets
@@ -491,14 +492,14 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-vc4
-DRI and XvMC drivers for Broadcom VC4 graphics chips
+DRI and XvMC drivers for Broadcom VC4 graphics chips.
 
 %package -n %{dridrivers}-v3d
 Summary:	DRI Drivers for Broadcom VC5 graphics chipsets
 Group:		System/Libraries
 
 %description -n %{dridrivers}-v3d
-DRI and XvMC drivers for Broadcom VC5 graphics chips
+DRI and XvMC drivers for Broadcom VC5 graphics chips.
 
 %package -n %{dridrivers}-etnaviv
 Summary:	DRI Drivers for Vivante graphics chipsets
@@ -506,7 +507,7 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-etnaviv
-DRI and XvMC drivers for Vivante graphics chips
+DRI and XvMC drivers for Vivante graphics chips.
 
 %package -n %{dridrivers}-tegra
 Summary:	DRI Drivers for Tegra graphics chipsets
@@ -514,21 +515,21 @@ Group:		System/Libraries
 Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 
 %description -n %{dridrivers}-tegra
-DRI and XvMC drivers for Tegra graphics chips
+DRI and XvMC drivers for Tegra graphics chips.
 
 %package -n %{dridrivers}-lima
 Summary:	DRI Drivers for Mali Utgard devices
 Group:		System/Libraries
 
 %description -n %{dridrivers}-lima
-DRI drivers for Mali Utgard devices
+DRI drivers for Mali Utgard devices.
 
 %package -n %{dridrivers}-panfrost
 Summary:	DRI Drivers for Mali Midgard and Bifrost devices
 Group:		System/Libraries
 
 %description -n %{dridrivers}-panfrost
-DRI drivers for Mali Midgard and Bifrost devices
+DRI drivers for Mali Midgard and Bifrost devices.
 
 %package -n %{dridrivers}-kmsro
 Summary:	DRI Drivers for KMS-only devices
@@ -538,7 +539,7 @@ Conflicts:	%{mklibname dri-drivers} < 9.1.0-0.20130130.2
 %rename %{dridrivers}-imx
 
 %description -n %{dridrivers}-kmsro
-DRI and XvMC drivers for KMS renderonly layer devices
+DRI and XvMC drivers for KMS renderonly layer devices.
 %endif
 
 %package -n %{libosmesa}
@@ -609,7 +610,7 @@ Provides:	vulkan-intel-devel = %{EVRD}
 
 %description -n %{devvulkan}
 This package contains the headers needed to compile applications
-that use Intel Vulkan driver extras
+that use Intel Vulkan driver extras.
 
 %if %{with egl}
 %package -n %{libegl}
@@ -682,14 +683,14 @@ Summary:	AVX Software rendering library for Mesa
 Group:		System/Libraries
 
 %description -n %{libswravx}
-AVX Software rendering library for Mesa
+AVX Software rendering library for Mesa.
 
 %package -n %{libswravx2}
 Summary:	AVX2 Software rendering library for Mesa
 Group:		System/Libraries
 
 %description -n %{libswravx2}
-AVX2 Software rendering library for Mesa
+AVX2 Software rendering library for Mesa.
 
 %package -n %{libglesv1}
 Summary:	Files for Mesa (glesv1 libs)
@@ -925,35 +926,35 @@ Summary:	DRI Drivers for Intel graphics chipsets (32-bit)
 Group:		System/Libraries
 
 %description -n %{dridrivers32}-intel
-DRI and XvMC drivers for Intel graphics chipsets
+DRI and XvMC drivers for Intel graphics chipsets.
 
 %package -n %{dridrivers32}-iris
 Summary:	Modern DRI Drivers for Intel graphics chipsets (32-bit)
 Group:		System/Libraries
 
 %description -n %{dridrivers32}-iris
-Modern DRI and XvMC drivers for Intel graphics chipsets
+Modern DRI and XvMC drivers for Intel graphics chipsets.
 
 %package -n %{dridrivers32}-radeon
 Summary:	DRI Drivers for AMD/ATI Radeon graphics chipsets (32-bit)
 Group:		System/Libraries
 
 %description -n %{dridrivers32}-radeon
-DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets
+DRI and XvMC drivers for AMD/ATI Radeon graphics chipsets.
 
 %package -n %{dridrivers32}-nouveau
 Summary:	DRI Drivers for NVIDIA graphics chipsets using the Nouveau driver (32-bit)
 Group:		System/Libraries
 
 %description -n %{dridrivers32}-nouveau
-DRI and XvMC drivers for Nvidia graphics chipsets
+DRI and XvMC drivers for Nvidia graphics chipsets.
 
 %package -n %{dridrivers32}-swrast
 Summary:	DRI Drivers for software rendering (32-bit)
 Group:		System/Libraries
 
 %description -n %{dridrivers32}-swrast
-Generic DRI driver using CPU rendering
+Generic DRI driver using CPU rendering.
 
 %package -n %{dridrivers32}-virtio
 Summary:	DRI Drivers for virtual environments
@@ -992,7 +993,7 @@ Requires:	%{lib32cl} = %{version}-%{release}
 Requires:	%{devcl} = %{version}-%{release}
 
 %description -n %{dev32cl}
-Development files for the OpenCL library
+Development files for the OpenCL library.
 %endif
 
 %if %{with opencl}
@@ -1461,6 +1462,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n freedreno-tools
 %{_bindir}/afuc-asm
 %{_bindir}/afuc-disasm
+%{_bindir}/cffdump
 %{_bindir}/computerator
 %{_bindir}/crashdec
 %{_datadir}/freedreno
@@ -1498,6 +1500,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/imx-drm_dri.so
 %{_libdir}/dri/imx-dcss_dri.so
 %{_libdir}/dri/ingenic-drm_dri.so
+%{_libdir}/dri/mali-dp_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mediatek_dri.so
 %{_libdir}/dri/meson_dri.so
