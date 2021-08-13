@@ -1465,6 +1465,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/cffdump
 %{_bindir}/computerator
 %{_bindir}/crashdec
+%{_bindir}/fdperf
 %{_datadir}/freedreno
 
 %files -n %{dridrivers}-vc4
