@@ -149,7 +149,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	21.2.0
+Version:	21.2.1
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -220,6 +220,10 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
+# LLVM 13 support
+Patch100:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/c1b4c64a28d9fc093229eab91a3a7fc4cb4fe29a.patch
+# More LLVM 13 support
+Patch101:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/3a2d317b996f57647da23de7876142be4b9b71f3.patch
 
 # Mandriva & Mageia patches
 
