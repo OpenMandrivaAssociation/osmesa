@@ -22,7 +22,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc %{nil}
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,7 +149,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	21.2.3
+Version:	21.3.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -200,7 +200,6 @@ Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-20.3.4-glibc-2.33.patch
-Patch3:		mesa-21.0-no-static-clang.patch
 Patch4:		mesa-21.0.0-rc4-issue-4302.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
@@ -220,10 +219,6 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-# LLVM 13 support
-Patch100:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/c1b4c64a28d9fc093229eab91a3a7fc4cb4fe29a.patch
-# More LLVM 13 support
-Patch101:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/3a2d317b996f57647da23de7876142be4b9b71f3.patch
 
 # Mandriva & Mageia patches
 
@@ -1185,6 +1180,7 @@ EOF
 
 if ! %meson32 \
 	-Dmicrosoft-clc=disabled \
+	-Dshared-llvm=enabled \
 	--cross-file=i686.cross \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
@@ -1235,6 +1231,7 @@ rm llvm-config
 
 if ! %meson \
 	-Dmicrosoft-clc=disabled \
+	-Dshared-llvm=enabled \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
@@ -1411,6 +1408,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %{_libdir}/libintel_noop_drm_shim.so
+# Crocus is for gen4-gen7
+%{_libdir}/dri/crocus_dri.so
+%{_libdir}/gallium-pipe/pipe_crocus.so
 
 %files -n %{dridrivers}-iris
 %{_libdir}/dri/iris_dri.so
@@ -1421,6 +1421,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/dri/i830_dri.so
 %{_prefix}/lib/dri/i9?5_dri.so
 %{_prefix}/lib/libvulkan_intel.so
+%{_prefix}/lib/dri/crocus_dri.so
+%{_prefix}/lib/gallium-pipe/pipe_crocus.so
 
 %files -n %{dridrivers32}-iris
 %{_prefix}/lib/dri/iris_dri.so

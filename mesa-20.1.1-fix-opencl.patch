@@ -1,6 +1,6 @@
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/clApiRename.h.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/clApiRename.h
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/clApiRename.h.1~	2021-02-09 16:20:07.551115049 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/clApiRename.h	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h.1~	2021-10-14 23:06:29.016569194 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h	2021-10-14 23:06:29.016569194 +0200
 @@ -0,0 +1,148 @@
 +#pragma once
 +
@@ -150,9 +150,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/clApiRename.h.1~ mesa-
 +#define gclSetDefaultDeviceCommandQueue gclSetDefaultDeviceCommandQueueMESA
 +#define gclSetProgramReleaseCallback gclSetProgramReleaseCallbackMESA
 +#define gclSetProgramSpecializationConstant gclSetProgramSpecializationConstantMESA
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/context.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/context.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/context.cpp.1~	2021-02-05 17:55:18.679613600 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/context.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp	2021-10-14 23:06:29.016569194 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -161,9 +161,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/context.cpp.1~ mesa-21
  #include "api/util.hpp"
  #include "core/context.hpp"
  #include "core/platform.hpp"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/device.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/device.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/device.cpp.1~	2021-02-05 17:55:18.679613600 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/device.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp	2021-10-14 23:06:29.016569194 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -172,9 +172,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/device.cpp.1~ mesa-21.
  #include "api/util.hpp"
  #include "core/platform.hpp"
  #include "core/device.hpp"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.cpp.1~	2021-02-05 17:55:18.679613600 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp	2021-10-14 23:06:29.017569226 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -183,9 +183,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.cpp.1~ mesa-2
  #include "api/dispatch.hpp"
  
  namespace clover {
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.hpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.hpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.hpp.1~	2021-02-05 17:55:18.679613600 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.hpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp	2021-10-14 23:06:29.017569226 +0200
 @@ -23,6 +23,7 @@
  #ifndef API_DISPATCH_HPP
  #define API_DISPATCH_HPP
@@ -194,9 +194,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/dispatch.hpp.1~ mesa-2
  #include "CL/cl.h"
  #include "CL/cl_ext.h"
  #include "CL/cl_egl.h"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/event.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/event.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/event.cpp.1~	2021-02-05 17:55:18.679613600 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/event.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp	2021-10-14 23:06:29.017569226 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -205,9 +205,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/event.cpp.1~ mesa-21.0
  #include "api/util.hpp"
  #include "core/event.hpp"
  
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/interop.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/interop.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/interop.cpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/interop.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp	2021-10-14 23:06:29.017569226 +0200
 @@ -21,6 +21,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -216,9 +216,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/interop.cpp.1~ mesa-21
  #include "core/event.hpp"
  #include "api/util.hpp"
  
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/kernel.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/kernel.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/kernel.cpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/kernel.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp	2021-10-14 23:06:29.017569226 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -227,9 +227,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/kernel.cpp.1~ mesa-21.
  #include "api/util.hpp"
  #include "core/kernel.hpp"
  #include "core/event.hpp"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/memory.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/memory.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/memory.cpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/memory.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp	2021-10-14 23:06:29.017569226 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -238,9 +238,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/memory.cpp.1~ mesa-21.
  #include "util/format/u_format.h"
  #include "util/u_math.h"
  #include "api/util.hpp"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/platform.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/platform.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/platform.cpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/platform.cpp	2021-02-09 16:20:07.551115049 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp	2021-10-14 23:06:29.018569258 +0200
 @@ -22,6 +22,7 @@
  
  #include <unordered_map>
@@ -249,9 +249,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/platform.cpp.1~ mesa-2
  #include "api/dispatch.hpp"
  #include "api/util.hpp"
  #include "core/platform.hpp"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/program.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/program.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/program.cpp.1~	2021-02-09 16:20:07.552115063 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/program.cpp	2021-02-09 16:20:45.023643046 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp.1~	2021-10-14 23:06:29.018569258 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp	2021-10-14 23:07:01.922636060 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -259,10 +259,10 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/program.cpp.1~ mesa-21
 +#include "clApiRename.h"
  #include "api/util.hpp"
  #include "core/program.hpp"
- #include "spirv/invocation.hpp"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/queue.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/queue.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/queue.cpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/queue.cpp	2021-02-09 16:20:07.552115063 +0100
+ #include "core/platform.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp	2021-10-14 23:06:29.018569258 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -271,9 +271,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/queue.cpp.1~ mesa-21.0
  #include "api/util.hpp"
  #include "core/queue.hpp"
  
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/sampler.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/sampler.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/sampler.cpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/sampler.cpp	2021-02-09 16:20:07.552115063 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp	2021-10-14 23:06:29.018569258 +0200
 @@ -20,6 +20,7 @@
  // OTHER DEALINGS IN THE SOFTWARE.
  //
@@ -282,9 +282,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/sampler.cpp.1~ mesa-21
  #include "api/util.hpp"
  #include "core/sampler.hpp"
  
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/transfer.cpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/transfer.cpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/transfer.cpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/transfer.cpp	2021-02-09 16:20:07.552115063 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp	2021-10-14 23:06:29.019569290 +0200
 @@ -22,6 +22,7 @@
  
  #include <cstring>
@@ -293,9 +293,9 @@ diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/transfer.cpp.1~ mesa-2
  #include "util/bitscan.h"
  
  #include "api/dispatch.hpp"
-diff -up mesa-21.0.0-rc4/src/gallium/frontends/clover/api/util.hpp.1~ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/util.hpp
---- mesa-21.0.0-rc4/src/gallium/frontends/clover/api/util.hpp.1~	2021-02-05 17:55:18.680613500 +0100
-+++ mesa-21.0.0-rc4/src/gallium/frontends/clover/api/util.hpp	2021-02-09 16:20:07.552115063 +0100
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp	2021-10-14 23:06:29.019569290 +0200
 @@ -26,6 +26,7 @@
  #include <cassert>
  #include <iostream>
