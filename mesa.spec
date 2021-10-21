@@ -22,7 +22,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc 1
+%define relc 2
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -1494,10 +1494,11 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/lima_disasm
 %{_libdir}/dri/lima_dri.so
 %{_libdir}/gallium-pipe/pipe_kmsro.so
-
+%{_libdir}/liblima_noop_drm_shim.so
 
 %files -n %{dridrivers}-panfrost
 %{_libdir}/dri/panfrost_dri.so
+%{_libdir}/liblima_noop_drm_shim.so
 
 %files -n %{dridrivers}-kmsro
 %{_libdir}/dri/armada-drm_dri.so
@@ -1507,6 +1508,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/imx-drm_dri.so
 %{_libdir}/dri/imx-dcss_dri.so
 %{_libdir}/dri/ingenic-drm_dri.so
+%{_libdir}/dri/dri/kirin_dri.so
 %{_libdir}/dri/mali-dp_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mediatek_dri.so
