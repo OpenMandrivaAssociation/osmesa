@@ -1508,7 +1508,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/imx-drm_dri.so
 %{_libdir}/dri/imx-dcss_dri.so
 %{_libdir}/dri/ingenic-drm_dri.so
-%{_libdir}/dri/dri/kirin_dri.so
+%{_libdir}/dri/kirin_dri.so
 %{_libdir}/dri/mali-dp_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mediatek_dri.so
