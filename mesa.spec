@@ -1498,7 +1498,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-panfrost
 %{_libdir}/dri/panfrost_dri.so
-%{_libdir}/liblima_noop_drm_shim.so
+%{_libdir}/libpanfrost_noop_drm_shim.so
 
 %files -n %{dridrivers}-kmsro
 %{_libdir}/dri/armada-drm_dri.so
