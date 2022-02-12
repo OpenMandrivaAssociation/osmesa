@@ -4,6 +4,11 @@
 # (aco) Needed for the dri drivers
 %define _disable_ld_no_undefined 1
 
+# LTOing Mesa takes insane amounts of RAM :/
+# So you may want to disable it for anything
+# but final builds...
+#define _disable_lto 1
+
 # Mesa is used by wine and steam
 %ifarch %{x86_64}
 %bcond_without compat32
@@ -22,7 +27,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc %{nil}
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,7 +154,7 @@
 
 Summary:	OpenGL %{opengl_ver} compatible 3D graphics library
 Name:		mesa
-Version:	21.3.5
+Version:	22.0.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -1185,7 +1190,6 @@ if ! %meson32 \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
-	-Ddri-drivers=auto \
 	-Dglx=auto \
 	-Dplatforms=auto \
 	-Dvulkan-drivers=auto \
@@ -1217,7 +1221,6 @@ if ! %meson32 \
 	-Dshader-cache=enabled \
 	-Dshared-glapi=enabled \
 	-Dshared-llvm=enabled \
-	-Dswr-arches=avx,avx2,knl,skx \
 	-Dselinux=false \
 	-Dbuild-tests=false \
 	-Dtools=""; then
@@ -1229,13 +1232,23 @@ fi
 rm llvm-config
 %endif
 
+# FIXME keep in sync with with_tools=all definition from meson.build
+TOOLS="drm-shim,dlclose-skip,glsl,nir,nouveau,xvmc,asahi"
+%ifarch %{armx}
+TOOLS="$TOOLS,etnaviv,freedreno,lima"
+%endif
+%ifarch %{ix86} %{x86_64}
+%if %{with intel}
+TOOLS="$TOOLS,intel,intel-ui"
+%endif
+%endif
+
 if ! %meson \
 	-Dmicrosoft-clc=disabled \
 	-Dshared-llvm=enabled \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
-	-Ddri-drivers=auto \
 	-Dgallium-drivers=auto \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
@@ -1267,10 +1280,9 @@ if ! %meson \
 	-Dshader-cache=enabled \
 	-Dshared-glapi=enabled \
 	-Dshared-llvm=enabled \
-	-Dswr-arches=avx,avx2,knl,skx \
 	-Dselinux=false \
 	-Dbuild-tests=false \
-	-Dtools=all; then
+	-Dtools="$TOOLS"; then
 
 	cat build/meson-logs/meson-log.txt >/dev/stderr
 fi
@@ -1372,12 +1384,12 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}-radeon
 %{_libdir}/dri/r?00_dri.so
-%{_libdir}/dri/radeon_dri.so
 #{_libdir}/libXvMCgallium.so
 %{_libdir}/libXvMCgallium.so.1*
 %{_libdir}/libXvMCr?00.so
 %{_libdir}/libXvMCr?00.so.1*
 %{_libdir}/dri/radeonsi_dri.so
+%{_libdir}/libradeon_noop_drm_shim.so
 %{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %if %{with opencl}
@@ -1403,11 +1415,11 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{dridrivers}-intel
-%{_libdir}/dri/i830_dri.so
 %{_libdir}/dri/i9?5_dri.so
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %{_libdir}/libintel_noop_drm_shim.so
+%{_libdir}/gallium-pipe/pipe_i915.so
 # Crocus is for gen4-gen7
 %{_libdir}/dri/crocus_dri.so
 %{_libdir}/gallium-pipe/pipe_crocus.so
@@ -1418,11 +1430,11 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %if %{with compat32}
 %files -n %{dridrivers32}-intel
-%{_prefix}/lib/dri/i830_dri.so
 %{_prefix}/lib/dri/i9?5_dri.so
 %{_prefix}/lib/libvulkan_intel.so
 %{_prefix}/lib/dri/crocus_dri.so
 %{_prefix}/lib/gallium-pipe/pipe_crocus.so
+%{_prefix}/lib/gallium-pipe/pipe_i915.so
 
 %files -n %{dridrivers32}-iris
 %{_prefix}/lib/dri/iris_dri.so
@@ -1707,6 +1719,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/xvmc_rendering
 %{_bindir}/xvmc_subpicture
 %{_bindir}/xvmc_surface
+%{_libdir}/libdlclose-skip.so
 
 %if %{with compat32}
 %files -n %{lib32d3d}
@@ -1739,7 +1752,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers32}-radeon
 %{_prefix}/lib/dri/r?00_dri.so
-%{_prefix}/lib/dri/radeon_dri.so
 #{_prefix}/lib/libXvMCgallium.so
 %{_prefix}/lib/libXvMCgallium.so.1
 %{_prefix}/lib/libXvMCr?00.so

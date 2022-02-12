@@ -1,17 +1,6 @@
 diff -up mesa-21.2.0-rc1/meson.build.6~ mesa-21.2.0-rc1/meson.build
 --- mesa-21.2.0-rc1/meson.build.6~	2021-07-16 20:33:17.388786655 +0200
 +++ mesa-21.2.0-rc1/meson.build	2021-07-16 20:33:48.622279078 +0200
-@@ -172,9 +172,7 @@ if dri_drivers.contains('auto')
-     # TODO: PPC, Sparc
-     if ['x86', 'x86_64'].contains(host_machine.cpu_family())
-       dri_drivers = ['i915', 'i965', 'r100', 'r200', 'nouveau']
--    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
--      dri_drivers = []
--    elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
-+    elif ['arm', 'aarch64', 'mips', 'mips64', 'riscv32', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
-       dri_drivers = ['r100', 'r200', 'nouveau']
-     else
-       error('Unknown architecture @0@. Please pass -Ddri-drivers to set driver options. Patches gladly accepted to fix this.'.format(
 @@ -209,9 +207,10 @@ if gallium_drivers.contains('auto')
      elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
        gallium_drivers = [
