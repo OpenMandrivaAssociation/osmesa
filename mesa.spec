@@ -366,6 +366,7 @@ BuildRequires:	devel(libOpenGL)
 BuildRequires:	devel(libGLdispatch)
 BuildRequires:	devel(libXrandr)
 BuildRequires:	devel(libXrender)
+BuildRequires:	devel(libatomic)
 %endif
 
 %description
