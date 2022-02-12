@@ -1522,6 +1522,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/imx-dcss_dri.so
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/kirin_dri.so
+%{_libdir}/dri/komeda_dri.so
 %{_libdir}/dri/mali-dp_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mediatek_dri.so
@@ -1529,6 +1530,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/dri/mi0283qt_dri.so
 %{_libdir}/dri/mxsfb-drm_dri.so
 %{_libdir}/dri/pl111_dri.so
+%{_libdir}/dri/rcar-du_dri.so
 %{_libdir}/dri/repaper_dri.so
 %{_libdir}/dri/rockchip_dri.so
 %{_libdir}/dri/st7586_dri.so
