@@ -27,7 +27,7 @@
 # (tpg) starting version 11.1.1 this may fully support OGL 4.1
 %define opengl_ver 4.6
 
-%define relc 1
+%define relc 2
 
 %ifarch %{riscv}
 %bcond_without gcc
