@@ -248,12 +248,10 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
-BuildRequires:	gccmakedep
 BuildRequires:	libxml2-python
-BuildRequires:	makedepend
 BuildRequires:	meson
 BuildRequires:	lm_sensors-devel
-BuildRequires:	llvm-devel >= 3.3
+BuildRequires:	cmake(LLVM)
 BuildRequires:	pkgconfig(LLVMSPIRVLib)
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	elfutils-devel
@@ -298,7 +296,7 @@ BuildRequires:	pkgconfig(lua)
 BuildRequires:	pkgconfig(libconfig)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
-BuildRequires:	clang-devel
+BuildRequires:	cmake(Clang)
 BuildRequires:	clang
 %endif
 BuildRequires:	pkgconfig(xvmc)
@@ -1193,6 +1191,7 @@ if ! %meson32 \
 	-Dcpp_std=c++17 \
 	-Dglx=auto \
 	-Dplatforms=auto \
+	-Dvulkan-layers=device-select \
 	-Dvulkan-drivers=auto \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
@@ -1209,11 +1208,11 @@ if ! %meson32 \
 	-Dgallium-xa=enabled \
 	-Dgallium-xvmc=enabled \
 	-Dgallium-nine=true \
-	-Dgallium-drivers=auto \
+	-Dgallium-drivers=auto,crocus,zink \
 	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
-	-Dgles1=enabled \
+	-Dgles1=disabled \
 	-Dgles2=enabled \
 	-Dglx-direct=true \
 	-Dllvm=enabled \
@@ -1224,6 +1223,7 @@ if ! %meson32 \
 	-Dshared-llvm=enabled \
 	-Dselinux=false \
 	-Dbuild-tests=false \
+	-Dprefer-crocus=true \
 	-Dtools=""; then
 
 	cat build32/meson-logs/meson-log.txt >/dev/stderr
@@ -1236,7 +1236,7 @@ rm llvm-config
 # FIXME keep in sync with with_tools=all definition from meson.build
 TOOLS="drm-shim,dlclose-skip,glsl,nir,nouveau,xvmc,asahi"
 %ifarch %{armx}
-TOOLS="$TOOLS,etnaviv,freedreno,lima"
+TOOLS="$TOOLS,etnaviv,freedreno,lima,panfrost"
 %endif
 %ifarch %{ix86} %{x86_64}
 %if %{with intel}
@@ -1250,7 +1250,11 @@ if ! %meson \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
-	-Dgallium-drivers=auto \
+%ifarch %{armx}
+	-Dgallium-drivers=auto,r300,r600,iris,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink \
+%else
+	-Dgallium-drivers=auto,crocus,zink \
+%endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 %else
@@ -1263,7 +1267,12 @@ if ! %meson \
 	-Dgallium-nine=true \
 	-Dglx=auto \
 	-Dplatforms=auto \
+	-Dvulkan-layers=device-select \
+%ifarch %{armx}
+	-Dvulkan-drivers=swrast,amd,broadcom,freedreno,panfrost \
+%else
 	-Dvulkan-drivers=auto \
+%endif
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
 %if %{with glvnd}
@@ -1272,7 +1281,7 @@ if ! %meson \
 	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
-	-Dgles1=enabled \
+	-Dgles1=disabled \
 	-Dgles2=enabled \
 	-Dglx-direct=true \
 	-Dllvm=enabled \
@@ -1283,6 +1292,7 @@ if ! %meson \
 	-Dshared-llvm=enabled \
 	-Dselinux=false \
 	-Dbuild-tests=false \
+	-Dprefer-crocus=true \
 	-Dtools="$TOOLS"; then
 
 	cat build/meson-logs/meson-log.txt >/dev/stderr
@@ -1363,7 +1373,7 @@ includedir=${prefix}/include
 Name: egl
 Description: Mesa EGL Library
 Version: %{version}
-Requires.private: x11, xext, xdamage >=  1.1, xfixes, x11-xcb, xcb, xcb-glx >=  1.8.1, xcb-dri2 >=  1.8, xxf86vm, libdrm >=  2.4.75
+Requires.private: x11, xext, xdamage >= 1.1, xfixes, x11-xcb, xcb, xcb-glx >= 1.8.1, xcb-dri2 >= 1.8, xxf86vm, libdrm >= 2.4.75
 Libs: -L${libdir} -lEGL
 Libs.private: -lpthread -pthread -lm -ldl
 Cflags: -I${includedir}
