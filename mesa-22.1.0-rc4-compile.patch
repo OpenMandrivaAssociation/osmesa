@@ -1,0 +1,12 @@
+diff -up mesa-22.1.0-rc4/src/drm-shim/drm_shim.c.omv~ mesa-22.1.0-rc4/src/drm-shim/drm_shim.c
+--- mesa-22.1.0-rc4/src/drm-shim/drm_shim.c.omv~	2022-05-08 17:25:29.761893909 +0200
++++ mesa-22.1.0-rc4/src/drm-shim/drm_shim.c	2022-05-08 17:25:35.601917842 +0200
+@@ -38,7 +38,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <sys/ioctl.h>
+-//#include <sys/mman.h>
++#include <sys/mman.h>
+ #include <sys/stat.h>
+ #include <sys/sysmacros.h>
+ #include <stdarg.h>

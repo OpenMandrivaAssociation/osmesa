@@ -24,7 +24,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc %nil
+%define relc 4
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,7 +149,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	22.0.3
+Version:	22.1.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -199,7 +199,8 @@ Patch0:		mesa-20.1.1-fix-opencl.patch
 Source50:	test.c
 
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
-Patch2:		mesa-20.3.4-glibc-2.33.patch
+Patch2:		mesa-22.1.0-rc4-compile.patch
+#Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch4:		mesa-21.0.0-rc4-issue-4302.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
@@ -349,7 +350,7 @@ BuildRequires:	devel(libwayland-client)
 BuildRequires:	devel(libwayland-server)
 BuildRequires:	devel(libffi)
 BuildRequires:	devel(libelf)
-BuildRequires:	devel(libunwind)
+BuildRequires:	libunwind-devel
 BuildRequires:	devel(libva)
 BuildRequires:	devel(libz)
 BuildRequires:	devel(libexpat)
