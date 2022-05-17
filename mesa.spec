@@ -201,7 +201,6 @@ Source50:	test.c
 Patch1:		mesa-19.2.3-arm32-buildfix.patch
 Patch2:		mesa-22.1.0-rc4-compile.patch
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
-Patch4:		mesa-21.0.0-rc4-issue-4302.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
@@ -329,22 +328,8 @@ BuildRequires:	devel(libXau)
 BuildRequires:	devel(libXdmcp)
 BuildRequires:	devel(libsensors)
 BuildRequires:	libsensors.so.5
-BuildRequires:	devel(libLLVMCore)
-BuildRequires:	devel(libLLVMSPIRVLib)
-BuildRequires:	devel(libclangCodeGen)
-BuildRequires:	devel(libclangFrontendTool)
-BuildRequires:	devel(libclangFrontend)
-BuildRequires:	devel(libclangDriver)
-BuildRequires:	devel(libclangSerialization)
-BuildRequires:	devel(libclangParse)
-BuildRequires:	devel(libclangSema)
-BuildRequires:	devel(libclangAnalysis)
-BuildRequires:	devel(libclangAST)
-BuildRequires:	devel(libclangASTMatchers)
-BuildRequires:	devel(libclangEdit)
-BuildRequires:	devel(libclangLex)
-BuildRequires:	devel(libclangBasic)
-BuildRequires:	devel(libPolly)
+BuildRequires:	devel(libLLVM-14)
+BuildRequires:	devel(libclang)
 BuildRequires:	devel(libzstd)
 BuildRequires:	devel(libwayland-client)
 BuildRequires:	devel(libwayland-server)
