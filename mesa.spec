@@ -24,7 +24,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 5
+%define relc %nil
 
 %ifarch %{riscv}
 %bcond_without gcc
