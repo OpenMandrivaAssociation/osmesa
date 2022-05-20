@@ -31,7 +31,7 @@
 %bcond_with opencl
 %else
 %bcond_with gcc
-%bcond_with opencl
+%bcond_without opencl
 %endif
 
 %bcond_with bootstrap
