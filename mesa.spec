@@ -31,7 +31,7 @@
 %bcond_with opencl
 %else
 %bcond_with gcc
-%bcond_without opencl
+%bcond_with opencl
 %endif
 
 %bcond_with bootstrap
@@ -1117,7 +1117,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/lima_disasm
 %endif
 %{_libdir}/dri/*.so
+%if %{with opencl}
 %{_libdir}/gallium-pipe/*.so
+%endif
 %{_libdir}/libXvMC*.so
 %{_libdir}/libXvMC*.so.1*
 %{_libdir}/lib*_noop_drm_shim.so
