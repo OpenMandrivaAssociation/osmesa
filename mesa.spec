@@ -287,6 +287,7 @@ BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	pkgconfig(libarchive)
 BuildRequires:	pkgconfig(lua)
 BuildRequires:	pkgconfig(libconfig)
+BuildRequires:	pkgconfig(SPIRV-Tools)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	cmake(Clang)
