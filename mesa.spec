@@ -348,6 +348,7 @@ BuildRequires:	devel(libGLdispatch)
 BuildRequires:	devel(libXrandr)
 BuildRequires:	devel(libXrender)
 BuildRequires:	devel(libatomic)
+BuildRequires:	devel(libSPIRV-Tools-shared)
 %endif
 
 %description
