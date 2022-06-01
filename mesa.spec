@@ -350,6 +350,7 @@ BuildRequires:	devel(libXrender)
 BuildRequires:	devel(libatomic)
 BuildRequires:	devel(libudev)
 BuildRequires:	devel(libSPIRV-Tools-shared)
+BuildRequires:	libLLVMSPIRVLib-devel
 BuildRequires:	libLLVMSPIRVLib-static-devel
 %endif
 
