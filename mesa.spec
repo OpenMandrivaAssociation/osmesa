@@ -348,7 +348,9 @@ BuildRequires:	devel(libGLdispatch)
 BuildRequires:	devel(libXrandr)
 BuildRequires:	devel(libXrender)
 BuildRequires:	devel(libatomic)
+BuildRequires:	devel(libudev)
 BuildRequires:	devel(libSPIRV-Tools-shared)
+BuildRequires:	libLLVMSPIRVLib-static-devel
 %endif
 
 %description
