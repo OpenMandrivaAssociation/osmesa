@@ -151,7 +151,7 @@ Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	22.1.0
 %if "%{relc}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{relc}" != ""
 %if "%{git}" != ""
@@ -290,6 +290,8 @@ BuildRequires:	pkgconfig(libconfig)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	cmake(Clang)
+BuildRequires:	cmake(OpenCLHeaders)
+BuildRequires:	cmake(OpenCLICDLoader)
 BuildRequires:	clang
 %endif
 BuildRequires:	pkgconfig(xvmc)
@@ -782,6 +784,7 @@ EGL development parts.
 %package -n %{lib32cl}
 Summary:	Mesa OpenCL libs (32-bit)
 Group:		System/Libraries
+Recommends:	libOpenCL
 
 %description -n %{lib32cl}
 Open Computing Language (OpenCL) is a framework for writing programs that
@@ -800,6 +803,7 @@ Summary:	Development files for OpenCL libs (32-bit)
 Group:		Development/Other
 Requires:	%{lib32cl} = %{EVRD}
 Requires:	%{devcl} = %{EVRD}
+Requires:	opencl-headers
 
 %description -n %{dev32cl}
 Development files for the OpenCL library.
@@ -811,6 +815,7 @@ Summary:	Mesa OpenCL libs
 Group:		System/Libraries
 Provides:	mesa-libOpenCL = %{EVRD}
 Provides:	mesa-opencl = %{EVRD}
+Recommends:	%{_lib}OpenCL
 
 %description -n %{libcl}
 Open Computing Language (OpenCL) is a framework for writing programs that
@@ -831,6 +836,8 @@ Requires:	%{libcl} = %{EVRD}
 Provides:	%{clname}-devel = %{EVRD}
 Provides:	mesa-libOpenCL-devel = %{EVRD}
 Provides:	mesa-opencl-devel = %{EVRD}
+Requires:	opencl-headers
+Recommends:	cmake(OpenCLICDLoader)
 
 %description -n %{devcl}
 Development files for the OpenCL library
@@ -959,6 +966,8 @@ if ! %meson32 \
 	-Dglvnd=true \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
+	-Dopencl-spirv=true \
+	-Dopencl-native=true \
 %else
 	-Dgallium-opencl=disabled \
 %endif
@@ -1015,6 +1024,8 @@ if ! %meson \
 %endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
+	-Dopencl-spirv=true \
+	-Dopencl-native=true \
 %else
 	-Dgallium-opencl=disabled \
 %endif
@@ -1082,16 +1093,6 @@ rm -rf	%{buildroot}%{_includedir}/GL/gl.h \
 
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
-%endif
-
-%if %{with opencl}
-# FIXME workaround for OpenCL headers not being installed
-if [ -e %{buildroot}%{_includedir}/CL/opencl.h ]; then
-    echo OpenCL headers are being installed correctly now. Please remove the workaround.
-    exit 1
-else
-    cp -af include/CL %{buildroot}%{_includedir}/
-fi
 %endif
 
 # .so files are not needed by vdpau
@@ -1228,7 +1229,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %if %{with opencl}
 %files -n %{devcl}
-%{_includedir}/CL
 %{_libdir}/libMesaOpenCL.so
 %endif
 
