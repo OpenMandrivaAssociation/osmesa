@@ -18,8 +18,8 @@
 
 # -fno-strict-aliasing is added because of numerous warnings, strict
 # aliasing might generate broken code.
-%global optflags %{optflags} -O3 -fno-strict-aliasing
-%global ldflags %{build_ldflags} -fno-strict-aliasing
+%global optflags %{optflags} -O3 -fno-strict-aliasing -flto=thin
+%global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin
 
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
