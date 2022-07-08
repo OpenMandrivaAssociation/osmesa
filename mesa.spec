@@ -924,10 +924,6 @@ Tools for debugging Mesa drivers.
 %endif
 chmod +x %{SOURCE5}
 
-# this is a hack for S3TC support. r200_screen.c is symlinked to
-# radeon_screen.c in git, but is its own file in the tarball.
-cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c || :
-
 %build
 %if %{with gcc}
 export CC=gcc
