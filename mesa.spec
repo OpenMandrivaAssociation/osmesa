@@ -24,7 +24,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc %nil
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,7 +149,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	22.1.5
+Version:	22.2.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
