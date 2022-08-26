@@ -24,7 +24,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc %nil
+%define relc 3
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -149,7 +149,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	22.1.7
+Version:	22.2.0
 %if "%{relc}%{git}" == ""
 Release:	1
 %else
@@ -331,7 +331,7 @@ BuildRequires:	devel(libXau)
 BuildRequires:	devel(libXdmcp)
 BuildRequires:	devel(libsensors)
 BuildRequires:	libsensors.so.5
-BuildRequires:	devel(libLLVM-14)
+BuildRequires:	devel(libLLVM-15)
 BuildRequires:	devel(libclang)
 BuildRequires:	devel(libzstd)
 BuildRequires:	devel(libwayland-client)
