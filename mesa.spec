@@ -1013,7 +1013,10 @@ TOOLS="$TOOLS,etnaviv,freedreno,lima,panfrost"
 %endif
 %ifarch %{ix86} %{x86_64}
 %if %{with intel}
-TOOLS="$TOOLS,intel,intel-ui"
+TOOLS="$TOOLS,intel"
+%if %{with aubinatorviewer}
+TOOLS="$TOOLS,intel-ui"
+%endif
 %endif
 %endif
 
