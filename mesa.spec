@@ -43,6 +43,9 @@
 %else
 %bcond_with intel
 %endif
+# aubinator_viewer (part of Intel bits) requires gtk
+# which in turn requires mesa, breaking bootstrapping
+%bcond_with aubinatorviewer
 # Sometimes it's necessary to disable r600 while bootstrapping
 # an LLVM change (such as the r600 -> AMDGPU rename)
 %bcond_without r600
@@ -258,9 +261,11 @@ BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(libglvnd)
 %ifnarch %{armx} %{riscv}
+%if %{with aubinatorviewer}
 # needed only for intel binaries
 BuildRequires:	pkgconfig(epoxy)
 BuildRequires:	pkgconfig(gtk+-3.0)
+%endif
 %endif
 BuildRequires:	pkgconfig(libzstd)
 BuildRequires:	pkgconfig(vulkan)
@@ -1248,7 +1253,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %ifarch %{ix86} %{x86_64}
 %{_bindir}/aubinator
 %{_bindir}/aubinator_error_decode
+%if %{with aubinatorviewer}
 %{_bindir}/aubinator_viewer
+%endif
 %{_bindir}/i965_asm
 %{_bindir}/i965_disasm
 %{_bindir}/intel_dev_info
