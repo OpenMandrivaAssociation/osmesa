@@ -1,0 +1,457 @@
+diff -up mesa-22.2.0-rc3/src/amd/common/ac_gpu_info.c.revert~ mesa-22.2.0-rc3/src/amd/common/ac_gpu_info.c
+--- mesa-22.2.0-rc3/src/amd/common/ac_gpu_info.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/amd/common/ac_gpu_info.c	2022-09-01 11:39:43.638340160 +0200
+@@ -750,6 +750,8 @@ bool ac_query_gpu_info(int fd, void *dev
+    /* Add some margin of error, though this shouldn't be needed in theory. */
+    info->all_vram_visible = info->vram_size_kb * 0.9 < info->vram_vis_size_kb;
+ 
++   util_cpu_detect();
++
+    /* Set chip identification. */
+    info->pci_id = device_info.device_id;
+    info->pci_rev_id = device_info.pci_rev;
+diff -up mesa-22.2.0-rc3/src/amd/compiler/tests/main.cpp.revert~ mesa-22.2.0-rc3/src/amd/compiler/tests/main.cpp
+--- mesa-22.2.0-rc3/src/amd/compiler/tests/main.cpp.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/amd/compiler/tests/main.cpp	2022-09-01 11:39:43.638340160 +0200
+@@ -34,6 +34,8 @@
+ #include "aco_ir.h"
+ #include "framework.h"
+ 
++#include "util/u_cpu_detect.h"
++
+ static const char *help_message =
+    "Usage: %s [-h] [-l --list] [--no-check] [TEST [TEST ...]]\n"
+    "\n"
+@@ -241,6 +243,8 @@ int main(int argc, char **argv)
+       return 99;
+    }
+ 
++   util_cpu_detect();
++
+    if (do_list) {
+       for (auto test : tests)
+          printf("%s\n", test.first.c_str());
+diff -up mesa-22.2.0-rc3/src/broadcom/vulkan/v3dv_device.c.revert~ mesa-22.2.0-rc3/src/broadcom/vulkan/v3dv_device.c
+--- mesa-22.2.0-rc3/src/broadcom/vulkan/v3dv_device.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/broadcom/vulkan/v3dv_device.c	2022-09-01 11:39:43.639340151 +0200
+@@ -51,6 +51,7 @@
+ 
+ #include "util/build_id.h"
+ #include "util/debug.h"
++#include "util/u_cpu_detect.h"
+ 
+ #ifdef VK_USE_PLATFORM_XCB_KHR
+ #include <xcb/xcb.h>
+@@ -257,6 +258,8 @@ v3dv_CreateInstance(const VkInstanceCrea
+       }
+    }
+ 
++   util_cpu_detect();
++
+    VG(VALGRIND_CREATE_MEMPOOL(instance, 0, false));
+ 
+    *pInstance = v3dv_instance_to_handle(instance);
+diff -up mesa-22.2.0-rc3/src/compiler/glsl_types.cpp.revert~ mesa-22.2.0-rc3/src/compiler/glsl_types.cpp
+--- mesa-22.2.0-rc3/src/compiler/glsl_types.cpp.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/compiler/glsl_types.cpp	2022-09-01 11:39:43.639340151 +0200
+@@ -26,6 +26,7 @@
+ #include "compiler/glsl/glsl_parser_extras.h"
+ #include "glsl_types.h"
+ #include "util/hash_table.h"
++#include "util/u_cpu_detect.h"
+ #include "util/u_string.h"
+ 
+ 
+@@ -519,6 +520,11 @@ hash_free_type_function(struct hash_entr
+ void
+ glsl_type_singleton_init_or_ref()
+ {
++   /* This is required for _mesa_half_to_float() which is
++    * required for constant-folding 16-bit float ops.
++    */
++   util_cpu_detect();
++
+    mtx_lock(&glsl_type::hash_mutex);
+    glsl_type_users++;
+    mtx_unlock(&glsl_type::hash_mutex);
+diff -up mesa-22.2.0-rc3/src/compiler/isaspec/decode.c.revert~ mesa-22.2.0-rc3/src/compiler/isaspec/decode.c
+--- mesa-22.2.0-rc3/src/compiler/isaspec/decode.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/compiler/isaspec/decode.c	2022-09-01 11:39:43.639340151 +0200
+@@ -773,6 +773,8 @@ isa_decode(void *bin, int sz, FILE *out,
+ 	if (!options)
+ 		options = &default_options;
+ 
++	util_cpu_detect();  /* needed for _mesa_half_to_float() */
++
+ 	state = rzalloc_size(NULL, sizeof(*state));
+ 	state->options = options;
+ 	state->num_instr = sz / (BITMASK_WORDS * sizeof(BITSET_WORD));
+diff -up mesa-22.2.0-rc3/src/gallium/auxiliary/draw/draw_context.c.revert~ mesa-22.2.0-rc3/src/gallium/auxiliary/draw/draw_context.c
+--- mesa-22.2.0-rc3/src/gallium/auxiliary/draw/draw_context.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/auxiliary/draw/draw_context.c	2022-09-01 11:39:43.639340151 +0200
+@@ -34,6 +34,7 @@
+ #include "pipe/p_context.h"
+ #include "util/u_memory.h"
+ #include "util/u_math.h"
++#include "util/u_cpu_detect.h"
+ #include "util/u_inlines.h"
+ #include "util/u_helpers.h"
+ #include "util/u_prim.h"
+@@ -84,6 +85,9 @@ draw_create_context(struct pipe_context
+    if (!draw)
+       goto err_out;
+ 
++   /* we need correct cpu caps for disabling denorms in draw_vbo() */
++   util_cpu_detect();
++
+ #ifdef DRAW_LLVM_AVAILABLE
+    if (try_llvm && draw_get_option_use_llvm()) {
+       draw->llvm = draw_llvm_create(draw, (LLVMContextRef)context);
+diff -up mesa-22.2.0-rc3/src/gallium/auxiliary/gallivm/lp_bld_init.c.revert~ mesa-22.2.0-rc3/src/gallium/auxiliary/gallivm/lp_bld_init.c
+--- mesa-22.2.0-rc3/src/gallium/auxiliary/gallivm/lp_bld_init.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/auxiliary/gallivm/lp_bld_init.c	2022-09-01 11:39:43.640340142 +0200
+@@ -438,6 +438,8 @@ lp_build_init(void)
+ 
+    lp_set_target_options();
+ 
++   util_cpu_detect();
++
+    /* For simulating less capable machines */
+ #ifdef DEBUG
+    if (debug_get_bool_option("LP_FORCE_SSE2", FALSE)) {
+diff -up mesa-22.2.0-rc3/src/gallium/auxiliary/pipe-loader/pipe_loader.c.revert~ mesa-22.2.0-rc3/src/gallium/auxiliary/pipe-loader/pipe_loader.c
+--- mesa-22.2.0-rc3/src/gallium/auxiliary/pipe-loader/pipe_loader.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/auxiliary/pipe-loader/pipe_loader.c	2022-09-01 11:39:43.640340142 +0200
+@@ -27,6 +27,7 @@
+ 
+ #include "pipe_loader_priv.h"
+ 
++#include "util/u_cpu_detect.h"
+ #include "util/u_inlines.h"
+ #include "util/u_memory.h"
+ #include "util/u_string.h"
+@@ -164,6 +165,7 @@ pipe_loader_create_screen_vk(struct pipe
+ {
+    struct pipe_screen_config config;
+ 
++   util_cpu_detect();
+    pipe_loader_load_options(dev);
+    config.options_info = &dev->option_info;
+    config.options = &dev->option_cache;
+diff -up mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_cpu.c.revert~ mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_cpu.c
+--- mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_cpu.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_cpu.c	2022-09-01 11:39:43.640340142 +0200
+@@ -37,6 +37,7 @@ DEBUG_GET_ONCE_BOOL_OPTION(nosse, "GALLI
+ 
+ static const struct util_cpu_caps_t *get_cpu_caps(void)
+ {
++   util_cpu_detect();
+    return util_get_cpu_caps();
+ }
+ 
+diff -up mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_x86sse.c.revert~ mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_x86sse.c
+--- mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_x86sse.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/auxiliary/rtasm/rtasm_x86sse.c	2022-09-01 11:39:43.640340142 +0200
+@@ -2159,6 +2159,7 @@ struct x86_reg x86_fn_arg( struct x86_fu
+ 
+ static void x86_init_func_common( struct x86_function *p )
+ {
++   util_cpu_detect();
+    p->caps = 0;
+    if(util_get_cpu_caps()->has_mmx)
+       p->caps |= X86_MMX;
+diff -up mesa-22.2.0-rc3/src/gallium/auxiliary/util/u_threaded_context.c.revert~ mesa-22.2.0-rc3/src/gallium/auxiliary/util/u_threaded_context.c
+--- mesa-22.2.0-rc3/src/gallium/auxiliary/util/u_threaded_context.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/auxiliary/util/u_threaded_context.c	2022-09-01 11:39:43.641340133 +0200
+@@ -4315,6 +4315,8 @@ threaded_context_create(struct pipe_cont
+    if (!pipe)
+       return NULL;
+ 
++   util_cpu_detect();
++
+    if (!debug_get_bool_option("GALLIUM_THREAD", util_get_cpu_caps()->nr_cpus > 1))
+       return pipe;
+ 
+diff -up mesa-22.2.0-rc3/src/gallium/drivers/lima/standalone/lima_disasm.c.revert~ mesa-22.2.0-rc3/src/gallium/drivers/lima/standalone/lima_disasm.c
+--- mesa-22.2.0-rc3/src/gallium/drivers/lima/standalone/lima_disasm.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/drivers/lima/standalone/lima_disasm.c	2022-09-01 11:39:43.641340133 +0200
+@@ -23,6 +23,7 @@
+  */
+ 
+ #include "util/ralloc.h"
++#include "util/u_cpu_detect.h"
+ 
+ #include <err.h>
+ #include <stdio.h>
+@@ -175,6 +176,9 @@ main(int argc, char **argv)
+       return -1;
+    }
+ 
++   /* Needed by _mesa_half_to_float() */
++   util_cpu_detect();
++
+    if (is_frag) {
+       assert((size & 0x3) == 0);
+       size >>= 2;
+diff -up mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_screen.c.revert~ mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_screen.c
+--- mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_screen.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_screen.c	2022-09-01 11:39:43.641340133 +0200
+@@ -918,8 +918,8 @@ static void update_cache_sha1_cpu(struct
+     * Don't need the cpu cache affinity stuff. The rest
+     * is contained in first 5 dwords.
+     */
+-   STATIC_ASSERT(offsetof(struct util_cpu_caps_t, num_L3_caches) == 6 * sizeof(uint32_t));
+-   _mesa_sha1_update(ctx, cpu_caps, 6 * sizeof(uint32_t));
++   STATIC_ASSERT(offsetof(struct util_cpu_caps_t, num_L3_caches) == 5 * sizeof(uint32_t));
++   _mesa_sha1_update(ctx, cpu_caps, 5 * sizeof(uint32_t));
+ }
+ 
+ static void lp_disk_cache_create(struct llvmpipe_screen *screen)
+@@ -1021,6 +1021,8 @@ llvmpipe_create_screen(struct sw_winsys
+ {
+    struct llvmpipe_screen *screen;
+ 
++   util_cpu_detect();
++
+    glsl_type_singleton_init_or_ref();
+ 
+ #ifdef DEBUG
+diff -up mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_test_main.c.revert~ mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_test_main.c
+--- mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_test_main.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/drivers/llvmpipe/lp_test_main.c	2022-09-01 11:39:43.641340133 +0200
+@@ -34,6 +34,7 @@
+  */
+ 
+ 
++#include "util/u_cpu_detect.h"
+ #include "util/u_math.h"
+ 
+ #include "gallivm/lp_bld_const.h"
+@@ -380,6 +381,7 @@ int main(int argc, char **argv)
+    boolean single = FALSE;
+    unsigned fpstate;
+ 
++   util_cpu_detect();
+    fpstate = util_fpstate_get();
+    util_fpstate_set_denorms_to_zero(fpstate);
+ 
+diff -up mesa-22.2.0-rc3/src/gallium/drivers/radeonsi/si_get.c.revert~ mesa-22.2.0-rc3/src/gallium/drivers/radeonsi/si_get.c
+--- mesa-22.2.0-rc3/src/gallium/drivers/radeonsi/si_get.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/drivers/radeonsi/si_get.c	2022-09-01 11:39:43.641340133 +0200
+@@ -1031,6 +1031,8 @@ static void si_init_renderer_string(stru
+ 
+ void si_init_screen_get_functions(struct si_screen *sscreen)
+ {
++   util_cpu_detect();
++
+    sscreen->b.get_name = si_get_name;
+    sscreen->b.get_vendor = si_get_vendor;
+    sscreen->b.get_device_vendor = si_get_device_vendor;
+diff -up mesa-22.2.0-rc3/src/gallium/drivers/vc4/vc4_screen.c.revert~ mesa-22.2.0-rc3/src/gallium/drivers/vc4/vc4_screen.c
+--- mesa-22.2.0-rc3/src/gallium/drivers/vc4/vc4_screen.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/drivers/vc4/vc4_screen.c	2022-09-01 11:39:43.641340133 +0200
+@@ -27,6 +27,7 @@
+ #include "pipe/p_screen.h"
+ #include "pipe/p_state.h"
+ 
++#include "util/u_cpu_detect.h"
+ #include "util/u_debug.h"
+ #include "util/u_memory.h"
+ #include "util/format/u_format.h"
+@@ -584,6 +585,8 @@ vc4_screen_create(int fd, struct rendero
+         if (!vc4_get_chip_info(screen))
+                 goto fail;
+ 
++        util_cpu_detect();
++
+         slab_create_parent(&screen->transfer_pool, sizeof(struct vc4_transfer), 16);
+ 
+         vc4_fence_screen_init(screen);
+diff -up mesa-22.2.0-rc3/src/gallium/drivers/zink/zink_screen.c.revert~ mesa-22.2.0-rc3/src/gallium/drivers/zink/zink_screen.c
+--- mesa-22.2.0-rc3/src/gallium/drivers/zink/zink_screen.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/drivers/zink/zink_screen.c	2022-09-01 11:39:43.641340133 +0200
+@@ -2138,6 +2138,7 @@ zink_internal_create_screen(const struct
+    if (!screen)
+       return NULL;
+ 
++   util_cpu_detect();
+    screen->threaded = util_get_cpu_caps()->nr_cpus > 1 && debug_get_bool_option("GALLIUM_THREAD", util_get_cpu_caps()->nr_cpus > 1);
+    screen->abort_on_hang = debug_get_bool_option("ZINK_HANG_ABORT", false);
+ 
+diff -up mesa-22.2.0-rc3/src/gallium/tests/unit/translate_test.c.revert~ mesa-22.2.0-rc3/src/gallium/tests/unit/translate_test.c
+--- mesa-22.2.0-rc3/src/gallium/tests/unit/translate_test.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/tests/unit/translate_test.c	2022-09-01 11:39:43.641340133 +0200
+@@ -69,6 +69,8 @@ int main(int argc, char** argv)
+ 
+    create_fn = 0;
+ 
++   util_cpu_detect();
++
+    if (argc <= 1 ||
+        !strcmp(argv[1], "default") )
+       create_fn = translate_create;
+diff -up mesa-22.2.0-rc3/src/gallium/tests/unit/u_half_test.c.revert~ mesa-22.2.0-rc3/src/gallium/tests/unit/u_half_test.c
+--- mesa-22.2.0-rc3/src/gallium/tests/unit/u_half_test.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/gallium/tests/unit/u_half_test.c	2022-09-01 11:39:43.641340133 +0200
+@@ -36,6 +36,7 @@ test(void)
+ int
+ main(int argc, char **argv)
+ {
++   util_cpu_detect();
+    test();
+ 
+    /* Test non-f16c. */
+diff -up mesa-22.2.0-rc3/src/mesa/main/tests/mesa_formats.cpp.revert~ mesa-22.2.0-rc3/src/mesa/main/tests/mesa_formats.cpp
+--- mesa-22.2.0-rc3/src/mesa/main/tests/mesa_formats.cpp.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/mesa/main/tests/mesa_formats.cpp	2022-09-01 11:39:43.642340124 +0200
+@@ -35,9 +35,15 @@
+ #include "main/glformats.h"
+ #include "main/format_unpack.h"
+ #include "main/format_pack.h"
++#include "util/u_cpu_detect.h"
+ 
+ // Test fixture for Format tests.
++// Currently just ensures that util_cpu_detect() has been called
+ class MesaFormatsTest : public ::testing::Test {
++  protected:
++    MesaFormatsTest() {
++       util_cpu_detect();
++    }
+ };
+ 
+ /**
+diff -up mesa-22.2.0-rc3/src/mesa/state_tracker/st_context.c.revert~ mesa-22.2.0-rc3/src/mesa/state_tracker/st_context.c
+--- mesa-22.2.0-rc3/src/mesa/state_tracker/st_context.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/mesa/state_tracker/st_context.c	2022-09-01 11:39:43.642340124 +0200
+@@ -483,6 +483,8 @@ st_create_context_priv(struct gl_context
+    struct pipe_screen *screen = pipe->screen;
+    struct st_context *st = CALLOC_STRUCT( st_context);
+ 
++   util_cpu_detect();
++
+    st->options = *options;
+ 
+    ctx->st_opts = &st->options;
+@@ -838,6 +840,8 @@ st_create_context(gl_api api, struct pip
+    struct dd_function_table funcs;
+    struct st_context *st;
+ 
++   util_cpu_detect();
++
+    memset(&funcs, 0, sizeof(funcs));
+    st_init_driver_functions(pipe->screen, &funcs, has_egl_image_validate);
+ 
+diff -up mesa-22.2.0-rc3/src/util/tests/format/u_format_test.c.revert~ mesa-22.2.0-rc3/src/util/tests/format/u_format_test.c
+--- mesa-22.2.0-rc3/src/util/tests/format/u_format_test.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/util/tests/format/u_format_test.c	2022-09-01 11:39:43.642340124 +0200
+@@ -869,6 +869,8 @@ int main(int argc, char **argv)
+ {
+    boolean success;
+ 
++   util_cpu_detect();
++
+    success = test_all();
+ 
+    return success ? 0 : 1;
+diff -up mesa-22.2.0-rc3/src/util/u_cpu_detect.c.revert~ mesa-22.2.0-rc3/src/util/u_cpu_detect.c
+--- mesa-22.2.0-rc3/src/util/u_cpu_detect.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/util/u_cpu_detect.c	2022-09-01 11:39:43.642340124 +0200
+@@ -860,9 +860,6 @@ util_cpu_detect_once(void)
+       printf("util_cpu_caps.num_L3_caches = %u\n", util_cpu_caps.num_L3_caches);
+       printf("util_cpu_caps.num_cpu_mask_bits = %u\n", util_cpu_caps.num_cpu_mask_bits);
+    }
+-
+-   /* This must happen at the end as it's used to guard everything else */
+-   p_atomic_set(&util_cpu_caps.detect_done, 1);
+ }
+ 
+ static once_flag cpu_once_flag = ONCE_FLAG_INIT;
+diff -up mesa-22.2.0-rc3/src/util/u_cpu_detect.h.revert~ mesa-22.2.0-rc3/src/util/u_cpu_detect.h
+--- mesa-22.2.0-rc3/src/util/u_cpu_detect.h.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/util/u_cpu_detect.h	2022-09-01 11:42:36.542793777 +0200
+@@ -38,7 +38,6 @@
+ #include <stdbool.h>
+ 
+ #include "pipe/p_config.h"
+-#include "util/u_atomic.h"
+ #include "util/u_thread.h"
+ 
+ 
+@@ -62,12 +61,6 @@ typedef uint32_t util_affinity_mask[UTIL
+ 
+ struct util_cpu_caps_t {
+    /**
+-    * Initialized to 0 and set to non-zero with an atomic after the entire
+-    * struct has been initialized.
+-    */
+-   uint32_t detect_done;
+-
+-   /**
+     * Number of CPUs available to the process.
+     *
+     * This will be less than or equal to \c max_cpus.  This is the number of
+@@ -134,42 +127,21 @@ struct util_cpu_caps_t {
+ 
+ #define U_CPU_INVALID_L3 0xffff
+ 
+-void util_cpu_detect(void);
+-
+-static inline ATTRIBUTE_CONST const struct util_cpu_caps_t *
++static inline const struct util_cpu_caps_t *
+ util_get_cpu_caps(void)
+ {
+-   extern struct util_cpu_caps_t util_cpu_caps;
++	extern struct util_cpu_caps_t util_cpu_caps;
+ 
+-   /* On most CPU architectures, an atomic read is simply a regular memory
+-    * load instruction with some extra compiler magic to prevent code
+-    * re-ordering around it.  The perf impact of doing this check should be
+-    * negligible in most cases.
+-    *
+-    * Also, even though it looks like  a bit of a lie, we've declared this
+-    * function with ATTRIBUTE_CONST.  The GCC docs say:
+-    *
+-    *    "Calls to functions whose return value is not affected by changes to
+-    *    the observable state of the program and that have no observable
+-    *    effects on such state other than to return a value may lend
+-    *    themselves to optimizations such as common subexpression elimination.
+-    *    Declaring such functions with the const attribute allows GCC to avoid
+-    *    emitting some calls in repeated invocations of the function with the
+-    *    same argument values."
+-    *
+-    * The word "observable" is important here.  With the exception of a
+-    * llvmpipe debug flag behind an environment variable and a few unit tests,
+-    * all of which emulate worse CPUs, this function neither affects nor is
+-    * affected by any "observable" state.  It has its own internal state for
+-    * sure, but that state is such that it appears to return exactly the same
+-    * value with the same internal data every time.
+-    */
+-   if (unlikely(!p_atomic_read(&util_cpu_caps.detect_done)))
+-      util_cpu_detect();
++	/* If you hit this assert, it means that something is using the
++	 * cpu-caps without having first called util_cpu_detect()
++	 */
++	assert(util_cpu_caps.nr_cpus >= 1);
+ 
+-   return &util_cpu_caps;
++	return &util_cpu_caps;
+ }
+ 
++void util_cpu_detect(void);
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff -up mesa-22.2.0-rc3/src/util/u_queue.c.revert~ mesa-22.2.0-rc3/src/util/u_queue.c
+--- mesa-22.2.0-rc3/src/util/u_queue.c.revert~	2022-08-18 19:49:06.000000000 +0200
++++ mesa-22.2.0-rc3/src/util/u_queue.c	2022-09-01 11:39:43.642340124 +0200
+@@ -259,6 +259,9 @@ util_queue_thread_func(void *input)
+ 
+       memset(mask, 0xff, sizeof(mask));
+ 
++      /* Ensure util_cpu_caps.num_cpu_mask_bits is initialized: */
++      util_cpu_detect();
++
+       util_set_current_thread_affinity(mask, NULL,
+                                        util_get_cpu_caps()->num_cpu_mask_bits);
+    }
