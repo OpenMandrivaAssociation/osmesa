@@ -160,7 +160,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}2
+Release:	%{?relc:0.rc%{relc}.}3
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -209,7 +209,8 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 #Patch15:	mesa-9.2-hardware-float.patch
 
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/7170
-Patch6:		mesa-revert-1b8a43a0bafd8c1d50b6fc840fadce8dfd7250de.patch
+Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/17803.patch
+Patch7:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/18039.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
