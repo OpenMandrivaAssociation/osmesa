@@ -160,7 +160,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}3
+Release:	%{?relc:0.rc%{relc}.}4
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -211,6 +211,8 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/7170
 Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/17803.patch
 Patch7:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/18039.patch
+
+Patch8:		mesa-buildsystem-improvements.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -359,6 +361,7 @@ BuildRequires:	devel(libXrender)
 BuildRequires:	devel(libatomic)
 BuildRequires:	devel(libudev)
 BuildRequires:	devel(libSPIRV-Tools-shared)
+BuildRequires:	devel(libvulkan)
 BuildRequires:	libLLVMSPIRVLib-devel
 BuildRequires:	libLLVMSPIRVLib-static-devel
 %endif
@@ -1011,7 +1014,7 @@ rm llvm-config
 %endif
 
 # FIXME keep in sync with with_tools=all definition from meson.build
-TOOLS="drm-shim,dlclose-skip,glsl,nir,nouveau,xvmc,asahi"
+TOOLS="drm-shim,dlclose-skip,glsl,nir,nouveau,xvmc"
 %ifarch %{armx}
 TOOLS="$TOOLS,etnaviv,freedreno,lima,panfrost"
 %endif
@@ -1031,9 +1034,9 @@ if ! %meson \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
 %ifarch %{armx}
-	-Dgallium-drivers=auto,r300,r600,iris,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink,d3d12 \
+	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink \
 %else
-	-Dgallium-drivers=auto,d3d12,crocus,zink \
+	-Dgallium-drivers=auto,crocus,zink \
 %endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
@@ -1052,9 +1055,13 @@ if ! %meson \
 	-Degl-native-platform=wayland \
 	-Dvulkan-layers=device-select,overlay \
 %ifarch %{armx}
-	-Dvulkan-drivers=amd,broadcom,freedreno,panfrost,swrast \
+	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio-experimental,imagination-experimental \
 %else
-	-Dvulkan-drivers=auto \
+%ifarch %{riscv}
+	-Dvulkan-drivers=auto,virtio-experimental,imagination-experimental \
+%else
+	-Dvulkan-drivers=auto,virtio-experimental \
+%endif
 %endif
 	-Dxlib-lease=auto \
 	-Dosmesa=true \

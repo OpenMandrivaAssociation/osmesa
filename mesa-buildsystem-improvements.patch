@@ -1,0 +1,53 @@
+diff -up mesa-22.2.0-rc3/meson.build.omv~ mesa-22.2.0-rc3/meson.build
+--- mesa-22.2.0-rc3/meson.build.omv~	2022-09-11 04:26:30.915591863 +0200
++++ mesa-22.2.0-rc3/meson.build	2022-09-11 04:28:24.473637972 +0200
+@@ -184,6 +184,12 @@ with_dri = dri_drivers.length() != 0
+ 
+ gallium_drivers = get_option('gallium-drivers')
+ if gallium_drivers.contains('auto')
++  extras = []
++  foreach drv : gallium_drivers
++    if drv != 'auto'
++      extras += drv
++    endif
++  endforeach
+   if system_has_kms_drm
+     # TODO: PPC, Sparc
+     if ['x86', 'x86_64'].contains(host_machine.cpu_family())
+@@ -211,6 +217,11 @@ if gallium_drivers.contains('auto')
+     error('Unknown OS @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+           host_machine.system()))
+   endif
++  foreach drv : extras
++    if not gallium_drivers.contains(drv)
++      gallium_drivers += drv
++    endif
++  endforeach
+ endif
+ with_gallium_radeonsi = gallium_drivers.contains('radeonsi')
+ with_gallium_r300 = gallium_drivers.contains('r300')
+@@ -249,6 +260,12 @@ endif
+ 
+ _vulkan_drivers = get_option('vulkan-drivers')
+ if _vulkan_drivers.contains('auto')
++  extras = []
++  foreach drv : _vulkan_drivers
++    if drv != 'auto'
++      extras += drv
++    endif
++  endforeach
+   if system_has_kms_drm
+     if host_machine.cpu_family().startswith('x86')
+       _vulkan_drivers = ['amd', 'intel', 'swrast']
+@@ -265,6 +282,11 @@ if _vulkan_drivers.contains('auto')
+     error('Unknown OS @0@. Please pass -Dvulkan-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+           host_machine.system()))
+   endif
++  foreach drv : extras
++    if not _vulkan_drivers.contains(drv)
++      _vulkan_drivers += drv
++    endif
++  endforeach
+ endif
+ 
+ with_intel_vk = _vulkan_drivers.contains('intel')
