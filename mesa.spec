@@ -1138,6 +1138,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/lima_disasm
 %endif
 %{_libdir}/dri/*.so
+%ifarch %{armx} %{riscv}
+%{_libdir}/libpowervr_rogue.so
+%endif
 %if %{with opencl}
 %{_libdir}/gallium-pipe/*.so
 %endif
