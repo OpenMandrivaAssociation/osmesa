@@ -24,7 +24,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 3
+#define relc 3
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -50,11 +50,7 @@
 # an LLVM change (such as the r600 -> AMDGPU rename)
 %bcond_without r600
 
-%if "%{relc}" != ""
-%define vsuffix -rc%{relc}
-%else
-%define vsuffix %{nil}
-%endif
+%define vsuffix %{?relc:-rc%{relc}}
 
 %define osmesamajor 8
 %define libosmesa %mklibname osmesa %{osmesamajor}
@@ -153,14 +149,14 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	22.2.0
-%if "%{relc}%{git}" == ""
+%if "%{?relc:1}%{git}" == ""
 Release:	1
 %else
-%if "%{relc}" != ""
+%if "%{?relc:1}" != ""
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}4
+Release:	%{?relc:0.rc%{relc}.}1
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
