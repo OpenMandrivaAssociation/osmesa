@@ -198,7 +198,6 @@ Patch0:		mesa-20.1.1-fix-opencl.patch
 Source50:	test.c
 
 #Patch1:		mesa-19.2.3-arm32-buildfix.patch
-Patch2:		mesa-22.1.0-rc4-compile.patch
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
