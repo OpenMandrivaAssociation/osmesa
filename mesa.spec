@@ -205,7 +205,6 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/7170
 Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/17803.patch
-Patch7:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/18039.patch
 
 Patch8:		mesa-buildsystem-improvements.patch
 
