@@ -968,6 +968,8 @@ if ! %meson32 \
 	-Dplatforms=wayland,x11 \
 	-Dvulkan-layers=device-select,overlay \
 	-Dvulkan-drivers=auto \
+	-Dvulkan-beta=true \
+	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
 	-Dglvnd=true \
@@ -1057,6 +1059,8 @@ if ! %meson \
 	-Dvulkan-drivers=auto,virtio-experimental \
 %endif
 %endif
+	-Dvulkan-beta=true \
+	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
 	-Dglvnd=true \
