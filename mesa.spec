@@ -24,7 +24,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-#define relc 3
+%define relc 2
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -148,7 +148,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	22.2.3
+Version:	22.3.0
 %if "%{?relc:1}%{git}" == ""
 Release:	1
 %else
@@ -202,9 +202,6 @@ Source50:	test.c
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
-
-# https://gitlab.freedesktop.org/mesa/mesa/-/issues/7170
-Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/17803.patch
 
 Patch8:		mesa-buildsystem-improvements.patch
 
@@ -283,7 +280,6 @@ BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	pkgconfig(xv)
-BuildRequires:	pkgconfig(xvmc)
 #BuildRequires:	pkgconfig(valgrind)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
@@ -300,7 +296,6 @@ BuildRequires:	cmake(OpenCLHeaders)
 BuildRequires:	cmake(OpenCLICDLoader)
 BuildRequires:	clang
 %endif
-BuildRequires:	pkgconfig(xvmc)
 %if %{with vdpau}
 BuildRequires:	pkgconfig(vdpau) >= 0.4.1
 %endif
@@ -330,7 +325,6 @@ BuildRequires:	devel(libXrandr)
 BuildRequires:	devel(libxcb-dri3)
 BuildRequires:	devel(libxcb-present)
 BuildRequires:	devel(libXv)
-BuildRequires:	devel(libXvMC)
 BuildRequires:	devel(libxcb)
 BuildRequires:	devel(libXau)
 BuildRequires:	devel(libXdmcp)
@@ -364,7 +358,7 @@ BuildRequires:	libLLVMSPIRVLib-static-devel
 Mesa is an OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library.
 
 %package -n %{dridrivers}
-Summary:	Mesa DRI, XvMC and Vulkan drivers
+Summary:	Mesa DRI and Vulkan drivers
 Group:		System/Libraries
 %rename		%{dridrivers}-swrast
 Conflicts:	%{dridrivers}-swrast <= 22.0.0-0.rc2.1
@@ -412,7 +406,7 @@ Requires:	vulkan-loader
 Obsoletes:	%{_lib}XvMCgallium1 <= 22.0.0-0.rc2.1
 
 %description -n %{dridrivers}
-DRI, XvMC and Vulkan drivers.
+DRI and Vulkan drivers.
 
 %ifarch %{armx} %{riscv}
 %package -n freedreno-tools
@@ -645,7 +639,7 @@ This package contains the headers needed to compile Direct3D 9 programs.
 
 %if %{with compat32}
 %package -n %{dridrivers32}
-Summary:	Mesa DRI, XvMC and Vulkan drivers (32-bit)
+Summary:	Mesa DRI and Vulkan drivers (32-bit)
 Group:		System/Libraries
 %rename		%{dridrivers32}-swrast
 Conflicts:	%{dridrivers32}-swrast <= 22.0.0-0.rc2.1
@@ -663,7 +657,7 @@ Conflicts:	%{dridrivers32}-nouveau <= 22.0.0-0.rc2.1
 Requires:	libvulkan1
 
 %description -n %{dridrivers32}
-DRI, XvMC and Vulkan drivers.
+DRI and Vulkan drivers.
 
 %package -n %{lib32gl}
 Summary:	Files for Mesa (GL and GLX libs) (32-bit)
@@ -976,14 +970,12 @@ if ! %meson32 \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 	-Dopencl-spirv=true \
-	-Dopencl-native=true \
 %else
 	-Dgallium-opencl=disabled \
 %endif
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=enabled \
-	-Dgallium-xvmc=enabled \
 	-Dgallium-nine=true \
 	-Dgallium-drivers=auto,crocus,zink \
 	-Ddri3=enabled \
@@ -1010,9 +1002,9 @@ rm llvm-config
 %endif
 
 # FIXME keep in sync with with_tools=all definition from meson.build
-TOOLS="drm-shim,dlclose-skip,glsl,nir,nouveau,xvmc"
+TOOLS="drm-shim,dlclose-skip,glsl,nir,nouveau"
 %ifarch %{armx}
-TOOLS="$TOOLS,etnaviv,freedreno,lima,panfrost"
+TOOLS="$TOOLS,etnaviv,freedreno,lima,panfrost,imagination"
 %endif
 %ifarch %{ix86} %{x86_64}
 %if %{with intel}
@@ -1034,17 +1026,18 @@ if ! %meson \
 %else
 	-Dgallium-drivers=auto,crocus,zink \
 %endif
+%ifarch %{x86_64}
+	-Dintel-clc=enabled \
+%endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 	-Dopencl-spirv=true \
-	-Dopencl-native=true \
 %else
 	-Dgallium-opencl=disabled \
 %endif
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=enabled \
-	-Dgallium-xvmc=enabled \
 	-Dgallium-nine=true \
 	-Dglx=dri \
 	-Dplatforms=wayland,x11 \
@@ -1109,6 +1102,9 @@ rm -rf	%{buildroot}%{_includedir}/GL/gl.h \
 	%{buildroot}%{_libdir}/libGLESv1_CM.so* \
 	%{buildroot}%{_libdir}/libGLESv2.so*
 
+# Useless, static lib without headers
+rm %{buildroot}%{_libdir}/libgrl.a
+
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
 %endif
@@ -1142,8 +1138,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with opencl}
 %{_libdir}/gallium-pipe/*.so
 %endif
-%{_libdir}/libXvMC*.so
-%{_libdir}/libXvMC*.so.1*
 %{_libdir}/lib*_noop_drm_shim.so
 # vulkan stuff
 %{_libdir}/libVkLayer_*.so
@@ -1221,8 +1215,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %if %{with egl}
 %files -n %{devegl}
-%{_includedir}/EGL/eglextchromium.h
 %{_includedir}/EGL/eglmesaext.h
+%{_includedir}/EGL/eglext_angle.h
 %{_libdir}/libEGL_mesa.so
 %endif
 
@@ -1288,12 +1282,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/glsl_test
 %{_bindir}/nouveau_compiler
 %{_bindir}/spirv2nir
-%{_bindir}/xvmc_bench
-%{_bindir}/xvmc_blocks
-%{_bindir}/xvmc_context
-%{_bindir}/xvmc_rendering
-%{_bindir}/xvmc_subpicture
-%{_bindir}/xvmc_surface
 %{_libdir}/libdlclose-skip.so
 
 %if %{with compat32}
@@ -1356,8 +1344,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers32}
 %{_prefix}/lib/dri/*.so
 %{_prefix}/lib/gallium-pipe/*.so
-%{_prefix}/lib/libXvMC*.so
-%{_prefix}/lib/libXvMC*.so.1*
 %{_prefix}/lib/libVkLayer_*.so
 %{_prefix}/lib/libvulkan_*.so
 %{_prefix}/lib/vdpau/libvdpau_*.so*

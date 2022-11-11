@@ -1,7 +1,7 @@
-diff -up mesa-22.2.0-rc3/meson.build.omv~ mesa-22.2.0-rc3/meson.build
---- mesa-22.2.0-rc3/meson.build.omv~	2022-09-11 04:26:30.915591863 +0200
-+++ mesa-22.2.0-rc3/meson.build	2022-09-11 04:28:24.473637972 +0200
-@@ -184,6 +184,12 @@ with_dri = dri_drivers.length() != 0
+diff -up mesa-22.3.0-rc2/meson.build.3~ mesa-22.3.0-rc2/meson.build
+--- mesa-22.3.0-rc2/meson.build.3~	2022-11-10 13:32:08.447637431 +0100
++++ mesa-22.3.0-rc2/meson.build	2022-11-10 13:36:38.602764575 +0100
+@@ -182,6 +182,12 @@ endif
  
  gallium_drivers = get_option('gallium-drivers')
  if gallium_drivers.contains('auto')
@@ -14,7 +14,7 @@ diff -up mesa-22.2.0-rc3/meson.build.omv~ mesa-22.2.0-rc3/meson.build
    if system_has_kms_drm
      # TODO: PPC, Sparc
      if ['x86', 'x86_64'].contains(host_machine.cpu_family())
-@@ -211,6 +217,11 @@ if gallium_drivers.contains('auto')
+@@ -209,6 +215,11 @@ if gallium_drivers.contains('auto')
      error('Unknown OS @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
            host_machine.system()))
    endif
@@ -26,7 +26,7 @@ diff -up mesa-22.2.0-rc3/meson.build.omv~ mesa-22.2.0-rc3/meson.build
  endif
  with_gallium_radeonsi = gallium_drivers.contains('radeonsi')
  with_gallium_r300 = gallium_drivers.contains('r300')
-@@ -249,6 +260,12 @@ endif
+@@ -252,6 +263,12 @@ endif
  
  _vulkan_drivers = get_option('vulkan-drivers')
  if _vulkan_drivers.contains('auto')
@@ -38,8 +38,8 @@ diff -up mesa-22.2.0-rc3/meson.build.omv~ mesa-22.2.0-rc3/meson.build
 +  endforeach
    if system_has_kms_drm
      if host_machine.cpu_family().startswith('x86')
-       _vulkan_drivers = ['amd', 'intel', 'swrast']
-@@ -265,6 +282,11 @@ if _vulkan_drivers.contains('auto')
+       _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'swrast']
+@@ -268,6 +285,11 @@ if _vulkan_drivers.contains('auto')
      error('Unknown OS @0@. Please pass -Dvulkan-drivers to set driver options. Patches gladly accepted to fix this.'.format(
            host_machine.system()))
    endif
