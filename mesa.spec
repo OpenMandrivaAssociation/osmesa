@@ -1106,8 +1106,8 @@ rm -rf	%{buildroot}%{_includedir}/GL/gl.h \
 	%{buildroot}%{_libdir}/libGLESv1_CM.so* \
 	%{buildroot}%{_libdir}/libGLESv2.so*
 
-# Useless, static lib without headers
-rm %{buildroot}%{_libdir}/libgrl.a
+# Useless, static lib without headers [optional because it's Intel specific]
+[ -e %{buildroot}%{_libdir}/libgrl.a ] && rm %{buildroot}%{_libdir}/libgrl.a
 
 %ifarch %{x86_64}
 mkdir -p %{buildroot}%{_prefix}/lib/dri
@@ -1281,6 +1281,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 %ifarch %{armx}
 %{_bindir}/etnaviv_compiler
+%{_bindir}/panfrostdump
+%{_bindir}/replay
+%{_bindir}/rogue_compiler
 %endif
 %{_bindir}/glsl_compiler
 %{_bindir}/glsl_test
