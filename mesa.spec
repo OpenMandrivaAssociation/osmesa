@@ -253,7 +253,9 @@ BuildRequires:	elfutils-devel
 %ifarch %{ix86}
 BuildRequires:	libatomic-devel
 %endif
-BuildRequires:	python-mako >= 0.8.0
+BuildRequires:	python
+BuildRequires:	python%{pyver}dist(ply)
+BuildRequires:	python%{pyver}dist(mako) >= 0.8.0
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(libglvnd)
