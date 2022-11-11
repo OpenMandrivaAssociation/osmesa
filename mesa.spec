@@ -293,6 +293,8 @@ BuildRequires:	pkgconfig(libconfig)
 BuildRequires:	pkgconfig(SPIRV-Tools)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
+BuildRequires:	libclc-amdgcn
+BuildRequires:	libclc-spirv
 BuildRequires:	cmake(Clang)
 BuildRequires:	cmake(OpenCLHeaders)
 BuildRequires:	cmake(OpenCLICDLoader)
