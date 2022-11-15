@@ -156,7 +156,7 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}1
+Release:	%{?relc:0.rc%{relc}.}2
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -204,6 +204,10 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 #Patch15:	mesa-9.2-hardware-float.patch
 
 Patch8:		mesa-buildsystem-improvements.patch
+
+# Make VirtualBox great again
+# Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
+Patch10:	mesa-22.3-make-vbox-great-again.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa

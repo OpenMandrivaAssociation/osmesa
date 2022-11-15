@@ -1,0 +1,17 @@
+diff -up mesa-22.3.0-rc2/src/glx/drisw_glx.c.omv~ mesa-22.3.0-rc2/src/glx/drisw_glx.c
+--- mesa-22.3.0-rc2/src/glx/drisw_glx.c.omv~	2022-11-15 14:24:48.279252560 +0100
++++ mesa-22.3.0-rc2/src/glx/drisw_glx.c	2022-11-15 14:28:01.270435951 +0100
+@@ -1055,7 +1055,12 @@ driswCreateScreen(int screen, struct glx
+ {
+    const struct drisw_display *pdpyp = (struct drisw_display *)priv->driswDisplay;
+ 
+-   return driswCreateScreenDriver(screen, priv, pdpyp->zink ? "zink" : "swrast");
++   struct glx_screen *ret = driswCreateScreenDriver(screen, priv, pdpyp->zink ? "zink" : "swrast");
++   if (!ret && pdpyp->zink) { /* Fall back to swrast */
++      ((struct drisw_display*)pdpyp)->zink = false;
++      ret = driswCreateScreenDriver(screen, priv, "swrast");
++   }
++   return ret;
+ }
+ 
+ /* Called from __glXFreeDisplayPrivate.
