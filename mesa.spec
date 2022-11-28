@@ -18,7 +18,9 @@
 
 # -fno-strict-aliasing is added because of numerous warnings, strict
 # aliasing might generate broken code.
-%global optflags %{optflags} -O3 -fno-strict-aliasing -flto=thin
+# (tpg) imho -g3 here is for someone who is developing graphics drivers
+# or trying to pin point a specific issue. Nobody install debug symbols by default
+%global optflags %{optflags} -O3 -fno-strict-aliasing -flto=thin -g1
 %global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin
 
 %define git %{nil}
@@ -223,8 +225,8 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
-Patch100:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/57e8d21ffffde3895b596c08df1db3dc46c8e4c4.patch
-
+#Patch100:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/4b19725ee525f6f0b5785436680cea63a21445a1.patch
+Patch100:	https://git.alpinelinux.org/aports/plain/main/mesa/0001-Revert-panfrost-Require-64-byte-alignment-on-imports.patch
 # Mandriva & Mageia patches
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
