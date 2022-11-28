@@ -223,6 +223,7 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
 
 # Cherry picks
+Patch100:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/57e8d21ffffde3895b596c08df1db3dc46c8e4c4.patch
 
 # Mandriva & Mageia patches
 
