@@ -26,7 +26,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 4
+#define relc 4
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -226,7 +226,6 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 
 # Cherry picks
 #Patch100:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/4b19725ee525f6f0b5785436680cea63a21445a1.patch
-Patch100:	https://git.alpinelinux.org/aports/plain/main/mesa/0001-Revert-panfrost-Require-64-byte-alignment-on-imports.patch
 # Mandriva & Mageia patches
 
 # git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
