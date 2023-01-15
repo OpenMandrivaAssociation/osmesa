@@ -1288,6 +1288,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %ifarch %{armx}
 %{_bindir}/etnaviv_compiler
 %{_bindir}/panfrostdump
+%{_bindir}/panfrost_texfeatures
+%{_bindir}/rddecompiler
 %{_bindir}/replay
 %{_bindir}/rogue_compiler
 %endif
