@@ -158,10 +158,10 @@ Release:	1
 %if "%{git}" != ""
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}1
+Release:	%{?relc:0.rc%{relc}.}2
 %endif
 %else
-Release:	%{?git:0.%{git}.}1
+Release:	%{?git:0.%{git}.}2
 %endif
 %endif
 Group:		System/Libraries
@@ -987,7 +987,7 @@ if ! %meson32 \
 	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=enabled \
 	-Dgallium-nine=true \
-	-Dgallium-drivers=auto,crocus,zink \
+	-Dgallium-drivers=auto,crocus \
 	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
@@ -1034,7 +1034,7 @@ if ! %meson \
 %ifarch %{armx}
 	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink \
 %else
-	-Dgallium-drivers=auto,crocus,zink \
+	-Dgallium-drivers=auto,crocus \
 %endif
 %ifarch %{x86_64}
 	-Dintel-clc=enabled \
