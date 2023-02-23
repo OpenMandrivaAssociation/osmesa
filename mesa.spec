@@ -26,7 +26,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 5
+#define relc 5
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -52,7 +52,7 @@
 # an LLVM change (such as the r600 -> AMDGPU rename)
 %bcond_without r600
 
-%define vsuffix %{?relc:-rc%{relc}}
+%define vsuffix %{?relc:-rc%{relc}}%{!?relc:%{nil}}
 
 %define osmesamajor 8
 %define libosmesa %mklibname osmesa %{osmesamajor}
