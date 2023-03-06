@@ -152,7 +152,7 @@ Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.0.0
 %if "%{?relc:1}%{git}" == ""
-Release:	1
+Release:	2
 %else
 %if "%{?relc:1}" != ""
 %if "%{git}" != ""
@@ -210,6 +210,21 @@ Patch8:		mesa-buildsystem-improvements.patch
 # Make VirtualBox great again
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
 Patch10:	mesa-22.3-make-vbox-great-again.patch
+
+# From Panfork https://gitlab.com/panfork/mesa
+# Unfortunately the repository is a mess making a clean
+# rebase virtually impossible. This is the result of
+# running clang-format to get rid of the slew of whitespace-only
+# changes, then running diff.
+# This is in sync with panfork commit 120202c675749c5ef81ae4c8cdc30019b4de08f4,
+# hopefully adding later commits will be less painful
+Patch20:	mesa-23.0.0-panfork-src-gallium-drivers-panfrost.patch
+# In addition to the steps described above, panfork was prepared by
+# adapting the modified directory structure (src/panfrost/compiler)
+# from upstream mesa
+Patch21:	mesa-23.0.0-panfork-src-panfrost.patch
+# There are no relevant patches in panform src/gallium/winsys/panfrost.
+Source22:	dma-buf.h
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -933,6 +948,9 @@ Tools for debugging Mesa drivers.
 %autosetup -p1 -n mesa-%{version}%{vsuffix}
 %endif
 chmod +x %{SOURCE5}
+
+mkdir -p include/dma-uapi
+cp %{S:22} include/dma-uapi/
 
 %build
 %if %{with gcc}
