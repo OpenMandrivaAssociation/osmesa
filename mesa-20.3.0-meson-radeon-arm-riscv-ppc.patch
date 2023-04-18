@@ -1,7 +1,7 @@
-diff -up mesa-22.3.0-rc1/meson.build.2~ mesa-22.3.0-rc1/meson.build
---- mesa-22.3.0-rc1/meson.build.2~	2022-11-02 20:48:31.000000000 +0100
-+++ mesa-22.3.0-rc1/meson.build	2022-11-10 13:27:29.138798429 +0100
-@@ -192,9 +192,10 @@ if gallium_drivers.contains('auto')
+diff -up mesa-23.1.0-rc1/meson.build.2~ mesa-23.1.0-rc1/meson.build
+--- mesa-23.1.0-rc1/meson.build.2~	2023-04-15 00:08:04.000000000 +0200
++++ mesa-23.1.0-rc1/meson.build	2023-04-19 00:39:47.098563375 +0200
+@@ -135,9 +135,10 @@ if gallium_drivers.contains('auto')
      elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
        gallium_drivers = [
          'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
@@ -14,14 +14,16 @@ diff -up mesa-22.3.0-rc1/meson.build.2~ mesa-22.3.0-rc1/meson.build
        gallium_drivers = [
          'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'swrast'
        ]
-@@ -254,9 +255,7 @@ if _vulkan_drivers.contains('auto')
+@@ -212,11 +213,7 @@ if _vulkan_drivers.contains('auto')
    if system_has_kms_drm
      if host_machine.cpu_family().startswith('x86')
        _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'swrast']
 -    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
 -      _vulkan_drivers = ['swrast']
 -    elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
-+    elif ['arm', 'aarch64', 'mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
+-      _vulkan_drivers = ['amd', 'swrast']
+-    elif ['loongarch64'].contains(host_machine.cpu_family())
++    elif ['arm', 'aarch64', 'loongarch64', 'mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
        _vulkan_drivers = ['amd', 'swrast']
      else
        error('Unknown architecture @0@. Please pass -Dvulkan-drivers to set driver options. Patches gladly accepted to fix this.'.format(

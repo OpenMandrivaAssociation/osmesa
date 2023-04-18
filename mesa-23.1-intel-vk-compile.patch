@@ -1,0 +1,13 @@
+diff -up mesa-23.1.0-rc1/src/intel/vulkan/genX_video.c.omv~ mesa-23.1.0-rc1/src/intel/vulkan/genX_video.c
+--- mesa-23.1.0-rc1/src/intel/vulkan/genX_video.c.omv~	2023-04-19 01:12:41.982714094 +0200
++++ mesa-23.1.0-rc1/src/intel/vulkan/genX_video.c	2023-04-19 01:12:55.692822662 +0200
+@@ -441,6 +441,9 @@ genX(CmdDecodeVideoKHR)(VkCommandBuffer
+ #ifdef VK_ENABLE_BETA_EXTENSIONS
+ void
+ genX(CmdEncodeVideoKHR)(VkCommandBuffer commandBuffer,
++                        const VkVideoEncodeInfoKHR *pEncodeInfo);
++void
++genX(CmdEncodeVideoKHR)(VkCommandBuffer commandBuffer,
+                         const VkVideoEncodeInfoKHR *pEncodeInfo)
+ {
+ }

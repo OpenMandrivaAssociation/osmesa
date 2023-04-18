@@ -26,7 +26,7 @@
 %define git %{nil}
 %define git_branch %(echo %{version} |cut -d. -f1-2)
 
-#define relc 5
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -150,7 +150,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	23.0.2
+Version:	23.1.0
 %if "%{?relc:1}%{git}" == ""
 Release:	1
 %else
@@ -193,6 +193,11 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # which for some reason calls back into the OpenCL ICD instead
 # of calling its own function by the same name.
 Patch0:		mesa-20.1.1-fix-opencl.patch
+# Use llvm-config to detect llvm, since the newer method
+# finds /usr/lib64/libLLVM-16.so even for 32-bit builds
+Patch1:		mesa-23.1-x86_32-llvm-detection.patch
+# Fix intel-vk build with clang 16 and gcc 13
+Patch2:		mesa-23.1-intel-vk-compile.patch
 # Not used in the spec; this is a test case to verify patch0
 # is still needed. If this code works without the patch, the
 # patch can be removed. If it crashes/takes forever (infinite
@@ -218,13 +223,16 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 # changes, then running diff.
 # This is in sync with panfork commit 120202c675749c5ef81ae4c8cdc30019b4de08f4,
 # hopefully adding later commits will be less painful
-Patch20:	mesa-23.0.0-panfork-src-gallium-drivers-panfrost.patch
+#Patch20:	mesa-23.0.0-panfork-src-gallium-drivers-panfrost.patch
 # In addition to the steps described above, panfork was prepared by
 # adapting the modified directory structure (src/panfrost/compiler)
 # from upstream mesa
-Patch21:	mesa-23.0.0-panfork-src-panfrost.patch
+#Patch21:	mesa-23.0.0-panfork-src-panfrost.patch
 # There are no relevant patches in panform src/gallium/winsys/panfrost.
-Source22:	dma-buf.h
+# Nowadays, the panfrost v10-wip branch contains another CSF implementation
+# with better changes of landing upstream, so let's use that...
+Patch20:        https://gitlab.freedesktop.org/panfrost/mesa/-/commit/f2a48379c435222af2b92bc18bb205704e53789a.patch
+Patch21:        https://gitlab.freedesktop.org/panfrost/mesa/-/commit/cdbab2d25a2807fbf237afdf02c7b7bd35f7a067.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -303,7 +311,7 @@ BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	pkgconfig(xv)
-#BuildRequires:	pkgconfig(valgrind)
+BuildRequires:	pkgconfig(valgrind)
 # for libsupc++.a
 BuildRequires:	stdc++-static-devel
 BuildRequires:	cmake(Polly)
@@ -949,9 +957,6 @@ Tools for debugging Mesa drivers.
 %endif
 chmod +x %{SOURCE5}
 
-mkdir -p include/dma-uapi
-cp %{S:22} include/dma-uapi/
-
 %build
 %if %{with gcc}
 export CC=gcc
@@ -994,6 +999,8 @@ if ! %meson32 \
 	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
+	-Dandroid-libbacktrace=disabled \
+	-Dvalgrind=disabled \
 	-Dglvnd=true \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
@@ -1049,6 +1056,7 @@ if ! %meson \
 	-Db_ndebug=true \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
+	-Dandroid-libbacktrace=disabled \
 %ifarch %{armx}
 	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink \
 %else
