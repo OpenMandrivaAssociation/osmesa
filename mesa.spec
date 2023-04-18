@@ -320,6 +320,7 @@ BuildRequires:	pkgconfig(libarchive)
 BuildRequires:	pkgconfig(lua)
 BuildRequires:	pkgconfig(libconfig)
 BuildRequires:	pkgconfig(SPIRV-Tools)
+BuildRequires:	pkgconfig(libunwind-llvm)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	libclc-amdgcn
