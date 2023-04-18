@@ -320,7 +320,7 @@ BuildRequires:	pkgconfig(libarchive)
 BuildRequires:	pkgconfig(lua)
 BuildRequires:	pkgconfig(libconfig)
 BuildRequires:	pkgconfig(SPIRV-Tools)
-BuildRequires:	pkgconfig(libunwind-llvm)
+BuildRequires:	pkgconfig(libunwind)
 %if %{with opencl}
 BuildRequires:	pkgconfig(libclc)
 BuildRequires:	libclc-amdgcn
@@ -371,7 +371,7 @@ BuildRequires:	devel(libwayland-client)
 BuildRequires:	devel(libwayland-server)
 BuildRequires:	devel(libffi)
 BuildRequires:	devel(libelf)
-BuildRequires:	libunwind-devel
+BuildRequires:	libunwind-nongnu-devel
 BuildRequires:	devel(libva)
 BuildRequires:	devel(libz)
 BuildRequires:	devel(libexpat)
