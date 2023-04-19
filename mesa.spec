@@ -23,8 +23,8 @@
 %global optflags %{optflags} -O3 -fno-strict-aliasing -flto=thin -g1
 %global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin
 
-%define git %{nil}
-%define git_branch %(echo %{version} |cut -d. -f1-2)
+#define git %{nil}
+#define git_branch %(echo %{version} |cut -d. -f1-2)
 
 %define relc 1
 
@@ -151,11 +151,11 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.1.0
-%if "%{?relc:1}%{git}" == ""
+%if ! 0%{?relc:1}%{?git:1}
 Release:	1
 %else
 %if "%{?relc:1}" != ""
-%if "%{git}" != ""
+%if 0%{?git:1}
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
 Release:	%{?relc:0.rc%{relc}.}1
@@ -167,8 +167,9 @@ Release:	%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
-%if "%{git}" != ""
-Source0:	%{name}-%{git_branch}-%{git}.tar.xz
+%if 0%{?git:1}
+Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
+#Source0:	https://gitlab.freedesktop.org/panfrost/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
 %else
 Source0:	https://mesa.freedesktop.org/archive/mesa-%{version}%{vsuffix}.tar.xz
 %endif
@@ -233,6 +234,7 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 # with better changes of landing upstream, so let's use that...
 Patch20:        https://gitlab.freedesktop.org/panfrost/mesa/-/commit/f2a48379c435222af2b92bc18bb205704e53789a.patch
 Patch21:        https://gitlab.freedesktop.org/panfrost/mesa/-/commit/cdbab2d25a2807fbf237afdf02c7b7bd35f7a067.patch
+Patch22:	mesa-panfrost-csf-compile.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
@@ -951,8 +953,8 @@ Group:		Development/Tools
 Tools for debugging Mesa drivers.
 
 %prep
-%if "%{git}" != ""
-%autosetup -p1 -n %{name}-%{git_branch}-%{git}
+%if 0%{?git:1}
+%autosetup -p1 -n %{name}-%{git}
 %else
 %autosetup -p1 -n mesa-%{version}%{vsuffix}
 %endif
@@ -1318,7 +1320,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/panfrost_texfeatures
 %{_bindir}/rddecompiler
 %{_bindir}/replay
-%{_bindir}/rogue_compiler
 %endif
 %{_bindir}/glsl_compiler
 %{_bindir}/glsl_test
