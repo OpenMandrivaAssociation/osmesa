@@ -1,0 +1,53 @@
+From 99cf5675d2138505335fb8cdd7536682a957b0ba Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Tue, 18 Apr 2023 18:33:29 +0200
+Subject: [PATCH] pancsf: Make sure we wait for BO idleness before unmapping
+ imported BOs
+
+Otherwise we might unmap/free BOs that are still used by in-flight jobs.
+---
+ src/panfrost/lib/pan_bo.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/src/panfrost/lib/pan_bo.c b/src/panfrost/lib/pan_bo.c
+index 4338eb74ac1..808f6db2608 100644
+--- a/src/panfrost/lib/pan_bo.c
++++ b/src/panfrost/lib/pan_bo.c
+@@ -160,18 +160,10 @@ panfrost_bo_free(struct panfrost_bo *bo)
+    struct panfrost_device *dev = bo->dev;
+    int ret;
+ 
+-   ret = drmIoctl(bo->dev->fd, DRM_IOCTL_GEM_CLOSE, &gem_close);
+-   if (ret) {
+-      fprintf(stderr, "DRM_IOCTL_GEM_CLOSE failed: %m\n");
+-      assert(0);
+-   }
+-
+    if (bo->dev->arch >= 10) {
+-      if (bo->sync.handle && bo->sync.point) {
+-         ret = drmSyncobjTimelineWait(bo->dev->fd, &bo->sync.handle,
+-                                      &bo->sync.point, 1, INT64_MAX,
+-                                      DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
+-      }
++      /* Make sure all jobs are done accessing this buffer before unmapping. */
++      ret = panfrost_bo_wait(bo, INT64_MAX, true);
++      assert(ret);
+ 
+       struct drm_pancsf_vm_unmap unmap = {
+          .vm_id = bo->dev->vm_id,
+@@ -185,7 +177,12 @@ panfrost_bo_free(struct panfrost_bo *bo)
+       util_vma_heap_free(&dev->vma_heap, bo->ptr.gpu, bo->size);
+ 
+       drmSyncobjDestroy(dev->fd, bo->sync.handle);
++   }
+ 
++   ret = drmIoctl(bo->dev->fd, DRM_IOCTL_GEM_CLOSE, &gem_close);
++   if (ret) {
++      fprintf(stderr, "DRM_IOCTL_GEM_CLOSE failed: %m\n");
++      assert(0);
+    }
+ 
+    /* BO will be freed with the sparse array, but zero to indicate free */
+-- 
+GitLab
+

@@ -1,4 +1,4 @@
-From f2a48379c435222af2b92bc18bb205704e53789a Mon Sep 17 00:00:00 2001
+From fed96b2fd17f66c5d9d2fffc75c8d61aebc11d5f Mon Sep 17 00:00:00 2001
 From: Alyssa Rosenzweig <alyssa@collabora.com>
 Date: Tue, 16 Aug 2022 00:10:00 +0000
 Subject: [PATCH] panfrost: v10 support
@@ -517,7 +517,7 @@ index 1e3142367fd..ccabf1d8afe 100644
  
  foreach ver : panfrost_versions
 diff --git a/src/gallium/drivers/panfrost/pan_cmdstream.c b/src/gallium/drivers/panfrost/pan_cmdstream.c
-index 6d7171c1190..f436e93f573 100644
+index 0594facd8c1..0ffd7827b36 100644
 --- a/src/gallium/drivers/panfrost/pan_cmdstream.c
 +++ b/src/gallium/drivers/panfrost/pan_cmdstream.c
 @@ -34,8 +34,11 @@
@@ -532,7 +532,7 @@ index 6d7171c1190..f436e93f573 100644
  #include "pan_blend.h"
  #include "pan_blitter.h"
  #include "pan_bo.h"
-@@ -2678,12 +2681,70 @@ panfrost_initialize_surface(struct panfrost_batch *batch,
+@@ -2679,12 +2682,70 @@ panfrost_initialize_surface(struct panfrost_batch *batch,
     }
  }
  
@@ -603,7 +603,7 @@ index 6d7171c1190..f436e93f573 100644
     /* Mark the affected buffers as initialized, since we're writing to it.
      * Also, add the surfaces we're writing to to the batch */
  
-@@ -2714,12 +2775,39 @@ emit_fragment_job(struct panfrost_batch *batch, const struct pan_fb_info *pfb)
+@@ -2715,12 +2776,39 @@ emit_fragment_job(struct panfrost_batch *batch, const struct pan_fb_info *pfb)
     assert(batch->maxx > batch->minx);
     assert(batch->maxy > batch->miny);
  
@@ -643,7 +643,7 @@ index 6d7171c1190..f436e93f573 100644
  }
  
  #define DEFINE_CASE(c)                                                         \
-@@ -2978,6 +3066,9 @@ panfrost_update_state_3d(struct panfrost_batch *batch)
+@@ -2979,6 +3067,9 @@ panfrost_update_state_3d(struct panfrost_batch *batch)
  }
  
  #if PAN_ARCH >= 6
@@ -653,7 +653,7 @@ index 6d7171c1190..f436e93f573 100644
  static mali_ptr
  panfrost_batch_get_bifrost_tiler(struct panfrost_batch *batch,
                                   unsigned vertex_count)
-@@ -2987,14 +3078,23 @@ panfrost_batch_get_bifrost_tiler(struct panfrost_batch *batch,
+@@ -2988,14 +3079,23 @@ panfrost_batch_get_bifrost_tiler(struct panfrost_batch *batch,
     if (!vertex_count)
        return 0;
  
@@ -682,7 +682,7 @@ index 6d7171c1190..f436e93f573 100644
  
     t = pan_pool_alloc_desc(&batch->pool.base, TILER_CONTEXT);
     GENX(pan_emit_tiler_ctx)
-@@ -3002,11 +3102,22 @@ panfrost_batch_get_bifrost_tiler(struct panfrost_batch *batch,
+@@ -3003,11 +3103,22 @@ panfrost_batch_get_bifrost_tiler(struct panfrost_batch *batch,
      util_framebuffer_get_num_samples(&batch->key),
      pan_tristate_get(batch->first_provoking_vertex), heap, t.cpu);
  
@@ -707,7 +707,7 @@ index 6d7171c1190..f436e93f573 100644
  /* Packs a primitive descriptor, mostly common between Midgard/Bifrost tiler
   * jobs and Valhall IDVS jobs
   */
-@@ -3048,8 +3159,7 @@ panfrost_emit_primitive(struct panfrost_context *ctx,
+@@ -3049,8 +3160,7 @@ panfrost_emit_primitive(struct panfrost_context *ctx,
  #else
        struct panfrost_compiled_shader *fs = ctx->prog[PIPE_SHADER_FRAGMENT];
  
@@ -717,7 +717,7 @@ index 6d7171c1190..f436e93f573 100644
        cfg.primitive_restart = info->primitive_restart;
  
        /* Non-fixed restart indices should have been lowered */
-@@ -3144,6 +3254,27 @@ panfrost_emit_shader(struct panfrost_batch *batch,
+@@ -3145,6 +3255,27 @@ panfrost_emit_shader(struct panfrost_batch *batch,
  }
  #endif
  
@@ -745,7 +745,7 @@ index 6d7171c1190..f436e93f573 100644
  static void
  panfrost_emit_draw(void *out, struct panfrost_batch *batch, bool fs_required,
                     enum pipe_prim_type prim, mali_ptr pos, mali_ptr fs_vary,
-@@ -3300,6 +3431,42 @@ panfrost_emit_draw(void *out, struct panfrost_batch *batch, bool fs_required,
+@@ -3301,6 +3432,42 @@ panfrost_emit_draw(void *out, struct panfrost_batch *batch, bool fs_required,
  }
  
  #if PAN_ARCH >= 9
@@ -788,7 +788,7 @@ index 6d7171c1190..f436e93f573 100644
  static void
  panfrost_emit_malloc_vertex(struct panfrost_batch *batch,
                              const struct pipe_draw_info *info,
-@@ -3327,15 +3494,9 @@ panfrost_emit_malloc_vertex(struct panfrost_batch *batch,
+@@ -3328,15 +3495,9 @@ panfrost_emit_malloc_vertex(struct panfrost_batch *batch,
  
     pan_section_pack(job, MALLOC_VERTEX_JOB, ALLOCATION, cfg) {
        if (secondary_shader) {
@@ -807,7 +807,7 @@ index 6d7171c1190..f436e93f573 100644
        } else {
           /* Hardware requirement for "no varyings" */
           cfg.vertex_packet_stride = 16;
-@@ -3363,14 +3524,8 @@ panfrost_emit_malloc_vertex(struct panfrost_batch *batch,
+@@ -3364,14 +3525,8 @@ panfrost_emit_malloc_vertex(struct panfrost_batch *batch,
                        fs_required, u_reduced_prim(info->mode), 0, 0, 0);
  
     pan_section_pack(job, MALLOC_VERTEX_JOB, POSITION, cfg) {
@@ -824,7 +824,7 @@ index 6d7171c1190..f436e93f573 100644
                             batch->tls.gpu);
     }
  
-@@ -3382,11 +3537,8 @@ panfrost_emit_malloc_vertex(struct panfrost_batch *batch,
+@@ -3383,11 +3538,8 @@ panfrost_emit_malloc_vertex(struct panfrost_batch *batch,
        if (!secondary_shader)
           continue;
  
@@ -838,7 +838,7 @@ index 6d7171c1190..f436e93f573 100644
     }
  }
  #endif
-@@ -3427,6 +3579,7 @@ panfrost_draw_emit_tiler(struct panfrost_batch *batch,
+@@ -3428,6 +3580,7 @@ panfrost_draw_emit_tiler(struct panfrost_batch *batch,
  }
  #endif
  
@@ -846,7 +846,7 @@ index 6d7171c1190..f436e93f573 100644
  static void
  panfrost_launch_xfb(struct panfrost_batch *batch,
                      const struct pipe_draw_info *info, mali_ptr attribs,
-@@ -3514,6 +3667,7 @@ panfrost_launch_xfb(struct panfrost_batch *batch,
+@@ -3515,6 +3668,7 @@ panfrost_launch_xfb(struct panfrost_batch *batch,
     batch->uniform_buffers[PIPE_SHADER_VERTEX] = saved_ubo;
     batch->push_uniforms[PIPE_SHADER_VERTEX] = saved_push;
  }
@@ -854,7 +854,7 @@ index 6d7171c1190..f436e93f573 100644
  
  /*
   * Increase the vertex count on the batch using a saturating add, and hope the
-@@ -3530,21 +3684,38 @@ panfrost_increase_vertex_count(struct panfrost_batch *batch, uint32_t increment)
+@@ -3531,21 +3685,38 @@ panfrost_increase_vertex_count(struct panfrost_batch *batch, uint32_t increment)
        batch->tiler_ctx.vertex_count = UINT32_MAX;
  }
  
@@ -903,7 +903,7 @@ index 6d7171c1190..f436e93f573 100644
     if ((ctx->dirty & PAN_DIRTY_RASTERIZER) ||
         ((ctx->active_prim == PIPE_PRIM_POINTS) ^
          (info->mode == PIPE_PRIM_POINTS))) {
-@@ -3552,6 +3723,472 @@ panfrost_direct_draw(struct panfrost_batch *batch,
+@@ -3553,6 +3724,472 @@ panfrost_direct_draw(struct panfrost_batch *batch,
        ctx->active_prim = info->mode;
        panfrost_update_shader_variant(ctx, PIPE_SHADER_FRAGMENT);
     }
@@ -1376,7 +1376,7 @@ index 6d7171c1190..f436e93f573 100644
  
     /* Take into account a negative bias */
     ctx->vertex_count =
-@@ -3672,7 +4309,7 @@ panfrost_direct_draw(struct panfrost_batch *batch,
+@@ -3673,7 +4310,7 @@ panfrost_direct_draw(struct panfrost_batch *batch,
     if (panfrost_batch_skip_rasterization(batch))
        return;
  
@@ -1385,7 +1385,7 @@ index 6d7171c1190..f436e93f573 100644
     assert(idvs && "Memory allocated IDVS required on Valhall");
  
     panfrost_emit_malloc_vertex(batch, info, draw, indices, secondary_shader,
-@@ -3703,28 +4340,6 @@ panfrost_direct_draw(struct panfrost_batch *batch,
+@@ -3704,28 +4341,6 @@ panfrost_direct_draw(struct panfrost_batch *batch,
  #endif
  }
  
@@ -1414,7 +1414,7 @@ index 6d7171c1190..f436e93f573 100644
  static void
  panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
                    unsigned drawid_offset,
-@@ -3754,7 +4369,7 @@ panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
+@@ -3755,7 +4370,7 @@ panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
     /* Don't add too many jobs to a single batch. Hardware has a hard limit
      * of 65536 jobs, but we choose a smaller soft limit (arbitrary) to
      * avoid the risk of timeouts. This might not be a good idea. */
@@ -1423,7 +1423,7 @@ index 6d7171c1190..f436e93f573 100644
        batch = panfrost_get_fresh_batch_for_fbo(ctx, "Too many draws");
  
     bool points = (info->mode == PIPE_PRIM_POINTS);
-@@ -3790,13 +4405,14 @@ panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
+@@ -3791,13 +4406,14 @@ panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
           ctx->dirty |= PAN_DIRTY_DRAWID;
           drawid++;
        }
@@ -1441,7 +1441,7 @@ index 6d7171c1190..f436e93f573 100644
  static void
  panfrost_launch_grid(struct pipe_context *pipe,
                       const struct pipe_grid_info *info)
-@@ -3921,6 +4537,7 @@ panfrost_launch_grid(struct pipe_context *pipe,
+@@ -3922,6 +4538,7 @@ panfrost_launch_grid(struct pipe_context *pipe,
                      false);
     panfrost_flush_all_batches(ctx, "Launch grid post-barrier");
  }
@@ -1449,7 +1449,7 @@ index 6d7171c1190..f436e93f573 100644
  
  static void *
  panfrost_create_rasterizer_state(struct pipe_context *pctx,
-@@ -4350,7 +4967,10 @@ prepare_shader(struct panfrost_compiled_shader *state,
+@@ -4356,7 +4973,10 @@ prepare_shader(struct panfrost_compiled_shader *state,
     /* Generic, or IDVS/points */
     pan_pack(ptr.cpu, SHADER_PROGRAM, cfg) {
        cfg.stage = pan_shader_stage(&state->info);
@@ -1461,7 +1461,7 @@ index 6d7171c1190..f436e93f573 100644
        cfg.register_allocation =
           pan_register_allocation(state->info.work_reg_count);
        cfg.binary = state->bin.gpu;
-@@ -4367,7 +4987,7 @@ prepare_shader(struct panfrost_compiled_shader *state,
+@@ -4373,7 +4993,7 @@ prepare_shader(struct panfrost_compiled_shader *state,
     /* IDVS/triangles */
     pan_pack(ptr.cpu + pan_size(SHADER_PROGRAM), SHADER_PROGRAM, cfg) {
        cfg.stage = pan_shader_stage(&state->info);
@@ -1470,7 +1470,7 @@ index 6d7171c1190..f436e93f573 100644
        cfg.register_allocation =
           pan_register_allocation(state->info.work_reg_count);
        cfg.binary = state->bin.gpu + state->info.vs.no_psiz_offset;
-@@ -4414,8 +5034,8 @@ static void
+@@ -4420,8 +5040,8 @@ static void
  preload(struct panfrost_batch *batch, struct pan_fb_info *fb)
  {
     GENX(pan_preload_fb)
@@ -1481,7 +1481,7 @@ index 6d7171c1190..f436e93f573 100644
  }
  
  static void
-@@ -4448,6 +5068,24 @@ init_batch(struct panfrost_batch *batch)
+@@ -4454,6 +5074,24 @@ init_batch(struct panfrost_batch *batch)
     batch->tls.gpu = ptr.opaque[0];
  #endif
  #endif
@@ -2074,7 +2074,7 @@ index 57032548d3a..e53c96ce222 100644
  
  #if defined(GALLIUM_V3D)
 diff --git a/src/panfrost/compiler/bifrost_compile.c b/src/panfrost/compiler/bifrost_compile.c
-index b2c35aa8a1b..25a948bbd05 100644
+index 5512bbea384..0bc59290f94 100644
 --- a/src/panfrost/compiler/bifrost_compile.c
 +++ b/src/panfrost/compiler/bifrost_compile.c
 @@ -1012,7 +1012,7 @@ bi_emit_store_vary(bi_builder *b, nir_intrinsic_instr *instr)
@@ -2774,7 +2774,7 @@ index b0a804e65b9..6b5634f1b65 100644
  pandecode_map_read_write(void)
  {
 diff --git a/src/panfrost/lib/genxml/decode_csf.c b/src/panfrost/lib/genxml/decode_csf.c
-index b3a27197485..5bd81ffefdb 100644
+index 99d0f955761..a64f572a046 100644
 --- a/src/panfrost/lib/genxml/decode_csf.c
 +++ b/src/panfrost/lib/genxml/decode_csf.c
 @@ -249,7 +249,7 @@ pandecode_run_fragment(struct queue_ctx *ctx, struct MALI_CEU_RUN_FRAGMENT *I)
@@ -2814,7 +2814,7 @@ index 139f34b9afa..b5c95d05293 100644
      'pan-arch-v' + ver,
      [
 diff --git a/src/panfrost/lib/pan_bo.c b/src/panfrost/lib/pan_bo.c
-index a5ca834d942..4fb974d1a57 100644
+index 5b686c95424..4338eb74ac1 100644
 --- a/src/panfrost/lib/pan_bo.c
 +++ b/src/panfrost/lib/pan_bo.c
 @@ -28,6 +28,7 @@

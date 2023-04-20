@@ -1,4 +1,4 @@
-From cdbab2d25a2807fbf237afdf02c7b7bd35f7a067 Mon Sep 17 00:00:00 2001
+From 64566dd45f4838b50145a4bb6981c712bc486db7 Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Fri, 7 Apr 2023 14:51:10 +0200
 Subject: [PATCH] panfrost/v10: Take fs_required into account when building
@@ -14,10 +14,10 @@ Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
  1 file changed, 65 insertions(+), 34 deletions(-)
 
 diff --git a/src/gallium/drivers/panfrost/pan_cmdstream.c b/src/gallium/drivers/panfrost/pan_cmdstream.c
-index f436e93f573..1a5a732cb78 100644
+index 0ffd7827b36..3da9d299474 100644
 --- a/src/gallium/drivers/panfrost/pan_cmdstream.c
 +++ b/src/gallium/drivers/panfrost/pan_cmdstream.c
-@@ -3759,9 +3759,11 @@ panfrost_draw(struct panfrost_batch *batch, const struct pipe_draw_info *info,
+@@ -3760,9 +3760,11 @@ panfrost_draw(struct panfrost_batch *batch, const struct pipe_draw_info *info,
  
     struct panfrost_compiled_shader *vs = ctx->prog[PIPE_SHADER_VERTEX];
     struct panfrost_compiled_shader *fs = ctx->prog[PIPE_SHADER_FRAGMENT];
@@ -30,7 +30,7 @@ index f436e93f573..1a5a732cb78 100644
     mali_ptr indices = 0;
  
     if (info->index_size) {
-@@ -3852,8 +3854,14 @@ panfrost_draw(struct panfrost_batch *batch, const struct pipe_draw_info *info,
+@@ -3853,8 +3855,14 @@ panfrost_draw(struct panfrost_batch *batch, const struct pipe_draw_info *info,
     panfrost_emit_shader_regs(batch, PIPE_SHADER_VERTEX,
                               panfrost_get_position_shader(batch, info));
  
@@ -47,7 +47,7 @@ index f436e93f573..1a5a732cb78 100644
  
     if (secondary_shader) {
        ceu_move64_to(b, ceu_reg64(b, 18), panfrost_get_varying_shader(batch));
-@@ -3952,50 +3960,73 @@ panfrost_draw(struct panfrost_batch *batch, const struct pipe_draw_info *info,
+@@ -3953,50 +3961,73 @@ panfrost_draw(struct panfrost_batch *batch, const struct pipe_draw_info *info,
  
        cfg.single_sampled_lines = !rast->multisample;
  

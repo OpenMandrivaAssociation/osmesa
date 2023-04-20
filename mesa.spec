@@ -158,7 +158,7 @@ Release:	1
 %if 0%{?git:1}
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}1
+Release:	%{?relc:0.rc%{relc}.}2
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -232,9 +232,14 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 # There are no relevant patches in panform src/gallium/winsys/panfrost.
 # Nowadays, the panfrost v10-wip branch contains another CSF implementation
 # with better changes of landing upstream, so let's use that...
-Patch20:        https://gitlab.freedesktop.org/panfrost/mesa/-/commit/f2a48379c435222af2b92bc18bb205704e53789a.patch
-Patch21:        https://gitlab.freedesktop.org/panfrost/mesa/-/commit/cdbab2d25a2807fbf237afdf02c7b7bd35f7a067.patch
-Patch22:	mesa-panfrost-csf-compile.patch
+Patch20:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/9167b5afa06f997f7a446a0caccd23df8b55c080.patch
+Patch21:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/fed96b2fd17f66c5d9d2fffc75c8d61aebc11d5f.patch
+Patch22:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/64566dd45f4838b50145a4bb6981c712bc486db7.patch
+Patch23:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/24e42af650730374f8a0958d2f6686b0b089843f.patch
+Patch24:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/7e397c0ae8bd6f42f06b3312a8db36ecb16c209e.patch
+Patch25:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/99cf5675d2138505335fb8cdd7536682a957b0ba.patch
+Patch26:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/8aa5ca2f01a4edcf639edabb0a4acfbda806461a.patch
+Patch30:	mesa-panfrost-csf-compile.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
