@@ -158,7 +158,7 @@ Release:	1
 %if 0%{?git:1}
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}2
+Release:	%{?relc:0.rc%{relc}.}3
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
@@ -239,6 +239,8 @@ Patch23:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/24e42af650730374f
 Patch24:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/7e397c0ae8bd6f42f06b3312a8db36ecb16c209e.patch
 Patch25:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/99cf5675d2138505335fb8cdd7536682a957b0ba.patch
 Patch26:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/8aa5ca2f01a4edcf639edabb0a4acfbda806461a.patch
+Patch27:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/87eb2b5e5932e519e92af84934550c6283ef26c3.patch
+Patch28:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/6f4820ed4b6de13cf0e4b6fb5356c8d07a5468af.patch
 Patch30:	mesa-panfrost-csf-compile.patch
 
 # Instructions to setup your repository clone
