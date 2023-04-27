@@ -26,7 +26,7 @@
 #define git %{nil}
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 2
+%define relc 3
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -158,7 +158,7 @@ Release:	1
 %if 0%{?git:1}
 Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
 %else
-Release:	%{?relc:0.rc%{relc}.}3
+Release:	%{?relc:0.rc%{relc}.}1
 %endif
 %else
 Release:	%{?git:0.%{git}.}1
