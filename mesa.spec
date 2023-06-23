@@ -150,7 +150,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	23.1.2
+Version:	23.1.3
 %if ! 0%{?relc:1}%{?git:1}
 Release:	1
 %else
