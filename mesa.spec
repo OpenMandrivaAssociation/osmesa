@@ -26,7 +26,7 @@
 #define git %{nil}
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-#define relc 4
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -150,7 +150,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	23.1.3
+Version:	23.2.0
 %if ! 0%{?relc:1}%{?git:1}
 Release:	1
 %else
@@ -232,7 +232,7 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 # There are no relevant patches in panform src/gallium/winsys/panfrost.
 # Nowadays, the panfrost v10-wip branch contains another CSF implementation
 # with better changes of landing upstream, so let's use that...
-Patch20:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/9167b5afa06f997f7a446a0caccd23df8b55c080.patch
+# FIXME PORT THOSE
 Patch21:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/fed96b2fd17f66c5d9d2fffc75c8d61aebc11d5f.patch
 Patch22:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/64566dd45f4838b50145a4bb6981c712bc486db7.patch
 Patch23:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/24e42af650730374f8a0958d2f6686b0b089843f.patch
@@ -444,7 +444,11 @@ Conflicts:	%{dridrivers}-panfrost <= 22.0.0-0.rc2.1
 %rename		%{dridrivers}-kmsro
 Conflicts:	%{dridrivers}-kmsro <= 22.0.0-0.rc2.1
 %endif
+# Old OM package
 Provides:	dri-drivers = %{EVRD}
+# Fedora naming, compat Provides: needed to make the
+# zoom RPM install
+Provides:	mesa-dri-drivers = %{EVRD}
 Requires:	vulkan-loader
 Obsoletes:	%{_lib}XvMCgallium1 <= 22.0.0-0.rc2.1
 
@@ -1090,12 +1094,12 @@ if ! %meson \
 	-Degl-native-platform=wayland \
 	-Dvulkan-layers=device-select,overlay \
 %ifarch %{armx}
-	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio-experimental,imagination-experimental \
+	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental \
 %else
 %ifarch %{riscv}
-	-Dvulkan-drivers=auto,virtio-experimental,imagination-experimental \
+	-Dvulkan-drivers=auto,virtio,imagination-experimental \
 %else
-	-Dvulkan-drivers=auto,virtio-experimental \
+	-Dvulkan-drivers=auto,virtio \
 %endif
 %endif
 	-Dvulkan-beta=true \
