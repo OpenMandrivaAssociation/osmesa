@@ -241,6 +241,9 @@ Patch25:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/99cf5675d21385053
 Patch26:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/8aa5ca2f01a4edcf639edabb0a4acfbda806461a.patch
 Patch27:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/87eb2b5e5932e519e92af84934550c6283ef26c3.patch
 Patch28:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/6f4820ed4b6de13cf0e4b6fb5356c8d07a5468af.patch
+Patch29:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/5f4b44aad1d5b527588d6865e011602cb31a1d21.patch
+# d7182... seems to be already merged
+#Patch30:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/d7182f0385ae8e1c1e16ad3351776d70f717c59e.patch
 Patch40:	mesa-panfrost-csf-compile.patch
 Patch41:	pancsf-port-to-23.2-final.patch
 

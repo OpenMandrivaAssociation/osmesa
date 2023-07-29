@@ -1,0 +1,39 @@
+From 5f4b44aad1d5b527588d6865e011602cb31a1d21 Mon Sep 17 00:00:00 2001
+From: Erik Faye-Lund <erik.faye-lund@collabora.com>
+Date: Wed, 21 Jun 2023 11:28:08 +0000
+Subject: [PATCH] squash! panfrost: v10 support
+
+---
+ src/panfrost/vulkan/panvk_vX_cmd_buffer.c | 2 +-
+ src/panfrost/vulkan/panvk_vX_cs.c         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/panfrost/vulkan/panvk_vX_cmd_buffer.c b/src/panfrost/vulkan/panvk_vX_cmd_buffer.c
+index 297e4497c2d..146599e36dc 100644
+--- a/src/panfrost/vulkan/panvk_vX_cmd_buffer.c
++++ b/src/panfrost/vulkan/panvk_vX_cmd_buffer.c
+@@ -431,7 +431,7 @@ panvk_per_arch(cmd_get_tiler_context)(struct panvk_cmd_buffer *cmdbuf,
+    panvk_per_arch(emit_tiler_context)(cmdbuf->device, width, height, &desc);
+    memcpy(batch->tiler.descs.cpu, batch->tiler.templ,
+           pan_size(TILER_CONTEXT) + pan_size(TILER_HEAP));
+-   batch->tiler.ctx.bifrost = batch->tiler.descs.gpu;
++   batch->tiler.ctx.bifrost.ctx = batch->tiler.descs.gpu;
+ }
+ 
+ void
+diff --git a/src/panfrost/vulkan/panvk_vX_cs.c b/src/panfrost/vulkan/panvk_vX_cs.c
+index a409700fb08..db377b8f7ca 100644
+--- a/src/panfrost/vulkan/panvk_vX_cs.c
++++ b/src/panfrost/vulkan/panvk_vX_cs.c
+@@ -540,7 +540,7 @@ panvk_per_arch(emit_tiler_job)(const struct panvk_pipeline *pipeline,
+    panvk_emit_tiler_dcd(pipeline, draw, section);
+ 
+    pan_section_pack(job, TILER_JOB, TILER, cfg) {
+-      cfg.address = draw->tiler_ctx->bifrost;
++      cfg.address = draw->tiler_ctx->bifrost.ctx;
+    }
+    pan_section_pack(job, TILER_JOB, PADDING, padding)
+       ;
+-- 
+GitLab
+
