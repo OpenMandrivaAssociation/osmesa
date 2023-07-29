@@ -244,8 +244,16 @@ Patch28:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/6f4820ed4b6de13cf
 Patch29:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/5f4b44aad1d5b527588d6865e011602cb31a1d21.patch
 # d7182... seems to be already merged
 #Patch30:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/d7182f0385ae8e1c1e16ad3351776d70f717c59e.patch
-Patch40:	mesa-panfrost-csf-compile.patch
-Patch41:	pancsf-port-to-23.2-final.patch
+# And add the Vulkan bits from https://gitlab.freedesktop.org/panfrost/mesa/-/commits/panvk-v10-wip/
+Patch31:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/4eab9a21fdbc86a0871422c76cfb7f7fc0928625-REBASED.patch
+Patch32:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/5dacefe334fad82e1ffa76f044c6bd72d9cb681e-REBASED.patch
+Patch33:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/080fb1ae5fdf222b8fa1a99563416fb7f26bc00f.patch
+Patch34:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/dc3ab3a34374f19d3d6a833aaad93f90d2471a5f.patch
+Patch35:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/95b5989c2b227070d205c32de1ea59187fcfd1c5-REBASED.patch
+Patch36:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/cff43f453ef9448c190cfcd5adc8d98b62d7db36.patch
+Patch37:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/fe5cbcbe5b635dc4c14d641097e4fa09830b9389.patch
+Patch50:	mesa-panfrost-csf-compile.patch
+Patch51:	pancsf-port-to-23.2-final.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa

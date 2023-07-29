@@ -1,0 +1,488 @@
+From 95b5989c2b227070d205c32de1ea59187fcfd1c5 Mon Sep 17 00:00:00 2001
+From: Erik Faye-Lund <erik.faye-lund@collabora.com>
+Date: Wed, 5 Jul 2023 14:42:12 +0000
+Subject: [PATCH] panvk: relegate panvk_meta to bifrost dir
+
+We're not going to use this for Valhall support.
+---
+ src/panfrost/vulkan/bifrost/panvk_meta.h      | 83 +++++++++++++++++++
+ src/panfrost/vulkan/bifrost/panvk_vX_meta.c   |  8 +-
+ .../vulkan/bifrost/panvk_vX_meta_blit.c       | 12 +--
+ .../vulkan/bifrost/panvk_vX_meta_clear.c      | 20 ++---
+ .../vulkan/bifrost/panvk_vX_meta_copy.c       | 64 +++++++-------
+ src/panfrost/vulkan/panvk_private.h           | 65 ++-------------
+ 6 files changed, 143 insertions(+), 109 deletions(-)
+ create mode 100644 src/panfrost/vulkan/bifrost/panvk_meta.h
+
+diff --git a/src/panfrost/vulkan/bifrost/panvk_meta.h b/src/panfrost/vulkan/bifrost/panvk_meta.h
+new file mode 100644
+index 00000000000..74c5c2f6900
+--- /dev/null
++++ b/src/panfrost/vulkan/bifrost/panvk_meta.h
+@@ -0,0 +1,83 @@
++/*
++ * Copyright (C) 2023 Collabora Ltd.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ */
++
++#ifndef PANVK_PRIVATE_H
++#error "Must be included from panvk_private.h"
++#endif
++
++#include "../panvk_mempool.h"
++
++#define PANVK_META_COPY_BUF2IMG_NUM_FORMATS  12
++#define PANVK_META_COPY_IMG2BUF_NUM_FORMATS  12
++#define PANVK_META_COPY_IMG2IMG_NUM_FORMATS  14
++#define PANVK_META_COPY_NUM_TEX_TYPES        5
++#define PANVK_META_COPY_BUF2BUF_NUM_BLKSIZES 5
++
++struct panvk_meta {
++   struct panvk_pool bin_pool;
++   struct panvk_pool desc_pool;
++
++   /* Access to the blitter pools are protected by the blitter
++    * shader/rsd locks. They can't be merged with other binary/desc
++    * pools unless we patch pan_blitter.c to external pool locks.
++    */
++   struct {
++      struct panvk_pool bin_pool;
++      struct panvk_pool desc_pool;
++   } blitter;
++
++   struct {
++      struct {
++         mali_ptr shader;
++         struct pan_shader_info shader_info;
++      } color[3]; /* 3 base types */
++   } clear_attachment;
++
++   struct {
++      struct {
++         mali_ptr rsd;
++      } buf2img[PANVK_META_COPY_BUF2IMG_NUM_FORMATS];
++      struct {
++         mali_ptr rsd;
++      } img2buf[PANVK_META_COPY_NUM_TEX_TYPES]
++               [PANVK_META_COPY_IMG2BUF_NUM_FORMATS];
++      struct {
++         mali_ptr rsd;
++      } img2img[2][PANVK_META_COPY_NUM_TEX_TYPES]
++               [PANVK_META_COPY_IMG2IMG_NUM_FORMATS];
++      struct {
++         mali_ptr rsd;
++      } buf2buf[PANVK_META_COPY_BUF2BUF_NUM_BLKSIZES];
++      struct {
++         mali_ptr rsd;
++      } fillbuf;
++   } copy;
++};
++
++static inline unsigned
++panvk_meta_copy_tex_type(unsigned dim, bool isarray)
++{
++   assert(dim > 0 && dim <= 3);
++   assert(dim < 3 || !isarray);
++   return (((dim - 1) << 1) | (isarray ? 1 : 0));
++}
+diff --git a/src/panfrost/vulkan/bifrost/panvk_vX_meta.c b/src/panfrost/vulkan/bifrost/panvk_vX_meta.c
+index ee9a6c9e159..fd32d822289 100644
+--- a/src/panfrost/vulkan/bifrost/panvk_vX_meta.c
++++ b/src/panfrost/vulkan/bifrost/panvk_vX_meta.c
+@@ -50,9 +50,9 @@ panvk_per_arch(meta_emit_viewport)(struct pan_pool *pool, uint16_t minx,
+ void
+ panvk_per_arch(meta_init)(struct panvk_physical_device *dev)
+ {
+-   panvk_pool_init(&dev->meta.bin_pool, &dev->pdev, NULL, PAN_BO_EXECUTE,
++   panvk_pool_init(&dev->bifrost.meta.bin_pool, &dev->pdev, NULL, PAN_BO_EXECUTE,
+                    16 * 1024, "panvk_meta binary pool", false);
+-   panvk_pool_init(&dev->meta.desc_pool, &dev->pdev, NULL, 0, 16 * 1024,
++   panvk_pool_init(&dev->bifrost.meta.desc_pool, &dev->pdev, NULL, 0, 16 * 1024,
+                    "panvk_meta descriptor pool", false);
+    panvk_per_arch(meta_blit_init)(dev);
+    panvk_per_arch(meta_copy_init)(dev);
+@@ -63,6 +63,6 @@ void
+ panvk_per_arch(meta_cleanup)(struct panvk_physical_device *dev)
+ {
+    panvk_per_arch(meta_blit_cleanup)(dev);
+-   panvk_pool_cleanup(&dev->meta.desc_pool);
+-   panvk_pool_cleanup(&dev->meta.bin_pool);
++   panvk_pool_cleanup(&dev->bifrost.meta.desc_pool);
++   panvk_pool_cleanup(&dev->bifrost.meta.bin_pool);
+ }
+diff --git a/src/panfrost/vulkan/bifrost/panvk_vX_meta_blit.c b/src/panfrost/vulkan/bifrost/panvk_vX_meta_blit.c
+index 24cd3df30d0..da172358fd6 100644
+--- a/src/panfrost/vulkan/bifrost/panvk_vX_meta_blit.c
++++ b/src/panfrost/vulkan/bifrost/panvk_vX_meta_blit.c
+@@ -216,15 +216,15 @@ panvk_per_arch(CmdResolveImage2)(VkCommandBuffer commandBuffer,
+ void
+ panvk_per_arch(meta_blit_init)(struct panvk_physical_device *dev)
+ {
+-   panvk_pool_init(&dev->meta.blitter.bin_pool, &dev->pdev, NULL,
++   panvk_pool_init(&dev->bifrost.meta.blitter.bin_pool, &dev->pdev, NULL,
+                    PAN_BO_EXECUTE, 16 * 1024, "panvk_meta blitter binary pool",
+                    false);
+-   panvk_pool_init(&dev->meta.blitter.desc_pool, &dev->pdev, NULL, 0, 16 * 1024,
++   panvk_pool_init(&dev->bifrost.meta.blitter.desc_pool, &dev->pdev, NULL, 0, 16 * 1024,
+                    "panvk_meta blitter descriptor pool", false);
+    pan_blend_shaders_init(&dev->pdev);
+    GENX(pan_blitter_init)
+-   (&dev->pdev, &dev->meta.blitter.bin_pool.base,
+-    &dev->meta.blitter.desc_pool.base);
++   (&dev->pdev, &dev->bifrost.meta.blitter.bin_pool.base,
++    &dev->bifrost.meta.blitter.desc_pool.base);
+ }
+ 
+ void
+@@ -232,6 +232,6 @@ panvk_per_arch(meta_blit_cleanup)(struct panvk_physical_device *dev)
+ {
+    GENX(pan_blitter_cleanup)(&dev->pdev);
+    pan_blend_shaders_cleanup(&dev->pdev);
+-   panvk_pool_cleanup(&dev->meta.blitter.desc_pool);
+-   panvk_pool_cleanup(&dev->meta.blitter.bin_pool);
++   panvk_pool_cleanup(&dev->bifrost.meta.blitter.desc_pool);
++   panvk_pool_cleanup(&dev->bifrost.meta.blitter.bin_pool);
+ }
+diff --git a/src/panfrost/vulkan/bifrost/panvk_vX_meta_clear.c b/src/panfrost/vulkan/bifrost/panvk_vX_meta_clear.c
+index 2440d55e487..3ed2b4d163f 100644
+--- a/src/panfrost/vulkan/bifrost/panvk_vX_meta_clear.c
++++ b/src/panfrost/vulkan/bifrost/panvk_vX_meta_clear.c
+@@ -258,7 +258,7 @@ panvk_meta_clear_attachment(struct panvk_cmd_buffer *cmdbuf,
+ {
+    struct panvk_physical_device *dev = cmdbuf->device->physical_device;
+    struct panfrost_device *pdev = &dev->pdev;
+-   struct panvk_meta *meta = &cmdbuf->device->physical_device->meta;
++   struct panvk_meta *meta = &cmdbuf->device->physical_device->bifrost.meta;
+    struct panvk_batch *batch = cmdbuf->state.batch;
+    const struct panvk_render_pass *pass = cmdbuf->state.pass;
+    const struct panvk_render_pass_attachment *att =
+@@ -491,20 +491,20 @@ panvk_per_arch(CmdClearAttachments)(VkCommandBuffer commandBuffer,
+ static void
+ panvk_meta_clear_attachment_init(struct panvk_physical_device *dev)
+ {
+-   dev->meta.clear_attachment.color[GLSL_TYPE_UINT].shader =
++   dev->bifrost.meta.clear_attachment.color[GLSL_TYPE_UINT].shader =
+       panvk_meta_clear_color_attachment_shader(
+-         &dev->pdev, &dev->meta.bin_pool.base, GLSL_TYPE_UINT,
+-         &dev->meta.clear_attachment.color[GLSL_TYPE_UINT].shader_info);
++         &dev->pdev, &dev->bifrost.meta.bin_pool.base, GLSL_TYPE_UINT,
++         &dev->bifrost.meta.clear_attachment.color[GLSL_TYPE_UINT].shader_info);
+ 
+-   dev->meta.clear_attachment.color[GLSL_TYPE_INT].shader =
++   dev->bifrost.meta.clear_attachment.color[GLSL_TYPE_INT].shader =
+       panvk_meta_clear_color_attachment_shader(
+-         &dev->pdev, &dev->meta.bin_pool.base, GLSL_TYPE_INT,
+-         &dev->meta.clear_attachment.color[GLSL_TYPE_INT].shader_info);
++         &dev->pdev, &dev->bifrost.meta.bin_pool.base, GLSL_TYPE_INT,
++         &dev->bifrost.meta.clear_attachment.color[GLSL_TYPE_INT].shader_info);
+ 
+-   dev->meta.clear_attachment.color[GLSL_TYPE_FLOAT].shader =
++   dev->bifrost.meta.clear_attachment.color[GLSL_TYPE_FLOAT].shader =
+       panvk_meta_clear_color_attachment_shader(
+-         &dev->pdev, &dev->meta.bin_pool.base, GLSL_TYPE_FLOAT,
+-         &dev->meta.clear_attachment.color[GLSL_TYPE_FLOAT].shader_info);
++         &dev->pdev, &dev->bifrost.meta.bin_pool.base, GLSL_TYPE_FLOAT,
++         &dev->bifrost.meta.clear_attachment.color[GLSL_TYPE_FLOAT].shader_info);
+ }
+ 
+ void
+diff --git a/src/panfrost/vulkan/bifrost/panvk_vX_meta_copy.c b/src/panfrost/vulkan/bifrost/panvk_vX_meta_copy.c
+index f18b8aa77d7..95c43451928 100644
+--- a/src/panfrost/vulkan/bifrost/panvk_vX_meta_copy.c
++++ b/src/panfrost/vulkan/bifrost/panvk_vX_meta_copy.c
+@@ -572,7 +572,7 @@ panvk_meta_copy_img2img(struct panvk_cmd_buffer *cmdbuf,
+    unsigned ms = dst->pimage.layout.nr_samples > 1 ? 1 : 0;
+ 
+    mali_ptr rsd =
+-      cmdbuf->device->physical_device->meta.copy.img2img[ms][texdimidx][fmtidx]
++      cmdbuf->device->physical_device->bifrost.meta.copy.img2img[ms][texdimidx][fmtidx]
+          .rsd;
+ 
+    struct pan_image_view srcview = {
+@@ -701,7 +701,7 @@ panvk_meta_copy_img2img_init(struct panvk_physical_device *dev, bool is_ms)
+    for (unsigned i = 0; i < ARRAY_SIZE(panvk_meta_copy_img2img_fmts); i++) {
+       for (unsigned texdim = 1; texdim <= 3; texdim++) {
+          unsigned texdimidx = panvk_meta_copy_tex_type(texdim, false);
+-         assert(texdimidx < ARRAY_SIZE(dev->meta.copy.img2img[0]));
++         assert(texdimidx < ARRAY_SIZE(dev->bifrost.meta.copy.img2img[0]));
+ 
+          /* No MSAA on 3D textures */
+          if (texdim == 3 && is_ms)
+@@ -709,14 +709,14 @@ panvk_meta_copy_img2img_init(struct panvk_physical_device *dev, bool is_ms)
+ 
+          struct pan_shader_info shader_info;
+          mali_ptr shader = panvk_meta_copy_img2img_shader(
+-            &dev->pdev, &dev->meta.bin_pool.base,
++            &dev->pdev, &dev->bifrost.meta.bin_pool.base,
+             panvk_meta_copy_img2img_fmts[i].srcfmt,
+             panvk_meta_copy_img2img_fmts[i].dstfmt,
+             panvk_meta_copy_img2img_fmts[i].dstmask, texdim, false, is_ms,
+             &shader_info);
+-         dev->meta.copy.img2img[is_ms][texdimidx][i].rsd =
++         dev->bifrost.meta.copy.img2img[is_ms][texdimidx][i].rsd =
+             panvk_meta_copy_to_img_emit_rsd(
+-               &dev->pdev, &dev->meta.desc_pool.base, shader, &shader_info,
++               &dev->pdev, &dev->bifrost.meta.desc_pool.base, shader, &shader_info,
+                panvk_meta_copy_img2img_fmts[i].dstfmt,
+                panvk_meta_copy_img2img_fmts[i].dstmask, true);
+          if (texdim == 3)
+@@ -724,16 +724,16 @@ panvk_meta_copy_img2img_init(struct panvk_physical_device *dev, bool is_ms)
+ 
+          memset(&shader_info, 0, sizeof(shader_info));
+          texdimidx = panvk_meta_copy_tex_type(texdim, true);
+-         assert(texdimidx < ARRAY_SIZE(dev->meta.copy.img2img[0]));
++         assert(texdimidx < ARRAY_SIZE(dev->bifrost.meta.copy.img2img[0]));
+          shader = panvk_meta_copy_img2img_shader(
+-            &dev->pdev, &dev->meta.bin_pool.base,
++            &dev->pdev, &dev->bifrost.meta.bin_pool.base,
+             panvk_meta_copy_img2img_fmts[i].srcfmt,
+             panvk_meta_copy_img2img_fmts[i].dstfmt,
+             panvk_meta_copy_img2img_fmts[i].dstmask, texdim, true, is_ms,
+             &shader_info);
+-         dev->meta.copy.img2img[is_ms][texdimidx][i].rsd =
++         dev->bifrost.meta.copy.img2img[is_ms][texdimidx][i].rsd =
+             panvk_meta_copy_to_img_emit_rsd(
+-               &dev->pdev, &dev->meta.desc_pool.base, shader, &shader_info,
++               &dev->pdev, &dev->bifrost.meta.desc_pool.base, shader, &shader_info,
+                panvk_meta_copy_img2img_fmts[i].dstfmt,
+                panvk_meta_copy_img2img_fmts[i].dstmask, true);
+       }
+@@ -1029,7 +1029,7 @@ panvk_meta_copy_buf2img(struct panvk_cmd_buffer *cmdbuf,
+    unsigned fmtidx = panvk_meta_copy_buf2img_format_idx(key);
+ 
+    mali_ptr rsd =
+-      cmdbuf->device->physical_device->meta.copy.buf2img[fmtidx].rsd;
++      cmdbuf->device->physical_device->bifrost.meta.copy.buf2img[fmtidx].rsd;
+ 
+    const struct vk_image_buffer_layout buflayout =
+       vk_image_buffer_copy_layout(&img->vk, region);
+@@ -1137,10 +1137,10 @@ panvk_meta_copy_buf2img_init(struct panvk_physical_device *dev)
+    for (unsigned i = 0; i < ARRAY_SIZE(panvk_meta_copy_buf2img_fmts); i++) {
+       struct pan_shader_info shader_info;
+       mali_ptr shader = panvk_meta_copy_buf2img_shader(
+-         &dev->pdev, &dev->meta.bin_pool.base, panvk_meta_copy_buf2img_fmts[i],
++         &dev->pdev, &dev->bifrost.meta.bin_pool.base, panvk_meta_copy_buf2img_fmts[i],
+          &shader_info);
+-      dev->meta.copy.buf2img[i].rsd = panvk_meta_copy_to_img_emit_rsd(
+-         &dev->pdev, &dev->meta.desc_pool.base, shader, &shader_info,
++      dev->bifrost.meta.copy.buf2img[i].rsd = panvk_meta_copy_to_img_emit_rsd(
++         &dev->pdev, &dev->bifrost.meta.desc_pool.base, shader, &shader_info,
+          panvk_meta_copy_buf2img_fmts[i].imgfmt,
+          panvk_meta_copy_buf2img_fmts[i].mask, false);
+    }
+@@ -1470,7 +1470,7 @@ panvk_meta_copy_img2buf(struct panvk_cmd_buffer *cmdbuf,
+    unsigned fmtidx = panvk_meta_copy_img2buf_format_idx(key);
+ 
+    mali_ptr rsd =
+-      cmdbuf->device->physical_device->meta.copy.img2buf[texdimidx][fmtidx].rsd;
++      cmdbuf->device->physical_device->bifrost.meta.copy.img2buf[texdimidx][fmtidx].rsd;
+ 
+    struct panvk_meta_copy_img2buf_info info = {
+       .buf.ptr = panvk_buffer_gpu_ptr(buf, region->bufferOffset),
+@@ -1567,15 +1567,15 @@ panvk_meta_copy_img2buf_init(struct panvk_physical_device *dev)
+    for (unsigned i = 0; i < ARRAY_SIZE(panvk_meta_copy_img2buf_fmts); i++) {
+       for (unsigned texdim = 1; texdim <= 3; texdim++) {
+          unsigned texdimidx = panvk_meta_copy_tex_type(texdim, false);
+-         assert(texdimidx < ARRAY_SIZE(dev->meta.copy.img2buf));
++         assert(texdimidx < ARRAY_SIZE(dev->bifrost.meta.copy.img2buf));
+ 
+          struct pan_shader_info shader_info;
+          mali_ptr shader = panvk_meta_copy_img2buf_shader(
+-            &dev->pdev, &dev->meta.bin_pool.base,
++            &dev->pdev, &dev->bifrost.meta.bin_pool.base,
+             panvk_meta_copy_img2buf_fmts[i], texdim, false, &shader_info);
+-         dev->meta.copy.img2buf[texdimidx][i].rsd =
++         dev->bifrost.meta.copy.img2buf[texdimidx][i].rsd =
+             panvk_meta_copy_to_buf_emit_rsd(&dev->pdev,
+-                                            &dev->meta.desc_pool.base, shader,
++                                            &dev->bifrost.meta.desc_pool.base, shader,
+                                             &shader_info, true);
+ 
+          if (texdim == 3)
+@@ -1583,13 +1583,13 @@ panvk_meta_copy_img2buf_init(struct panvk_physical_device *dev)
+ 
+          memset(&shader_info, 0, sizeof(shader_info));
+          texdimidx = panvk_meta_copy_tex_type(texdim, true);
+-         assert(texdimidx < ARRAY_SIZE(dev->meta.copy.img2buf));
++         assert(texdimidx < ARRAY_SIZE(dev->bifrost.meta.copy.img2buf));
+          shader = panvk_meta_copy_img2buf_shader(
+-            &dev->pdev, &dev->meta.bin_pool.base,
++            &dev->pdev, &dev->bifrost.meta.bin_pool.base,
+             panvk_meta_copy_img2buf_fmts[i], texdim, true, &shader_info);
+-         dev->meta.copy.img2buf[texdimidx][i].rsd =
++         dev->bifrost.meta.copy.img2buf[texdimidx][i].rsd =
+             panvk_meta_copy_to_buf_emit_rsd(&dev->pdev,
+-                                            &dev->meta.desc_pool.base, shader,
++                                            &dev->bifrost.meta.desc_pool.base, shader,
+                                             &shader_info, true);
+       }
+    }
+@@ -1676,12 +1676,12 @@ panvk_meta_copy_buf2buf_shader(struct panfrost_device *pdev,
+ static void
+ panvk_meta_copy_buf2buf_init(struct panvk_physical_device *dev)
+ {
+-   for (unsigned i = 0; i < ARRAY_SIZE(dev->meta.copy.buf2buf); i++) {
++   for (unsigned i = 0; i < ARRAY_SIZE(dev->bifrost.meta.copy.buf2buf); i++) {
+       struct pan_shader_info shader_info;
+       mali_ptr shader = panvk_meta_copy_buf2buf_shader(
+-         &dev->pdev, &dev->meta.bin_pool.base, 1 << i, &shader_info);
+-      dev->meta.copy.buf2buf[i].rsd = panvk_meta_copy_to_buf_emit_rsd(
+-         &dev->pdev, &dev->meta.desc_pool.base, shader, &shader_info, false);
++         &dev->pdev, &dev->bifrost.meta.bin_pool.base, 1 << i, &shader_info);
++      dev->bifrost.meta.copy.buf2buf[i].rsd = panvk_meta_copy_to_buf_emit_rsd(
++         &dev->pdev, &dev->bifrost.meta.desc_pool.base, shader, &shader_info, false);
+    }
+ }
+ 
+@@ -1700,9 +1700,9 @@ panvk_meta_copy_buf2buf(struct panvk_cmd_buffer *cmdbuf,
+    unsigned log2blksz = alignment ? alignment - 1 : 4;
+ 
+    assert(log2blksz <
+-          ARRAY_SIZE(cmdbuf->device->physical_device->meta.copy.buf2buf));
++          ARRAY_SIZE(cmdbuf->device->physical_device->bifrost.meta.copy.buf2buf));
+    mali_ptr rsd =
+-      cmdbuf->device->physical_device->meta.copy.buf2buf[log2blksz].rsd;
++      cmdbuf->device->physical_device->bifrost.meta.copy.buf2buf[log2blksz].rsd;
+ 
+    mali_ptr pushconsts =
+       pan_pool_upload_aligned(&cmdbuf->desc_pool.base, &info, sizeof(info), 16);
+@@ -1822,8 +1822,8 @@ panvk_meta_fill_buf_emit_rsd(struct panfrost_device *pdev,
+ static void
+ panvk_meta_fill_buf_init(struct panvk_physical_device *dev)
+ {
+-   dev->meta.copy.fillbuf.rsd = panvk_meta_fill_buf_emit_rsd(
+-      &dev->pdev, &dev->meta.bin_pool.base, &dev->meta.desc_pool.base);
++   dev->bifrost.meta.copy.fillbuf.rsd = panvk_meta_fill_buf_emit_rsd(
++      &dev->pdev, &dev->bifrost.meta.bin_pool.base, &dev->bifrost.meta.desc_pool.base);
+ }
+ 
+ static void
+@@ -1850,7 +1850,7 @@ panvk_meta_fill_buf(struct panvk_cmd_buffer *cmdbuf,
+    assert(!(offset & 3) && !(size & 3));
+ 
+    unsigned nwords = size / sizeof(uint32_t);
+-   mali_ptr rsd = cmdbuf->device->physical_device->meta.copy.fillbuf.rsd;
++   mali_ptr rsd = cmdbuf->device->physical_device->bifrost.meta.copy.fillbuf.rsd;
+ 
+    mali_ptr pushconsts =
+       pan_pool_upload_aligned(&cmdbuf->desc_pool.base, &info, sizeof(info), 16);
+@@ -1899,7 +1899,7 @@ panvk_meta_update_buf(struct panvk_cmd_buffer *cmdbuf,
+    unsigned log2blksz = ffs(sizeof(uint32_t)) - 1;
+ 
+    mali_ptr rsd =
+-      cmdbuf->device->physical_device->meta.copy.buf2buf[log2blksz].rsd;
++      cmdbuf->device->physical_device->bifrost.meta.copy.buf2buf[log2blksz].rsd;
+ 
+    mali_ptr pushconsts =
+       pan_pool_upload_aligned(&cmdbuf->desc_pool.base, &info, sizeof(info), 16);
+diff --git a/src/panfrost/vulkan/panvk_private.h b/src/panfrost/vulkan/panvk_private.h
+index 510deb71b03..3dc6f33fc7d 100644
+--- a/src/panfrost/vulkan/panvk_private.h
++++ b/src/panfrost/vulkan/panvk_private.h
+@@ -88,6 +88,8 @@ typedef uint32_t xcb_window_t;
+ 
+ #include "panvk_entrypoints.h"
+ 
++#include "bifrost/panvk_meta.h"
++
+ #define MAX_BIND_POINTS             2 /* compute + graphics */
+ #define MAX_VBS                     16
+ #define MAX_VERTEX_ATTRIBS          16
+@@ -117,62 +119,7 @@ typedef uint32_t xcb_window_t;
+ void panvk_logi(const char *format, ...) panvk_printflike(1, 2);
+ void panvk_logi_v(const char *format, va_list va);
+ 
+-#define panvk_stub() assert(!"stub")
+-
+-#define PANVK_META_COPY_BUF2IMG_NUM_FORMATS  12
+-#define PANVK_META_COPY_IMG2BUF_NUM_FORMATS  12
+-#define PANVK_META_COPY_IMG2IMG_NUM_FORMATS  14
+-#define PANVK_META_COPY_NUM_TEX_TYPES        5
+-#define PANVK_META_COPY_BUF2BUF_NUM_BLKSIZES 5
+-
+-static inline unsigned
+-panvk_meta_copy_tex_type(unsigned dim, bool isarray)
+-{
+-   assert(dim > 0 && dim <= 3);
+-   assert(dim < 3 || !isarray);
+-   return (((dim - 1) << 1) | (isarray ? 1 : 0));
+-}
+-
+-struct panvk_meta {
+-   struct panvk_pool bin_pool;
+-   struct panvk_pool desc_pool;
+-
+-   /* Access to the blitter pools are protected by the blitter
+-    * shader/rsd locks. They can't be merged with other binary/desc
+-    * pools unless we patch pan_blitter.c to external pool locks.
+-    */
+-   struct {
+-      struct panvk_pool bin_pool;
+-      struct panvk_pool desc_pool;
+-   } blitter;
+-
+-   struct {
+-      struct {
+-         mali_ptr shader;
+-         struct pan_shader_info shader_info;
+-      } color[3]; /* 3 base types */
+-   } clear_attachment;
+-
+-   struct {
+-      struct {
+-         mali_ptr rsd;
+-      } buf2img[PANVK_META_COPY_BUF2IMG_NUM_FORMATS];
+-      struct {
+-         mali_ptr rsd;
+-      } img2buf[PANVK_META_COPY_NUM_TEX_TYPES]
+-               [PANVK_META_COPY_IMG2BUF_NUM_FORMATS];
+-      struct {
+-         mali_ptr rsd;
+-      } img2img[2][PANVK_META_COPY_NUM_TEX_TYPES]
+-               [PANVK_META_COPY_IMG2IMG_NUM_FORMATS];
+-      struct {
+-         mali_ptr rsd;
+-      } buf2buf[PANVK_META_COPY_BUF2BUF_NUM_BLKSIZES];
+-      struct {
+-         mali_ptr rsd;
+-      } fillbuf;
+-   } copy;
+-};
++#define panvk_stub() // assert(!"stub")
+ 
+ struct panvk_physical_device {
+    struct vk_physical_device vk;
+@@ -192,7 +139,11 @@ struct panvk_physical_device {
+    const struct vk_sync_type *sync_types[2];
+ 
+    struct wsi_device wsi_device;
+-   struct panvk_meta meta;
++   union {
++      struct {
++         struct panvk_meta meta;
++      } bifrost;
++   };
+ 
+    int master_fd;
+ };
+-- 
+GitLab
+
