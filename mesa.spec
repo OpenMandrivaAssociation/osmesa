@@ -26,7 +26,7 @@
 #define git %{nil}
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 1
+#define relc 1
 
 %ifarch %{riscv}
 %bcond_without gcc
@@ -232,16 +232,16 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 # There are no relevant patches in panform src/gallium/winsys/panfrost.
 # Nowadays, the panfrost v10-wip branch contains another CSF implementation
 # with better changes of landing upstream, so let's use that...
-# FIXME PORT THOSE
-#Patch21:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/fed96b2fd17f66c5d9d2fffc75c8d61aebc11d5f.patch
-#Patch22:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/64566dd45f4838b50145a4bb6981c712bc486db7.patch
-#Patch23:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/24e42af650730374f8a0958d2f6686b0b089843f.patch
-#Patch24:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/7e397c0ae8bd6f42f06b3312a8db36ecb16c209e.patch
-#Patch25:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/99cf5675d2138505335fb8cdd7536682a957b0ba.patch
-#Patch26:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/8aa5ca2f01a4edcf639edabb0a4acfbda806461a.patch
-#Patch27:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/87eb2b5e5932e519e92af84934550c6283ef26c3.patch
-#Patch28:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/6f4820ed4b6de13cf0e4b6fb5356c8d07a5468af.patch
-#Patch30:	mesa-panfrost-csf-compile.patch
+# FIXME PORT THE ONES CURRENTLY COMMENTED OUT
+Patch21:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/fed96b2fd17f66c5d9d2fffc75c8d61aebc11d5f-REBASED.patch
+Patch22:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/64566dd45f4838b50145a4bb6981c712bc486db7.patch
+Patch23:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/24e42af650730374f8a0958d2f6686b0b089843f.patch
+Patch24:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/7e397c0ae8bd6f42f06b3312a8db36ecb16c209e.patch
+Patch25:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/99cf5675d2138505335fb8cdd7536682a957b0ba-REBASED.patch
+Patch26:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/8aa5ca2f01a4edcf639edabb0a4acfbda806461a.patch
+Patch27:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/87eb2b5e5932e519e92af84934550c6283ef26c3.patch
+Patch28:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/6f4820ed4b6de13cf0e4b6fb5356c8d07a5468af.patch
+Patch30:	mesa-panfrost-csf-compile.patch
 
 # Instructions to setup your repository clone
 # git://git.freedesktop.org/git/mesa/mesa
