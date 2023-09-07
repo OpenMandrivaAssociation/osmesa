@@ -1,6 +1,6 @@
-diff -up mesa-23.2.0/include/drm-uapi/pancsf_drm.h.7~ mesa-23.2.0/include/drm-uapi/pancsf_drm.h
---- mesa-23.2.0/include/drm-uapi/pancsf_drm.h.7~	2023-07-29 15:19:54.323353399 +0200
-+++ mesa-23.2.0/include/drm-uapi/pancsf_drm.h	2023-07-29 15:19:54.323353399 +0200
+diff -up mesa-23.2.0-rc3/include/drm-uapi/pancsf_drm.h.8~ mesa-23.2.0-rc3/include/drm-uapi/pancsf_drm.h
+--- mesa-23.2.0-rc3/include/drm-uapi/pancsf_drm.h.8~	2023-09-08 01:00:47.830430390 +0200
++++ mesa-23.2.0-rc3/include/drm-uapi/pancsf_drm.h	2023-09-08 01:00:47.830430390 +0200
 @@ -0,0 +1,458 @@
 +/* SPDX-License-Identifier: MIT */
 +/* Copyright (C) 2023 Collabora ltd. */
@@ -460,9 +460,9 @@ diff -up mesa-23.2.0/include/drm-uapi/pancsf_drm.h.7~ mesa-23.2.0/include/drm-ua
 +#endif
 +
 +#endif /* _PANCSF_DRM_H_ */
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/meson.build.7~ mesa-23.2.0/src/gallium/drivers/panfrost/meson.build
---- mesa-23.2.0/src/gallium/drivers/panfrost/meson.build.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/meson.build	2023-07-29 15:19:54.323353399 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/meson.build.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/meson.build
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/meson.build.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/meson.build	2023-09-08 01:00:47.830430390 +0200
 @@ -53,7 +53,7 @@ compile_args_panfrost = [
    '-Wno-pointer-arith'
  ]
@@ -472,9 +472,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/meson.build.7~ mesa-23.2.0/src
  libpanfrost_versions = []
  
  foreach ver : panfrost_versions
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c
---- mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c	2023-07-29 15:25:42.277637983 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_cmdstream.c.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_cmdstream.c
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_cmdstream.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_cmdstream.c	2023-09-08 01:01:21.374782116 +0200
 @@ -35,8 +35,11 @@
  #include "util/u_vbuf.h"
  #include "util/u_viewport.h"
@@ -801,15 +801,15 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
  static void
  panfrost_launch_xfb(struct panfrost_batch *batch,
                      const struct pipe_draw_info *info, mali_ptr attribs,
-@@ -3486,6 +3639,7 @@ panfrost_launch_xfb(struct panfrost_batc
-    batch->uniform_buffers[PIPE_SHADER_VERTEX] = saved_ubo;
+@@ -3490,6 +3643,7 @@ panfrost_launch_xfb(struct panfrost_batc
     batch->push_uniforms[PIPE_SHADER_VERTEX] = saved_push;
+    batch->nr_push_uniforms[PIPE_SHADER_VERTEX] = saved_nr_push_uniforms;
  }
 +#endif
  
  /*
   * Increase the vertex count on the batch using a saturating add, and hope the
-@@ -3502,21 +3656,39 @@ panfrost_increase_vertex_count(struct pa
+@@ -3506,21 +3660,39 @@ panfrost_increase_vertex_count(struct pa
        batch->tiler_ctx.vertex_count = UINT32_MAX;
  }
  
@@ -859,7 +859,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
     if ((ctx->dirty & PAN_DIRTY_RASTERIZER) ||
         ((ctx->active_prim == MESA_PRIM_POINTS) ^
          (info->mode == MESA_PRIM_POINTS))) {
-@@ -3524,6 +3696,472 @@ panfrost_direct_draw(struct panfrost_bat
+@@ -3528,6 +3700,472 @@ panfrost_direct_draw(struct panfrost_bat
        ctx->active_prim = info->mode;
        panfrost_update_shader_variant(ctx, PIPE_SHADER_FRAGMENT);
     }
@@ -1332,7 +1332,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
  
     /* Take into account a negative bias */
     ctx->vertex_count =
-@@ -3644,7 +4282,7 @@ panfrost_direct_draw(struct panfrost_bat
+@@ -3648,7 +4286,7 @@ panfrost_direct_draw(struct panfrost_bat
     if (panfrost_batch_skip_rasterization(batch))
        return;
  
@@ -1341,7 +1341,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
     assert(idvs && "Memory allocated IDVS required on Valhall");
  
     panfrost_emit_malloc_vertex(batch, info, draw, indices, secondary_shader,
-@@ -3675,28 +4313,6 @@ panfrost_direct_draw(struct panfrost_bat
+@@ -3679,28 +4317,6 @@ panfrost_direct_draw(struct panfrost_bat
  #endif
  }
  
@@ -1370,7 +1370,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
  static void
  panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
                    unsigned drawid_offset,
-@@ -3726,7 +4342,7 @@ panfrost_draw_vbo(struct pipe_context *p
+@@ -3730,7 +4346,7 @@ panfrost_draw_vbo(struct pipe_context *p
     /* Don't add too many jobs to a single batch. Hardware has a hard limit
      * of 65536 jobs, but we choose a smaller soft limit (arbitrary) to
      * avoid the risk of timeouts. This might not be a good idea. */
@@ -1379,7 +1379,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
        batch = panfrost_get_fresh_batch_for_fbo(ctx, "Too many draws");
  
     bool points = (info->mode == MESA_PRIM_POINTS);
-@@ -3762,13 +4378,14 @@ panfrost_draw_vbo(struct pipe_context *p
+@@ -3766,13 +4382,14 @@ panfrost_draw_vbo(struct pipe_context *p
           ctx->dirty |= PAN_DIRTY_DRAWID;
           drawid++;
        }
@@ -1397,7 +1397,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
  static void
  panfrost_launch_grid(struct pipe_context *pipe,
                       const struct pipe_grid_info *info)
-@@ -3893,6 +4510,7 @@ panfrost_launch_grid(struct pipe_context
+@@ -3897,6 +4514,7 @@ panfrost_launch_grid(struct pipe_context
                      false);
     panfrost_flush_all_batches(ctx, "Launch grid post-barrier");
  }
@@ -1405,7 +1405,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
  
  static void *
  panfrost_create_rasterizer_state(struct pipe_context *pctx,
-@@ -4324,7 +4942,10 @@ prepare_shader(struct panfrost_compiled_
+@@ -4328,7 +4946,10 @@ prepare_shader(struct panfrost_compiled_
     /* Generic, or IDVS/points */
     pan_pack(ptr.cpu, SHADER_PROGRAM, cfg) {
        cfg.stage = pan_shader_stage(&state->info);
@@ -1417,7 +1417,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
        cfg.register_allocation =
           pan_register_allocation(state->info.work_reg_count);
        cfg.binary = state->bin.gpu;
-@@ -4341,7 +4962,7 @@ prepare_shader(struct panfrost_compiled_
+@@ -4345,7 +4966,7 @@ prepare_shader(struct panfrost_compiled_
     /* IDVS/triangles */
     pan_pack(ptr.cpu + pan_size(SHADER_PROGRAM), SHADER_PROGRAM, cfg) {
        cfg.stage = pan_shader_stage(&state->info);
@@ -1426,7 +1426,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
        cfg.register_allocation =
           pan_register_allocation(state->info.work_reg_count);
        cfg.binary = state->bin.gpu + state->info.vs.no_psiz_offset;
-@@ -4379,8 +5000,8 @@ static void
+@@ -4383,8 +5004,8 @@ static void
  preload(struct panfrost_batch *batch, struct pan_fb_info *fb)
  {
     GENX(pan_preload_fb)
@@ -1437,7 +1437,7 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
  }
  
  static void
-@@ -4413,6 +5034,24 @@ init_batch(struct panfrost_batch *batch)
+@@ -4417,6 +5038,24 @@ init_batch(struct panfrost_batch *batch)
     batch->tls.gpu = ptr.opaque[0];
  #endif
  #endif
@@ -1462,9 +1462,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_cmdstream.c.7~ mesa-23.2.0
  }
  
  static void
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.c.7~ mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.c
---- mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.c	2023-07-29 15:19:54.325353417 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.c.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.c
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.c	2023-09-08 01:00:47.831430400 +0200
 @@ -54,6 +54,9 @@
  #include "pan_screen.h"
  #include "pan_util.h"
@@ -1586,9 +1586,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.c.7~ mesa-23.2.0/s
 +
     return gallium;
  }
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.h.7~ mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.h
---- mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.h	2023-07-29 15:19:54.325353417 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.h.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.h
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_context.h	2023-09-08 01:00:47.831430400 +0200
 @@ -227,6 +227,16 @@ struct panfrost_context {
  
     int in_sync_fd;
@@ -1606,9 +1606,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_context.h.7~ mesa-23.2.0/s
  };
  
  /* Corresponds to the CSO */
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.c.7~ mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.c
---- mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.c	2023-07-29 15:19:54.325353417 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.c.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.c
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.c	2023-09-08 01:00:47.831430400 +0200
 @@ -26,6 +26,7 @@
  
  #include <assert.h>
@@ -1933,9 +1933,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.c.7~ mesa-23.2.0/src/g
  
     if (ret)
        fprintf(stderr, "panfrost_batch_submit failed: %d\n", ret);
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.h.7~ mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.h
---- mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.h	2023-07-29 15:19:54.325353417 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.h.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.h
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_job.h	2023-09-08 01:00:47.831430400 +0200
 @@ -82,6 +82,8 @@ pan_tristate_get(struct pan_tristate sta
  /* A panfrost_batch corresponds to a bound FBO we're rendering to,
   * collecting over multiple draws. */
@@ -1975,9 +1975,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_job.h.7~ mesa-23.2.0/src/g
  };
  
  /* Functions for managing the above */
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.c.7~ mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.c
---- mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.c	2023-07-29 15:19:54.325353417 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.c.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.c
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.c	2023-09-08 01:00:47.831430400 +0200
 @@ -43,6 +43,8 @@
  #include "drm-uapi/drm_fourcc.h"
  #include "drm-uapi/panfrost_drm.h"
@@ -1996,9 +1996,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.c.7~ mesa-23.2.0/sr
     else
        unreachable("Unhandled architecture major");
  
-diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.h.7~ mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.h
---- mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.h	2023-07-29 15:19:54.325353417 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.h.8~ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.h
+--- mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/drivers/panfrost/pan_screen.h	2023-09-08 01:00:47.832430410 +0200
 @@ -132,6 +132,7 @@ void panfrost_cmdstream_screen_init_v5(s
  void panfrost_cmdstream_screen_init_v6(struct panfrost_screen *screen);
  void panfrost_cmdstream_screen_init_v7(struct panfrost_screen *screen);
@@ -2007,9 +2007,9 @@ diff -up mesa-23.2.0/src/gallium/drivers/panfrost/pan_screen.h.7~ mesa-23.2.0/sr
  
  #define perf_debug(dev, ...)                                                   \
     do {                                                                        \
-diff -up mesa-23.2.0/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c.7~ mesa-23.2.0/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c
---- mesa-23.2.0/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c	2023-07-29 15:19:54.325353417 +0200
+diff -up mesa-23.2.0-rc3/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c.8~ mesa-23.2.0-rc3/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c
+--- mesa-23.2.0-rc3/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c	2023-09-08 01:00:47.832430410 +0200
 @@ -110,6 +110,11 @@ struct pipe_screen *kmsro_drm_screen_cre
           .create_screen = panfrost_drm_screen_create_renderonly,
           .create_for_resource = panfrost_create_kms_dumb_buffer_for_resource,
@@ -2022,9 +2022,9 @@ diff -up mesa-23.2.0/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c.7~ mesa-23.
  #endif
  
  #if defined(GALLIUM_V3D)
-diff -up mesa-23.2.0/src/panfrost/compiler/bifrost_compile.c.7~ mesa-23.2.0/src/panfrost/compiler/bifrost_compile.c
---- mesa-23.2.0/src/panfrost/compiler/bifrost_compile.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/compiler/bifrost_compile.c	2023-07-29 15:19:54.326353426 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/compiler/bifrost_compile.c.8~ mesa-23.2.0-rc3/src/panfrost/compiler/bifrost_compile.c
+--- mesa-23.2.0-rc3/src/panfrost/compiler/bifrost_compile.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/compiler/bifrost_compile.c	2023-09-08 01:00:47.832430410 +0200
 @@ -1012,7 +1012,7 @@ bi_emit_store_vary(bi_builder *b, nir_in
     } else if (b->shader->arch >= 9 && b->shader->idvs != BI_IDVS_NONE) {
        bi_index index = bi_preload(b, 59);
@@ -2045,9 +2045,9 @@ diff -up mesa-23.2.0/src/panfrost/compiler/bifrost_compile.c.7~ mesa-23.2.0/src/
     } else if (immediate) {
        bi_index address = bi_lea_attr_imm(b, bi_vertex_id(b), bi_instance_id(b),
                                           regfmt, imm_index);
-diff -up mesa-23.2.0/src/panfrost/lib/genxml/ceu_builder.h.7~ mesa-23.2.0/src/panfrost/lib/genxml/ceu_builder.h
---- mesa-23.2.0/src/panfrost/lib/genxml/ceu_builder.h.7~	2023-07-29 15:19:54.326353426 +0200
-+++ mesa-23.2.0/src/panfrost/lib/genxml/ceu_builder.h	2023-07-29 15:19:54.326353426 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/genxml/ceu_builder.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/genxml/ceu_builder.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/genxml/ceu_builder.h.8~	2023-09-08 01:00:47.832430410 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/genxml/ceu_builder.h	2023-09-08 01:00:47.832430410 +0200
 @@ -0,0 +1,528 @@
 +/*
 + * Copyright (C) 2022 Collabora Ltd.
@@ -2577,9 +2577,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/genxml/ceu_builder.h.7~ mesa-23.2.0/src/pa
 +
 +#endif
 +#endif
-diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode.c.7~ mesa-23.2.0/src/panfrost/lib/genxml/decode.c
---- mesa-23.2.0/src/panfrost/lib/genxml/decode.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/genxml/decode.c	2023-07-29 15:19:54.326353426 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.c.8~ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.c
+--- mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.c	2023-09-08 01:00:47.832430410 +0200
 @@ -330,6 +330,72 @@ GENX(pandecode_tiler)(mali_ptr gpu_va, u
     }
  
@@ -2653,9 +2653,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode.c.7~ mesa-23.2.0/src/panfros
  }
  #endif
  
-diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode.h.7~ mesa-23.2.0/src/panfrost/lib/genxml/decode.h
---- mesa-23.2.0/src/panfrost/lib/genxml/decode.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/genxml/decode.h	2023-07-29 15:19:54.326353426 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode.h	2023-09-08 01:00:47.832430410 +0200
 @@ -87,6 +87,7 @@ __pandecode_fetch_gpu_mem(uint64_t gpu_v
     name = __pandecode_fetch_gpu_mem(gpu_va, sizeof(*name), __LINE__, __FILE__)
  
@@ -2664,9 +2664,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode.h.7~ mesa-23.2.0/src/panfros
  
  /* Forward declare for all supported gens to permit thunking */
  void pandecode_jc_v4(mali_ptr jc_gpu_va, unsigned gpu_id);
-diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode_common.c.7~ mesa-23.2.0/src/panfrost/lib/genxml/decode_common.c
---- mesa-23.2.0/src/panfrost/lib/genxml/decode_common.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/genxml/decode_common.c	2023-07-29 15:19:54.327353435 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_common.c.8~ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_common.c
+--- mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_common.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_common.c	2023-09-08 01:00:47.832430410 +0200
 @@ -144,6 +144,48 @@ pandecode_validate_buffer(mali_ptr addr,
  }
  
@@ -2716,9 +2716,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode_common.c.7~ mesa-23.2.0/src/
  pandecode_map_read_write(void)
  {
     simple_mtx_assert_locked(&pandecode_lock);
-diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode_csf.c.7~ mesa-23.2.0/src/panfrost/lib/genxml/decode_csf.c
---- mesa-23.2.0/src/panfrost/lib/genxml/decode_csf.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/genxml/decode_csf.c	2023-07-29 15:19:54.327353435 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_csf.c.8~ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_csf.c
+--- mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_csf.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/genxml/decode_csf.c	2023-09-08 01:00:47.832430410 +0200
 @@ -249,7 +249,7 @@ pandecode_run_fragment(struct queue_ctx
     DUMP_CL(SCISSOR, &ctx->regs[42], "Scissor\n");
  
@@ -2742,9 +2742,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/genxml/decode_csf.c.7~ mesa-23.2.0/src/pan
  
        return interpret_ceu_jump(ctx, I.address, I.length);
     }
-diff -up mesa-23.2.0/src/panfrost/lib/meson.build.7~ mesa-23.2.0/src/panfrost/lib/meson.build
---- mesa-23.2.0/src/panfrost/lib/meson.build.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/meson.build	2023-07-29 15:19:54.327353435 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/meson.build.8~ mesa-23.2.0-rc3/src/panfrost/lib/meson.build
+--- mesa-23.2.0-rc3/src/panfrost/lib/meson.build.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/meson.build	2023-09-08 01:00:47.832430410 +0200
 @@ -39,7 +39,7 @@ endforeach
  
  libpanfrost_per_arch = []
@@ -2754,9 +2754,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/meson.build.7~ mesa-23.2.0/src/panfrost/li
    libpanfrost_per_arch += static_library(
      'pan-arch-v' + ver,
      [
-diff -up mesa-23.2.0/src/panfrost/lib/pan_bo.c.7~ mesa-23.2.0/src/panfrost/lib/pan_bo.c
---- mesa-23.2.0/src/panfrost/lib/pan_bo.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_bo.c	2023-07-29 15:28:21.223597470 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.c.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.c
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.c	2023-09-08 01:00:47.833430421 +0200
 @@ -28,6 +28,7 @@
  #include <pthread.h>
  #include <stdio.h>
@@ -3248,9 +3248,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_bo.c.7~ mesa-23.2.0/src/panfrost/lib/p
        /* Sometimes this can fail and return -1. size of -1 is not
         * a nice thing for mmap to try mmap. Be more robust also
         * for zero sized maps and fail nicely too
-diff -up mesa-23.2.0/src/panfrost/lib/pan_bo.h.7~ mesa-23.2.0/src/panfrost/lib/pan_bo.h
---- mesa-23.2.0/src/panfrost/lib/pan_bo.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_bo.h	2023-07-29 15:19:54.327353435 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_bo.h	2023-09-08 01:00:47.833430421 +0200
 @@ -50,6 +50,8 @@
   * cached locally */
  #define PAN_BO_SHARED (1 << 4)
@@ -3283,9 +3283,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_bo.h.7~ mesa-23.2.0/src/panfrost/lib/p
 +                                          uint32_t handle, uint32_t flags);
  
  #endif /* __PAN_BO_H__ */
-diff -up mesa-23.2.0/src/panfrost/lib/pan_cs.c.7~ mesa-23.2.0/src/panfrost/lib/pan_cs.c
---- mesa-23.2.0/src/panfrost/lib/pan_cs.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_cs.c	2023-07-29 15:19:54.327353435 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.c.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.c
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.c	2023-09-08 01:00:47.833430421 +0200
 @@ -442,7 +442,7 @@ pan_rt_init_format(const struct pan_imag
  
  #if PAN_ARCH >= 9
@@ -3370,9 +3370,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_cs.c.7~ mesa-23.2.0/src/panfrost/lib/p
     }
  }
 +#endif
-diff -up mesa-23.2.0/src/panfrost/lib/pan_cs.h.7~ mesa-23.2.0/src/panfrost/lib/pan_cs.h
---- mesa-23.2.0/src/panfrost/lib/pan_cs.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_cs.h	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_cs.h	2023-09-08 01:00:47.833430421 +0200
 @@ -76,11 +76,14 @@ struct pan_tiler_context {
     uint32_t vertex_count;
  
@@ -3401,9 +3401,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_cs.h.7~ mesa-23.2.0/src/panfrost/lib/p
  #endif /* ifdef PAN_ARCH */
  
  #endif
-diff -up mesa-23.2.0/src/panfrost/lib/pan_device.h.7~ mesa-23.2.0/src/panfrost/lib/pan_device.h
---- mesa-23.2.0/src/panfrost/lib/pan_device.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_device.h	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_device.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_device.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_device.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_device.h	2023-09-08 01:00:47.833430421 +0200
 @@ -36,6 +36,7 @@
  #include "util/list.h"
  #include "util/sparse_array.h"
@@ -3426,9 +3426,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_device.h.7~ mesa-23.2.0/src/panfrost/l
  };
  
  void panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev);
-diff -up mesa-23.2.0/src/panfrost/lib/pan_props.c.7~ mesa-23.2.0/src/panfrost/lib/pan_props.c
---- mesa-23.2.0/src/panfrost/lib/pan_props.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_props.c	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_props.c.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_props.c
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_props.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_props.c	2023-09-08 01:00:47.833430421 +0200
 @@ -27,8 +27,10 @@
  #include <xf86drm.h>
  
@@ -3586,9 +3586,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_props.c.7~ mesa-23.2.0/src/panfrost/li
 +   if (dev->arch >= 10)
 +      util_vma_heap_finish(&dev->vma_heap);
  }
-diff -up mesa-23.2.0/src/panfrost/lib/pan_scoreboard.h.7~ mesa-23.2.0/src/panfrost/lib/pan_scoreboard.h
---- mesa-23.2.0/src/panfrost/lib/pan_scoreboard.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_scoreboard.h	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_scoreboard.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_scoreboard.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_scoreboard.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_scoreboard.h	2023-09-08 01:00:47.833430421 +0200
 @@ -54,7 +54,7 @@ struct pan_scoreboard {
     unsigned write_value_index;
  };
@@ -3598,9 +3598,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_scoreboard.h.7~ mesa-23.2.0/src/panfro
  /*
   * There are various types of Mali jobs:
   *
-diff -up mesa-23.2.0/src/panfrost/lib/pan_texture.c.7~ mesa-23.2.0/src/panfrost/lib/pan_texture.c
---- mesa-23.2.0/src/panfrost/lib/pan_texture.c.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_texture.c	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.c.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.c
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.c.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.c	2023-09-08 01:00:47.833430421 +0200
 @@ -438,7 +438,7 @@ panfrost_emit_plane(const struct pan_ima
           cfg.afbc.ytr = (layout->modifier & AFBC_FORMAT_MOD_YTR);
           cfg.afbc.tiled_header = (layout->modifier & AFBC_FORMAT_MOD_TILED);
@@ -3610,9 +3610,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_texture.c.7~ mesa-23.2.0/src/panfrost/
           cfg.afbc.header_stride = layout->slices[level].afbc.header_size;
        } else {
           cfg.plane_type = MALI_PLANE_TYPE_GENERIC;
-diff -up mesa-23.2.0/src/panfrost/lib/pan_texture.h.7~ mesa-23.2.0/src/panfrost/lib/pan_texture.h
---- mesa-23.2.0/src/panfrost/lib/pan_texture.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/pan_texture.h	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/pan_texture.h	2023-09-08 01:00:47.833430421 +0200
 @@ -260,7 +260,7 @@ void pan_iview_get_surface(const struct
  
  #if PAN_ARCH >= 9
@@ -3622,9 +3622,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/pan_texture.h.7~ mesa-23.2.0/src/panfrost/
  #endif
  
  #ifdef __cplusplus
-diff -up mesa-23.2.0/src/panfrost/lib/wrap.h.7~ mesa-23.2.0/src/panfrost/lib/wrap.h
---- mesa-23.2.0/src/panfrost/lib/wrap.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/lib/wrap.h	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/lib/wrap.h.8~ mesa-23.2.0-rc3/src/panfrost/lib/wrap.h
+--- mesa-23.2.0-rc3/src/panfrost/lib/wrap.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/lib/wrap.h	2023-09-08 01:00:47.833430421 +0200
 @@ -60,4 +60,6 @@ void pandecode_cs(mali_ptr queue_gpu_va,
  
  void pandecode_abort_on_fault(uint64_t jc_gpu_va, unsigned gpu_id);
@@ -3632,9 +3632,9 @@ diff -up mesa-23.2.0/src/panfrost/lib/wrap.h.7~ mesa-23.2.0/src/panfrost/lib/wra
 +void pandecode_dump_mappings(void);
 +
  #endif /* __MMAP_TRACE_H__ */
-diff -up mesa-23.2.0/src/panfrost/util/pan_ir.h.7~ mesa-23.2.0/src/panfrost/util/pan_ir.h
---- mesa-23.2.0/src/panfrost/util/pan_ir.h.7~	2023-07-29 12:05:19.000000000 +0200
-+++ mesa-23.2.0/src/panfrost/util/pan_ir.h	2023-07-29 15:19:54.328353444 +0200
+diff -up mesa-23.2.0-rc3/src/panfrost/util/pan_ir.h.8~ mesa-23.2.0-rc3/src/panfrost/util/pan_ir.h
+--- mesa-23.2.0-rc3/src/panfrost/util/pan_ir.h.8~	2023-09-05 18:48:17.000000000 +0200
++++ mesa-23.2.0-rc3/src/panfrost/util/pan_ir.h	2023-09-08 01:00:47.833430421 +0200
 @@ -481,6 +481,9 @@ panfrost_max_thread_count(unsigned arch,
        return work_reg_count > 32 ? 384 : 768;
  

@@ -20,16 +20,16 @@
 # aliasing might generate broken code.
 # (tpg) imho -g3 here is for someone who is developing graphics drivers
 # or trying to pin point a specific issue. Nobody install debug symbols by default
-%global optflags %{optflags} -O3 -fno-strict-aliasing -flto=thin -g1
-%global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin
+%global optflags %{optflags} -O3 -fno-strict-aliasing -g1 -flto=thin
+%global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin -Wl,--undefined-version
 
-#define git %{nil}
+#define git 20230824
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-#define relc 1
+%define relc 3
 
 %ifarch %{riscv}
-%bcond_without gcc
+%bcond_with gcc
 %bcond_with opencl
 %else
 %bcond_with gcc
@@ -168,7 +168,7 @@ Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
 %if 0%{?git:1}
-Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
+Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/main/mesa-main.tar.bz2#/mesa-%{git }.tar.bz2
 #Source0:	https://gitlab.freedesktop.org/panfrost/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
 %else
 Source0:	https://mesa.freedesktop.org/archive/mesa-%{version}%{vsuffix}.tar.xz
@@ -195,7 +195,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # of calling its own function by the same name.
 Patch0:		mesa-20.1.1-fix-opencl.patch
 # Use llvm-config to detect llvm, since the newer method
-# finds /usr/lib64/libLLVM-16.so even for 32-bit builds
+# finds /usr/lib64/libLLVM-17.so even for 32-bit builds
 Patch1:		mesa-23.1-x86_32-llvm-detection.patch
 # Fix intel-vk build with clang 16 and gcc 13
 Patch2:		mesa-23.1-intel-vk-compile.patch
@@ -208,6 +208,8 @@ Source50:	test.c
 #Patch1:		mesa-19.2.3-arm32-buildfix.patch
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
+
+Patch6:		clover-llvm-17.patch
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 
@@ -977,11 +979,7 @@ Group:		Development/Tools
 Tools for debugging Mesa drivers.
 
 %prep
-%if 0%{?git:1}
-%autosetup -p1 -n %{name}-%{git}
-%else
-%autosetup -p1 -n mesa-%{version}%{vsuffix}
-%endif
+%autosetup -p1 -n mesa-%{?git:main}%{!?git:%{version}%{vsuffix}}
 chmod +x %{SOURCE5}
 
 %build
