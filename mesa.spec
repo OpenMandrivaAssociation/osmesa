@@ -1085,7 +1085,11 @@ if ! %meson \
 %ifarch %{armx}
 	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink \
 %else
+%ifarch %{riscv}
+	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,etnaviv,kmsro,zink \
+%else
 	-Dgallium-drivers=auto,crocus \
+%endif
 %endif
 %ifarch %{x86_64}
 	-Dintel-clc=enabled \
