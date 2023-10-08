@@ -152,7 +152,7 @@ Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.2.1
 %if ! 0%{?relc:1}%{?git:1}
-Release:	1
+Release:	2
 %else
 %if "%{?relc:1}" != ""
 %if 0%{?git:1}
@@ -219,79 +219,72 @@ Patch8:		mesa-buildsystem-improvements.patch
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
 Patch10:	mesa-22.3-make-vbox-great-again.patch
 
-# From Panfork https://gitlab.com/panfork/mesa
-# Unfortunately the repository is a mess making a clean
-# rebase virtually impossible. This is the result of
-# running clang-format to get rid of the slew of whitespace-only
-# changes, then running diff.
-# This is in sync with panfork commit 120202c675749c5ef81ae4c8cdc30019b4de08f4,
-# hopefully adding later commits will be less painful
-#Patch20:	mesa-23.0.0-panfork-src-gallium-drivers-panfrost.patch
-# In addition to the steps described above, panfork was prepared by
-# adapting the modified directory structure (src/panfrost/compiler)
-# from upstream mesa
-#Patch21:	mesa-23.0.0-panfork-src-panfrost.patch
-# There are no relevant patches in panform src/gallium/winsys/panfrost.
-# Nowadays, the panfrost v10-wip branch contains another CSF implementation
-# with better changes of landing upstream, so let's use that...
-# FIXME PORT THE ONES CURRENTLY COMMENTED OUT
-Patch21:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/fed96b2fd17f66c5d9d2fffc75c8d61aebc11d5f-REBASED.patch
-Patch22:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/64566dd45f4838b50145a4bb6981c712bc486db7.patch
-Patch23:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/24e42af650730374f8a0958d2f6686b0b089843f.patch
-Patch24:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/7e397c0ae8bd6f42f06b3312a8db36ecb16c209e.patch
-Patch25:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/99cf5675d2138505335fb8cdd7536682a957b0ba-REBASED.patch
-Patch26:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/8aa5ca2f01a4edcf639edabb0a4acfbda806461a.patch
-Patch27:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/87eb2b5e5932e519e92af84934550c6283ef26c3.patch
-Patch28:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/6f4820ed4b6de13cf0e4b6fb5356c8d07a5468af.patch
-Patch29:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/5f4b44aad1d5b527588d6865e011602cb31a1d21.patch
-# d7182... seems to be already merged
-#Patch30:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/d7182f0385ae8e1c1e16ad3351776d70f717c59e.patch
-# And add the Vulkan bits from https://gitlab.freedesktop.org/panfrost/mesa/-/commits/panvk-v10-wip/
-Patch31:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/4eab9a21fdbc86a0871422c76cfb7f7fc0928625-REBASED.patch
-Patch32:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/5dacefe334fad82e1ffa76f044c6bd72d9cb681e-REBASED.patch
-Patch33:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/080fb1ae5fdf222b8fa1a99563416fb7f26bc00f.patch
-Patch34:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/dc3ab3a34374f19d3d6a833aaad93f90d2471a5f.patch
-Patch35:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/95b5989c2b227070d205c32de1ea59187fcfd1c5-REBASED.patch
-Patch36:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/cff43f453ef9448c190cfcd5adc8d98b62d7db36.patch
-Patch37:	https://gitlab.freedesktop.org/panfrost/mesa/-/commit/fe5cbcbe5b635dc4c14d641097e4fa09830b9389.patch
-Patch50:	mesa-panfrost-csf-compile.patch
-Patch51:	pancsf-port-to-23.2-final.patch
-
-# Instructions to setup your repository clone
-# git://git.freedesktop.org/git/mesa/mesa
-# git checkout mesa_7_5_branch
-# git branch mdv-cherry-picks
-# git am ../02??-*.patch
-# git branch mdv-redhat
-# git am ../03??-*.patch
-# git branch mdv-patches
-# git am ../09??-*.patch
-
-# In order to update to the branch via patches, issue this command:
-# git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
-
-# Cherry picks
-#Patch100:	https://gitlab.freedesktop.org/mesa/mesa/-/commit/4b19725ee525f6f0b5785436680cea63a21445a1.patch
-# Mandriva & Mageia patches
-
-# git format-patch --start-number 100 mesa_7_5_1..mesa_7_5_branch | sed 's/^0\([0-9]\+\)-/Patch\1: 0\1-/'
-#Patch201:	0201-revert-fix-glxinitializevisualconfigfromtags-handling.patch
-#Patch202:	riscv64.patch
-# https://bugs.freedesktop.org/show_bug.cgi?id=110783
-# https://gitlab.freedesktop.org/mesa/mesa/merge_requests/1084
-#Patch203:	https://gitlab.freedesktop.org/mesa/mesa/merge_requests/1084.diff
-
-# Direct3D patchset -- https://wiki.ixit.cz/d3d9
-#
-# git clone git://anongit.freedesktop.org/git/mesa/mesa
-# git remote add ixit https://github.com/iXit/Mesa-3D
-# git fetch ixit
-# git checkout -b d3d9 ixit/master
-# git rebase origin/master
-# git format-patch origin/master
-# ( for i in 00*.patch; do PN=`echo $i |cut -b1-4 |sed 's,^0*,,g'`; echo Patch$((PN+1000)): $i; done ) >patchlist
-# Currently empty -- current D3D9 bits have been merged into 10.4.0-rc1
-# Leaving the infrastructure in place for future updates.
+# Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfork/mesa.git
+Patch100:	0001-panfrost-Abstract-some-kernel-driver-operations.patch
+Patch101:	0002-panfrost-Use-the-kmod-abstraction.patch
+Patch102:	0003-panfrost-Introduce-a-PAN_BO_SHAREABLE-flag.patch
+Patch103:	0004-panvk-Pass-the-PAN_BO_SHAREABLE-when-relevant.patch
+Patch104:	0005-panfrost-Keep-original-BO-flags-when-linearizing-a-r.patch
+Patch105:	0006-panfrost-Flag-BO-shareable-when-appropriate.patch
+Patch106:	0007-panfrost-Add-a-flag-to-create-uncached-GPU-mappings.patch
+Patch107:	0008-panfrost-Create-scanout-kmsro-buffer-when-shared.patch
+Patch108:	0009-panfrost-Add-a-backend-for-the-Panthor-kernel-driver.patch
+Patch109:	0010-panfrost-Add-a-library-to-help-building-CSF-streams.patch
+Patch110:	0011-panfrost-genxml-Add-missing-Progress-increment-field.patch
+Patch111:	0012-panfrost-genxml-Fix-Last-First-Heap-Chunk-field-posi.patch
+Patch112:	0013-panfrost-Move-pan_afbc_compression_mode-to-pan_cs.c-.patch
+Patch113:	0014-panfrost-v10-support.patch
+Patch114:	0015-panfrost-do-not-open-code-panfrost_has_fragment_job.patch
+Patch115:	0016-panfrost-consult-draws-instead-of-draw_count.patch
+Patch116:	0017-panfrost-factor-out-ceu_vt_start-from-panfrost_emit_.patch
+Patch117:	0018-panfrost-Rename-panfrost_vtable-context_init.patch
+Patch118:	0019-panfrost-Add-arch-specific-context-init-cleanup-hook.patch
+Patch119:	0020-panfrost-Move-the-queue-heap-initialization-to-pan_c.patch
+Patch120:	0021-panfrost-Add-a-panfrost_context_reinit-helper-and-us.patch
+Patch121:	0022-panfrost-Set-the-heap-context-only-once-at-context-c.patch
+Patch122:	0023-panfrost-Move-the-heap-descriptor-creation-to-panfro.patch
+Patch123:	0024-panfrost-run-clang-format.patch
+Patch124:	0025-fixup-panfrost-Abstract-some-kernel-driver-operation.patch
+Patch125:	0026-panfrost-return-error-from-panthor_kmod_bo_get_sync_.patch
+Patch126:	0027-panfrost-handle-errors-in-panthor_kmod_bo_get_sync_p.patch
+Patch127:	0028-panfrost-debug_printf-on-unlikely-errors.patch
+Patch128:	0029-fixup-panfrost-Abstract-some-kernel-driver-operation.patch
+Patch129:	0030-fixup-panfrost-debug_printf-on-unlikely-errors.patch
+Patch130:	0031-panfrost-Fix-gnu-empty-initializer-warning.patch
+Patch131:	0032-fixup-panfrost-v10-support.patch
+Patch132:	0033-Revert-panfrost-consult-draws-instead-of-draw_count.patch
+Patch133:	0034-fixup-panfrost-v10-support.patch
+Patch134:	0035-panfrost-Set-batch-any_compute-true-any-time-we-issu.patch
+# Doesn't apply and isn't relevant outside of gitlab CI anyway
+#Patch135:	0036-panfrost-Add-kmod-changes-to-CI-trigger.patch
+Patch136:	0037-panfrost-kmod-Add-locking-to-panfrost_kmod_vm-va_to_.patch
+Patch137:	0038-panfrost-Add-spec-egl-1.4-egl-ext_egl_image_storage-.patch
+Patch138:	0039-panfrost-Create-a-dedicated-hook-for-batch-ending-cl.patch
+Patch139:	0040-panfrost-introduce-and-use-PAN_USE_CSF.patch
+Patch140:	0041-panfrost-Add-JOBX-wrappers-to-simplify-jm_-vs-csf_-h.patch
+Patch141:	0042-panfrost-merge-top-level-draw-functions.patch
+Patch142:	0043-panfrost-reuse-panfrost_launch_xfb-for-v10.patch
+Patch143:	0044-panfrost-merge-panfrost_direct_draw-functions.patch
+Patch144:	0045-panfrost-clean-up-index_size-logic.patch
+Patch145:	0046-panfrost-Inline-panfrost_emit_heap_set.patch
+Patch146:	0047-panfrost-Use-JOBX-for-the-context_-init-cleanup-hook.patch
+Patch147:	0048-panfrost-Use-JOBX-for-emit_batch_end.patch
+Patch148:	0049-panfrost-Use-JOBX-for-tiler-heap-desc-emission.patch
+Patch149:	0050-panfrost-s-panfrost_emit_shader_regs-csf_emit_shader.patch
+Patch150:	0051-panfrost-Use-JOBX-for-init_batch.patch
+Patch151:	0052-panfrost-Rename-panfrost_start_tiling-and-use-JOBX.patch
+Patch152:	0053-panfrost-Provide-CSF-JM-specific-emit_fragment_job-h.patch
+Patch153:	0054-panfrost-Use-JOBX-for-job-backend-specific-launch_xf.patch
+Patch154:	0055-panfrost-Deduplicate-panfrost_launch_grid.patch
+Patch155:	0056-panfrost-Move-vertex_count-calculation-out-of-panfro.patch
+Patch156:	0057-panfrost-Move-job-backend-specific-bits-out-of-panfr.patch
+Patch157:	0058-panfrost-Allocate-the-temporary-geometry-buffer-once.patch
+Patch158:	0059-panfrost-Set-any_compute-true-in-the-panfrost_launch.patch
+Patch159:	0060-panfrost-Move-draw_count-increment-to-jm-csf-_emit_d.patch
+Patch160:	0061-panfrost-Prepare-uniform-buffers-in-panfrost_launch_.patch
+Patch161:	0062-panfrost-Use-a-1-task-increment-in-csf_launch_xfb.patch
+Patch162:	0063-panfrost-Make-CS-decoding-more-robust.patch
+Patch163:	0064-panfrost-Move-occlusion_query-init-out-of-the-if-fs_.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
