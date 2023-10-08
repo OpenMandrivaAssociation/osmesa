@@ -219,6 +219,11 @@ Patch8:		mesa-buildsystem-improvements.patch
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
 Patch10:	mesa-22.3-make-vbox-great-again.patch
 
+# Fix LLVM 17 support
+Patch20:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25536.patch
+# Adapt Patch20 to work with 23.2 branch
+Patch21:	backport-25536.patch
+
 # Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfork/mesa.git
 Patch100:	0001-panfrost-Abstract-some-kernel-driver-operations.patch
 Patch101:	0002-panfrost-Use-the-kmod-abstraction.patch
@@ -381,7 +386,7 @@ BuildRequires:	devel(libXau)
 BuildRequires:	devel(libXdmcp)
 BuildRequires:	devel(libsensors)
 BuildRequires:	libsensors.so.5
-BuildRequires:	devel(libLLVM-16)
+BuildRequires:	(devel(libLLVM-17) or devel(libLLVM-16))
 BuildRequires:	devel(libclang)
 BuildRequires:	devel(libzstd)
 BuildRequires:	devel(libwayland-client)

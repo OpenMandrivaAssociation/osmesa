@@ -1,0 +1,149 @@
+From 1f92d631632c059ffeb749d70ee734adc28340cd Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Mon, 11 Sep 2023 13:42:28 +1000
+Subject: [PATCH 1/2] nir: add deref follower builder for casts.
+
+This fixes intel_clc builds with llvm 17 on
+gfx125_bvh_build_DFS_DFS
+
+where it dies in the lower indirect derefs pass.
+---
+ src/compiler/nir/nir_builder.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/compiler/nir/nir_builder.h b/src/compiler/nir/nir_builder.h
+index c9f3465406c1..e777ec975d29 100644
+--- a/src/compiler/nir/nir_builder.h
++++ b/src/compiler/nir/nir_builder.h
+@@ -1570,6 +1570,9 @@ nir_build_deref_follower(nir_builder *b, nir_deref_instr *parent,
+ 
+       return nir_build_deref_struct(b, parent, leader->strct.index);
+ 
++   case nir_deref_type_cast:
++      return nir_build_deref_cast(b, &parent->def, leader->modes,
++                                  leader->type, leader->cast.ptr_stride);
+    default:
+       unreachable("Invalid deref instruction type");
+    }
+-- 
+GitLab
+
+
+From a0c80a87d59a1583e3278f7967b51d470824af1a Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Wed, 4 Oct 2023 16:35:29 +1000
+Subject: [PATCH 2/2] intel-clc: avoid using spirv-linker.
+
+There is not real need to use the spirv-linker here at all,
+we can just read all the CL C files into one buffer, then compile
+that buffer in a single pass.
+
+This worksaround an issue seen with llvm17 and opaque pointers
+and the spirv linker.
+---
+ src/intel/compiler/intel_clc.c | 78 ++++++++++++++++++----------------
+ 1 file changed, 42 insertions(+), 36 deletions(-)
+
+diff --git a/src/intel/compiler/intel_clc.c b/src/intel/compiler/intel_clc.c
+index 6371e8640174..09aaf0af9b50 100644
+--- a/src/intel/compiler/intel_clc.c
++++ b/src/intel/compiler/intel_clc.c
+@@ -402,6 +402,8 @@ int main(int argc, char **argv)
+       .warning = msg_callback,
+    };
+ 
++   size_t total_size = 0;
++   char *all_inputs = NULL;
+    util_dynarray_foreach(&input_files, char *, infile) {
+       int fd = open(*infile, O_RDONLY);
+       if (fd < 0) {
+@@ -411,46 +413,50 @@ int main(int argc, char **argv)
+       }
+ 
+       off_t len = lseek(fd, 0, SEEK_END);
+-      const void *map = mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
+-      close(fd);
+-      if (map == MAP_FAILED) {
+-         fprintf(stderr, "Failed to mmap the file: errno=%d, %s\n",
+-                 errno, strerror(errno));
++      size_t new_size = total_size + len;
++      all_inputs = reralloc_size(mem_ctx, all_inputs, new_size + 1);
++      if (!all_inputs) {
++         fprintf(stderr, "Failed to allocate memory\n");
+          ralloc_free(mem_ctx);
+          return 1;
+       }
++      lseek(fd, 0, SEEK_SET);
++      read(fd, all_inputs + total_size, len);
++      close(fd);
++      total_size = new_size;
++      all_inputs[total_size] = '\0';
++   }
+ 
+-      const char *allowed_spirv_extensions[] = {
+-         "SPV_EXT_shader_atomic_float_add",
+-         "SPV_EXT_shader_atomic_float_min_max",
+-         "SPV_KHR_float_controls",
+-         "SPV_INTEL_subgroups",
+-         NULL,
+-      };
+-
+-      struct clc_compile_args clc_args = {
+-         .source = {
+-            .name = *infile,
+-            .value = map,
+-         },
+-         .features = {
+-            .fp16 = true,
+-            .intel_subgroups = true,
+-            .subgroups = true,
+-            .subgroups_ifp = true,
+-         },
+-         .args = util_dynarray_begin(&clang_args),
+-         .num_args = util_dynarray_num_elements(&clang_args, char *),
+-         .allowed_spirv_extensions = allowed_spirv_extensions,
+-      };
+-
+-      struct clc_binary *spirv_out =
+-         util_dynarray_grow(&spirv_objs, struct clc_binary, 1);
+-
+-      if (!clc_compile_c_to_spirv(&clc_args, &logger, spirv_out)) {
+-         ralloc_free(mem_ctx);
+-         return 1;
+-      }
++   const char *allowed_spirv_extensions[] = {
++      "SPV_EXT_shader_atomic_float_add",
++      "SPV_EXT_shader_atomic_float_min_max",
++      "SPV_KHR_float_controls",
++      "SPV_INTEL_subgroups",
++      NULL,
++   };
++
++   struct clc_compile_args clc_args = {
++      .source = {
++         .name = "intel_clc_files",
++         .value = all_inputs,
++      },
++      .features = {
++         .fp16 = true,
++         .intel_subgroups = true,
++         .subgroups = true,
++         .subgroups_ifp = true,
++      },
++      .args = util_dynarray_begin(&clang_args),
++      .num_args = util_dynarray_num_elements(&clang_args, char *),
++      .allowed_spirv_extensions = allowed_spirv_extensions,
++   };
++
++   struct clc_binary *spirv_out =
++      util_dynarray_grow(&spirv_objs, struct clc_binary, 1);
++
++   if (!clc_compile_c_to_spirv(&clc_args, &logger, spirv_out)) {
++      ralloc_free(mem_ctx);
++      return 1;
+    }
+ 
+    util_dynarray_foreach(&spirv_objs, struct clc_binary, p) {
+-- 
+GitLab
+
