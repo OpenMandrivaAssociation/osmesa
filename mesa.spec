@@ -209,7 +209,10 @@ Source50:	test.c
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
-Patch6:		clover-llvm-17.patch
+# Fix clover with new LLVM versions
+Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/24879.patch
+Patch7:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/13449.patch
+
 # fedora patches
 #Patch15:	mesa-9.2-hardware-float.patch
 
@@ -467,6 +470,18 @@ Obsoletes:	%{_lib}XvMCgallium1 <= 22.0.0-0.rc2.1
 
 %description -n %{dridrivers}
 DRI and Vulkan drivers.
+
+# This is intentionally packaged separately and not installed by default
+# until https://gitlab.freedesktop.org/mesa/mesa/-/issues/8106 gets fixed.
+%package -n %{dridrivers}-zink
+Summary:	OpenGL driver that emits Vulkan calls
+Requires:	%{dridrivers} = %{EVRD}
+
+%description -n %{dridrivers}-zink
+OpenGL driver that emits Vulkan calls
+
+This allows OpenGL applictions to run on hardware that
+has only a Vulkan driver.
 
 %ifarch %{armx} %{riscv}
 %package -n freedreno-tools
@@ -1086,7 +1101,7 @@ if ! %meson \
 %ifarch %{riscv}
 	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,etnaviv,kmsro,zink \
 %else
-	-Dgallium-drivers=auto,crocus \
+	-Dgallium-drivers=auto,crocus,zink \
 %endif
 %endif
 %ifarch %{x86_64}
@@ -1195,6 +1210,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/lima_disasm
 %endif
 %{_libdir}/dri/*.so
+%exclude %{_libdir}/dri/zink_dri.so
 %ifarch %{armx} %{riscv}
 %{_libdir}/libpowervr_rogue.so
 %endif
@@ -1209,6 +1225,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_datadir}/vulkan/explicit_layer.d/*.json
 %{_libdir}/libvulkan_*.so
 %{_datadir}/vulkan/icd.d/*_icd.*.json
+
+%files -n %{dridrivers}-zink
+%{_libdir}/dri/zink_dri.so
 
 %ifarch %{armx}
 %files -n freedreno-tools
