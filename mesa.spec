@@ -26,7 +26,7 @@
 #define git 20230824
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-#define relc 3
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -150,9 +150,9 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	23.2.1
+Version:	23.3.0
 %if ! 0%{?relc:1}%{?git:1}
-Release:	2
+Release:	1
 %else
 %if "%{?relc:1}" != ""
 %if 0%{?git:1}
@@ -168,13 +168,14 @@ Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
 %if 0%{?git:1}
+%if "%{git_branch}" == "panthor" || "%{git_branch}" == "panfrost"
+Source0:	https://gitlab.freedesktop.org/panfrost/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
+%else
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/main/mesa-main.tar.bz2#/mesa-%{git }.tar.bz2
-#Source0:	https://gitlab.freedesktop.org/panfrost/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
+%endif
 %else
 Source0:	https://mesa.freedesktop.org/archive/mesa-%{version}%{vsuffix}.tar.xz
 %endif
-Source3:	make-git-snapshot.sh
-Source5:	mesa-driver-install
 Source100:	%{name}.rpmlintrc
 
 %define dricoremajor 1
@@ -193,6 +194,7 @@ Obsoletes:	%{name}-xorg-drivers-nouveau < %{EVRD}
 # Without this patch, the OpenCL ICD calls into MesaOpenCL,
 # which for some reason calls back into the OpenCL ICD instead
 # of calling its own function by the same name.
+# (Probably related to -Bsymbolic/-Bsymbolic-functions)
 Patch0:		mesa-20.1.1-fix-opencl.patch
 # Use llvm-config to detect llvm, since the newer method
 # finds /usr/lib64/libLLVM-17.so even for 32-bit builds
@@ -209,90 +211,31 @@ Source50:	test.c
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
-# Fix clover with new LLVM versions
-Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/24879.patch
-Patch7:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/13449.patch
-
-# fedora patches
-#Patch15:	mesa-9.2-hardware-float.patch
-
 Patch8:		mesa-buildsystem-improvements.patch
 
 # Make VirtualBox great again
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
 Patch10:	mesa-22.3-make-vbox-great-again.patch
 
-# Fix LLVM 17 support
-Patch20:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25536.patch
-# Adapt Patch20 to work with 23.2 branch
-Patch21:	backport-25536.patch
-
-# Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfork/mesa.git
-Patch100:	0001-panfrost-Abstract-some-kernel-driver-operations.patch
-Patch101:	0002-panfrost-Use-the-kmod-abstraction.patch
-Patch102:	0003-panfrost-Introduce-a-PAN_BO_SHAREABLE-flag.patch
-Patch103:	0004-panvk-Pass-the-PAN_BO_SHAREABLE-when-relevant.patch
-Patch104:	0005-panfrost-Keep-original-BO-flags-when-linearizing-a-r.patch
-Patch105:	0006-panfrost-Flag-BO-shareable-when-appropriate.patch
-Patch106:	0007-panfrost-Add-a-flag-to-create-uncached-GPU-mappings.patch
-Patch107:	0008-panfrost-Create-scanout-kmsro-buffer-when-shared.patch
-Patch108:	0009-panfrost-Add-a-backend-for-the-Panthor-kernel-driver.patch
-Patch109:	0010-panfrost-Add-a-library-to-help-building-CSF-streams.patch
-Patch110:	0011-panfrost-genxml-Add-missing-Progress-increment-field.patch
-Patch111:	0012-panfrost-genxml-Fix-Last-First-Heap-Chunk-field-posi.patch
-Patch112:	0013-panfrost-Move-pan_afbc_compression_mode-to-pan_cs.c-.patch
-Patch113:	0014-panfrost-v10-support.patch
-Patch114:	0015-panfrost-do-not-open-code-panfrost_has_fragment_job.patch
-Patch115:	0016-panfrost-consult-draws-instead-of-draw_count.patch
-Patch116:	0017-panfrost-factor-out-ceu_vt_start-from-panfrost_emit_.patch
-Patch117:	0018-panfrost-Rename-panfrost_vtable-context_init.patch
-Patch118:	0019-panfrost-Add-arch-specific-context-init-cleanup-hook.patch
-Patch119:	0020-panfrost-Move-the-queue-heap-initialization-to-pan_c.patch
-Patch120:	0021-panfrost-Add-a-panfrost_context_reinit-helper-and-us.patch
-Patch121:	0022-panfrost-Set-the-heap-context-only-once-at-context-c.patch
-Patch122:	0023-panfrost-Move-the-heap-descriptor-creation-to-panfro.patch
-Patch123:	0024-panfrost-run-clang-format.patch
-Patch124:	0025-fixup-panfrost-Abstract-some-kernel-driver-operation.patch
-Patch125:	0026-panfrost-return-error-from-panthor_kmod_bo_get_sync_.patch
-Patch126:	0027-panfrost-handle-errors-in-panthor_kmod_bo_get_sync_p.patch
-Patch127:	0028-panfrost-debug_printf-on-unlikely-errors.patch
-Patch128:	0029-fixup-panfrost-Abstract-some-kernel-driver-operation.patch
-Patch129:	0030-fixup-panfrost-debug_printf-on-unlikely-errors.patch
-Patch130:	0031-panfrost-Fix-gnu-empty-initializer-warning.patch
-Patch131:	0032-fixup-panfrost-v10-support.patch
-Patch132:	0033-Revert-panfrost-consult-draws-instead-of-draw_count.patch
-Patch133:	0034-fixup-panfrost-v10-support.patch
-Patch134:	0035-panfrost-Set-batch-any_compute-true-any-time-we-issu.patch
-# Doesn't apply and isn't relevant outside of gitlab CI anyway
-#Patch135:	0036-panfrost-Add-kmod-changes-to-CI-trigger.patch
-Patch136:	0037-panfrost-kmod-Add-locking-to-panfrost_kmod_vm-va_to_.patch
-Patch137:	0038-panfrost-Add-spec-egl-1.4-egl-ext_egl_image_storage-.patch
-Patch138:	0039-panfrost-Create-a-dedicated-hook-for-batch-ending-cl.patch
-Patch139:	0040-panfrost-introduce-and-use-PAN_USE_CSF.patch
-Patch140:	0041-panfrost-Add-JOBX-wrappers-to-simplify-jm_-vs-csf_-h.patch
-Patch141:	0042-panfrost-merge-top-level-draw-functions.patch
-Patch142:	0043-panfrost-reuse-panfrost_launch_xfb-for-v10.patch
-Patch143:	0044-panfrost-merge-panfrost_direct_draw-functions.patch
-Patch144:	0045-panfrost-clean-up-index_size-logic.patch
-Patch145:	0046-panfrost-Inline-panfrost_emit_heap_set.patch
-Patch146:	0047-panfrost-Use-JOBX-for-the-context_-init-cleanup-hook.patch
-Patch147:	0048-panfrost-Use-JOBX-for-emit_batch_end.patch
-Patch148:	0049-panfrost-Use-JOBX-for-tiler-heap-desc-emission.patch
-Patch149:	0050-panfrost-s-panfrost_emit_shader_regs-csf_emit_shader.patch
-Patch150:	0051-panfrost-Use-JOBX-for-init_batch.patch
-Patch151:	0052-panfrost-Rename-panfrost_start_tiling-and-use-JOBX.patch
-Patch152:	0053-panfrost-Provide-CSF-JM-specific-emit_fragment_job-h.patch
-Patch153:	0054-panfrost-Use-JOBX-for-job-backend-specific-launch_xf.patch
-Patch154:	0055-panfrost-Deduplicate-panfrost_launch_grid.patch
-Patch155:	0056-panfrost-Move-vertex_count-calculation-out-of-panfro.patch
-Patch156:	0057-panfrost-Move-job-backend-specific-bits-out-of-panfr.patch
-Patch157:	0058-panfrost-Allocate-the-temporary-geometry-buffer-once.patch
-Patch158:	0059-panfrost-Set-any_compute-true-in-the-panfrost_launch.patch
-Patch159:	0060-panfrost-Move-draw_count-increment-to-jm-csf-_emit_d.patch
-Patch160:	0061-panfrost-Prepare-uniform-buffers-in-panfrost_launch_.patch
-Patch161:	0062-panfrost-Use-a-1-task-increment-in-csf_launch_xfb.patch
-Patch162:	0063-panfrost-Make-CS-decoding-more-robust.patch
-Patch163:	0064-panfrost-Move-occlusion_query-init-out-of-the-if-fs_.patch
+# Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfrost/mesa.git
+# Generated using:
+#	git checkout -b panthor-23.3 mesa-23.3.0-rc1
+#	# (Revert a few changes that are good, but conflict with Panthor for now)
+#	git revert 9ec9849c85e8202cb894736d0411f9b2409ab6e8
+#	git revert 5a928f7563af8ed18617210b95208ea63c157e2f
+#	git revert 888d7c8ee6ad59aed2b86ba6f32542976b671dd0
+#	git revert 33b48a55857b15f7e7b892a89cad2f0ad2399ba6
+#	git revert e9d523bb92a59336f69e92e51e8fe004f04cd629
+#	git revert bc55d150a915d5b2e91cd6ee11af4992d18fcf4f
+#	git revert 32fbd388895e4590488a63417c36dc342d1737a7
+#	git revert ae3fb3089f50a5f7bc42f209656b783ac98ec509
+#	git revert c1429a3120037a1599b4187eaca31fec413b2579
+#	# (These changes are good too, but they prevent Panthor from loading)
+#	git revert 88c03ddd345fe6b0cd16c11cb5c5309f8d7d16ff
+#	git revert 2be404f5571ada32d3b2e9cfe9b769846f27d68f
+#	git merge v10+panthor
+#	git diff mesa-23.3.0-rc1
+Patch100:	mesa-23.3-panthor.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -992,8 +935,7 @@ Group:		Development/Tools
 Tools for debugging Mesa drivers.
 
 %prep
-%autosetup -p1 -n mesa-%{?git:main}%{!?git:%{version}%{vsuffix}}
-chmod +x %{SOURCE5}
+%autosetup -p1 -n mesa-%{?git:%{git}}%{!?git:%{version}%{vsuffix}}
 
 %build
 %if %{with gcc}
@@ -1366,7 +1308,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 %{_bindir}/glsl_compiler
 %{_bindir}/glsl_test
-%{_bindir}/nouveau_compiler
 %{_bindir}/spirv2nir
 %{_libdir}/libdlclose-skip.so
 
