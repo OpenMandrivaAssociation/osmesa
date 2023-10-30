@@ -236,6 +236,15 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 #	git merge v10+panthor
 #	git diff mesa-23.3.0-rc1
 Patch100:	mesa-23.3-panthor.patch
+# Bring back reverted patches (to the extent possible)
+Patch101:	port-9ec984.patch
+Patch102:	port-5a928f.patch
+Patch103:	port-888d7c.patch
+Patch104:	port-33b48a.patch
+Patch105:	port-e9d523.patch
+Patch106:	port-bc55d1.patch
+Patch107:	port-32fbd3.patch
+Patch108:	port-ae3db3.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -1064,12 +1073,12 @@ if ! %meson \
 	-Degl-native-platform=wayland \
 	-Dvulkan-layers=device-select,overlay \
 %ifarch %{armx}
-	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental \
+	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental,nouveau-experimental \
 %else
 %ifarch %{riscv}
-	-Dvulkan-drivers=auto,virtio,imagination-experimental \
+	-Dvulkan-drivers=auto,virtio,imagination-experimental,nouveau-experimental \
 %else
-	-Dvulkan-drivers=auto,virtio \
+	-Dvulkan-drivers=auto,virtio,nouveau-experimental,intel,intel_hasvk \
 %endif
 %endif
 	-Dvulkan-beta=true \

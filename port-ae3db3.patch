@@ -1,0 +1,92 @@
+commit bd128c12ce390f5e26fe71f4c43f800e8531954c
+Author: Louis-Francis Ratté-Boulianne <lfrb@collabora.com>
+Date:   Fri Oct 6 21:19:45 2023 -0400
+
+    panfrost: Add infrastructure for internal AFBC compute shaders
+    
+    A few compute shaders are needed to support AFBC-packing. Here is
+    just the boilerplate to create, compile and retrieve the shaders.
+    
+    Signed-off-by: Louis-Francis Ratté-Boulianne <lfrb@collabora.com>
+    Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25012>
+    [bero@lindev.ch: Port to Panthor]
+    Signed-off-by: Bernhard Rosenkränzer <bero@lindev.ch>
+
+diff --git a/src/gallium/drivers/panfrost/meson.build b/src/gallium/drivers/panfrost/meson.build
+index 5a574459ab7..820d8479468 100644
+--- a/src/gallium/drivers/panfrost/meson.build
++++ b/src/gallium/drivers/panfrost/meson.build
+@@ -20,6 +20,7 @@
+ # SOFTWARE.
+ 
+ files_panfrost = files(
++  'pan_afbc_cso.c',
+   'pan_disk_cache.c',
+   'pan_fence.c',
+   'pan_helpers.c',
+diff --git a/src/gallium/drivers/panfrost/pan_afbc_cso.c b/src/gallium/drivers/panfrost/pan_afbc_cso.c
+index 17bd04b4a59..278e4017c14 100644
+--- a/src/gallium/drivers/panfrost/pan_afbc_cso.c
++++ b/src/gallium/drivers/panfrost/pan_afbc_cso.c
+@@ -294,8 +294,6 @@ panfrost_afbc_get_shaders(struct panfrost_context *ctx,
+       shader->name##_cso = pctx->create_compute_state(pctx, &cso);             \
+    }
+ 
+-   COMPILE_SHADER(size, key.bpp, key.align);
+-
+ #undef COMPILE_SHADER
+ 
+    pthread_mutex_lock(&ctx->afbc_shaders.lock);
+diff --git a/src/gallium/drivers/panfrost/pan_context.c b/src/gallium/drivers/panfrost/pan_context.c
+index eb41ab7dc97..a0782a0aef2 100644
+--- a/src/gallium/drivers/panfrost/pan_context.c
++++ b/src/gallium/drivers/panfrost/pan_context.c
+@@ -565,6 +565,7 @@ panfrost_destroy(struct pipe_context *pipe)
+ 
+    panfrost_pool_cleanup(&panfrost->descs);
+    panfrost_pool_cleanup(&panfrost->shaders);
++   panfrost_afbc_context_destroy(panfrost);
+ 
+    drmSyncobjDestroy(panfrost_device_fd(dev), panfrost->in_sync_obj);
+    if (panfrost->in_sync_fd != -1)
+@@ -948,6 +949,7 @@ panfrost_create_context(struct pipe_screen *screen, void *priv, unsigned flags)
+ 
+    panfrost_resource_context_init(gallium);
+    panfrost_shader_context_init(gallium);
++   panfrost_afbc_context_init(ctx);
+ 
+    gallium->stream_uploader = u_upload_create_default(gallium);
+    gallium->const_uploader = gallium->stream_uploader;
+diff --git a/src/gallium/drivers/panfrost/pan_context.h b/src/gallium/drivers/panfrost/pan_context.h
+index 75e066b6e41..483ed820161 100644
+--- a/src/gallium/drivers/panfrost/pan_context.h
++++ b/src/gallium/drivers/panfrost/pan_context.h
+@@ -28,6 +28,7 @@
+ #define _LARGEFILE64_SOURCE 1
+ #include <assert.h>
+ #include <sys/mman.h>
++#include "pan_afbc_cso.h"
+ #include "pan_blend_cso.h"
+ #include "pan_earlyzs.h"
+ #include "pan_encoder.h"
+@@ -203,6 +204,8 @@ struct panfrost_context {
+ 
+    struct blitter_context *blitter;
+ 
++   struct pan_afbc_shaders afbc_shaders;
++
+    struct panfrost_blend_state *blend;
+ 
+    /* On Valhall, does the current blend state use a blend shader for any
+diff --git a/src/gallium/drivers/panfrost/pan_screen.h b/src/gallium/drivers/panfrost/pan_screen.h
+index d95a9a3d968..164fe4b931f 100644
+--- a/src/gallium/drivers/panfrost/pan_screen.h
++++ b/src/gallium/drivers/panfrost/pan_screen.h
+@@ -41,6 +41,7 @@
+ 
+ #include "pan_device.h"
+ #include "pan_mempool.h"
++#include "pan_texture.h"
+ 
+ #define PAN_QUERY_DRAW_CALLS (PIPE_QUERY_DRIVER_SPECIFIC + 0)
+ 

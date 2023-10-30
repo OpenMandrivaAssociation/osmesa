@@ -1,0 +1,197 @@
+commit fa26a37a89f3ae9a155a8a129cc53ebf4a91f52f
+Author: Louis-Francis Ratté-Boulianne <lfrb@collabora.com>
+Date:   Thu Sep 21 11:19:23 2023 -0400
+
+    panfrost: Add env variable for max AFBC packing ratio
+    
+    Add `PAN_MAX_AFBC_PACKING_RATIO` variable. If the ratio (size of the
+    packed resource) / (size of the sparse resource) * 100 is above that
+    value, we don't care about packing it.
+    
+    Signed-off-by: Louis-Francis Ratté-Boulianne <lfrb@collabora.com>
+    Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25012>
+    [bero@lindev.ch: port to Panthor]
+    Signed-off-by: Bernhard Rosenkränzer <bero@lindev.ch>
+
+diff --git a/src/gallium/drivers/panfrost/pan_resource.c b/src/gallium/drivers/panfrost/pan_resource.c
+index ff5dd0583c6..8e4ef0d6a5a 100644
+--- a/src/gallium/drivers/panfrost/pan_resource.c
++++ b/src/gallium/drivers/panfrost/pan_resource.c
+@@ -1288,6 +1288,143 @@ panfrost_should_linear_convert(struct panfrost_device *dev,
+    }
+ }
+ 
++struct panfrost_bo *
++panfrost_get_afbc_superblock_sizes(struct panfrost_context *ctx,
++                                   struct panfrost_resource *rsrc,
++                                   unsigned first_level, unsigned last_level,
++                                   unsigned *out_offsets)
++{
++   struct panfrost_screen *screen = pan_screen(ctx->base.screen);
++   struct panfrost_device *dev = pan_device(ctx->base.screen);
++   struct panfrost_batch *batch;
++   struct panfrost_bo *bo;
++   unsigned metadata_size = 0;
++
++   for (int level = first_level; level <= last_level; ++level) {
++      struct pan_image_slice_layout *slice = &rsrc->image.layout.slices[level];
++      unsigned sz = slice->afbc.nr_blocks * sizeof(struct pan_afbc_block_info);
++      out_offsets[level - first_level] = metadata_size;
++      metadata_size += sz;
++   }
++
++   panfrost_flush_batches_accessing_rsrc(ctx, rsrc, "AFBC before size flush");
++   batch = panfrost_get_fresh_batch_for_fbo(ctx, "AFBC superblock sizes");
++   bo = panfrost_bo_create(dev, metadata_size, 0, "AFBC superblock sizes");
++
++   for (int level = first_level; level <= last_level; ++level) {
++      unsigned offset = out_offsets[level - first_level];
++      screen->vtbl.afbc_size(batch, rsrc, bo, offset, level);
++   }
++
++   panfrost_flush_batches_accessing_rsrc(ctx, rsrc, "AFBC after size flush");
++
++   return bo;
++}
++
++void
++panfrost_pack_afbc(struct panfrost_context *ctx,
++                   struct panfrost_resource *prsrc)
++{
++   struct panfrost_screen *screen = pan_screen(ctx->base.screen);
++   struct panfrost_device *dev = pan_device(ctx->base.screen);
++   struct panfrost_bo *metadata_bo;
++   unsigned metadata_offsets[PIPE_MAX_TEXTURE_LEVELS];
++
++   uint64_t src_modifier = prsrc->image.layout.modifier;
++   uint64_t dst_modifier =
++      src_modifier & ~(AFBC_FORMAT_MOD_TILED | AFBC_FORMAT_MOD_SPARSE);
++   bool is_tiled = src_modifier & AFBC_FORMAT_MOD_TILED;
++   unsigned last_level = prsrc->base.last_level;
++   struct pan_image_slice_layout slice_infos[PIPE_MAX_TEXTURE_LEVELS] = {0};
++   unsigned total_size = 0;
++
++   /* It doesn't make sense to pack everything if we need to unpack right
++    * away to upload data to another level */
++   for (int i = 0; i <= last_level; i++) {
++      if (!BITSET_TEST(prsrc->valid.data, i))
++         return;
++   }
++
++   metadata_bo = panfrost_get_afbc_superblock_sizes(ctx, prsrc, 0, last_level,
++                                                    metadata_offsets);
++   panfrost_bo_wait(metadata_bo, INT64_MAX, false);
++
++   for (unsigned level = 0; level <= last_level; ++level) {
++      struct pan_image_slice_layout *src_slice =
++         &prsrc->image.layout.slices[level];
++      struct pan_image_slice_layout *dst_slice = &slice_infos[level];
++
++      unsigned width = u_minify(prsrc->base.width0, level);
++      unsigned height = u_minify(prsrc->base.height0, level);
++      unsigned src_stride =
++         pan_afbc_stride_blocks(src_modifier, src_slice->row_stride);
++      unsigned dst_stride =
++         DIV_ROUND_UP(width, panfrost_afbc_superblock_width(dst_modifier));
++      unsigned dst_height =
++         DIV_ROUND_UP(height, panfrost_afbc_superblock_height(dst_modifier));
++
++      uint32_t offset = 0;
++      struct pan_afbc_block_info *meta =
++         metadata_bo->ptr.cpu + metadata_offsets[level];
++
++      for (unsigned y = 0, i = 0; y < dst_height; ++y) {
++         for (unsigned x = 0; x < dst_stride; ++x, ++i) {
++            unsigned idx = is_tiled ? get_morton_index(x, y, src_stride) : i;
++            uint32_t size = meta[idx].size;
++            meta[idx].offset = offset; /* write the start offset */
++            offset += size;
++         }
++      }
++
++      total_size = ALIGN_POT(total_size, pan_slice_align(dst_modifier));
++      {
++         dst_slice->afbc.stride = dst_stride;
++         dst_slice->afbc.nr_blocks = dst_stride * dst_height;
++         dst_slice->afbc.header_size =
++            ALIGN_POT(dst_stride * dst_height * AFBC_HEADER_BYTES_PER_TILE,
++                      pan_afbc_body_align(dst_modifier));
++         dst_slice->afbc.body_size = offset;
++         dst_slice->afbc.surface_stride = dst_slice->afbc.header_size + offset;
++
++         dst_slice->offset = total_size;
++         dst_slice->row_stride = dst_stride * AFBC_HEADER_BYTES_PER_TILE;
++         dst_slice->surface_stride = dst_slice->afbc.surface_stride;
++         dst_slice->size = dst_slice->afbc.surface_stride;
++      }
++      total_size += dst_slice->afbc.surface_stride;
++   }
++
++   unsigned new_size = ALIGN_POT(total_size, 4096); // FIXME
++   unsigned old_size = prsrc->image.data.bo->size;
++   unsigned ratio = 100 * new_size / old_size;
++
++   if (ratio > screen->max_afbc_packing_ratio)
++      return;
++
++   if (dev->debug & PAN_DBG_PERF) {
++      printf("%i%%: %i KB -> %i KB\n", ratio, old_size / 1024, new_size / 1024);
++   }
++
++   struct panfrost_bo *dst =
++      panfrost_bo_create(dev, new_size, 0, "AFBC compact texture");
++   struct panfrost_batch *batch =
++      panfrost_get_fresh_batch_for_fbo(ctx, "AFBC compaction");
++
++   for (unsigned level = 0; level <= last_level; ++level) {
++      struct pan_image_slice_layout *slice = &slice_infos[level];
++      screen->vtbl.afbc_pack(batch, prsrc, dst, slice, metadata_bo,
++                             metadata_offsets[level], level);
++      prsrc->image.layout.slices[level] = *slice;
++   }
++
++   panfrost_flush_batches_accessing_rsrc(ctx, prsrc, "AFBC compaction flush");
++
++   prsrc->image.layout.modifier = dst_modifier;
++   panfrost_bo_unreference(prsrc->image.data.bo);
++   prsrc->image.data.bo = dst;
++   panfrost_bo_unreference(metadata_bo);
++}
++
+ static void
+ panfrost_ptr_unmap(struct pipe_context *pctx, struct pipe_transfer *transfer)
+ {
+diff --git a/src/gallium/drivers/panfrost/pan_screen.c b/src/gallium/drivers/panfrost/pan_screen.c
+index c8659a0cb0e..ccd698f20e5 100644
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -56,6 +56,8 @@
+ 
+ #include "pan_context.h"
+ 
++#define DEFAULT_MAX_AFBC_PACKING_RATIO 90
++
+ /* clang-format off */
+ static const struct debug_named_value panfrost_debug_options[] = {
+    {"perf",       PAN_DBG_PERF,     "Enable performance warnings"},
+@@ -841,6 +843,8 @@ panfrost_create_screen(int fd, const struct pipe_screen_config *config,
+    /* Debug must be set first for pandecode to work correctly */
+    dev->debug =
+       debug_get_flags_option("PAN_MESA_DEBUG", panfrost_debug_options, 0);
++   screen->max_afbc_packing_ratio = debug_get_num_option(
++      "PAN_MAX_AFBC_PACKING_RATIO", DEFAULT_MAX_AFBC_PACKING_RATIO);
+    panfrost_open_device(screen, fd, dev);
+ 
+    if (dev->debug & PAN_DBG_NO_AFBC)
+diff --git a/src/gallium/drivers/panfrost/pan_screen.h b/src/gallium/drivers/panfrost/pan_screen.h
+index 043aa1cff36..26841f0123a 100644
+--- a/src/gallium/drivers/panfrost/pan_screen.h
++++ b/src/gallium/drivers/panfrost/pan_screen.h
+@@ -102,6 +102,7 @@ struct panfrost_screen {
+ 
+    struct panfrost_vtable vtbl;
+    struct disk_cache *disk_cache;
++   unsigned max_afbc_packing_ratio;
+ };
+ 
+ static inline struct panfrost_screen *
