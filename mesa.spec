@@ -151,19 +151,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.3.0
-%if ! 0%{?relc:1}%{?git:1}
-Release:	1
-%else
-%if "%{?relc:1}" != ""
-%if 0%{?git:1}
-Release:	%{?relc:0.rc%{relc}.}0.%{git}.1
-%else
-Release:	%{?relc:0.rc%{relc}.}1
-%endif
-%else
-Release:	%{?git:0.%{git}.}1
-%endif
-%endif
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
