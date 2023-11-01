@@ -26,7 +26,7 @@
 #define git 20230824
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 1
+%define relc 2
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -151,7 +151,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.3.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org

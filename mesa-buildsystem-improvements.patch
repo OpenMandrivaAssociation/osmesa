@@ -1,7 +1,7 @@
-diff -up mesa-22.3.0-rc2/meson.build.3~ mesa-22.3.0-rc2/meson.build
---- mesa-22.3.0-rc2/meson.build.3~	2022-11-10 13:32:08.447637431 +0100
-+++ mesa-22.3.0-rc2/meson.build	2022-11-10 13:36:38.602764575 +0100
-@@ -182,6 +182,12 @@ endif
+diff -up mesa-23.3.0-rc2/meson.build.7~ mesa-23.3.0-rc2/meson.build
+--- mesa-23.3.0-rc2/meson.build.7~	2023-11-01 20:14:24.788430051 +0100
++++ mesa-23.3.0-rc2/meson.build	2023-11-01 20:17:45.395386930 +0100
+@@ -125,6 +125,12 @@ system_has_kms_drm = ['openbsd', 'netbsd
  
  gallium_drivers = get_option('gallium-drivers')
  if gallium_drivers.contains('auto')
@@ -14,7 +14,7 @@ diff -up mesa-22.3.0-rc2/meson.build.3~ mesa-22.3.0-rc2/meson.build
    if system_has_kms_drm
      # TODO: PPC, Sparc
      if ['x86', 'x86_64'].contains(host_machine.cpu_family())
-@@ -209,6 +215,11 @@ if gallium_drivers.contains('auto')
+@@ -156,6 +162,11 @@ if gallium_drivers.contains('auto')
      error('Unknown OS @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
            host_machine.system()))
    endif
@@ -23,10 +23,10 @@ diff -up mesa-22.3.0-rc2/meson.build.3~ mesa-22.3.0-rc2/meson.build
 +      gallium_drivers += drv
 +    endif
 +  endforeach
- endif
- with_gallium_radeonsi = gallium_drivers.contains('radeonsi')
- with_gallium_r300 = gallium_drivers.contains('r300')
-@@ -252,6 +263,12 @@ endif
+ elif gallium_drivers.contains('all')
+    # Build-test everything except for i915, which depends on libdrm-intel which
+    # is not available on non-Intel distros.
+@@ -203,6 +214,12 @@ with_gallium_kmsro = system_has_kms_drm
  
  _vulkan_drivers = get_option('vulkan-drivers')
  if _vulkan_drivers.contains('auto')
@@ -39,7 +39,7 @@ diff -up mesa-22.3.0-rc2/meson.build.3~ mesa-22.3.0-rc2/meson.build
    if system_has_kms_drm
      if host_machine.cpu_family().startswith('x86')
        _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'swrast']
-@@ -268,6 +285,11 @@ if _vulkan_drivers.contains('auto')
+@@ -219,6 +236,11 @@ if _vulkan_drivers.contains('auto')
      error('Unknown OS @0@. Please pass -Dvulkan-drivers to set driver options. Patches gladly accepted to fix this.'.format(
            host_machine.system()))
    endif
@@ -48,6 +48,6 @@ diff -up mesa-22.3.0-rc2/meson.build.3~ mesa-22.3.0-rc2/meson.build
 +      _vulkan_drivers += drv
 +    endif
 +  endforeach
- endif
- 
- with_intel_vk = _vulkan_drivers.contains('intel')
+ elif _vulkan_drivers.contains('all')
+    # Build every vulkan driver regardless of architecture.
+    _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'swrast',
