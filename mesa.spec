@@ -151,7 +151,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.3.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -200,6 +200,9 @@ Source50:	test.c
 #Patch1:		mesa-19.2.3-arm32-buildfix.patch
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
+
+# Fix radeonsi Vulkan nv12 rendering
+Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25970.patch
 
 Patch8:		mesa-buildsystem-improvements.patch
 

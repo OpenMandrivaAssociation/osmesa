@@ -1,0 +1,30 @@
+From eb2d8913c4b949865d45878a1388d6ce91f1eadc Mon Sep 17 00:00:00 2001
+From: David Rosca <nowrep@gmail.com>
+Date: Tue, 31 Oct 2023 10:13:52 +0100
+Subject: [PATCH] radeonsi: Fix offset for linear surfaces on GFX < 9
+
+Fixes: 86262b6eac0 ("radeonsi,radv: fix usages of surf_pitch")
+
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/9949
+---
+ src/gallium/drivers/radeonsi/si_texture.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/radeonsi/si_texture.c b/src/gallium/drivers/radeonsi/si_texture.c
+index 16948db41a76..6003b71f40fc 100644
+--- a/src/gallium/drivers/radeonsi/si_texture.c
++++ b/src/gallium/drivers/radeonsi/si_texture.c
+@@ -640,7 +640,9 @@ static bool si_resource_get_param(struct pipe_screen *screen, struct pipe_contex
+       if (resource->target == PIPE_BUFFER) {
+          *value = 0;
+       } else {
+-         uint64_t level_offset = tex->surface.is_linear ? tex->surface.u.gfx9.offset[level] : 0;
++         uint64_t level_offset = 0;
++         if (sscreen->info.gfx_level >= GFX9 && tex->surface.is_linear)
++            level_offset = tex->surface.u.gfx9.offset[level];
+          *value = ac_surface_get_plane_offset(sscreen->info.gfx_level,
+                                               &tex->surface, plane, layer)  + level_offset;
+       }
+-- 
+GitLab
+
