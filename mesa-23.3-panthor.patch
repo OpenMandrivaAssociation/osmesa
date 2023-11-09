@@ -1,3 +1,16 @@
+diff --git a/.pick_status.json b/.pick_status.json
+index 64b330fbf71..cebd1544b49 100644
+--- a/.pick_status.json
++++ b/.pick_status.json
+@@ -764,7 +764,7 @@
+         "description": "panfrost: use perf_debug instead of open-coding",
+         "nominated": true,
+         "nomination_type": 1,
+-        "resolution": 1,
++        "resolution": 0,
+         "main_sha": null,
+         "because_sha": "bc55d150a915d5b2e91cd6ee11af4992d18fcf4f",
+         "notes": null
 diff --git a/include/drm-uapi/panthor_drm.h b/include/drm-uapi/panthor_drm.h
 new file mode 100644
 index 00000000000..2e53831233f
@@ -867,6 +880,18 @@ index 00000000000..2e53831233f
 +#endif
 +
 +#endif /* _PANTHOR_DRM_H_ */
+diff --git a/src/.clang-format b/src/.clang-format
+index 0f0916c369e..01245aa84d7 100644
+--- a/src/.clang-format
++++ b/src/.clang-format
+@@ -312,6 +312,7 @@ ForEachMacros:
+   - pan_foreach_instr_in_block_rev
+   - pan_foreach_predecessor
+   - pan_foreach_successor
++  - ceu_emit
+ 
+ # Disable clang formatting by default. Drivers that use clang-format
+ # inherit from this .clang-format file and re-enable formatting:
 diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
 index ec492d5e76d..42cd4b1b03b 100644
 --- a/src/egl/drivers/dri2/platform_drm.c
@@ -6283,7 +6308,7 @@ index 89797cc3935..23791cb06f5 100644
        /* Update the BO access flags so that panfrost_bo_wait() knows
         * about all pending accesses.
 diff --git a/src/gallium/drivers/panfrost/pan_resource.c b/src/gallium/drivers/panfrost/pan_resource.c
-index ad19ad767b7..ff5dd0583c6 100644
+index 6f4b5c14ccc..ff5dd0583c6 100644
 --- a/src/gallium/drivers/panfrost/pan_resource.c
 +++ b/src/gallium/drivers/panfrost/pan_resource.c
 @@ -4,7 +4,6 @@
@@ -6588,7 +6613,7 @@ index ad19ad767b7..ff5dd0583c6 100644
  }
  
  static bool
-@@ -1419,149 +1288,11 @@ panfrost_should_linear_convert(struct panfrost_device *dev,
+@@ -1419,148 +1288,11 @@ panfrost_should_linear_convert(struct panfrost_device *dev,
     }
  }
  
@@ -6705,9 +6730,8 @@ index ad19ad767b7..ff5dd0583c6 100644
 -   if (ratio > screen->max_afbc_packing_ratio)
 -      return;
 -
--   if (dev->debug & PAN_DBG_PERF) {
--      printf("%i%%: %i KB -> %i KB\n", ratio, old_size / 1024, new_size / 1024);
--   }
+-   perf_debug(dev, "%i%%: %i KB -> %i KB\n", ratio, old_size / 1024,
+-              new_size / 1024);
 -
 -   struct panfrost_bo *dst =
 -      panfrost_bo_create(dev, new_size, 0, "AFBC compact texture");
@@ -6738,7 +6762,7 @@ index ad19ad767b7..ff5dd0583c6 100644
     struct panfrost_transfer *trans = pan_transfer(transfer);
     struct panfrost_resource *prsrc =
        (struct panfrost_resource *)transfer->resource;
-@@ -1590,13 +1321,8 @@ panfrost_ptr_unmap(struct pipe_context *pctx, struct pipe_transfer *transfer)
+@@ -1589,13 +1321,8 @@ panfrost_ptr_unmap(struct pipe_context *pctx, struct pipe_transfer *transfer)
           } else {
              pan_blit_from_staging(pctx, trans);
              panfrost_flush_batches_accessing_rsrc(
@@ -6753,7 +6777,7 @@ index ad19ad767b7..ff5dd0583c6 100644
           }
        }
  
-@@ -1615,11 +1341,13 @@ panfrost_ptr_unmap(struct pipe_context *pctx, struct pipe_transfer *transfer)
+@@ -1614,11 +1341,13 @@ panfrost_ptr_unmap(struct pipe_context *pctx, struct pipe_transfer *transfer)
              if (panfrost_should_linear_convert(dev, prsrc, transfer)) {
                 panfrost_resource_setup(dev, prsrc, DRM_FORMAT_MOD_LINEAR,
                                         prsrc->image.layout.format);
@@ -7306,10 +7330,10 @@ index 3a2dd9d3307..d890822f059 100644
  spec@egl_chromium_sync_control@conformance,Fail
 diff --git a/src/panfrost/lib/genxml/ceu_builder.h b/src/panfrost/lib/genxml/ceu_builder.h
 new file mode 100644
-index 00000000000..d24bd9ad7c4
+index 00000000000..17fbe89ee1a
 --- /dev/null
 +++ b/src/panfrost/lib/genxml/ceu_builder.h
-@@ -0,0 +1,576 @@
+@@ -0,0 +1,564 @@
 +/*
 + * Copyright (C) 2022 Collabora Ltd.
 + *
@@ -7570,8 +7594,7 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_move32_to(ceu_builder *b, ceu_index dest, uint32_t imm)
 +{
-+   ceu_emit(b, MOVE32, I)
-+   {
++   ceu_emit(b, MOVE32, I) {
 +      I.destination = ceu_to_reg32(dest);
 +      I.immediate = imm;
 +   }
@@ -7580,8 +7603,7 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_move48_to(ceu_builder *b, ceu_index dest, uint64_t imm)
 +{
-+   ceu_emit(b, MOVE, I)
-+   {
++   ceu_emit(b, MOVE, I) {
 +      I.destination = ceu_to_reg64(dest);
 +      I.immediate = imm;
 +   }
@@ -7590,8 +7612,7 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_wait_slots(ceu_builder *b, uint8_t slots)
 +{
-+   ceu_emit(b, WAIT, I)
-+   {
++   ceu_emit(b, WAIT, I) {
 +      I.slots = slots;
 +   }
 +}
@@ -7600,8 +7621,7 @@ index 00000000000..d24bd9ad7c4
 +ceu_branch(ceu_builder *b, int16_t offset, enum mali_ceu_condition cond,
 +           ceu_index val)
 +{
-+   ceu_emit(b, BRANCH, I)
-+   {
++   ceu_emit(b, BRANCH, I) {
 +      I.offset = offset;
 +      I.condition = cond;
 +      I.value = ceu_to_reg32(val);
@@ -7612,8 +7632,7 @@ index 00000000000..d24bd9ad7c4
 +ceu_run_compute(ceu_builder *b, unsigned task_increment,
 +                enum mali_task_axis task_axis)
 +{
-+   ceu_emit(b, RUN_COMPUTE, I)
-+   {
++   ceu_emit(b, RUN_COMPUTE, I) {
 +      I.task_increment = task_increment;
 +      I.task_axis = task_axis;
 +
@@ -7625,8 +7644,7 @@ index 00000000000..d24bd9ad7c4
 +ceu_run_idvs(ceu_builder *b, enum mali_draw_mode draw_mode,
 +             enum mali_index_type index_type, bool secondary_shader)
 +{
-+   ceu_emit(b, RUN_IDVS, I)
-+   {
++   ceu_emit(b, RUN_IDVS, I) {
 +      /* We do not have a use case for traditional IDVS */
 +      I.malloc_enable = true;
 +
@@ -7647,8 +7665,7 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_run_fragment(ceu_builder *b, bool enable_tem)
 +{
-+   ceu_emit(b, RUN_FRAGMENT, I)
-+   {
++   ceu_emit(b, RUN_FRAGMENT, I) {
 +      I.enable_tem = enable_tem;
 +   }
 +}
@@ -7656,7 +7673,8 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_finish_tiling(ceu_builder *b)
 +{
-+   ceu_emit(b, FINISH_TILING, _);
++   ceu_emit(b, FINISH_TILING, _)
++      ;
 +}
 +
 +static inline void
@@ -7665,8 +7683,7 @@ index 00000000000..d24bd9ad7c4
 +                    ceu_index last_free_heap_chunk, uint16_t scoreboard_mask,
 +                    uint8_t signal_slot)
 +{
-+   ceu_emit(b, FINISH_FRAGMENT, I)
-+   {
++   ceu_emit(b, FINISH_FRAGMENT, I) {
 +      I.increment_fragment_completed = increment_frag_completed;
 +      I.wait_mask = scoreboard_mask;
 +      I.first_heap_chunk = ceu_to_reg64(first_free_heap_chunk);
@@ -7678,8 +7695,7 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_heap_set(ceu_builder *b, ceu_index address)
 +{
-+   ceu_emit(b, HEAP_SET, I)
-+   {
++   ceu_emit(b, HEAP_SET, I) {
 +      I.address = ceu_to_reg64(address);
 +   }
 +}
@@ -7688,8 +7704,7 @@ index 00000000000..d24bd9ad7c4
 +ceu_load_to(ceu_builder *b, ceu_index dest, ceu_index address, uint16_t mask,
 +            int16_t offset)
 +{
-+   ceu_emit(b, LOAD_MULTIPLE, I)
-+   {
++   ceu_emit(b, LOAD_MULTIPLE, I) {
 +      I.base = ceu_to_reg_tuple(dest, util_bitcount(mask));
 +      I.address = ceu_to_reg64(address);
 +      I.mask = mask;
@@ -7701,8 +7716,7 @@ index 00000000000..d24bd9ad7c4
 +ceu_store(ceu_builder *b, ceu_index data, ceu_index address, uint16_t mask,
 +          int16_t offset)
 +{
-+   ceu_emit(b, STORE_MULTIPLE, I)
-+   {
++   ceu_emit(b, STORE_MULTIPLE, I) {
 +      I.base = ceu_to_reg_tuple(data, util_bitcount(mask));
 +      I.address = ceu_to_reg64(address);
 +      I.mask = mask;
@@ -7720,8 +7734,7 @@ index 00000000000..d24bd9ad7c4
 +   assert(ep < 8 && "invalid slot");
 +   assert(other < 8 && "invalid slot");
 +
-+   ceu_emit(b, SET_SB_ENTRY, I)
-+   {
++   ceu_emit(b, SET_SB_ENTRY, I) {
 +      I.endpoint_entry = ep;
 +      I.other_entry = other;
 +   }
@@ -7730,8 +7743,7 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_require_all(ceu_builder *b)
 +{
-+   ceu_emit(b, REQ_RESOURCE, I)
-+   {
++   ceu_emit(b, REQ_RESOURCE, I) {
 +      I.compute = true;
 +      I.tiler = true;
 +      I.idvs = true;
@@ -7742,20 +7754,21 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_require_compute(ceu_builder *b)
 +{
-+   ceu_emit(b, REQ_RESOURCE, I) I.compute = true;
++   ceu_emit(b, REQ_RESOURCE, I)
++      I.compute = true;
 +}
 +
 +static inline void
 +ceu_require_fragment(ceu_builder *b)
 +{
-+   ceu_emit(b, REQ_RESOURCE, I) I.fragment = true;
++   ceu_emit(b, REQ_RESOURCE, I)
++      I.fragment = true;
 +}
 +
 +static inline void
 +ceu_require_idvs(ceu_builder *b)
 +{
-+   ceu_emit(b, REQ_RESOURCE, I)
-+   {
++   ceu_emit(b, REQ_RESOURCE, I) {
 +      I.compute = true;
 +      I.tiler = true;
 +      I.idvs = true;
@@ -7765,7 +7778,8 @@ index 00000000000..d24bd9ad7c4
 +static inline void
 +ceu_heap_operation(ceu_builder *b, enum mali_ceu_heap_operation operation)
 +{
-+   ceu_emit(b, HEAP_OPERATION, I) I.operation = operation;
++   ceu_emit(b, HEAP_OPERATION, I)
++      I.operation = operation;
 +}
 +
 +static inline void
@@ -7792,8 +7806,7 @@ index 00000000000..d24bd9ad7c4
 +                 ceu_index flush_id, uint16_t scoreboard_mask,
 +                 uint8_t signal_slot)
 +{
-+   ceu_emit(b, FLUSH_CACHE2, I)
-+   {
++   ceu_emit(b, FLUSH_CACHE2, I) {
 +      I.l2_flush_mode = l2;
 +      I.lsc_flush_mode = lsc;
 +      I.other_invalidate = other_inv;
@@ -7853,8 +7866,7 @@ index 00000000000..d24bd9ad7c4
 +ceu_store_state(ceu_builder *b, uint8_t signal_slot, ceu_index address,
 +                enum mali_ceu_state state, uint16_t wait_mask, int16_t offset)
 +{
-+   ceu_emit(b, STORE_STATE, I)
-+   {
++   ceu_emit(b, STORE_STATE, I) {
 +      I.offset = offset;
 +      I.wait_mask = wait_mask;
 +      I.state = state;

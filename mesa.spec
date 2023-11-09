@@ -26,7 +26,7 @@
 #define git 20230824
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 2
+%define relc 3
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -190,7 +190,7 @@ Patch1:		mesa-23.1-x86_32-llvm-detection.patch
 # Fix intel-vk build with clang 16 and gcc 13
 Patch2:		mesa-23.1-intel-vk-compile.patch
 # Fix intel_clc for LLVM 17
-Patch3:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25536.patch
+#Patch3:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25536.patch
 # Not used in the spec; this is a test case to verify patch0
 # is still needed. If this code works without the patch, the
 # patch can be removed. If it crashes/takes forever (infinite
@@ -201,9 +201,6 @@ Source50:	test.c
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
-# Fix radeonsi Vulkan nv12 rendering
-Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25970.patch
-
 Patch8:		mesa-buildsystem-improvements.patch
 
 # Make VirtualBox great again
@@ -212,9 +209,10 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 
 # Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfrost/mesa.git
 # Generated using:
-#	git checkout -b panthor-23.3 mesa-23.3.0-rc1
+#	git checkout -b panthor-23.3 mesa-23.3.0-rc3
 #	# (Revert a few changes that are good, but conflict with Panthor for now)
 #	git revert 9ec9849c85e8202cb894736d0411f9b2409ab6e8
+#	git revert 43540839e7b47e2a0c14aaf1d6ab287d7d13e669
 #	git revert 5a928f7563af8ed18617210b95208ea63c157e2f
 #	git revert 888d7c8ee6ad59aed2b86ba6f32542976b671dd0
 #	git revert 33b48a55857b15f7e7b892a89cad2f0ad2399ba6
@@ -225,9 +223,10 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 #	git revert c1429a3120037a1599b4187eaca31fec413b2579
 #	# (These changes are good too, but they prevent Panthor from loading)
 #	git revert 88c03ddd345fe6b0cd16c11cb5c5309f8d7d16ff
+#	git revert c7e522a9f3e86f16877a9a09d9b273e945247650
 #	git revert 2be404f5571ada32d3b2e9cfe9b769846f27d68f
 #	git merge v10+panthor
-#	git diff mesa-23.3.0-rc1
+#	git diff mesa-23.3.0-rc3
 Patch100:	mesa-23.3-panthor.patch
 
 BuildRequires:	flex
