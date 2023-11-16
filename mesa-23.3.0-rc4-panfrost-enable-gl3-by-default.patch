@@ -1,0 +1,33 @@
+diff -up mesa-23.3.0-rc4/src/gallium/drivers/panfrost/pan_screen.c.omv~ mesa-23.3.0-rc4/src/gallium/drivers/panfrost/pan_screen.c
+--- mesa-23.3.0-rc4/src/gallium/drivers/panfrost/pan_screen.c.omv~	2023-11-16 23:53:28.826244553 +0100
++++ mesa-23.3.0-rc4/src/gallium/drivers/panfrost/pan_screen.c	2023-11-16 23:55:01.985156880 +0100
+@@ -63,7 +63,7 @@ static const struct debug_named_value pa
+    {"dirty",      PAN_DBG_DIRTY,    "Always re-emit all state"},
+    {"sync",       PAN_DBG_SYNC,     "Wait for each job's completion and abort on GPU faults"},
+    {"nofp16",     PAN_DBG_NOFP16,    "Disable 16-bit support"},
+-   {"gl3",        PAN_DBG_GL3,      "Enable experimental GL 3.x implementation, up to 3.3"},
++   {"nogl3",      PAN_DBG_NOGL3,    "Disable experimental GL 3.x implementation, up to 3.3"},
+    {"noafbc",     PAN_DBG_NO_AFBC,  "Disable AFBC support"},
+    {"crc",        PAN_DBG_CRC,      "Enable transaction elimination"},
+    {"msaa16",     PAN_DBG_MSAA16,   "Enable MSAA 8x and 16x support"},
+@@ -102,7 +102,7 @@ panfrost_get_param(struct pipe_screen *s
+    struct panfrost_device *dev = pan_device(screen);
+ 
+    /* Our GL 3.x implementation is WIP */
+-   bool is_gl3 = dev->debug & PAN_DBG_GL3;
++   bool is_gl3 = (dev->debug & PAN_DBG_NOGL3) == 0;
+ 
+    /* Native MRT is introduced with v5 */
+    bool has_mrt = (dev->arch >= 5);
+diff -up mesa-23.3.0-rc4/src/panfrost/lib/pan_util.h.omv~ mesa-23.3.0-rc4/src/panfrost/lib/pan_util.h
+--- mesa-23.3.0-rc4/src/panfrost/lib/pan_util.h.omv~	2023-11-16 23:52:59.918964277 +0100
++++ mesa-23.3.0-rc4/src/panfrost/lib/pan_util.h	2023-11-16 23:53:17.097130660 +0100
+@@ -40,7 +40,7 @@
+ /* 0x20 unused */
+ #define PAN_DBG_NOFP16  0x0040
+ #define PAN_DBG_CRC     0x0080
+-#define PAN_DBG_GL3     0x0100
++#define PAN_DBG_NOGL3   0x0100
+ #define PAN_DBG_NO_AFBC 0x0200
+ #define PAN_DBG_MSAA16  0x0400
+ /* 0x800 unused */

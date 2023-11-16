@@ -151,7 +151,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.3.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -191,6 +191,7 @@ Patch1:		mesa-23.1-x86_32-llvm-detection.patch
 Patch2:		mesa-23.1-intel-vk-compile.patch
 # Fix intel_clc for LLVM 17
 #Patch3:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25536.patch
+Patch4:		mesa-23.3.0-rc4-panfrost-enable-gl3-by-default.patch
 # Not used in the spec; this is a test case to verify patch0
 # is still needed. If this code works without the patch, the
 # patch can be removed. If it crashes/takes forever (infinite
