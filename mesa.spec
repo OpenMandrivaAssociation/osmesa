@@ -231,8 +231,7 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 Patch100:	mesa-23.3-panthor.patch
 
 # Upstream fix for crashes in virtual machines.
-#Patch200:	0001-zink-Fix-crash-on-zink_create_screen-error-path.patch
-Patch201:	0001-zink-allow-software-rendering-only-if-selected.patch
+Patch200:	0001-zink-allow-software-rendering-only-if-selected.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
