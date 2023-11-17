@@ -151,7 +151,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.3.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}3
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -229,6 +229,10 @@ Patch10:	mesa-22.3-make-vbox-great-again.patch
 #	git merge v10+panthor
 #	git diff mesa-23.3.0-rc3
 Patch100:	mesa-23.3-panthor.patch
+
+# Upstream fix for crashes in virtual machines.
+Patch200:	0001-zink-Fix-crash-on-zink_create_screen-error-path.patch
+Patch201:	0001-zink-allow-software-rendering-only-if-selected.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
