@@ -206,7 +206,8 @@ Patch8:		mesa-buildsystem-improvements.patch
 
 # Make VirtualBox great again
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
-Patch10:	mesa-22.3-make-vbox-great-again.patch
+# This *should* also be fixed by patch 200
+#Patch10:	mesa-22.3-make-vbox-great-again.patch
 
 # Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfrost/mesa.git
 # Generated using:
