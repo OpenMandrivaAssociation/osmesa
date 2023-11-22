@@ -37,6 +37,7 @@
 %endif
 
 %bcond_with bootstrap
+%bcond_without rusticl
 %bcond_without vdpau
 %bcond_without va
 %bcond_without egl
@@ -142,6 +143,7 @@
 %define devcl %mklibname %clname -d
 %define lib32cl lib%{clname}%{clmajor}
 %define dev32cl lib%{clname}-devel
+%define librusticl %mklibname RusticlOpenCL
 
 %define mesasrcdir %{_prefix}/src/Mesa/
 %define driver_dir %{_libdir}/dri
@@ -305,6 +307,11 @@ BuildRequires:	pkgconfig(wayland-client)
 BuildRequires:	pkgconfig(wayland-server)
 BuildRequires:	pkgconfig(wayland-protocols) >= 1.8
 BuildRequires:	glslang
+
+%if %{with rusticl}
+BuildRequires:	rust
+BuildRequires:	bindgen
+%endif
 
 # package mesa
 Requires:	libGL.so.1%{_arch_tag_suffix}
@@ -863,6 +870,21 @@ Recommends:	cmake(OpenCLICDLoader)
 Development files for the OpenCL library
 %endif
 
+%if %{with rusticl}
+%package -n %{librusticl}
+Summary:	Mesa Rusticl OpenCL libs
+Group:		System/Libraries
+Provides:	mesa-rusticl = %{EVRD}
+Recommends:	%{_lib}OpenCL
+
+%description -n %{librusticl}
+Open Computing Language (OpenCL) is a framework for writing programs that
+execute across heterogeneous platforms consisting of central processing units
+(CPUs), graphics processing units (GPUs), DSPs and other processors.
+
+Rusticl is an implementation of OpenCL.
+%endif
+
 %if %{with vdpau}
 %package -n %{vdpaudrivers}
 Summary:	Mesa VDPAU drivers
@@ -1052,6 +1074,9 @@ if ! %meson \
 %else
 	-Dgallium-opencl=disabled \
 %endif
+%if %{with rusticl}
+	-Dgallium-rusticl=true \
+%endif
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=enabled \
@@ -1216,6 +1241,11 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{libcl}
 %{_sysconfdir}/OpenCL
 %{_libdir}/libMesaOpenCL.so.%{clmajor}*
+%endif
+
+%if %{with rusticl}
+%files -n %{librusticl}
+%{_libdir}/libRusticlOpenCL.so*
 %endif
 
 %if %{with egl}
