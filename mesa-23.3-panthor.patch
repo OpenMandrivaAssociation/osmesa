@@ -1,8 +1,7 @@
-diff --git a/.pick_status.json b/.pick_status.json
-index 64b330fbf71..cebd1544b49 100644
---- a/.pick_status.json
-+++ b/.pick_status.json
-@@ -764,7 +764,7 @@
+diff -up mesa-23.3.0-rc5/.pick_status.json.8~ mesa-23.3.0-rc5/.pick_status.json
+--- mesa-23.3.0-rc5/.pick_status.json.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/.pick_status.json	2023-11-24 23:33:24.959610812 +0100
+@@ -10764,7 +10764,7 @@
          "description": "panfrost: use perf_debug instead of open-coding",
          "nominated": true,
          "nomination_type": 1,
@@ -11,11 +10,9 @@ index 64b330fbf71..cebd1544b49 100644
          "main_sha": null,
          "because_sha": "bc55d150a915d5b2e91cd6ee11af4992d18fcf4f",
          "notes": null
-diff --git a/include/drm-uapi/panthor_drm.h b/include/drm-uapi/panthor_drm.h
-new file mode 100644
-index 00000000000..2e53831233f
---- /dev/null
-+++ b/include/drm-uapi/panthor_drm.h
+diff -up mesa-23.3.0-rc5/include/drm-uapi/panthor_drm.h.8~ mesa-23.3.0-rc5/include/drm-uapi/panthor_drm.h
+--- mesa-23.3.0-rc5/include/drm-uapi/panthor_drm.h.8~	2023-11-24 23:33:24.959610812 +0100
++++ mesa-23.3.0-rc5/include/drm-uapi/panthor_drm.h	2023-11-24 23:33:24.959610812 +0100
 @@ -0,0 +1,863 @@
 +/* SPDX-License-Identifier: MIT */
 +/* Copyright (C) 2023 Collabora ltd. */
@@ -880,10 +877,9 @@ index 00000000000..2e53831233f
 +#endif
 +
 +#endif /* _PANTHOR_DRM_H_ */
-diff --git a/src/.clang-format b/src/.clang-format
-index 0f0916c369e..01245aa84d7 100644
---- a/src/.clang-format
-+++ b/src/.clang-format
+diff -up mesa-23.3.0-rc5/src/.clang-format.8~ mesa-23.3.0-rc5/src/.clang-format
+--- mesa-23.3.0-rc5/src/.clang-format.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/.clang-format	2023-11-24 23:33:24.959610812 +0100
 @@ -312,6 +312,7 @@ ForEachMacros:
    - pan_foreach_instr_in_block_rev
    - pan_foreach_predecessor
@@ -892,11 +888,10 @@ index 0f0916c369e..01245aa84d7 100644
  
  # Disable clang formatting by default. Drivers that use clang-format
  # inherit from this .clang-format file and re-enable formatting:
-diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
-index ec492d5e76d..42cd4b1b03b 100644
---- a/src/egl/drivers/dri2/platform_drm.c
-+++ b/src/egl/drivers/dri2/platform_drm.c
-@@ -562,20 +562,6 @@ static const struct dri2_egl_display_vtbl dri2_drm_display_vtbl = {
+diff -up mesa-23.3.0-rc5/src/egl/drivers/dri2/platform_drm.c.8~ mesa-23.3.0-rc5/src/egl/drivers/dri2/platform_drm.c
+--- mesa-23.3.0-rc5/src/egl/drivers/dri2/platform_drm.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/egl/drivers/dri2/platform_drm.c	2023-11-24 23:33:24.960610818 +0100
+@@ -562,20 +562,6 @@ static const struct dri2_egl_display_vtb
     .get_dri_drawable = dri2_surface_get_dri_drawable,
  };
  
@@ -917,7 +912,7 @@ index ec492d5e76d..42cd4b1b03b 100644
  EGLBoolean
  dri2_initialize_drm(_EGLDisplay *disp)
  {
-@@ -603,37 +589,30 @@ dri2_initialize_drm(_EGLDisplay *disp)
+@@ -602,37 +588,30 @@ dri2_initialize_drm(_EGLDisplay *disp)
              goto cleanup;
           }
  
@@ -961,20 +956,19 @@ index ec492d5e76d..42cd4b1b03b 100644
  
     if (strcmp(gbm_device_get_backend_name(gbm), "drm") != 0) {
        err = "DRI2: gbm device using incorrect/incompatible backend";
-diff --git a/src/egl/main/egldevice.c b/src/egl/main/egldevice.c
-index daa2aa0a27e..d4cc3d995d8 100644
---- a/src/egl/main/egldevice.c
-+++ b/src/egl/main/egldevice.c
-@@ -152,9 +152,6 @@ _eglAddDRMDevice(drmDevicePtr device)
- #endif
+diff -up mesa-23.3.0-rc5/src/egl/main/egldevice.c.8~ mesa-23.3.0-rc5/src/egl/main/egldevice.c
+--- mesa-23.3.0-rc5/src/egl/main/egldevice.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/egl/main/egldevice.c	2023-11-24 23:33:24.960610818 +0100
+@@ -153,9 +153,6 @@ _eglAddDRMDevice(drmDevicePtr device)
  
  /* Finds a device in DeviceList, for the given fd.
-- *
+  *
 - * The fd must be of a render-capable device, as there are only render-capable
 - * devices in DeviceList.
-  *
+- *
   * If a software device, the fd is ignored.
   */
+ _EGLDevice *
 @@ -185,16 +182,10 @@ _eglFindDevice(int fd, bool software)
  
        if (_eglDeviceSupports(dev, _EGL_DEVICE_DRM) &&
@@ -993,11 +987,10 @@ index daa2aa0a27e..d4cc3d995d8 100644
  #else
     _eglLog(_EGL_FATAL,
             "Driver bug: Built without libdrm, yet looking for HW device");
-diff --git a/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c b/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
-index 055c637199d..94d15452749 100644
---- a/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
-+++ b/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
-@@ -82,6 +82,7 @@ static const struct drm_driver_descriptor *driver_descriptors[] = {
+diff -up mesa-23.3.0-rc5/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c.8~ mesa-23.3.0-rc5/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
+--- mesa-23.3.0-rc5/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c	2023-11-24 23:33:24.960610818 +0100
+@@ -82,6 +82,7 @@ static const struct drm_driver_descripto
     &v3d_driver_descriptor,
     &vc4_driver_descriptor,
     &panfrost_driver_descriptor,
@@ -1005,11 +998,10 @@ index 055c637199d..94d15452749 100644
     &asahi_driver_descriptor,
     &etnaviv_driver_descriptor,
     &tegra_driver_descriptor,
-diff --git a/src/gallium/auxiliary/target-helpers/drm_helper.h b/src/gallium/auxiliary/target-helpers/drm_helper.h
-index be44b8f71df..8a06b775cdd 100644
---- a/src/gallium/auxiliary/target-helpers/drm_helper.h
-+++ b/src/gallium/auxiliary/target-helpers/drm_helper.h
-@@ -335,9 +335,11 @@ pipe_panfrost_create_screen(int fd, const struct pipe_screen_config *config)
+diff -up mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper.h.8~ mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper.h
+--- mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper.h	2023-11-24 23:33:24.960610818 +0100
+@@ -335,9 +335,11 @@ pipe_panfrost_create_screen(int fd, cons
     return screen ? debug_screen_wrap(screen) : NULL;
  }
  DRM_DRIVER_DESCRIPTOR(panfrost, NULL, 0)
@@ -1021,11 +1013,10 @@ index be44b8f71df..8a06b775cdd 100644
  #endif
  
  #ifdef GALLIUM_ASAHI
-diff --git a/src/gallium/auxiliary/target-helpers/drm_helper_public.h b/src/gallium/auxiliary/target-helpers/drm_helper_public.h
-index 89c0a429967..e7fcd6b379f 100644
---- a/src/gallium/auxiliary/target-helpers/drm_helper_public.h
-+++ b/src/gallium/auxiliary/target-helpers/drm_helper_public.h
-@@ -18,6 +18,7 @@ extern const struct drm_driver_descriptor virtio_gpu_driver_descriptor;
+diff -up mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper_public.h.8~ mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper_public.h
+--- mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper_public.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/auxiliary/target-helpers/drm_helper_public.h	2023-11-24 23:33:24.960610818 +0100
+@@ -18,6 +18,7 @@ extern const struct drm_driver_descripto
  extern const struct drm_driver_descriptor v3d_driver_descriptor;
  extern const struct drm_driver_descriptor vc4_driver_descriptor;
  extern const struct drm_driver_descriptor panfrost_driver_descriptor;
@@ -1033,10 +1024,9 @@ index 89c0a429967..e7fcd6b379f 100644
  extern const struct drm_driver_descriptor asahi_driver_descriptor;
  extern const struct drm_driver_descriptor etnaviv_driver_descriptor;
  extern const struct drm_driver_descriptor tegra_driver_descriptor;
-diff --git a/src/gallium/drivers/panfrost/meson.build b/src/gallium/drivers/panfrost/meson.build
-index 071620bd95c..5a574459ab7 100644
---- a/src/gallium/drivers/panfrost/meson.build
-+++ b/src/gallium/drivers/panfrost/meson.build
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/meson.build.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/meson.build
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/meson.build.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/meson.build	2023-11-24 23:33:24.960610818 +0100
 @@ -20,7 +20,6 @@
  # SOFTWARE.
  
@@ -1067,437 +1057,12 @@ index 071620bd95c..5a574459ab7 100644
      include_directories : panfrost_includes,
      c_args : ['-DPAN_ARCH=' + ver],
      gnu_symbol_visibility : 'hidden',
-diff --git a/src/gallium/drivers/panfrost/pan_afbc_cso.c b/src/gallium/drivers/panfrost/pan_afbc_cso.c
-deleted file mode 100644
-index 7ea74252b98..00000000000
---- a/src/gallium/drivers/panfrost/pan_afbc_cso.c
-+++ /dev/null
-@@ -1,334 +0,0 @@
--/*
-- * Copyright (C) 2023 Amazon.com, Inc. or its affiliates
-- *
-- * Permission is hereby granted, free of charge, to any person obtaining a
-- * copy of this software and associated documentation files (the "Software"),
-- * to deal in the Software without restriction, including without limitation
-- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-- * and/or sell copies of the Software, and to permit persons to whom the
-- * Software is furnished to do so, subject to the following conditions:
-- *
-- * The above copyright notice and this permission notice (including the next
-- * paragraph) shall be included in all copies or substantial portions of the
-- * Software.
-- *
-- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-- * SOFTWARE.
-- */
--
--#include "pan_afbc_cso.h"
--#include "nir_builder.h"
--#include "pan_context.h"
--#include "pan_resource.h"
--#include "pan_screen.h"
--
--#define panfrost_afbc_add_info_ubo(name, b)                                    \
--   nir_variable *info_ubo = nir_variable_create(                               \
--      b.shader, nir_var_mem_ubo,                                               \
--      glsl_array_type(glsl_uint_type(),                                        \
--                      sizeof(struct panfrost_afbc_##name##_info) / 4, 0),      \
--      "info_ubo");                                                             \
--   info_ubo->data.driver_location = 0;
--
--#define panfrost_afbc_get_info_field(name, b, field)                           \
--   nir_load_ubo(                                                               \
--      (b), 1, sizeof(((struct panfrost_afbc_##name##_info *)0)->field) * 8,    \
--      nir_imm_int(b, 0),                                                       \
--      nir_imm_int(b, offsetof(struct panfrost_afbc_##name##_info, field)),     \
--      .align_mul = 4, .range = ~0)
--
--static nir_def *
--read_afbc_header(nir_builder *b, nir_def *buf, nir_def *idx)
--{
--   nir_def *offset = nir_imul_imm(b, idx, AFBC_HEADER_BYTES_PER_TILE);
--   return nir_load_global(b, nir_iadd(b, buf, nir_u2u64(b, offset)), 16,
--                          AFBC_HEADER_BYTES_PER_TILE / 4, 32);
--}
--
--static void
--write_afbc_header(nir_builder *b, nir_def *buf, nir_def *idx, nir_def *hdr)
--{
--   nir_def *offset = nir_imul_imm(b, idx, AFBC_HEADER_BYTES_PER_TILE);
--   nir_store_global(b, nir_iadd(b, buf, nir_u2u64(b, offset)), 16, hdr, 0xF);
--}
--
--static nir_def *
--get_morton_index(nir_builder *b, nir_def *idx, nir_def *src_stride,
--                 nir_def *dst_stride)
--{
--   nir_def *x = nir_umod(b, idx, dst_stride);
--   nir_def *y = nir_udiv(b, idx, dst_stride);
--
--   nir_def *offset = nir_imul(b, nir_iand_imm(b, y, ~0x7), src_stride);
--   offset = nir_iadd(b, offset, nir_ishl_imm(b, nir_ushr_imm(b, x, 3), 6));
--
--   x = nir_iand_imm(b, x, 0x7);
--   x = nir_iand_imm(b, nir_ior(b, x, nir_ishl_imm(b, x, 2)), 0x13);
--   x = nir_iand_imm(b, nir_ior(b, x, nir_ishl_imm(b, x, 1)), 0x15);
--   y = nir_iand_imm(b, y, 0x7);
--   y = nir_iand_imm(b, nir_ior(b, y, nir_ishl_imm(b, y, 2)), 0x13);
--   y = nir_iand_imm(b, nir_ior(b, y, nir_ishl_imm(b, y, 1)), 0x15);
--   nir_def *tile_idx = nir_ior(b, x, nir_ishl_imm(b, y, 1));
--
--   return nir_iadd(b, offset, tile_idx);
--}
--
--static nir_def *
--get_superblock_size(nir_builder *b, unsigned arch, nir_def *hdr,
--                    nir_def *uncompressed_size)
--{
--   nir_def *size = nir_imm_int(b, 0);
--
--   unsigned body_base_ptr_len = 32;
--   unsigned nr_subblocks = 16;
--   unsigned sz_len = 6; /* bits */
--   nir_def *words[4];
--   nir_def *mask = nir_imm_int(b, (1 << sz_len) - 1);
--   nir_def *is_solid_color = nir_imm_bool(b, false);
--
--   for (int i = 0; i < 4; i++)
--      words[i] = nir_channel(b, hdr, i);
--
--   /* Sum up all of the subblock sizes */
--   for (int i = 0; i < nr_subblocks; i++) {
--      nir_def *subblock_size;
--      unsigned bitoffset = body_base_ptr_len + (i * sz_len);
--      unsigned start = bitoffset / 32;
--      unsigned end = (bitoffset + (sz_len - 1)) / 32;
--      unsigned offset = bitoffset % 32;
--
--      /* Handle differently if the size field is split between two words
--       * of the header */
--      if (start != end) {
--         subblock_size = nir_ior(b, nir_ushr_imm(b, words[start], offset),
--                                 nir_ishl_imm(b, words[end], 32 - offset));
--         subblock_size = nir_iand(b, subblock_size, mask);
--      } else {
--         subblock_size =
--            nir_ubitfield_extract_imm(b, words[start], offset, sz_len);
--      }
--      subblock_size = nir_bcsel(b, nir_ieq_imm(b, subblock_size, 1),
--                                uncompressed_size, subblock_size);
--      size = nir_iadd(b, size, subblock_size);
--
--      /* When the first subblock size is set to zero, the whole superblock is
--       * filled with a solid color specified in the header */
--      if (arch >= 7 && i == 0)
--         is_solid_color = nir_ieq_imm(b, size, 0);
--   }
--
--   return (arch >= 7)
--             ? nir_bcsel(b, is_solid_color, nir_imm_zero(b, 1, 32), size)
--             : size;
--}
--
--static nir_def *
--get_packed_offset(nir_builder *b, nir_def *metadata, nir_def *idx,
--                  nir_def **out_size)
--{
--   nir_def *metadata_offset =
--      nir_u2u64(b, nir_imul_imm(b, idx, sizeof(struct pan_afbc_block_info)));
--   nir_def *range_ptr = nir_iadd(b, metadata, metadata_offset);
--   nir_def *entry = nir_load_global(b, range_ptr, 4,
--                                    sizeof(struct pan_afbc_block_info) / 4, 32);
--   nir_def *offset =
--      nir_channel(b, entry, offsetof(struct pan_afbc_block_info, offset) / 4);
--
--   if (out_size)
--      *out_size =
--         nir_channel(b, entry, offsetof(struct pan_afbc_block_info, size) / 4);
--
--   return nir_u2u64(b, offset);
--}
--
--#define MAX_LINE_SIZE 16
--
--static void
--copy_superblock(nir_builder *b, nir_def *dst, nir_def *dst_idx, nir_def *hdr_sz,
--                nir_def *src, nir_def *src_idx, nir_def *metadata,
--                nir_def *meta_idx, unsigned align)
--{
--   nir_def *hdr = read_afbc_header(b, src, src_idx);
--   nir_def *src_body_base_ptr = nir_u2u64(b, nir_channel(b, hdr, 0));
--   nir_def *src_bodyptr = nir_iadd(b, src, src_body_base_ptr);
--
--   nir_def *size;
--   nir_def *dst_offset = get_packed_offset(b, metadata, meta_idx, &size);
--   nir_def *dst_body_base_ptr = nir_iadd(b, dst_offset, hdr_sz);
--   nir_def *dst_bodyptr = nir_iadd(b, dst, dst_body_base_ptr);
--
--   /* Replace the `base_body_ptr` field if not zero (solid color) */
--   nir_def *hdr2 =
--      nir_vector_insert_imm(b, hdr, nir_u2u32(b, dst_body_base_ptr), 0);
--   hdr = nir_bcsel(b, nir_ieq_imm(b, src_body_base_ptr, 0), hdr, hdr2);
--   write_afbc_header(b, dst, dst_idx, hdr);
--
--   nir_variable *offset_var =
--      nir_local_variable_create(b->impl, glsl_uint_type(), "offset");
--   nir_store_var(b, offset_var, nir_imm_int(b, 0), 1);
--   nir_loop *loop = nir_push_loop(b);
--   {
--      nir_def *offset = nir_load_var(b, offset_var);
--      nir_if *loop_check = nir_push_if(b, nir_uge(b, offset, size));
--      nir_jump(b, nir_jump_break);
--      nir_push_else(b, loop_check);
--      unsigned line_sz = align <= MAX_LINE_SIZE ? align : MAX_LINE_SIZE;
--      for (unsigned i = 0; i < align / line_sz; ++i) {
--         nir_def *src_line = nir_iadd(b, src_bodyptr, nir_u2u64(b, offset));
--         nir_def *dst_line = nir_iadd(b, dst_bodyptr, nir_u2u64(b, offset));
--         nir_store_global(
--            b, dst_line, line_sz,
--            nir_load_global(b, src_line, line_sz, line_sz / 4, 32), ~0);
--         offset = nir_iadd_imm(b, offset, line_sz);
--      }
--      nir_store_var(b, offset_var, offset, 0x1);
--      nir_pop_if(b, loop_check);
--   }
--   nir_pop_loop(b, loop);
--}
--
--#define panfrost_afbc_size_get_info_field(b, field)                            \
--   panfrost_afbc_get_info_field(size, b, field)
--
--static nir_shader *
--panfrost_afbc_create_size_shader(struct panfrost_screen *screen, unsigned bpp,
--                                 unsigned align)
--{
--   struct panfrost_device *dev = pan_device(&screen->base);
--
--   nir_builder b = nir_builder_init_simple_shader(
--      MESA_SHADER_COMPUTE, screen->vtbl.get_compiler_options(),
--      "panfrost_afbc_size(bpp=%d)", bpp);
--
--   panfrost_afbc_add_info_ubo(size, b);
--
--   nir_def *coord = nir_load_global_invocation_id(&b, 32);
--   nir_def *block_idx = nir_channel(&b, coord, 0);
--   nir_def *src = panfrost_afbc_size_get_info_field(&b, src);
--   nir_def *metadata = panfrost_afbc_size_get_info_field(&b, metadata);
--   nir_def *uncompressed_size = nir_imm_int(&b, 4 * 4 * bpp / 8); /* bytes */
--
--   nir_def *hdr = read_afbc_header(&b, src, block_idx);
--   nir_def *size = get_superblock_size(&b, dev->arch, hdr, uncompressed_size);
--   size = nir_iand(&b, nir_iadd(&b, size, nir_imm_int(&b, align - 1)),
--                   nir_inot(&b, nir_imm_int(&b, align - 1)));
--
--   nir_def *offset = nir_u2u64(
--      &b,
--      nir_iadd(&b,
--               nir_imul_imm(&b, block_idx, sizeof(struct pan_afbc_block_info)),
--               nir_imm_int(&b, offsetof(struct pan_afbc_block_info, size))));
--   nir_store_global(&b, nir_iadd(&b, metadata, offset), 4, size, 0x1);
--
--   return b.shader;
--}
--
--#define panfrost_afbc_pack_get_info_field(b, field)                            \
--   panfrost_afbc_get_info_field(pack, b, field)
--
--static nir_shader *
--panfrost_afbc_create_pack_shader(struct panfrost_screen *screen, unsigned align,
--                                 bool tiled)
--{
--   nir_builder b = nir_builder_init_simple_shader(
--      MESA_SHADER_COMPUTE, screen->vtbl.get_compiler_options(),
--      "panfrost_afbc_pack");
--
--   panfrost_afbc_add_info_ubo(pack, b);
--
--   nir_def *coord = nir_load_global_invocation_id(&b, 32);
--   nir_def *src_stride = panfrost_afbc_pack_get_info_field(&b, src_stride);
--   nir_def *dst_stride = panfrost_afbc_pack_get_info_field(&b, dst_stride);
--   nir_def *dst_idx = nir_channel(&b, coord, 0);
--   nir_def *src_idx =
--      tiled ? get_morton_index(&b, dst_idx, src_stride, dst_stride) : dst_idx;
--   nir_def *src = panfrost_afbc_pack_get_info_field(&b, src);
--   nir_def *dst = panfrost_afbc_pack_get_info_field(&b, dst);
--   nir_def *header_size =
--      nir_u2u64(&b, panfrost_afbc_pack_get_info_field(&b, header_size));
--   nir_def *metadata = panfrost_afbc_pack_get_info_field(&b, metadata);
--
--   copy_superblock(&b, dst, dst_idx, header_size, src, src_idx, metadata,
--                   src_idx, align);
--
--   return b.shader;
--}
--
--struct pan_afbc_shader_data *
--panfrost_afbc_get_shaders(struct panfrost_context *ctx,
--                          struct panfrost_resource *rsrc, unsigned align)
--{
--   struct pipe_context *pctx = &ctx->base;
--   struct panfrost_screen *screen = pan_screen(ctx->base.screen);
--   bool tiled = rsrc->image.layout.modifier & AFBC_FORMAT_MOD_TILED;
--   struct pan_afbc_shader_key key = {
--      .bpp = util_format_get_blocksizebits(rsrc->base.format),
--      .align = align,
--      .tiled = tiled,
--   };
--
--   pthread_mutex_lock(&ctx->afbc_shaders.lock);
--   struct hash_entry *he =
--      _mesa_hash_table_search(ctx->afbc_shaders.shaders, &key);
--   struct pan_afbc_shader_data *shader = he ? he->data : NULL;
--   pthread_mutex_unlock(&ctx->afbc_shaders.lock);
--
--   if (shader)
--      return shader;
--
--   shader = rzalloc(ctx->afbc_shaders.shaders, struct pan_afbc_shader_data);
--   shader->key = key;
--   _mesa_hash_table_insert(ctx->afbc_shaders.shaders, &shader->key, shader);
--
--#define COMPILE_SHADER(name, ...)                                              \
--   {                                                                           \
--      nir_shader *nir =                                                        \
--         panfrost_afbc_create_##name##_shader(screen, __VA_ARGS__);            \
--      nir->info.num_ubos = 1;                                                  \
--      struct pipe_compute_state cso = {PIPE_SHADER_IR_NIR, nir};               \
--      shader->name##_cso = pctx->create_compute_state(pctx, &cso);             \
--   }
--
--   COMPILE_SHADER(size, key.bpp, key.align);
--   COMPILE_SHADER(pack, key.align, key.tiled);
--
--#undef COMPILE_SHADER
--
--   pthread_mutex_lock(&ctx->afbc_shaders.lock);
--   _mesa_hash_table_insert(ctx->afbc_shaders.shaders, &shader->key, shader);
--   pthread_mutex_unlock(&ctx->afbc_shaders.lock);
--
--   return shader;
--}
--
--static uint32_t
--panfrost_afbc_shader_key_hash(const void *key)
--{
--   return _mesa_hash_data(key, sizeof(struct pan_afbc_shader_key));
--}
--
--static bool
--panfrost_afbc_shader_key_equal(const void *a, const void *b)
--{
--   return !memcmp(a, b, sizeof(struct pan_afbc_shader_key));
--}
--
--void
--panfrost_afbc_context_init(struct panfrost_context *ctx)
--{
--   ctx->afbc_shaders.shaders = _mesa_hash_table_create(
--      NULL, panfrost_afbc_shader_key_hash, panfrost_afbc_shader_key_equal);
--   pthread_mutex_init(&ctx->afbc_shaders.lock, NULL);
--}
--
--void
--panfrost_afbc_context_destroy(struct panfrost_context *ctx)
--{
--   _mesa_hash_table_destroy(ctx->afbc_shaders.shaders, NULL);
--   pthread_mutex_destroy(&ctx->afbc_shaders.lock);
--}
-diff --git a/src/gallium/drivers/panfrost/pan_afbc_cso.h b/src/gallium/drivers/panfrost/pan_afbc_cso.h
-deleted file mode 100644
-index 4b9f324ac2d..00000000000
---- a/src/gallium/drivers/panfrost/pan_afbc_cso.h
-+++ /dev/null
-@@ -1,80 +0,0 @@
--/*
-- * Copyright (C) 2023 Amazon.com, Inc. or its affiliates
-- *
-- * Permission is hereby granted, free of charge, to any person obtaining a
-- * copy of this software and associated documentation files (the "Software"),
-- * to deal in the Software without restriction, including without limitation
-- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-- * and/or sell copies of the Software, and to permit persons to whom the
-- * Software is furnished to do so, subject to the following conditions:
-- *
-- * The above copyright notice and this permission notice (including the next
-- * paragraph) shall be included in all copies or substantial portions of the
-- * Software.
-- *
-- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-- * SOFTWARE.
-- */
--
--#ifndef __PAN_AFBC_CSO_H__
--#define __PAN_AFBC_CSO_H__
--
--#include "util/hash_table.h"
--
--#include "panfrost/util/pan_ir.h"
--#include "pan_texture.h"
--
--struct panfrost_context;
--struct panfrost_resource;
--struct panfrost_screen;
--
--struct pan_afbc_shader_key {
--   unsigned bpp;
--   unsigned align;
--   bool tiled;
--};
--
--struct pan_afbc_shader_data {
--   struct pan_afbc_shader_key key;
--   void *size_cso;
--   void *pack_cso;
--};
--
--struct pan_afbc_shaders {
--   struct hash_table *shaders;
--   pthread_mutex_t lock;
--};
--
--struct pan_afbc_block_info {
--   uint32_t size;
--   uint32_t offset;
--};
--
--struct panfrost_afbc_size_info {
--   mali_ptr src;
--   mali_ptr metadata;
--} PACKED;
--
--struct panfrost_afbc_pack_info {
--   mali_ptr src;
--   mali_ptr dst;
--   mali_ptr metadata;
--   uint32_t header_size;
--   uint32_t src_stride;
--   uint32_t dst_stride;
--   uint32_t padding[3]; // FIXME
--} PACKED;
--
--void panfrost_afbc_context_init(struct panfrost_context *ctx);
--void panfrost_afbc_context_destroy(struct panfrost_context *ctx);
--
--struct pan_afbc_shader_data *
--panfrost_afbc_get_shaders(struct panfrost_context *ctx,
--                          struct panfrost_resource *rsrc, unsigned align);
--
--#endif
-diff --git a/src/gallium/drivers/panfrost/pan_blit.c b/src/gallium/drivers/panfrost/pan_blit.c
-index fcb3aa32160..d5205ec636d 100644
---- a/src/gallium/drivers/panfrost/pan_blit.c
-+++ b/src/gallium/drivers/panfrost/pan_blit.c
-@@ -90,10 +90,6 @@ panfrost_blit(struct pipe_context *pipe, const struct pipe_blit_info *info)
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_afbc_cso.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_afbc_cso.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_afbc_cso.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_afbc_cso.h
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_blit.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_blit.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_blit.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_blit.c	2023-11-24 23:33:24.960610818 +0100
+@@ -90,10 +90,6 @@ panfrost_blit(struct pipe_context *pipe,
     if (!util_blitter_is_blit_supported(ctx->blitter, info))
        unreachable("Unsupported blit\n");
  
@@ -1508,10 +1073,9 @@ index fcb3aa32160..d5205ec636d 100644
     panfrost_blitter_save(ctx, info->render_condition_enable
                                   ? PAN_RENDER_BLIT_COND
                                   : PAN_RENDER_BLIT);
-diff --git a/src/gallium/drivers/panfrost/pan_cmdstream.c b/src/gallium/drivers/panfrost/pan_cmdstream.c
-index 58c38ed0d22..3e3c38b9276 100644
---- a/src/gallium/drivers/panfrost/pan_cmdstream.c
-+++ b/src/gallium/drivers/panfrost/pan_cmdstream.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.c	2023-11-24 23:33:24.961610824 +0100
 @@ -1,5 +1,4 @@
  /*
 - * Copyright (C) 2023 Amazon.com, Inc. or its affiliates.
@@ -1559,13 +1123,13 @@ index 58c38ed0d22..3e3c38b9276 100644
 -
 -   /* Is any depth, stencil, or alpha testing enabled? */
 -   bool enabled;
-+#define PAN_USE_CSF (PAN_ARCH >= 10)
- 
+-
 -   /* Does the depth and stencil tests always pass? This ignores write
 -    * masks, we are only interested in whether pixels may be killed.
 -    */
 -   bool zs_always_passes;
--
++#define PAN_USE_CSF (PAN_ARCH >= 10)
+ 
 -   /* Are depth or stencil writes possible? */
 -   bool writes_zs;
 -
@@ -1615,7 +1179,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  /* Statically assert that PIPE_* enums match the hardware enums.
   * (As long as they match, we don't need to translate them.)
   */
-@@ -287,35 +245,6 @@ panfrost_create_sampler_state(struct pipe_context *pctx,
+@@ -287,35 +245,6 @@ panfrost_create_sampler_state(struct pip
     return so;
  }
  
@@ -1651,7 +1215,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  /* Get pointers to the blend shaders bound to each active render target. Used
   * to emit the blend descriptors, as well as the fragment renderer state
   * descriptor.
-@@ -354,34 +283,6 @@ pack_blend_constant(enum pipe_format format, float cons)
+@@ -354,34 +283,6 @@ pack_blend_constant(enum pipe_format for
     return unorm << (16 - chan_size);
  }
  
@@ -1686,7 +1250,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  static void
  panfrost_emit_blend(struct panfrost_batch *batch, void *rts,
                      mali_ptr *blend_shaders)
-@@ -495,23 +396,6 @@ panfrost_emit_blend(struct panfrost_batch *batch, void *rts,
+@@ -495,23 +396,6 @@ panfrost_emit_blend(struct panfrost_batc
  }
  #endif
  
@@ -1710,7 +1274,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  static mali_ptr
  panfrost_emit_compute_shader_meta(struct panfrost_batch *batch,
                                    enum pipe_shader_type stage)
-@@ -1888,7 +1772,7 @@ emit_image_bufs(struct panfrost_batch *batch, enum pipe_shader_type shader,
+@@ -1888,7 +1772,7 @@ emit_image_bufs(struct panfrost_batch *b
           cfg.type = pan_modifier_to_attr_type(rsrc->image.layout.modifier);
           cfg.pointer = rsrc->image.data.bo->ptr.gpu + offset;
           cfg.stride = util_format_get_blocksize(image->format);
@@ -1719,7 +1283,7 @@ index 58c38ed0d22..3e3c38b9276 100644
        }
  
        if (is_buffer) {
-@@ -2469,10 +2353,8 @@ pan_emit_special_input(struct mali_attribute_buffer_packed *out,
+@@ -2469,10 +2353,8 @@ pan_emit_special_input(struct mali_attri
  
  static void
  panfrost_emit_varying_descriptor(struct panfrost_batch *batch,
@@ -1732,7 +1296,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  {
     struct panfrost_context *ctx = batch->ctx;
     struct panfrost_compiled_shader *vs = ctx->prog[PIPE_SHADER_VERTEX];
-@@ -2480,6 +2362,8 @@ panfrost_emit_varying_descriptor(struct panfrost_batch *batch,
+@@ -2480,6 +2362,8 @@ panfrost_emit_varying_descriptor(struct
  
     uint16_t point_coord_mask = 0;
  
@@ -1741,7 +1305,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  #if PAN_ARCH <= 5
     struct pipe_rasterizer_state *rast = &ctx->rasterizer->base;
  
-@@ -2510,8 +2394,7 @@ panfrost_emit_varying_descriptor(struct panfrost_batch *batch,
+@@ -2510,8 +2394,7 @@ panfrost_emit_varying_descriptor(struct
     struct mali_attribute_buffer_packed *varyings =
        (struct mali_attribute_buffer_packed *)T.cpu;
  
@@ -1751,7 +1315,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  
  #if PAN_ARCH >= 6
     /* Suppress prefetch on Bifrost */
-@@ -2530,12 +2413,12 @@ panfrost_emit_varying_descriptor(struct panfrost_batch *batch,
+@@ -2530,12 +2413,12 @@ panfrost_emit_varying_descriptor(struct
     }
  
     /* fp32 vec4 gl_Position */
@@ -1766,7 +1330,7 @@ index 58c38ed0d22..3e3c38b9276 100644
           batch, &varyings[pan_varying_index(present, PAN_VARY_PSIZ)], 2,
           vertex_count);
     }
-@@ -2552,27 +2435,9 @@ panfrost_emit_varying_descriptor(struct panfrost_batch *batch,
+@@ -2552,27 +2435,9 @@ panfrost_emit_varying_descriptor(struct
                            MALI_ATTRIBUTE_SPECIAL_FRAG_COORD);
  #endif
  
@@ -1797,7 +1361,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  }
  #endif
  
-@@ -2638,7 +2503,7 @@ panfrost_initialize_surface(struct panfrost_batch *batch,
+@@ -2638,7 +2503,7 @@ panfrost_initialize_surface(struct panfr
  /* Generate a fragment job. This should be called once per frame. (Usually,
   * this corresponds to eglSwapBuffers or one of glFlush, glFinish)
   */
@@ -1806,7 +1370,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  emit_fragment_job(struct panfrost_batch *batch, const struct pan_fb_info *pfb)
  {
     /* Mark the affected buffers as initialized, since we're writing to it.
-@@ -2671,42 +2536,9 @@ emit_fragment_job(struct panfrost_batch *batch, const struct pan_fb_info *pfb)
+@@ -2671,42 +2536,9 @@ emit_fragment_job(struct panfrost_batch
     assert(batch->maxx > batch->minx);
     assert(batch->maxy > batch->miny);
  
@@ -1850,7 +1414,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  /* Count generated primitives (when there is no geom/tess shaders) for
   * transform feedback */
  
-@@ -2742,92 +2574,6 @@ panfrost_update_streamout_offsets(struct panfrost_context *ctx)
+@@ -2742,92 +2574,6 @@ panfrost_update_streamout_offsets(struct
     }
  }
  
@@ -1943,7 +1507,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  /* On Bifrost and older, the Renderer State Descriptor aggregates many pieces of
   * 3D state. In particular, it groups the fragment shader descriptor with
   * depth/stencil, blend, polygon offset, and multisampling state. These pieces
-@@ -2895,7 +2641,10 @@ panfrost_update_shader_state(struct panfrost_batch *batch,
+@@ -2895,7 +2641,10 @@ panfrost_update_shader_state(struct panf
        batch->rsd[st] = panfrost_emit_frag_shader_meta(batch);
     }
  
@@ -1955,7 +1519,7 @@ index 58c38ed0d22..3e3c38b9276 100644
        batch->attribs[st] =
           panfrost_emit_image_attribs(batch, &batch->attrib_bufs[st], st);
     }
-@@ -2931,566 +2680,245 @@ panfrost_update_state_3d(struct panfrost_batch *batch)
+@@ -2931,468 +2680,26 @@ panfrost_update_state_3d(struct panfrost
        batch->attrib_bufs[PIPE_SHADER_VERTEX] =
           panfrost_emit_vertex_buffers(batch);
     }
@@ -1986,49 +1550,32 @@ index 58c38ed0d22..3e3c38b9276 100644
 -   (dev, batch->key.width, batch->key.height,
 -    util_framebuffer_get_num_samples(&batch->key),
 -    pan_tristate_get(batch->first_provoking_vertex), heap, t.cpu);
-+#else
-+   unsigned vt_shader_dirty = ctx->dirty_shader[PIPE_SHADER_VERTEX];
- 
+-
 -   batch->tiler_ctx.bifrost = t.gpu;
 -   return batch->tiler_ctx.bifrost;
 -}
-+   /* Vertex data, vertex shader and images accessed by the vertex shader have
-+    * an impact on the attributes array, we need to re-emit anytime one of these
-+    * parameters changes. */
-+   if ((dirty & PAN_DIRTY_VERTEX) ||
-+       (vt_shader_dirty & (PAN_DIRTY_STAGE_IMAGE | PAN_DIRTY_STAGE_SHADER))) {
-+      batch->attribs[PIPE_SHADER_VERTEX] = panfrost_emit_vertex_data(
-+         batch, &batch->attrib_bufs[PIPE_SHADER_VERTEX]);
-+   }
- #endif
-+}
- 
+-#endif
+-
 -/* Packs a primitive descriptor, mostly common between Midgard/Bifrost tiler
 - * jobs and Valhall IDVS jobs
 - */
- static void
+-static void
 -panfrost_emit_primitive(struct panfrost_context *ctx,
 -                        const struct pipe_draw_info *info,
 -                        const struct pipe_draw_start_count_bias *draw,
 -                        mali_ptr indices, bool secondary_shader, void *out)
-+panfrost_launch_xfb(struct panfrost_batch *batch,
-+                    const struct pipe_draw_info *info, unsigned count)
- {
+-{
 -   UNUSED struct pipe_rasterizer_state *rast = &ctx->rasterizer->base;
 -
 -   bool lines =
 -      (info->mode == MESA_PRIM_LINES || info->mode == MESA_PRIM_LINE_LOOP ||
 -       info->mode == MESA_PRIM_LINE_STRIP);
-+   struct panfrost_context *ctx = batch->ctx;
- 
+-
 -   pan_pack(out, PRIMITIVE, cfg) {
 -      cfg.draw_mode = pan_draw_mode(info->mode);
 -      if (panfrost_writes_point_size(ctx))
 -         cfg.point_size_array_format = MALI_POINT_SIZE_ARRAY_FORMAT_FP16;
-+   /* Nothing to do */
-+   if (batch->ctx->streamout.num_targets == 0)
-+      return;
- 
+-
 -#if PAN_ARCH <= 8
 -      /* For line primitives, PRIMITIVE.first_provoking_vertex must
 -       * be set to true and the provoking vertex is selected with
@@ -2038,43 +1585,29 @@ index 58c38ed0d22..3e3c38b9276 100644
 -         cfg.first_provoking_vertex = true;
 -      else
 -         cfg.first_provoking_vertex = rast->flatshade_first;
-+   /* TODO: XFB with index buffers */
-+   // assert(info->index_size == 0);
-+   u_trim_pipe_prim(info->mode, &count);
- 
+-
 -      if (panfrost_is_implicit_prim_restart(info)) {
 -         cfg.primitive_restart = MALI_PRIMITIVE_RESTART_IMPLICIT;
 -      } else if (info->primitive_restart) {
 -         cfg.primitive_restart = MALI_PRIMITIVE_RESTART_EXPLICIT;
 -         cfg.primitive_restart_index = info->restart_index;
 -      }
-+   if (count == 0)
-+      return;
- 
+-
 -      cfg.job_task_split = 6;
--#else
+ #else
 -      struct panfrost_compiled_shader *fs = ctx->prog[PIPE_SHADER_FRAGMENT];
-+   perf_debug_ctx(batch->ctx, "Emulating transform feedback");
- 
+-
 -      cfg.allow_rotating_primitives =
 -         !(lines || fs->info.bifrost.uses_flat_shading);
 -      cfg.primitive_restart = info->primitive_restart;
-+   struct panfrost_uncompiled_shader *vs_uncompiled =
-+      ctx->uncompiled[PIPE_SHADER_VERTEX];
-+   struct panfrost_compiled_shader *vs = ctx->prog[PIPE_SHADER_VERTEX];
- 
+-
 -      /* Non-fixed restart indices should have been lowered */
 -      assert(!cfg.primitive_restart || panfrost_is_implicit_prim_restart(info));
 -#endif
-+   vs_uncompiled->xfb->stream_output = vs->stream_output;
- 
+-
 -      cfg.index_count = draw->count;
 -      cfg.index_type = panfrost_translate_index_size(info->index_size);
-+   mali_ptr saved_rsd = batch->rsd[PIPE_SHADER_VERTEX];
-+   mali_ptr saved_ubo = batch->uniform_buffers[PIPE_SHADER_VERTEX];
-+   mali_ptr saved_push = batch->push_uniforms[PIPE_SHADER_VERTEX];
-+   unsigned saved_nr_push_uniforms =
-+      batch->nr_push_uniforms[PIPE_SHADER_VERTEX];
++   unsigned vt_shader_dirty = ctx->dirty_shader[PIPE_SHADER_VERTEX];
  
 -      if (PAN_ARCH >= 9) {
 -         /* Base vertex offset on Valhall is used for both
@@ -2085,51 +1618,29 @@ index 58c38ed0d22..3e3c38b9276 100644
 -            cfg.base_vertex_offset = draw->index_bias;
 -         else
 -            cfg.base_vertex_offset = draw->start;
-+   ctx->uncompiled[PIPE_SHADER_VERTEX] = NULL; /* should not be read */
-+   ctx->prog[PIPE_SHADER_VERTEX] = vs_uncompiled->xfb;
-+   batch->rsd[PIPE_SHADER_VERTEX] =
-+      panfrost_emit_compute_shader_meta(batch, PIPE_SHADER_VERTEX);
- 
+-
 -         /* Indices are moved outside the primitive descriptor
 -          * on Valhall, so we don't need to set that here
 -          */
 -      } else if (cfg.index_type) {
 -         cfg.base_vertex_offset = draw->index_bias - ctx->offset_start;
-+   batch->uniform_buffers[PIPE_SHADER_VERTEX] =
-+      panfrost_emit_const_buf(batch, PIPE_SHADER_VERTEX, NULL,
-+                              &batch->push_uniforms[PIPE_SHADER_VERTEX],
-+                              &batch->nr_push_uniforms[PIPE_SHADER_VERTEX]);
- 
+-
 -#if PAN_ARCH <= 7
 -         cfg.indices = indices;
 -#endif
 -      }
-+   JOBX(launch_xfb)(batch, info, count);
-+   batch->any_compute = true;
- 
+-
 -#if PAN_ARCH >= 6
 -      cfg.secondary_shader = secondary_shader;
 -#endif
 -   }
-+   ctx->uncompiled[PIPE_SHADER_VERTEX] = vs_uncompiled;
-+   ctx->prog[PIPE_SHADER_VERTEX] = vs;
-+   batch->rsd[PIPE_SHADER_VERTEX] = saved_rsd;
-+   batch->uniform_buffers[PIPE_SHADER_VERTEX] = saved_ubo;
-+   batch->push_uniforms[PIPE_SHADER_VERTEX] = saved_push;
-+   batch->nr_push_uniforms[PIPE_SHADER_VERTEX] = saved_nr_push_uniforms;
- }
- 
+-}
+-
 -#if PAN_ARCH >= 9
 -static mali_ptr
 -panfrost_emit_resources(struct panfrost_batch *batch,
 -                        enum pipe_shader_type stage)
-+/*
-+ * Increase the vertex count on the batch using a saturating add, and hope the
-+ * compiler can use the machine instruction here...
-+ */
-+static inline void
-+panfrost_increase_vertex_count(struct panfrost_batch *batch, uint32_t increment)
- {
+-{
 -   struct panfrost_context *ctx = batch->ctx;
 -   struct panfrost_ptr T;
 -   unsigned nr_tables = 12;
@@ -2146,96 +1657,55 @@ index 58c38ed0d22..3e3c38b9276 100644
 -
 -   panfrost_make_resource_table(T, PAN_TABLE_TEXTURE, batch->textures[stage],
 -                                ctx->sampler_view_count[stage]);
-+   uint32_t sum = batch->tiler_ctx.vertex_count + increment;
- 
+-
 -   /* We always need at least 1 sampler for txf to work */
 -   panfrost_make_resource_table(T, PAN_TABLE_SAMPLER, batch->samplers[stage],
 -                                MAX2(ctx->sampler_count[stage], 1));
-+   if (sum >= batch->tiler_ctx.vertex_count)
-+      batch->tiler_ctx.vertex_count = sum;
-+   else
-+      batch->tiler_ctx.vertex_count = UINT32_MAX;
-+}
- 
+-
 -   panfrost_make_resource_table(T, PAN_TABLE_IMAGE, batch->images[stage],
 -                                util_last_bit(ctx->image_mask[stage]));
-+static bool
-+panfrost_compatible_batch_state(struct panfrost_batch *batch, bool points)
-+{
-+   /* Only applies on Valhall */
-+   if (PAN_ARCH < 9)
-+      return true;
- 
+-
 -   if (stage == PIPE_SHADER_VERTEX) {
 -      panfrost_make_resource_table(T, PAN_TABLE_ATTRIBUTE,
 -                                   batch->attribs[stage],
 -                                   ctx->vertex->num_elements);
-+   struct panfrost_context *ctx = batch->ctx;
-+   struct pipe_rasterizer_state *rast = &ctx->rasterizer->base;
- 
+-
 -      panfrost_make_resource_table(T, PAN_TABLE_ATTRIBUTE_BUFFER,
 -                                   batch->attrib_bufs[stage],
 -                                   util_last_bit(ctx->vb_mask));
--   }
-+   bool coord = (rast->sprite_coord_mode == PIPE_SPRITE_COORD_LOWER_LEFT);
-+   bool first = rast->flatshade_first;
- 
++   /* Vertex data, vertex shader and images accessed by the vertex shader have
++    * an impact on the attributes array, we need to re-emit anytime one of these
++    * parameters changes. */
++   if ((dirty & PAN_DIRTY_VERTEX) ||
++       (vt_shader_dirty & (PAN_DIRTY_STAGE_IMAGE | PAN_DIRTY_STAGE_SHADER))) {
++      batch->attribs[PIPE_SHADER_VERTEX] = panfrost_emit_vertex_data(
++         batch, &batch->attrib_bufs[PIPE_SHADER_VERTEX]);
+    }
+-
 -   return T.gpu | nr_tables;
-+   /* gl_PointCoord orientation only matters when drawing points, but
-+    * provoking vertex doesn't matter for points.
-+    */
-+   if (points)
-+      return pan_tristate_set(&batch->sprite_coord_origin, coord);
-+   else
-+      return pan_tristate_set(&batch->first_provoking_vertex, first);
- }
- 
-+/*
-+ * If we change whether we're drawing points, or whether point sprites are
-+ * enabled (specified in the rasterizer), we may need to rebind shaders
-+ * accordingly. This implicitly covers the case of rebinding framebuffers,
-+ * because all dirty flags are set there.
-+ */
- static void
+-}
+-
+-static void
 -panfrost_emit_shader(struct panfrost_batch *batch,
 -                     struct MALI_SHADER_ENVIRONMENT *cfg,
 -                     enum pipe_shader_type stage, mali_ptr shader_ptr,
 -                     mali_ptr thread_storage)
-+panfrost_update_point_sprite_shader(struct panfrost_context *ctx,
-+                                    const struct pipe_draw_info *info)
- {
+-{
 -   cfg->resources = panfrost_emit_resources(batch, stage);
 -   cfg->thread_storage = thread_storage;
 -   cfg->shader = shader_ptr;
-+   /* If we change whether we're drawing points, or whether point sprites
-+    * are enabled (specified in the rasterizer), we may need to rebind
-+    * shaders accordingly. This implicitly covers the case of rebinding
-+    * framebuffers, because all dirty flags are set there.
-+    */
-+   if ((ctx->dirty & PAN_DIRTY_RASTERIZER) ||
-+       ((ctx->active_prim == MESA_PRIM_POINTS) ^
-+        (info->mode == MESA_PRIM_POINTS))) {
- 
+-
 -   /* Each entry of FAU is 64-bits */
 -   cfg->fau = batch->push_uniforms[stage];
 -   cfg->fau_count = DIV_ROUND_UP(batch->nr_push_uniforms[stage], 2);
-+      ctx->active_prim = info->mode;
-+      panfrost_update_shader_variant(ctx, PIPE_SHADER_FRAGMENT);
-+   }
- }
--#endif
- 
-+/*
-+ * Launch grid is the compute equivalent of draw_vbo. Set up the registers for a
-+ * compute kernel and emit the run_compute command.
-+ */
- static void
+-}
+ #endif
+-
+-static void
 -panfrost_emit_draw(void *out, struct panfrost_batch *batch, bool fs_required,
 -                   enum mesa_prim prim, mali_ptr pos, mali_ptr fs_vary,
 -                   mali_ptr varyings)
-+panfrost_launch_grid(struct pipe_context *pipe,
-+                     const struct pipe_grid_info *info)
- {
+-{
 -   struct panfrost_context *ctx = batch->ctx;
 -   struct pipe_rasterizer_state *rast = &ctx->rasterizer->base;
 -   bool polygon = (prim == MESA_PRIM_TRIANGLES);
@@ -2267,14 +1737,10 @@ index 58c38ed0d22..3e3c38b9276 100644
 -
 -#if PAN_ARCH >= 9
 -      struct panfrost_compiled_shader *fs = ctx->prog[PIPE_SHADER_FRAGMENT];
-+   struct panfrost_context *ctx = pan_context(pipe);
- 
+-
 -      cfg.multisample_enable = rast->multisample;
 -      cfg.sample_mask = rast->multisample ? ctx->sample_mask : 0xFFFF;
-+   /* XXX - shouldn't be necessary with working memory barriers. Affected
-+    * test: KHR-GLES31.core.compute_shader.pipeline-post-xfb */
-+   panfrost_flush_all_batches(ctx, "Launch grid pre-barrier");
- 
+-
 -      /* Use per-sample shading if required by API Also use it when a
 -       * blend shader is used with multisampling, as this is handled
 -       * by a single ST_TILE in the blend shader with the current
@@ -2283,8 +1749,7 @@ index 58c38ed0d22..3e3c38b9276 100644
 -      cfg.evaluate_per_sample =
 -         (rast->multisample &&
 -          ((ctx->min_samples > 1) || ctx->valhall_has_blend_shader));
-+   struct panfrost_batch *batch = panfrost_get_batch_for_fbo(ctx);
- 
+-
 -      cfg.single_sampled_lines = !rast->multisample;
 -
 -      cfg.vertex_array.packet = true;
@@ -2438,52 +1903,34 @@ index 58c38ed0d22..3e3c38b9276 100644
 -   pan_section_pack(job, MALLOC_VERTEX_JOB, TILER, cfg) {
 -      cfg.address = panfrost_batch_get_bifrost_tiler(batch, ~0);
 -   }
-+   if (info->indirect && !PAN_GPU_INDIRECTS) {
-+      struct pipe_transfer *transfer;
-+      uint32_t *params =
-+         pipe_buffer_map_range(pipe, info->indirect, info->indirect_offset,
-+                               3 * sizeof(uint32_t), PIPE_MAP_READ, &transfer);
- 
+-
 -   STATIC_ASSERT(sizeof(batch->scissor) == pan_size(SCISSOR));
 -   memcpy(pan_section_ptr(job, MALLOC_VERTEX_JOB, SCISSOR), &batch->scissor,
 -          pan_size(SCISSOR));
-+      struct pipe_grid_info direct = *info;
-+      direct.indirect = NULL;
-+      direct.grid[0] = params[0];
-+      direct.grid[1] = params[1];
-+      direct.grid[2] = params[2];
-+      pipe_buffer_unmap(pipe, transfer);
- 
+-
 -   panfrost_emit_primitive_size(
 -      ctx, info->mode == MESA_PRIM_POINTS, 0,
 -      pan_section_ptr(job, MALLOC_VERTEX_JOB, PRIMITIVE_SIZE));
-+      if (params[0] && params[1] && params[2])
-+         panfrost_launch_grid(pipe, &direct);
- 
+-
 -   pan_section_pack(job, MALLOC_VERTEX_JOB, INDICES, cfg) {
 -      cfg.address = indices;
-+      return;
-    }
- 
+-   }
+-
 -   panfrost_emit_draw(pan_section_ptr(job, MALLOC_VERTEX_JOB, DRAW), batch,
 -                      fs_required, u_reduced_prim(info->mode), 0, 0, 0);
 -
 -   pan_section_pack(job, MALLOC_VERTEX_JOB, POSITION, cfg) {
 -      /* IDVS/points vertex shader */
 -      mali_ptr vs_ptr = batch->rsd[PIPE_SHADER_VERTEX];
-+   ctx->compute_grid = info;
- 
+-
 -      /* IDVS/triangle vertex shader */
 -      if (vs_ptr && info->mode != MESA_PRIM_POINTS)
 -         vs_ptr += pan_size(SHADER_PROGRAM);
-+   /* Conservatively assume workgroup size changes every launch */
-+   ctx->dirty |= PAN_DIRTY_PARAMS;
- 
+-
 -      panfrost_emit_shader(batch, &cfg, PIPE_SHADER_VERTEX, vs_ptr,
 -                           batch->tls.gpu);
 -   }
-+   panfrost_update_shader_state(batch, PIPE_SHADER_COMPUTE);
- 
+-
 -   pan_section_pack(job, MALLOC_VERTEX_JOB, VARYING, cfg) {
 -      /* If a varying shader is used, we configure it with the same
 -       * state as the position shader for backwards compatible
@@ -2491,26 +1938,16 @@ index 58c38ed0d22..3e3c38b9276 100644
 -       */
 -      if (!secondary_shader)
 -         continue;
-+   /* We want our compute thread descriptor to be per job.
-+    * Save the global one, and restore it when we're done emitting
-+    * the job.
-+    */
-+   mali_ptr saved_tls = batch->tls.gpu;
- 
+-
 -      mali_ptr ptr =
 -         batch->rsd[PIPE_SHADER_VERTEX] + (2 * pan_size(SHADER_PROGRAM));
-+   batch->tls.gpu = panfrost_emit_shared_memory(batch, info);
-+   JOBX(launch_grid)(batch, info);
-+   batch->any_compute = true;
-+   batch->tls.gpu = saved_tls;
- 
+-
 -      panfrost_emit_shader(batch, &cfg, PIPE_SHADER_VERTEX, ptr,
 -                           batch->tls.gpu);
 -   }
-+   panfrost_flush_all_batches(ctx, "Launch grid post-barrier");
  }
 -#endif
- 
+-
 -#if PAN_ARCH <= 7
 -static void
 -panfrost_draw_emit_tiler(struct panfrost_batch *batch,
@@ -2519,47 +1956,23 @@ index 58c38ed0d22..3e3c38b9276 100644
 -                         void *invocation_template, mali_ptr indices,
 -                         mali_ptr fs_vary, mali_ptr varyings, mali_ptr pos,
 -                         mali_ptr psiz, bool secondary_shader, void *job)
-+static unsigned
-+panfrost_draw_get_vertex_count(struct panfrost_batch *batch,
-+                               const struct pipe_draw_info *info,
-+                               const struct pipe_draw_start_count_bias *draw,
-+                               bool idvs)
- {
-    struct panfrost_context *ctx = batch->ctx;
-+   unsigned vertex_count = ctx->vertex_count;
-+   unsigned min_index = 0, max_index = 0;
- 
+-{
+-   struct panfrost_context *ctx = batch->ctx;
+-
 -   void *section = pan_section_ptr(job, TILER_JOB, INVOCATION);
 -   memcpy(section, invocation_template, pan_size(INVOCATION));
-+   batch->indices = 0;
-+   if (info->index_size && PAN_ARCH >= 9) {
-+      batch->indices = panfrost_get_index_buffer(batch, info, draw);
- 
+-
 -   panfrost_emit_primitive(ctx, info, draw, indices, secondary_shader,
 -                           pan_section_ptr(job, TILER_JOB, PRIMITIVE));
-+      /* Use index count to estimate vertex count */
-+      if (!PAN_USE_CSF)
-+         panfrost_increase_vertex_count(batch, draw->count);
-+   } else if (info->index_size) {
-+      batch->indices = panfrost_get_index_buffer_bounded(
-+         batch, info, draw, &min_index, &max_index);
- 
+-
 -   void *prim_size = pan_section_ptr(job, TILER_JOB, PRIMITIVE_SIZE);
 -   enum mesa_prim prim = u_reduced_prim(info->mode);
-+      /* Use the corresponding values */
-+      vertex_count = max_index - min_index + 1;
-+      ctx->offset_start = min_index + draw->index_bias;
-+      panfrost_increase_vertex_count(batch, vertex_count);
-+   } else {
-+      ctx->offset_start = draw->start;
- 
+-
 -#if PAN_ARCH >= 6
 -   pan_section_pack(job, TILER_JOB, TILER, cfg) {
 -      cfg.address = panfrost_batch_get_bifrost_tiler(batch, ~0);
-+      if (!PAN_USE_CSF)
-+         panfrost_increase_vertex_count(batch, vertex_count);
-    }
- 
+-   }
+-
 -   pan_section_pack(job, TILER_JOB, PADDING, cfg)
 -      ;
 -#endif
@@ -2570,51 +1983,24 @@ index 58c38ed0d22..3e3c38b9276 100644
 -   panfrost_emit_primitive_size(ctx, prim == MESA_PRIM_POINTS, psiz, prim_size);
 -}
 -#endif
--
--static void
--panfrost_launch_xfb(struct panfrost_batch *batch,
+ 
+ static void
+ panfrost_launch_xfb(struct panfrost_batch *batch,
 -                    const struct pipe_draw_info *info, mali_ptr attribs,
 -                    mali_ptr attrib_bufs, unsigned count)
--{
--   struct panfrost_context *ctx = batch->ctx;
--
++                    const struct pipe_draw_info *info, unsigned count)
+ {
+    struct panfrost_context *ctx = batch->ctx;
+ 
 -   struct panfrost_ptr t = pan_pool_alloc_desc(&batch->pool.base, COMPUTE_JOB);
 -
--   /* Nothing to do */
--   if (batch->ctx->streamout.num_targets == 0)
--      return;
--
--   /* TODO: XFB with index buffers */
--   // assert(info->index_size == 0);
--   u_trim_pipe_prim(info->mode, &count);
--
--   if (count == 0)
--      return;
--
--   perf_debug_ctx(batch->ctx, "Emulating transform feedback");
--
--   struct panfrost_uncompiled_shader *vs_uncompiled =
--      ctx->uncompiled[PIPE_SHADER_VERTEX];
--   struct panfrost_compiled_shader *vs = ctx->prog[PIPE_SHADER_VERTEX];
--
--   vs_uncompiled->xfb->stream_output = vs->stream_output;
--
--   mali_ptr saved_rsd = batch->rsd[PIPE_SHADER_VERTEX];
--   mali_ptr saved_ubo = batch->uniform_buffers[PIPE_SHADER_VERTEX];
--   mali_ptr saved_push = batch->push_uniforms[PIPE_SHADER_VERTEX];
--   unsigned saved_nr_push_uniforms =
--      batch->nr_push_uniforms[PIPE_SHADER_VERTEX];
--
--   ctx->uncompiled[PIPE_SHADER_VERTEX] = NULL; /* should not be read */
--   ctx->prog[PIPE_SHADER_VERTEX] = vs_uncompiled->xfb;
--   batch->rsd[PIPE_SHADER_VERTEX] =
--      panfrost_emit_compute_shader_meta(batch, PIPE_SHADER_VERTEX);
--
--   batch->uniform_buffers[PIPE_SHADER_VERTEX] =
--      panfrost_emit_const_buf(batch, PIPE_SHADER_VERTEX, NULL,
--                              &batch->push_uniforms[PIPE_SHADER_VERTEX],
--                              &batch->nr_push_uniforms[PIPE_SHADER_VERTEX]);
--
+    /* Nothing to do */
+    if (batch->ctx->streamout.num_targets == 0)
+       return;
+@@ -3428,45 +2735,8 @@ panfrost_launch_xfb(struct panfrost_batc
+                               &batch->push_uniforms[PIPE_SHADER_VERTEX],
+                               &batch->nr_push_uniforms[PIPE_SHADER_VERTEX]);
+ 
 -#if PAN_ARCH >= 9
 -   pan_section_pack(t.cpu, COMPUTE_JOB, PAYLOAD, cfg) {
 -      cfg.workgroup_size_x = 1;
@@ -2630,16 +2016,10 @@ index 58c38ed0d22..3e3c38b9276 100644
 -
 -      /* TODO: Indexing. Also, this is a legacy feature... */
 -      cfg.compute.attribute_offset = batch->ctx->offset_start;
-+   if (!PAN_USE_CSF && info->instance_count > 1) {
-+      unsigned count = vertex_count;
- 
+-
 -      /* Transform feedback shaders do not use barriers or shared
 -       * memory, so we may merge workgroups.
-+      /* Index-Driven Vertex Shading requires different instances to
-+       * have different cache lines for position results. Each vertex
-+       * position is 16 bytes and the Mali cache line is 64 bytes, so
-+       * the instance count must be aligned to 4 vertices.
-        */
+-       */
 -      cfg.allow_merging_workgroups = true;
 -      cfg.task_increment = 1;
 -      cfg.task_axis = MALI_TASK_AXIS_Z;
@@ -2650,9 +2030,7 @@ index 58c38ed0d22..3e3c38b9276 100644
 -   panfrost_pack_work_groups_compute(&invocation, 1, count,
 -                                     info->instance_count, 1, 1, 1,
 -                                     PAN_ARCH <= 5, false);
-+      if (idvs)
-+         count = ALIGN_POT(count, 4);
- 
+-
 -   panfrost_draw_emit_vertex(batch, info, &invocation, 0, 0, attribs,
 -                             attrib_bufs, t.cpu);
 -#endif
@@ -2662,71 +2040,96 @@ index 58c38ed0d22..3e3c38b9276 100644
 -#endif
 -   panfrost_add_job(&batch->pool.base, &batch->scoreboard, job_type, true,
 -                    false, 0, 0, &t, false);
-+      ctx->padded_count = panfrost_padded_vertex_count(count);
-+   } else {
-+      ctx->padded_count = vertex_count;
-+   }
++   JOBX(launch_xfb)(batch, info, count);
++   batch->any_compute = true;
  
--   ctx->uncompiled[PIPE_SHADER_VERTEX] = vs_uncompiled;
--   ctx->prog[PIPE_SHADER_VERTEX] = vs;
--   batch->rsd[PIPE_SHADER_VERTEX] = saved_rsd;
--   batch->uniform_buffers[PIPE_SHADER_VERTEX] = saved_ubo;
--   batch->push_uniforms[PIPE_SHADER_VERTEX] = saved_push;
--   batch->nr_push_uniforms[PIPE_SHADER_VERTEX] = saved_nr_push_uniforms;
-+   return vertex_count;
+    ctx->uncompiled[PIPE_SHADER_VERTEX] = vs_uncompiled;
+    ctx->prog[PIPE_SHADER_VERTEX] = vs;
+@@ -3491,16 +2761,38 @@ panfrost_increase_vertex_count(struct pa
+       batch->tiler_ctx.vertex_count = UINT32_MAX;
  }
  
- /*
-- * Increase the vertex count on the batch using a saturating add, and hope the
-- * compiler can use the machine instruction here...
-+ * Entrypoint for draws on JM/CSF Mali. Depending on generation, this requires
-+ * emitting jobs for indirect drawing, transform feedback, vertex shading, and
-+ * tiling.
-  */
--static inline void
--panfrost_increase_vertex_count(struct panfrost_batch *batch, uint32_t increment)
--{
--   uint32_t sum = batch->tiler_ctx.vertex_count + increment;
--
--   if (sum >= batch->tiler_ctx.vertex_count)
--      batch->tiler_ctx.vertex_count = sum;
--   else
--      batch->tiler_ctx.vertex_count = UINT32_MAX;
--}
--
- static void
- panfrost_direct_draw(struct panfrost_batch *batch,
-                      const struct pipe_draw_info *info, unsigned drawid_offset,
-@@ -3501,18 +2929,7 @@ panfrost_direct_draw(struct panfrost_batch *batch,
+-static void
+-panfrost_direct_draw(struct panfrost_batch *batch,
+-                     const struct pipe_draw_info *info, unsigned drawid_offset,
+-                     const struct pipe_draw_start_count_bias *draw)
++static bool
++panfrost_compatible_batch_state(struct panfrost_batch *batch, bool points)
+ {
+-   if (!draw->count || !info->instance_count)
+-      return;
++   /* Only applies on Valhall */
++   if (PAN_ARCH < 9)
++      return true;
  
     struct panfrost_context *ctx = batch->ctx;
++   struct pipe_rasterizer_state *rast = &ctx->rasterizer->base;
++
++   bool coord = (rast->sprite_coord_mode == PIPE_SPRITE_COORD_LOWER_LEFT);
++   bool first = rast->flatshade_first;
  
--   /* If we change whether we're drawing points, or whether point sprites
--    * are enabled (specified in the rasterizer), we may need to rebind
--    * shaders accordingly. This implicitly covers the case of rebinding
--    * framebuffers, because all dirty flags are set there.
--    */
--   if ((ctx->dirty & PAN_DIRTY_RASTERIZER) ||
--       ((ctx->active_prim == MESA_PRIM_POINTS) ^
--        (info->mode == MESA_PRIM_POINTS))) {
--
--      ctx->active_prim = info->mode;
--      panfrost_update_shader_variant(ctx, PIPE_SHADER_FRAGMENT);
--   }
-+   panfrost_update_point_sprite_shader(ctx, info);
++   /* gl_PointCoord orientation only matters when drawing points, but
++    * provoking vertex doesn't matter for points.
++    */
++   if (points)
++      return pan_tristate_set(&batch->sprite_coord_origin, coord);
++   else
++      return pan_tristate_set(&batch->first_provoking_vertex, first);
++}
++
++/*
++ * If we change whether we're drawing points, or whether point sprites are
++ * enabled (specified in the rasterizer), we may need to rebind shaders
++ * accordingly. This implicitly covers the case of rebinding framebuffers,
++ * because all dirty flags are set there.
++ */
++static void
++panfrost_update_point_sprite_shader(struct panfrost_context *ctx,
++                                    const struct pipe_draw_info *info)
++{
+    /* If we change whether we're drawing points, or whether point sprites
+     * are enabled (specified in the rasterizer), we may need to rebind
+     * shaders accordingly. This implicitly covers the case of rebinding
+@@ -3513,49 +2805,84 @@ panfrost_direct_draw(struct panfrost_bat
+       ctx->active_prim = info->mode;
+       panfrost_update_shader_variant(ctx, PIPE_SHADER_FRAGMENT);
+    }
++}
  
-    /* Take into account a negative bias */
-    ctx->vertex_count =
-@@ -3524,105 +2941,19 @@ panfrost_direct_draw(struct panfrost_batch *batch,
-    ctx->drawid = drawid_offset;
+-   /* Take into account a negative bias */
+-   ctx->vertex_count =
+-      draw->count + (info->index_size ? abs(draw->index_bias) : 0);
+-   ctx->instance_count = info->instance_count;
+-   ctx->base_vertex = info->index_size ? draw->index_bias : 0;
+-   ctx->base_instance = info->start_instance;
+-   ctx->active_prim = info->mode;
+-   ctx->drawid = drawid_offset;
++/*
++ * Launch grid is the compute equivalent of draw_vbo. Set up the registers for a
++ * compute kernel and emit the run_compute command.
++ */
++static void
++panfrost_launch_grid(struct pipe_context *pipe,
++                     const struct pipe_grid_info *info)
++{
++   struct panfrost_context *ctx = pan_context(pipe);
  
-    struct panfrost_compiled_shader *vs = ctx->prog[PIPE_SHADER_VERTEX];
--
-    bool idvs = vs->info.vs.idvs;
+-   struct panfrost_compiled_shader *vs = ctx->prog[PIPE_SHADER_VERTEX];
++   /* XXX - shouldn't be necessary with working memory barriers. Affected
++    * test: KHR-GLES31.core.compute_shader.pipeline-post-xfb */
++   panfrost_flush_all_batches(ctx, "Launch grid pre-barrier");
+ 
+-   bool idvs = vs->info.vs.idvs;
 -   bool secondary_shader = vs->info.vs.secondary_enable;
--
++   struct panfrost_batch *batch = panfrost_get_batch_for_fbo(ctx);
+ 
 -   UNUSED struct panfrost_ptr tiler, vertex;
--
++   if (info->indirect && !PAN_GPU_INDIRECTS) {
++      struct pipe_transfer *transfer;
++      uint32_t *params =
++         pipe_buffer_map_range(pipe, info->indirect, info->indirect_offset,
++                               3 * sizeof(uint32_t), PIPE_MAP_READ, &transfer);
+ 
 -   if (idvs) {
 -#if PAN_ARCH >= 9
 -      tiler = pan_pool_alloc_desc(&batch->pool.base, MALLOC_VERTEX_JOB);
@@ -2738,49 +2141,96 @@ index 58c38ed0d22..3e3c38b9276 100644
 -   } else {
 -      vertex = pan_pool_alloc_desc(&batch->pool.base, COMPUTE_JOB);
 -      tiler = pan_pool_alloc_desc(&batch->pool.base, TILER_JOB);
--   }
--
++      struct pipe_grid_info direct = *info;
++      direct.indirect = NULL;
++      direct.grid[0] = params[0];
++      direct.grid[1] = params[1];
++      direct.grid[2] = params[2];
++      pipe_buffer_unmap(pipe, transfer);
++
++      if (params[0] && params[1] && params[2])
++         panfrost_launch_grid(pipe, &direct);
++
++      return;
+    }
+ 
 -   unsigned vertex_count = ctx->vertex_count;
--
--   unsigned min_index = 0, max_index = 0;
++   ctx->compute_grid = info;
++
++   /* Conservatively assume workgroup size changes every launch */
++   ctx->dirty |= PAN_DIRTY_PARAMS;
++
++   panfrost_update_shader_state(batch, PIPE_SHADER_COMPUTE);
+ 
++   /* We want our compute thread descriptor to be per job.
++    * Save the global one, and restore it when we're done emitting
++    * the job.
++    */
++   mali_ptr saved_tls = batch->tls.gpu;
++
++   batch->tls.gpu = panfrost_emit_shared_memory(batch, info);
++   JOBX(launch_grid)(batch, info);
++   batch->any_compute = true;
++   batch->tls.gpu = saved_tls;
++
++   panfrost_flush_all_batches(ctx, "Launch grid post-barrier");
++}
++
++static unsigned
++panfrost_draw_get_vertex_count(struct panfrost_batch *batch,
++                               const struct pipe_draw_info *info,
++                               const struct pipe_draw_start_count_bias *draw,
++                               bool idvs)
++{
++   struct panfrost_context *ctx = batch->ctx;
++   unsigned vertex_count = ctx->vertex_count;
+    unsigned min_index = 0, max_index = 0;
 -   mali_ptr indices = 0;
--
--   if (info->index_size && PAN_ARCH >= 9) {
+ 
++   batch->indices = 0;
+    if (info->index_size && PAN_ARCH >= 9) {
 -      indices = panfrost_get_index_buffer(batch, info, draw);
--
--      /* Use index count to estimate vertex count */
++      batch->indices = panfrost_get_index_buffer(batch, info, draw);
+ 
+       /* Use index count to estimate vertex count */
 -      panfrost_increase_vertex_count(batch, draw->count);
--   } else if (info->index_size) {
++      if (!PAN_USE_CSF)
++         panfrost_increase_vertex_count(batch, draw->count);
+    } else if (info->index_size) {
 -      indices = panfrost_get_index_buffer_bounded(batch, info, draw, &min_index,
 -                                                  &max_index);
--
--      /* Use the corresponding values */
--      vertex_count = max_index - min_index + 1;
--      ctx->offset_start = min_index + draw->index_bias;
--      panfrost_increase_vertex_count(batch, vertex_count);
--   } else {
--      ctx->offset_start = draw->start;
--      panfrost_increase_vertex_count(batch, vertex_count);
--   }
--
--   if (info->instance_count > 1) {
--      unsigned count = vertex_count;
--
--      /* Index-Driven Vertex Shading requires different instances to
--       * have different cache lines for position results. Each vertex
--       * position is 16 bytes and the Mali cache line is 64 bytes, so
--       * the instance count must be aligned to 4 vertices.
--       */
--      if (idvs)
--         count = ALIGN_POT(count, 4);
--
--      ctx->padded_count = panfrost_padded_vertex_count(count);
--   } else
--      ctx->padded_count = vertex_count;
-+   unsigned vertex_count =
-+      panfrost_draw_get_vertex_count(batch, info, draw, idvs);
++      batch->indices = panfrost_get_index_buffer_bounded(
++         batch, info, draw, &min_index, &max_index);
  
-    panfrost_statistics_record(ctx, info, draw);
+       /* Use the corresponding values */
+       vertex_count = max_index - min_index + 1;
+@@ -3563,10 +2890,12 @@ panfrost_direct_draw(struct panfrost_bat
+       panfrost_increase_vertex_count(batch, vertex_count);
+    } else {
+       ctx->offset_start = draw->start;
+-      panfrost_increase_vertex_count(batch, vertex_count);
++
++      if (!PAN_USE_CSF)
++         panfrost_increase_vertex_count(batch, vertex_count);
+    }
+ 
+-   if (info->instance_count > 1) {
++   if (!PAN_USE_CSF && info->instance_count > 1) {
+       unsigned count = vertex_count;
+ 
+       /* Index-Driven Vertex Shading requires different instances to
+@@ -3578,51 +2907,53 @@ panfrost_direct_draw(struct panfrost_bat
+          count = ALIGN_POT(count, 4);
+ 
+       ctx->padded_count = panfrost_padded_vertex_count(count);
+-   } else
++   } else {
+       ctx->padded_count = vertex_count;
++   }
+ 
+-   panfrost_statistics_record(ctx, info, draw);
++   return vertex_count;
++}
  
 -#if PAN_ARCH <= 7
 -   struct mali_invocation_packed invocation;
@@ -2799,18 +2249,47 @@ index 58c38ed0d22..3e3c38b9276 100644
 -         cfg.thread_group_split = MALI_SPLIT_MIN_EFFICIENT;
 -      }
 -   }
--
++/*
++ * Entrypoint for draws on JM/CSF Mali. Depending on generation, this requires
++ * emitting jobs for indirect drawing, transform feedback, vertex shading, and
++ * tiling.
++ */
++static void
++panfrost_direct_draw(struct panfrost_batch *batch,
++                     const struct pipe_draw_info *info, unsigned drawid_offset,
++                     const struct pipe_draw_start_count_bias *draw)
++{
++   if (!draw->count || !info->instance_count)
++      return;
+ 
 -   /* Emit all sort of descriptors. */
 -   mali_ptr varyings = 0, vs_vary = 0, fs_vary = 0, pos = 0, psiz = 0;
--
++   struct panfrost_context *ctx = batch->ctx;
+ 
 -   panfrost_emit_varying_descriptor(
 -      batch, ctx->padded_count * ctx->instance_count, &vs_vary, &fs_vary,
 -      &varyings, NULL, &pos, &psiz, info->mode == MESA_PRIM_POINTS);
--
++   panfrost_update_point_sprite_shader(ctx, info);
+ 
 -   mali_ptr attribs, attrib_bufs;
 -   attribs = panfrost_emit_vertex_data(batch, &attrib_bufs);
 -#endif
--
++   /* Take into account a negative bias */
++   ctx->vertex_count =
++      draw->count + (info->index_size ? abs(draw->index_bias) : 0);
++   ctx->instance_count = info->instance_count;
++   ctx->base_vertex = info->index_size ? draw->index_bias : 0;
++   ctx->base_instance = info->start_instance;
++   ctx->active_prim = info->mode;
++   ctx->drawid = drawid_offset;
++
++   struct panfrost_compiled_shader *vs = ctx->prog[PIPE_SHADER_VERTEX];
++   bool idvs = vs->info.vs.idvs;
++   unsigned vertex_count =
++      panfrost_draw_get_vertex_count(batch, info, draw, idvs);
++
++   panfrost_statistics_record(ctx, info, draw);
+ 
     panfrost_update_state_3d(batch);
     panfrost_update_shader_state(batch, PIPE_SHADER_VERTEX);
     panfrost_update_shader_state(batch, PIPE_SHADER_FRAGMENT);
@@ -2827,7 +2306,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  
     /* Increment transform feedback offsets */
     panfrost_update_streamout_offsets(ctx);
-@@ -3633,57 +2964,14 @@ panfrost_direct_draw(struct panfrost_batch *batch,
+@@ -3633,57 +2964,14 @@ panfrost_direct_draw(struct panfrost_bat
     if (panfrost_batch_skip_rasterization(batch))
        return;
  
@@ -2865,7 +2344,7 @@ index 58c38ed0d22..3e3c38b9276 100644
 +                                    info->mode == MESA_PRIM_POINTS);
  #endif
 -}
- 
+-
 -static bool
 -panfrost_compatible_batch_state(struct panfrost_batch *batch, bool points)
 -{
@@ -2878,7 +2357,7 @@ index 58c38ed0d22..3e3c38b9276 100644
 -
 -   bool coord = (rast->sprite_coord_mode == PIPE_SPRITE_COORD_LOWER_LEFT);
 -   bool first = rast->flatshade_first;
--
+ 
 -   /* gl_PointCoord orientation only matters when drawing points, but
 -    * provoking vertex doesn't matter for points.
 -    */
@@ -2891,7 +2370,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  }
  
  static void
-@@ -3715,7 +3003,7 @@ panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
+@@ -3715,7 +3003,7 @@ panfrost_draw_vbo(struct pipe_context *p
     /* Don't add too many jobs to a single batch. Hardware has a hard limit
      * of 65536 jobs, but we choose a smaller soft limit (arbitrary) to
      * avoid the risk of timeouts. This might not be a good idea. */
@@ -2900,7 +2379,7 @@ index 58c38ed0d22..3e3c38b9276 100644
        batch = panfrost_get_fresh_batch_for_fbo(ctx, "Too many draws");
  
     bool points = (info->mode == MESA_PRIM_POINTS);
-@@ -3754,230 +3042,6 @@ panfrost_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info,
+@@ -3754,230 +3042,6 @@ panfrost_draw_vbo(struct pipe_context *p
     }
  }
  
@@ -3131,7 +2610,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  static void *
  panfrost_create_rasterizer_state(struct pipe_context *pctx,
                                   const struct pipe_rasterizer_state *cso)
-@@ -4224,8 +3288,7 @@ panfrost_create_sampler_view(struct pipe_context *pctx,
+@@ -4224,8 +3288,7 @@ panfrost_create_sampler_view(struct pipe
     struct panfrost_sampler_view *so =
        rzalloc(pctx, struct panfrost_sampler_view);
  
@@ -3141,7 +2620,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  
     pipe_reference(NULL, &texture->reference);
  
-@@ -4400,7 +3463,10 @@ prepare_shader(struct panfrost_compiled_shader *state,
+@@ -4400,7 +3463,10 @@ prepare_shader(struct panfrost_compiled_
     /* Generic, or IDVS/points */
     pan_pack(ptr.cpu, SHADER_PROGRAM, cfg) {
        cfg.stage = pan_shader_stage(&state->info);
@@ -3153,7 +2632,7 @@ index 58c38ed0d22..3e3c38b9276 100644
        cfg.register_allocation =
           pan_register_allocation(state->info.work_reg_count);
        cfg.binary = state->bin.gpu;
-@@ -4417,7 +3483,7 @@ prepare_shader(struct panfrost_compiled_shader *state,
+@@ -4417,7 +3483,7 @@ prepare_shader(struct panfrost_compiled_
     /* IDVS/triangles */
     pan_pack(ptr.cpu + pan_size(SHADER_PROGRAM), SHADER_PROGRAM, cfg) {
        cfg.stage = pan_shader_stage(&state->info);
@@ -3205,7 +2684,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  }
  
  static void
-@@ -4503,7 +3537,7 @@ panfrost_sampler_view_destroy(struct pipe_context *pctx,
+@@ -4503,7 +3537,7 @@ panfrost_sampler_view_destroy(struct pip
  }
  
  static void
@@ -3214,7 +2693,7 @@ index 58c38ed0d22..3e3c38b9276 100644
  {
     pipe->draw_vbo = panfrost_draw_vbo;
     pipe->launch_grid = panfrost_launch_grid;
-@@ -4531,7 +3565,7 @@ batch_get_polygon_list(struct panfrost_batch *batch)
+@@ -4531,7 +3565,7 @@ batch_get_polygon_list(struct panfrost_b
     struct panfrost_device *dev = pan_device(batch->ctx->base.screen);
  
     if (!batch->tiler_ctx.midgard.polygon_list) {
@@ -3223,7 +2702,7 @@ index 58c38ed0d22..3e3c38b9276 100644
        unsigned size = panfrost_tiler_get_polygon_list_size(
           dev, batch->key.width, batch->key.height,
           batch->tiler_ctx.vertex_count);
-@@ -4573,30 +3607,66 @@ init_polygon_list(struct panfrost_batch *batch)
+@@ -4573,30 +3607,66 @@ init_polygon_list(struct panfrost_batch
  {
  #if PAN_ARCH <= 5
     mali_ptr polygon_list = batch_get_polygon_list(batch);
@@ -3301,11 +2780,9 @@ index 58c38ed0d22..3e3c38b9276 100644
  
     GENX(pan_blitter_init)
     (dev, &screen->blitter.bin_pool.base, &screen->blitter.desc_pool.base);
-diff --git a/src/gallium/drivers/panfrost/pan_cmdstream.h b/src/gallium/drivers/panfrost/pan_cmdstream.h
-new file mode 100644
-index 00000000000..501b264c13b
---- /dev/null
-+++ b/src/gallium/drivers/panfrost/pan_cmdstream.h
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.h
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.h.8~	2023-11-24 23:33:24.961610824 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_cmdstream.h	2023-11-24 23:33:24.961610824 +0100
 @@ -0,0 +1,323 @@
 +/*
 + * Copyright (C) 2018 Alyssa Rosenzweig
@@ -3630,10 +3107,9 @@ index 00000000000..501b264c13b
 +}
 +
 +#endif
-diff --git a/src/gallium/drivers/panfrost/pan_context.c b/src/gallium/drivers/panfrost/pan_context.c
-index ae5e2608909..eb41ab7dc97 100644
---- a/src/gallium/drivers/panfrost/pan_context.c
-+++ b/src/gallium/drivers/panfrost/pan_context.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.c	2023-11-24 23:33:24.961610824 +0100
 @@ -54,6 +54,9 @@
  #include "pan_screen.h"
  #include "pan_util.h"
@@ -3644,7 +3120,7 @@ index ae5e2608909..eb41ab7dc97 100644
  static void
  panfrost_clear(struct pipe_context *pipe, unsigned buffers,
                 const struct pipe_scissor_state *scissor_state,
-@@ -70,7 +73,7 @@ panfrost_clear(struct pipe_context *pipe, unsigned buffers,
+@@ -70,7 +73,7 @@ panfrost_clear(struct pipe_context *pipe
     struct panfrost_batch *batch = panfrost_get_batch_for_fbo(ctx);
  
     /* At the start of the batch, we can clear for free */
@@ -3653,16 +3129,7 @@ index ae5e2608909..eb41ab7dc97 100644
        panfrost_batch_clear(batch, buffers, color, depth, stencil);
        return;
     }
-@@ -254,7 +257,7 @@ panfrost_set_shader_images(struct pipe_context *pctx,
-                            const struct pipe_image_view *iviews)
- {
-    struct panfrost_context *ctx = pan_context(pctx);
--   ctx->dirty_shader[PIPE_SHADER_FRAGMENT] |= PAN_DIRTY_STAGE_IMAGE;
-+   ctx->dirty_shader[shader] |= PAN_DIRTY_STAGE_IMAGE;
- 
-    /* Unbind start_slot...start_slot+count */
-    if (!iviews) {
-@@ -550,6 +553,8 @@ panfrost_destroy(struct pipe_context *pipe)
+@@ -550,6 +553,8 @@ panfrost_destroy(struct pipe_context *pi
     struct panfrost_context *panfrost = pan_context(pipe);
     struct panfrost_device *dev = pan_device(pipe->screen);
  
@@ -3671,7 +3138,7 @@ index ae5e2608909..eb41ab7dc97 100644
     _mesa_hash_table_destroy(panfrost->writers, NULL);
  
     if (panfrost->blitter)
-@@ -560,13 +565,12 @@ panfrost_destroy(struct pipe_context *pipe)
+@@ -560,13 +565,12 @@ panfrost_destroy(struct pipe_context *pi
  
     panfrost_pool_cleanup(&panfrost->descs);
     panfrost_pool_cleanup(&panfrost->shaders);
@@ -3687,7 +3154,7 @@ index ae5e2608909..eb41ab7dc97 100644
     ralloc_free(pipe);
  }
  
-@@ -860,7 +864,7 @@ panfrost_fence_server_sync(struct pipe_context *pctx,
+@@ -860,7 +864,7 @@ panfrost_fence_server_sync(struct pipe_c
     struct panfrost_context *ctx = pan_context(pctx);
     int fd = -1, ret;
  
@@ -3696,7 +3163,7 @@ index ae5e2608909..eb41ab7dc97 100644
     assert(!ret);
  
     sync_accumulate("panfrost", &ctx->in_sync_fd, fd);
-@@ -940,11 +944,10 @@ panfrost_create_context(struct pipe_screen *screen, void *priv, unsigned flags)
+@@ -940,11 +944,10 @@ panfrost_create_context(struct pipe_scre
     gallium->set_global_binding = panfrost_set_global_binding;
     gallium->memory_barrier = panfrost_memory_barrier;
  
@@ -3709,7 +3176,7 @@ index ae5e2608909..eb41ab7dc97 100644
  
     gallium->stream_uploader = u_upload_create_default(gallium);
     gallium->const_uploader = gallium->stream_uploader;
-@@ -973,13 +976,23 @@ panfrost_create_context(struct pipe_screen *screen, void *priv, unsigned flags)
+@@ -973,13 +976,23 @@ panfrost_create_context(struct pipe_scre
     /* Create a syncobj in a signaled state. Will be updated to point to the
      * last queued job out_sync every time we submit a new job.
      */
@@ -3735,10 +3202,9 @@ index ae5e2608909..eb41ab7dc97 100644
 +   pan_screen(ctx->base.screen)->vtbl.context_cleanup(ctx);
 +   pan_screen(ctx->base.screen)->vtbl.context_init(ctx);
 +}
-diff --git a/src/gallium/drivers/panfrost/pan_context.h b/src/gallium/drivers/panfrost/pan_context.h
-index dbf0d503ae9..75e066b6e41 100644
---- a/src/gallium/drivers/panfrost/pan_context.h
-+++ b/src/gallium/drivers/panfrost/pan_context.h
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.h
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_context.h	2023-11-24 23:33:24.961610824 +0100
 @@ -28,7 +28,6 @@
  #define _LARGEFILE64_SOURCE 1
  #include <assert.h>
@@ -3778,18 +3244,16 @@ index dbf0d503ae9..75e066b6e41 100644
  };
  
  /* Corresponds to the CSO */
-@@ -521,4 +526,6 @@ void panfrost_track_image_access(struct panfrost_batch *batch,
+@@ -521,4 +526,6 @@ void panfrost_track_image_access(struct
                                   enum pipe_shader_type stage,
                                   struct pipe_image_view *image);
  
 +void panfrost_context_reinit(struct panfrost_context *ctx);
 +
  #endif
-diff --git a/src/gallium/drivers/panfrost/pan_csf.c b/src/gallium/drivers/panfrost/pan_csf.c
-new file mode 100644
-index 00000000000..288b63694c5
---- /dev/null
-+++ b/src/gallium/drivers/panfrost/pan_csf.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.c.8~	2023-11-24 23:33:24.961610824 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.c	2023-11-24 23:33:24.961610824 +0100
 @@ -0,0 +1,909 @@
 +/*
 + * Copyright (C) 2023 Collabora Ltd.
@@ -4700,11 +4164,9 @@ index 00000000000..288b63694c5
 +
 +   panfrost_bo_unreference(ctx->csf.heap.desc_bo);
 +}
-diff --git a/src/gallium/drivers/panfrost/pan_csf.h b/src/gallium/drivers/panfrost/pan_csf.h
-new file mode 100644
-index 00000000000..83e833d075f
---- /dev/null
-+++ b/src/gallium/drivers/panfrost/pan_csf.h
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.h
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.h.8~	2023-11-24 23:33:24.961610824 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_csf.h	2023-11-24 23:33:24.961610824 +0100
 @@ -0,0 +1,91 @@
 +/*
 + * Copyright (C) 2023 Collabora Ltd.
@@ -4797,11 +4259,10 @@ index 00000000000..83e833d075f
 +#endif /* PAN_ARCH >= 10 */
 +
 +#endif /* __PAN_CSF_H__ */
-diff --git a/src/gallium/drivers/panfrost/pan_fence.c b/src/gallium/drivers/panfrost/pan_fence.c
-index 792550371f8..1390ddfe400 100644
---- a/src/gallium/drivers/panfrost/pan_fence.c
-+++ b/src/gallium/drivers/panfrost/pan_fence.c
-@@ -42,7 +42,7 @@ panfrost_fence_reference(struct pipe_screen *pscreen,
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_fence.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_fence.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_fence.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_fence.c	2023-11-24 23:33:24.961610824 +0100
+@@ -42,7 +42,7 @@ panfrost_fence_reference(struct pipe_scr
     struct pipe_fence_handle *old = *ptr;
  
     if (pipe_reference(&old->reference, &fence->reference)) {
@@ -4810,7 +4271,7 @@ index 792550371f8..1390ddfe400 100644
        free(old);
     }
  
-@@ -63,8 +63,8 @@ panfrost_fence_finish(struct pipe_screen *pscreen, struct pipe_context *ctx,
+@@ -63,8 +63,8 @@ panfrost_fence_finish(struct pipe_screen
     if (abs_timeout == OS_TIMEOUT_INFINITE)
        abs_timeout = INT64_MAX;
  
@@ -4821,7 +4282,7 @@ index 792550371f8..1390ddfe400 100644
  
     fence->signaled = (ret >= 0);
     return fence->signaled;
-@@ -76,7 +76,7 @@ panfrost_fence_get_fd(struct pipe_screen *screen, struct pipe_fence_handle *f)
+@@ -76,7 +76,7 @@ panfrost_fence_get_fd(struct pipe_screen
     struct panfrost_device *dev = pan_device(screen);
     int fd = -1;
  
@@ -4830,7 +4291,7 @@ index 792550371f8..1390ddfe400 100644
     return fd;
  }
  
-@@ -92,20 +92,20 @@ panfrost_fence_from_fd(struct panfrost_context *ctx, int fd,
+@@ -92,20 +92,20 @@ panfrost_fence_from_fd(struct panfrost_c
        return NULL;
  
     if (type == PIPE_FD_TYPE_NATIVE_SYNC) {
@@ -4854,7 +4315,7 @@ index 792550371f8..1390ddfe400 100644
        if (ret) {
           fprintf(stderr, "import syncobj FD failed\n");
           goto err_free_fence;
-@@ -117,7 +117,7 @@ panfrost_fence_from_fd(struct panfrost_context *ctx, int fd,
+@@ -117,7 +117,7 @@ panfrost_fence_from_fd(struct panfrost_c
     return f;
  
  err_destroy_syncobj:
@@ -4863,7 +4324,7 @@ index 792550371f8..1390ddfe400 100644
  err_free_fence:
     free(f);
     return NULL;
-@@ -134,7 +134,7 @@ panfrost_fence_create(struct panfrost_context *ctx)
+@@ -134,7 +134,7 @@ panfrost_fence_create(struct panfrost_co
      * (HandleToFD/FDToHandle just gives you another syncobj ID for the
      * same syncobj).
      */
@@ -4872,11 +4333,9 @@ index 792550371f8..1390ddfe400 100644
     if (ret || fd == -1) {
        fprintf(stderr, "export failed\n");
        return NULL;
-diff --git a/src/gallium/drivers/panfrost/pan_jm.c b/src/gallium/drivers/panfrost/pan_jm.c
-new file mode 100644
-index 00000000000..d6d51c59979
---- /dev/null
-+++ b/src/gallium/drivers/panfrost/pan_jm.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.c.8~	2023-11-24 23:33:24.962610829 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.c	2023-11-24 23:33:24.962610829 +0100
 @@ -0,0 +1,900 @@
 +/*
 + * Copyright (C) 2018 Alyssa Rosenzweig
@@ -5778,11 +5237,9 @@ index 00000000000..d6d51c59979
 +   }
 +#endif
 +}
-diff --git a/src/gallium/drivers/panfrost/pan_jm.h b/src/gallium/drivers/panfrost/pan_jm.h
-new file mode 100644
-index 00000000000..9edf4b7ce1d
---- /dev/null
-+++ b/src/gallium/drivers/panfrost/pan_jm.h
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.h
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.h.8~	2023-11-24 23:33:24.962610829 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_jm.h	2023-11-24 23:33:24.962610829 +0100
 @@ -0,0 +1,95 @@
 +/*
 + * Copyright (C) 2023 Collabora Ltd.
@@ -5879,10 +5336,9 @@ index 00000000000..9edf4b7ce1d
 +#endif /* PAN_ARCH < 10 */
 +
 +#endif
-diff --git a/src/gallium/drivers/panfrost/pan_job.c b/src/gallium/drivers/panfrost/pan_job.c
-index 717e7db9f36..55b48f66e62 100644
---- a/src/gallium/drivers/panfrost/pan_job.c
-+++ b/src/gallium/drivers/panfrost/pan_job.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.c	2023-11-24 23:33:24.962610829 +0100
 @@ -26,15 +26,12 @@
  
  #include <assert.h>
@@ -5899,7 +5355,7 @@ index 717e7db9f36..55b48f66e62 100644
  #include "pan_bo.h"
  #include "pan_context.h"
  #include "pan_util.h"
-@@ -68,7 +65,6 @@ panfrost_batch_add_surface(struct panfrost_batch *batch,
+@@ -68,7 +65,6 @@ panfrost_batch_add_surface(struct panfro
  {
     if (surf) {
        struct panfrost_resource *rsrc = pan_resource(surf->texture);
@@ -5915,7 +5371,7 @@ index 717e7db9f36..55b48f66e62 100644
     struct panfrost_device *dev = pan_device(ctx->base.screen);
  
     assert(batch->seqnum);
-@@ -123,6 +120,8 @@ panfrost_batch_cleanup(struct panfrost_context *ctx,
+@@ -123,6 +120,8 @@ panfrost_batch_cleanup(struct panfrost_c
     if (ctx->batch == batch)
        ctx->batch = NULL;
  
@@ -5924,7 +5380,7 @@ index 717e7db9f36..55b48f66e62 100644
     unsigned batch_idx = panfrost_batch_idx(batch);
  
     pan_bo_access *flags = util_dynarray_begin(&batch->bos);
-@@ -229,7 +228,7 @@ panfrost_get_fresh_batch_for_fbo(struct panfrost_context *ctx,
+@@ -229,7 +228,7 @@ panfrost_get_fresh_batch_for_fbo(struct
     /* We only need to submit and get a fresh batch if there is no
      * draw/clear queued. Otherwise we may reuse the batch. */
  
@@ -5933,7 +5389,7 @@ index 717e7db9f36..55b48f66e62 100644
        perf_debug_ctx(ctx, "Flushing the current FBO due to: %s", reason);
        panfrost_batch_submit(ctx, batch);
        batch = panfrost_get_batch(ctx, &ctx->pipe_framebuffer);
-@@ -303,7 +302,7 @@ panfrost_batch_uses_resource(struct panfrost_batch *batch,
+@@ -303,7 +302,7 @@ panfrost_batch_uses_resource(struct panf
                               struct panfrost_resource *rsrc)
  {
     /* A resource is used iff its current BO is used */
@@ -5942,7 +5398,7 @@ index 717e7db9f36..55b48f66e62 100644
     unsigned size = util_dynarray_num_elements(&batch->bos, pan_bo_access);
  
     /* If out of bounds, certainly not used */
-@@ -321,7 +320,8 @@ panfrost_batch_add_bo_old(struct panfrost_batch *batch, struct panfrost_bo *bo,
+@@ -321,7 +320,8 @@ panfrost_batch_add_bo_old(struct panfros
     if (!bo)
        return;
  
@@ -5952,7 +5408,7 @@ index 717e7db9f36..55b48f66e62 100644
     pan_bo_access old_flags = *entry;
  
     if (!old_flags) {
-@@ -420,7 +420,7 @@ panfrost_batch_get_scratchpad(struct panfrost_batch *batch,
+@@ -420,7 +420,7 @@ panfrost_batch_get_scratchpad(struct pan
        size_per_thread, thread_tls_alloc, core_id_range);
  
     if (batch->scratchpad) {
@@ -5961,7 +5417,7 @@ index 717e7db9f36..55b48f66e62 100644
     } else {
        batch->scratchpad =
           panfrost_batch_create_bo(batch, size, PAN_BO_INVISIBLE,
-@@ -437,7 +437,7 @@ panfrost_batch_get_shared_memory(struct panfrost_batch *batch, unsigned size,
+@@ -437,7 +437,7 @@ panfrost_batch_get_shared_memory(struct
                                   unsigned workgroup_count)
  {
     if (batch->shared_memory) {
@@ -5970,7 +5426,7 @@ index 717e7db9f36..55b48f66e62 100644
     } else {
        batch->shared_memory = panfrost_batch_create_bo(
           batch, size, PAN_BO_INVISIBLE, PIPE_SHADER_VERTEX,
-@@ -590,206 +590,20 @@ panfrost_batch_to_fb_info(const struct panfrost_batch *batch,
+@@ -590,206 +590,20 @@ panfrost_batch_to_fb_info(const struct p
     }
  }
  
@@ -6180,7 +5636,7 @@ index 717e7db9f36..55b48f66e62 100644
        struct pipe_surface *surf = batch->key.zsbuf;
        struct panfrost_resource *z_rsrc = pan_resource(surf->texture);
  
-@@ -814,20 +628,7 @@ panfrost_batch_submit(struct panfrost_context *ctx,
+@@ -814,20 +628,7 @@ panfrost_batch_submit(struct panfrost_co
  
     panfrost_batch_to_fb_info(batch, &fb, rts, &zs, &s, false);
  
@@ -6202,10 +5658,9 @@ index 717e7db9f36..55b48f66e62 100644
     if (ret)
        fprintf(stderr, "panfrost_batch_submit failed: %d\n", ret);
  
-diff --git a/src/gallium/drivers/panfrost/pan_job.h b/src/gallium/drivers/panfrost/pan_job.h
-index f57b82857f8..885a52c2380 100644
---- a/src/gallium/drivers/panfrost/pan_job.h
-+++ b/src/gallium/drivers/panfrost/pan_job.h
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.h
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_job.h	2023-11-24 23:33:24.962610829 +0100
 @@ -29,6 +29,8 @@
  #include "pipe/p_state.h"
  #include "util/u_dynarray.h"
@@ -6215,7 +5670,7 @@ index f57b82857f8..885a52c2380 100644
  #include "pan_mempool.h"
  #include "pan_resource.h"
  #include "pan_scoreboard.h"
-@@ -82,6 +84,8 @@ pan_tristate_get(struct pan_tristate state)
+@@ -82,6 +84,8 @@ pan_tristate_get(struct pan_tristate sta
  /* A panfrost_batch corresponds to a bound FBO we're rendering to,
   * collecting over multiple draws. */
  
@@ -6281,7 +5736,7 @@ index f57b82857f8..885a52c2380 100644
  };
  
  /* Functions for managing the above */
-@@ -258,4 +279,10 @@ void panfrost_batch_union_scissor(struct panfrost_batch *batch, unsigned minx,
+@@ -258,4 +279,10 @@ void panfrost_batch_union_scissor(struct
  
  bool panfrost_batch_skip_rasterization(struct panfrost_batch *batch);
  
@@ -6292,11 +5747,10 @@ index f57b82857f8..885a52c2380 100644
 +}
 +
  #endif
-diff --git a/src/gallium/drivers/panfrost/pan_mempool.c b/src/gallium/drivers/panfrost/pan_mempool.c
-index 89797cc3935..23791cb06f5 100644
---- a/src/gallium/drivers/panfrost/pan_mempool.c
-+++ b/src/gallium/drivers/panfrost/pan_mempool.c
-@@ -104,8 +104,8 @@ panfrost_pool_get_bo_handles(struct panfrost_pool *pool, uint32_t *handles)
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_mempool.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_mempool.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_mempool.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_mempool.c	2023-11-24 23:33:24.962610829 +0100
+@@ -104,8 +104,8 @@ panfrost_pool_get_bo_handles(struct panf
  
     unsigned idx = 0;
     util_dynarray_foreach(&pool->bos, struct panfrost_bo *, bo) {
@@ -6307,10 +5761,9 @@ index 89797cc3935..23791cb06f5 100644
  
        /* Update the BO access flags so that panfrost_bo_wait() knows
         * about all pending accesses.
-diff --git a/src/gallium/drivers/panfrost/pan_resource.c b/src/gallium/drivers/panfrost/pan_resource.c
-index 6f4b5c14ccc..ff5dd0583c6 100644
---- a/src/gallium/drivers/panfrost/pan_resource.c
-+++ b/src/gallium/drivers/panfrost/pan_resource.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.c	2023-11-24 23:33:24.962610829 +0100
 @@ -4,7 +4,6 @@
   * Copyright (C) 2014-2017 Broadcom
   * Copyright (C) 2018-2019 Alyssa Rosenzweig
@@ -6327,7 +5780,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
  #include "util/u_drm.h"
  #include "util/u_gen_mipmap.h"
  #include "util/u_memory.h"
-@@ -193,7 +191,7 @@ panfrost_resource_get_handle(struct pipe_screen *pscreen,
+@@ -194,7 +192,7 @@ panfrost_resource_get_handle(struct pipe
     if (handle->type == WINSYS_HANDLE_TYPE_KMS && dev->ro) {
        return renderonly_get_handle(scanout, handle);
     } else if (handle->type == WINSYS_HANDLE_TYPE_KMS) {
@@ -6336,7 +5789,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
     } else if (handle->type == WINSYS_HANDLE_TYPE_FD) {
        int fd = panfrost_bo_export(rsrc->image.data.bo);
  
-@@ -258,8 +256,11 @@ static struct pipe_surface *
+@@ -251,8 +249,11 @@ static struct pipe_surface *
  panfrost_create_surface(struct pipe_context *pipe, struct pipe_resource *pt,
                          const struct pipe_surface *surf_tmpl)
  {
@@ -6348,7 +5801,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
     ps = CALLOC_STRUCT(pipe_surface);
  
     if (ps) {
-@@ -388,23 +389,7 @@ panfrost_should_tile_afbc(const struct panfrost_device *dev,
+@@ -381,23 +382,7 @@ panfrost_should_tile_afbc(const struct p
                            const struct panfrost_resource *pres)
  {
     return panfrost_afbc_can_tile(dev) && pres->base.width0 >= 128 &&
@@ -6373,7 +5826,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
  }
  
  static bool
-@@ -683,7 +668,12 @@ panfrost_resource_create_with_modifier(struct pipe_screen *screen,
+@@ -676,7 +661,12 @@ panfrost_resource_create_with_modifier(s
                         : (bind & PIPE_BIND_SHADER_IMAGE)    ? "Shader image"
                                                              : "Other resource";
  
@@ -6387,24 +5840,24 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
        struct winsys_handle handle;
        struct pan_block_size blocksize =
           panfrost_block_size(modifier, template->format);
-@@ -744,9 +734,14 @@ panfrost_resource_create_with_modifier(struct pipe_screen *screen,
+@@ -737,9 +727,14 @@ panfrost_resource_create_with_modifier(s
     } else {
        /* We create a BO immediately but don't bother mapping, since we don't
         * care to map e.g. FBOs which the CPU probably won't touch */
 +      uint32_t flags = PAN_BO_DELAY_MMAP;
-+
-+      /* If the resource is never exported, we can make the BO private. */
-+      if (template->bind & PAN_BIND_SHARED_MASK)
-+         flags |= PAN_BO_SHAREABLE;
  
 -      so->image.data.bo = panfrost_bo_create(dev, so->image.layout.data_size,
 -                                             PAN_BO_DELAY_MMAP, label);
++      /* If the resource is never exported, we can make the BO private. */
++      if (template->bind & PAN_BIND_SHARED_MASK)
++         flags |= PAN_BO_SHAREABLE;
++
 +      so->image.data.bo =
 +         panfrost_bo_create(dev, so->image.layout.data_size, flags, label);
  
        so->constant_stencil = true;
     }
-@@ -921,131 +916,6 @@ panfrost_load_tiled_images(struct panfrost_transfer *transfer,
+@@ -914,131 +909,6 @@ panfrost_load_tiled_images(struct panfro
     }
  }
  
@@ -6536,7 +5989,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
  static void
  panfrost_store_tiled_images(struct panfrost_transfer *transfer,
                              struct panfrost_resource *rsrc)
-@@ -1147,9 +1017,10 @@ panfrost_ptr_map(struct pipe_context *pctx, struct pipe_resource *resource,
+@@ -1140,9 +1010,10 @@ panfrost_ptr_map(struct pipe_context *pc
     /* If we haven't already mmaped, now's the time */
     panfrost_bo_mmap(bo);
  
@@ -6550,7 +6003,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
  
     /* Upgrade writes to uninitialized ranges to UNSYNCHRONIZED */
     if ((usage & PIPE_MAP_WRITE) && resource->target == PIPE_BUFFER &&
-@@ -1215,12 +1086,16 @@ panfrost_ptr_map(struct pipe_context *pctx, struct pipe_resource *resource,
+@@ -1208,12 +1079,16 @@ panfrost_ptr_map(struct pipe_context *pc
            * importer/exporter wouldn't see the change we're
            * doing to it.
            */
@@ -6571,7 +6024,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
  
              /* Swap the pointers, dropping a reference to
               * the old BO which is no long referenced from
-@@ -1309,8 +1184,7 @@ pan_resource_modifier_convert(struct panfrost_context *ctx,
+@@ -1302,8 +1177,7 @@ pan_resource_modifier_convert(struct pan
  {
     assert(!rsrc->modifier_constant);
  
@@ -6581,7 +6034,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
  
     struct pipe_resource *tmp_prsrc = panfrost_resource_create_with_modifier(
        ctx->base.screen, &rsrc->base, modifier);
-@@ -1362,25 +1236,20 @@ pan_resource_modifier_convert(struct panfrost_context *ctx,
+@@ -1355,25 +1229,20 @@ pan_resource_modifier_convert(struct pan
  void
  pan_legalize_afbc_format(struct panfrost_context *ctx,
                           struct panfrost_resource *rsrc,
@@ -6613,7 +6066,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
  }
  
  static bool
-@@ -1419,148 +1288,11 @@ panfrost_should_linear_convert(struct panfrost_device *dev,
+@@ -1412,148 +1281,11 @@ panfrost_should_linear_convert(struct pa
     }
  }
  
@@ -6762,7 +6215,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
     struct panfrost_transfer *trans = pan_transfer(transfer);
     struct panfrost_resource *prsrc =
        (struct panfrost_resource *)transfer->resource;
-@@ -1589,13 +1321,8 @@ panfrost_ptr_unmap(struct pipe_context *pctx, struct pipe_transfer *transfer)
+@@ -1582,13 +1314,8 @@ panfrost_ptr_unmap(struct pipe_context *
           } else {
              pan_blit_from_staging(pctx, trans);
              panfrost_flush_batches_accessing_rsrc(
@@ -6777,7 +6230,7 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
           }
        }
  
-@@ -1614,11 +1341,13 @@ panfrost_ptr_unmap(struct pipe_context *pctx, struct pipe_transfer *transfer)
+@@ -1607,11 +1334,13 @@ panfrost_ptr_unmap(struct pipe_context *
              if (panfrost_should_linear_convert(dev, prsrc, transfer)) {
                 panfrost_resource_setup(dev, prsrc, DRM_FORMAT_MOD_LINEAR,
                                         prsrc->image.layout.format);
@@ -6793,11 +6246,10 @@ index 6f4b5c14ccc..ff5dd0583c6 100644
                    assert(bo);
                 }
  
-diff --git a/src/gallium/drivers/panfrost/pan_resource.h b/src/gallium/drivers/panfrost/pan_resource.h
-index 9acc5068381..37bb3ccddc7 100644
---- a/src/gallium/drivers/panfrost/pan_resource.h
-+++ b/src/gallium/drivers/panfrost/pan_resource.h
-@@ -177,24 +177,12 @@ panfrost_resource_create_with_modifier(struct pipe_screen *screen,
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.h
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_resource.h	2023-11-24 23:33:24.962610829 +0100
+@@ -177,24 +177,12 @@ panfrost_resource_create_with_modifier(s
                                         const struct pipe_resource *template,
                                         uint64_t modifier);
  
@@ -6823,10 +6275,9 @@ index 9acc5068381..37bb3ccddc7 100644
 +                              enum pipe_format format);
  
  #endif /* PAN_RESOURCE_H */
-diff --git a/src/gallium/drivers/panfrost/pan_screen.c b/src/gallium/drivers/panfrost/pan_screen.c
-index 2b12dfa8a69..c8659a0cb0e 100644
---- a/src/gallium/drivers/panfrost/pan_screen.c
-+++ b/src/gallium/drivers/panfrost/pan_screen.c
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.c.8~	2023-11-24 23:33:24.937610687 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.c	2023-11-24 23:33:24.962610829 +0100
 @@ -43,6 +43,8 @@
  #include "drm-uapi/drm_fourcc.h"
  #include "drm-uapi/panfrost_drm.h"
@@ -6845,7 +6296,7 @@ index 2b12dfa8a69..c8659a0cb0e 100644
  /* clang-format off */
  static const struct debug_named_value panfrost_debug_options[] = {
     {"perf",       PAN_DBG_PERF,     "Enable performance warnings"},
-@@ -74,7 +74,6 @@ static const struct debug_named_value panfrost_debug_options[] = {
+@@ -74,7 +74,6 @@ static const struct debug_named_value pa
     {"overflow",   PAN_DBG_OVERFLOW, "Check for buffer overflows in pool uploads"},
  #endif
     {"yuv",        PAN_DBG_YUV,      "Tint YUV textures with blue for 1-plane and green for 2-plane"},
@@ -6853,7 +6304,7 @@ index 2b12dfa8a69..c8659a0cb0e 100644
     DEBUG_NAMED_VALUE_END
  };
  /* clang-format on */
-@@ -109,8 +108,8 @@ panfrost_get_param(struct pipe_screen *screen, enum pipe_cap param)
+@@ -109,8 +108,8 @@ panfrost_get_param(struct pipe_screen *s
     bool has_mrt = (dev->arch >= 5);
  
     /* Only kernel drivers >= 1.1 can allocate HEAP BOs */
@@ -6864,7 +6315,7 @@ index 2b12dfa8a69..c8659a0cb0e 100644
  
     switch (param) {
     case PIPE_CAP_NPOT_TEXTURES:
-@@ -143,7 +142,7 @@ panfrost_get_param(struct pipe_screen *screen, enum pipe_cap param)
+@@ -143,7 +142,7 @@ panfrost_get_param(struct pipe_screen *s
        return true;
  
     case PIPE_CAP_ANISOTROPIC_FILTER:
@@ -6873,7 +6324,7 @@ index 2b12dfa8a69..c8659a0cb0e 100644
  
     /* Compile side is done for Bifrost, Midgard TODO. Needs some kernel
      * work to turn on, since CYCLE_COUNT_START needs to be issued. In
-@@ -807,7 +806,7 @@ panfrost_get_disk_shader_cache(struct pipe_screen *pscreen)
+@@ -807,7 +806,7 @@ panfrost_get_disk_shader_cache(struct pi
  static int
  panfrost_get_screen_fd(struct pipe_screen *pscreen)
  {
@@ -6882,7 +6333,7 @@ index 2b12dfa8a69..c8659a0cb0e 100644
  }
  
  int
-@@ -842,8 +841,6 @@ panfrost_create_screen(int fd, const struct pipe_screen_config *config,
+@@ -842,8 +841,6 @@ panfrost_create_screen(int fd, const str
     /* Debug must be set first for pandecode to work correctly */
     dev->debug =
        debug_get_flags_option("PAN_MESA_DEBUG", panfrost_debug_options, 0);
@@ -6891,7 +6342,7 @@ index 2b12dfa8a69..c8659a0cb0e 100644
     panfrost_open_device(screen, fd, dev);
  
     if (dev->debug & PAN_DBG_NO_AFBC)
-@@ -851,7 +848,8 @@ panfrost_create_screen(int fd, const struct pipe_screen_config *config,
+@@ -851,7 +848,8 @@ panfrost_create_screen(int fd, const str
  
     /* Bail early on unsupported hardware */
     if (dev->model == NULL) {
@@ -6901,7 +6352,7 @@ index 2b12dfa8a69..c8659a0cb0e 100644
        panfrost_destroy_screen(&(screen->base));
        return NULL;
     }
-@@ -901,6 +899,8 @@ panfrost_create_screen(int fd, const struct pipe_screen_config *config,
+@@ -901,6 +899,8 @@ panfrost_create_screen(int fd, const str
        panfrost_cmdstream_screen_init_v7(screen);
     else if (dev->arch == 9)
        panfrost_cmdstream_screen_init_v9(screen);
@@ -6910,10 +6361,9 @@ index 2b12dfa8a69..c8659a0cb0e 100644
     else
        unreachable("Unhandled architecture major");
  
-diff --git a/src/gallium/drivers/panfrost/pan_screen.h b/src/gallium/drivers/panfrost/pan_screen.h
-index 9ae94e619e5..043aa1cff36 100644
---- a/src/gallium/drivers/panfrost/pan_screen.h
-+++ b/src/gallium/drivers/panfrost/pan_screen.h
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.h.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.h
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_screen.h	2023-11-24 23:33:24.962610829 +0100
 @@ -41,7 +41,6 @@
  
  #include "pan_device.h"
@@ -6995,7 +6445,7 @@ index 9ae94e619e5..043aa1cff36 100644
  };
  
  static inline struct panfrost_screen *
-@@ -147,6 +124,7 @@ void panfrost_cmdstream_screen_init_v5(struct panfrost_screen *screen);
+@@ -147,6 +124,7 @@ void panfrost_cmdstream_screen_init_v5(s
  void panfrost_cmdstream_screen_init_v6(struct panfrost_screen *screen);
  void panfrost_cmdstream_screen_init_v7(struct panfrost_screen *screen);
  void panfrost_cmdstream_screen_init_v9(struct panfrost_screen *screen);
@@ -7003,11 +6453,10 @@ index 9ae94e619e5..043aa1cff36 100644
  
  #define perf_debug(dev, ...)                                                   \
     do {                                                                        \
-diff --git a/src/gallium/drivers/panfrost/pan_shader.c b/src/gallium/drivers/panfrost/pan_shader.c
-index 42bb2f72768..ea03f2d4dbb 100644
---- a/src/gallium/drivers/panfrost/pan_shader.c
-+++ b/src/gallium/drivers/panfrost/pan_shader.c
-@@ -84,11 +84,11 @@ panfrost_shader_compile(struct panfrost_screen *screen, const nir_shader *ir,
+diff -up mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_shader.c.8~ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_shader.c
+--- mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_shader.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/drivers/panfrost/pan_shader.c	2023-11-24 23:33:24.962610829 +0100
+@@ -84,11 +84,11 @@ panfrost_shader_compile(struct panfrost_
      * happens at CSO create time regardless.
      */
     if (gl_shader_stage_is_compute(s->info.stage))
@@ -7021,7 +6470,7 @@ index 42bb2f72768..ea03f2d4dbb 100644
     };
  
     /* Lower this early so the backends don't have to worry about it */
-@@ -130,7 +130,7 @@ panfrost_shader_compile(struct panfrost_screen *screen, const nir_shader *ir,
+@@ -130,7 +130,7 @@ panfrost_shader_compile(struct panfrost_
     if (dev->arch <= 5 && s->info.stage == MESA_SHADER_FRAGMENT) {
        NIR_PASS_V(s, pan_lower_framebuffer, key->fs.rt_formats,
                   pan_raw_format_mask_midgard(key->fs.rt_formats), 0,
@@ -7030,7 +6479,7 @@ index 42bb2f72768..ea03f2d4dbb 100644
     }
  
     NIR_PASS_V(s, panfrost_nir_lower_sysvals, &out->sysvals);
-@@ -375,7 +375,7 @@ panfrost_create_shader_state(struct pipe_context *pctx,
+@@ -375,7 +375,7 @@ panfrost_create_shader_state(struct pipe
  
     /* Then run the suite of lowering and optimization, including I/O lowering */
     struct panfrost_device *dev = pan_device(pctx->screen);
@@ -7039,10 +6488,9 @@ index 42bb2f72768..ea03f2d4dbb 100644
  
     /* If this shader uses transform feedback, compile the transform
      * feedback program. This is a special shader variant.
-diff --git a/src/gallium/targets/dri/meson.build b/src/gallium/targets/dri/meson.build
-index 66619bba0db..54cb623fd28 100644
---- a/src/gallium/targets/dri/meson.build
-+++ b/src/gallium/targets/dri/meson.build
+diff -up mesa-23.3.0-rc5/src/gallium/targets/dri/meson.build.8~ mesa-23.3.0-rc5/src/gallium/targets/dri/meson.build
+--- mesa-23.3.0-rc5/src/gallium/targets/dri/meson.build.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/targets/dri/meson.build	2023-11-24 23:33:24.962610829 +0100
 @@ -101,7 +101,7 @@ foreach d : [[with_gallium_kmsro, [
               [with_gallium_softpipe and with_gallium_drisw_kms, 'kms_swrast_dri.so'],
               [with_gallium_v3d, 'v3d_dri.so'],
@@ -7052,10 +6500,9 @@ index 66619bba0db..54cb623fd28 100644
               [with_gallium_etnaviv, 'etnaviv_dri.so'],
               [with_gallium_tegra, 'tegra_dri.so'],
               [with_gallium_crocus, 'crocus_dri.so'],
-diff --git a/src/gallium/targets/dri/target.c b/src/gallium/targets/dri/target.c
-index 9d3069eb004..c149b6350ac 100644
---- a/src/gallium/targets/dri/target.c
-+++ b/src/gallium/targets/dri/target.c
+diff -up mesa-23.3.0-rc5/src/gallium/targets/dri/target.c.8~ mesa-23.3.0-rc5/src/gallium/targets/dri/target.c
+--- mesa-23.3.0-rc5/src/gallium/targets/dri/target.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/targets/dri/target.c	2023-11-24 23:33:24.962610829 +0100
 @@ -82,6 +82,7 @@ DEFINE_LOADER_DRM_ENTRYPOINT(vc4)
  
  #if defined(GALLIUM_PANFROST)
@@ -7064,10 +6511,9 @@ index 9d3069eb004..c149b6350ac 100644
  #endif
  
  #if defined(GALLIUM_ASAHI)
-diff --git a/src/gallium/targets/pipe-loader/meson.build b/src/gallium/targets/pipe-loader/meson.build
-index 5e6238fe822..aff9f932055 100644
---- a/src/gallium/targets/pipe-loader/meson.build
-+++ b/src/gallium/targets/pipe-loader/meson.build
+diff -up mesa-23.3.0-rc5/src/gallium/targets/pipe-loader/meson.build.8~ mesa-23.3.0-rc5/src/gallium/targets/pipe-loader/meson.build
+--- mesa-23.3.0-rc5/src/gallium/targets/pipe-loader/meson.build.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/targets/pipe-loader/meson.build	2023-11-24 23:33:24.962610829 +0100
 @@ -64,7 +64,7 @@ pipe_loaders = [
    [with_gallium_r600, 'r600', driver_r600, []],
    [with_gallium_radeonsi, 'radeonsi', [driver_radeonsi, idep_xmlconfig], []],
@@ -7077,10 +6523,9 @@ index 5e6238fe822..aff9f932055 100644
    [with_gallium_svga, 'vmwgfx', driver_svga, []],
    [with_gallium_softpipe, 'swrast', driver_swrast, [libwsw, libws_null, libswdri, libswkmsdri]],
  ]
-diff --git a/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h b/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h
-index 37461dacf36..9d81ea3ee39 100644
---- a/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h
-+++ b/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h
+diff -up mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h.8~ mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h
+--- mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_public.h	2023-11-24 23:33:24.962610829 +0100
 @@ -30,7 +30,7 @@
  struct pipe_screen;
  struct pipe_screen_config;
@@ -7090,10 +6535,9 @@ index 37461dacf36..9d81ea3ee39 100644
                                              const struct pipe_screen_config *config);
  
  #endif /* __KMSRO_DRM_PUBLIC_H__ */
-diff --git a/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c b/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c
-index 3d14bce1ce7..5c0b197c0ef 100644
---- a/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c
-+++ b/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c
+diff -up mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c.8~ mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c
+--- mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/kmsro_drm_winsys.c	2023-11-24 23:33:24.962610829 +0100
 @@ -36,12 +36,9 @@
  #include "xf86drm.h"
  
@@ -7107,7 +6551,7 @@ index 3d14bce1ce7..5c0b197c0ef 100644
  static void kmsro_ro_destroy(struct renderonly *ro)
  {
     if (ro->gpu_fd >= 0)
-@@ -52,77 +49,112 @@ static void kmsro_ro_destroy(struct renderonly *ro)
+@@ -52,77 +49,112 @@ static void kmsro_ro_destroy(struct rend
     FREE(ro);
  }
  
@@ -7230,16 +6674,15 @@ index 3d14bce1ce7..5c0b197c0ef 100644
         */
 -      ro->create_for_resource = renderonly_create_gpu_import_for_resource;
 -      screen = vc4_drm_screen_create_renderonly(ro->gpu_fd, ro, config);
+-#endif
 +      {
 +         .name = "vc4",
 +         .create_screen = vc4_drm_screen_create_renderonly,
 +         .create_for_resource = renderonly_create_gpu_import_for_resource,
 +      },
- #endif
--   }
++#endif
 +   };
- 
--   free(render_dev_name);
++
 +   for (int i = 0; i < ARRAY_SIZE(renderonly_drivers); i++) {
 +      ro->gpu_fd = drmOpenWithType(renderonly_drivers[i].name, NULL, DRM_NODE_RENDER);
 +      if (ro->gpu_fd >= 0) {
@@ -7249,8 +6692,10 @@ index 3d14bce1ce7..5c0b197c0ef 100644
 +            goto out_free;
 +         return screen;
 +      }
-+   }
+    }
  
+-   free(render_dev_name);
+-
     return screen;
 +
 +out_free:
@@ -7260,10 +6705,9 @@ index 3d14bce1ce7..5c0b197c0ef 100644
 +
 +   return NULL;
  }
-diff --git a/src/gallium/winsys/kmsro/drm/meson.build b/src/gallium/winsys/kmsro/drm/meson.build
-index 2d41eb10d7c..3203dd53ee1 100644
---- a/src/gallium/winsys/kmsro/drm/meson.build
-+++ b/src/gallium/winsys/kmsro/drm/meson.build
+diff -up mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/meson.build.8~ mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/meson.build
+--- mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/meson.build.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/gallium/winsys/kmsro/drm/meson.build	2023-11-24 23:33:24.963610835 +0100
 @@ -22,10 +22,9 @@ libkmsrowinsys = static_library(
    'kmsrowinsys',
    files('kmsro_drm_winsys.c'),
@@ -7276,11 +6720,10 @@ index 2d41eb10d7c..3203dd53ee1 100644
    c_args : [renderonly_drivers_c_args],
    gnu_symbol_visibility : 'hidden',
    dependencies: [dep_libdrm, idep_mesautil],
-diff --git a/src/loader/loader.c b/src/loader/loader.c
-index 4b8f532fe74..47c3a9b5950 100644
---- a/src/loader/loader.c
-+++ b/src/loader/loader.c
-@@ -103,8 +103,7 @@ loader_open_device(const char *device_name)
+diff -up mesa-23.3.0-rc5/src/loader/loader.c.8~ mesa-23.3.0-rc5/src/loader/loader.c
+--- mesa-23.3.0-rc5/src/loader/loader.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/loader/loader.c	2023-11-24 23:33:24.963610835 +0100
+@@ -103,8 +103,7 @@ loader_open_device(const char *device_na
     return fd;
  }
  
@@ -7290,10 +6733,9 @@ index 4b8f532fe74..47c3a9b5950 100644
  {
     char *driver;
     drmVersionPtr version = drmGetVersion(fd);
-diff --git a/src/loader/loader.h b/src/loader/loader.h
-index 8cbfb1afc00..008e38c5aef 100644
---- a/src/loader/loader.h
-+++ b/src/loader/loader.h
+diff -up mesa-23.3.0-rc5/src/loader/loader.h.8~ mesa-23.3.0-rc5/src/loader/loader.h
+--- mesa-23.3.0-rc5/src/loader/loader.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/loader/loader.h	2023-11-24 23:33:24.963610835 +0100
 @@ -43,9 +43,6 @@ struct __DRIextensionRec;
  int
  loader_open_device(const char *);
@@ -7304,10 +6746,9 @@ index 8cbfb1afc00..008e38c5aef 100644
  int
  loader_open_render_node_platform_device(const char * const drivers[],
                                          unsigned int n_drivers);
-diff --git a/src/panfrost/ci/gitlab-ci.yml b/src/panfrost/ci/gitlab-ci.yml
-index 4e37d9f760c..8671bd6c6e2 100644
---- a/src/panfrost/ci/gitlab-ci.yml
-+++ b/src/panfrost/ci/gitlab-ci.yml
+diff -up mesa-23.3.0-rc5/src/panfrost/ci/gitlab-ci.yml.8~ mesa-23.3.0-rc5/src/panfrost/ci/gitlab-ci.yml
+--- mesa-23.3.0-rc5/src/panfrost/ci/gitlab-ci.yml.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/ci/gitlab-ci.yml	2023-11-24 23:33:24.963610835 +0100
 @@ -11,6 +11,7 @@
        - src/panfrost/ci/*
        - src/panfrost/include/*
@@ -7316,11 +6757,10 @@ index 4e37d9f760c..8671bd6c6e2 100644
        - src/panfrost/shared/*
        - src/panfrost/util/*
        when: on_success
-diff --git a/src/panfrost/ci/panfrost-g52-fails.txt b/src/panfrost/ci/panfrost-g52-fails.txt
-index 3a2dd9d3307..d890822f059 100644
---- a/src/panfrost/ci/panfrost-g52-fails.txt
-+++ b/src/panfrost/ci/panfrost-g52-fails.txt
-@@ -160,6 +160,7 @@ spec@arb_texture_view@sampling-2d-array-as-cubemap,Crash
+diff -up mesa-23.3.0-rc5/src/panfrost/ci/panfrost-g52-fails.txt.8~ mesa-23.3.0-rc5/src/panfrost/ci/panfrost-g52-fails.txt
+--- mesa-23.3.0-rc5/src/panfrost/ci/panfrost-g52-fails.txt.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/ci/panfrost-g52-fails.txt	2023-11-24 23:33:24.963610835 +0100
+@@ -160,6 +160,7 @@ spec@arb_texture_view@sampling-2d-array-
  spec@arb_transform_feedback_instanced@draw-auto instanced,Fail
  spec@arb_uniform_buffer_object@rendering-dsa-offset,Fail
  spec@arb_uniform_buffer_object@rendering-offset,Fail
@@ -7328,11 +6768,9 @@ index 3a2dd9d3307..d890822f059 100644
  spec@egl 1.4@eglterminate then unbind context,Fail
  spec@egl_chromium_sync_control@conformance@eglGetSyncValuesCHROMIUM_msc_and_sbc_test,Fail
  spec@egl_chromium_sync_control@conformance,Fail
-diff --git a/src/panfrost/lib/genxml/ceu_builder.h b/src/panfrost/lib/genxml/ceu_builder.h
-new file mode 100644
-index 00000000000..17fbe89ee1a
---- /dev/null
-+++ b/src/panfrost/lib/genxml/ceu_builder.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/genxml/ceu_builder.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/genxml/ceu_builder.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/genxml/ceu_builder.h.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/genxml/ceu_builder.h	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,564 @@
 +/*
 + * Copyright (C) 2022 Collabora Ltd.
@@ -7898,11 +7336,10 @@ index 00000000000..17fbe89ee1a
 +}
 +
 +#endif /* PAN_ARCH >= 10 */
-diff --git a/src/panfrost/lib/genxml/decode.c b/src/panfrost/lib/genxml/decode.c
-index b1344e04821..fea885a3e54 100644
---- a/src/panfrost/lib/genxml/decode.c
-+++ b/src/panfrost/lib/genxml/decode.c
-@@ -434,6 +434,8 @@ GENX(pandecode_resource_tables)(struct pandecode_context *ctx, mali_ptr addr,
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode.c	2023-11-24 23:33:24.963610835 +0100
+@@ -434,6 +434,8 @@ GENX(pandecode_resource_tables)(struct p
     const uint8_t *cl =
        pandecode_fetch_gpu_mem(ctx, addr, MALI_RESOURCE_LENGTH * count);
  
@@ -7911,7 +7348,7 @@ index b1344e04821..fea885a3e54 100644
     for (unsigned i = 0; i < count; ++i) {
        pan_unpack(cl + i * MALI_RESOURCE_LENGTH, RESOURCE, entry);
        DUMP_UNPACKED(ctx, RESOURCE, entry, "Entry %u @%" PRIx64 ":\n", i,
-@@ -444,6 +446,7 @@ GENX(pandecode_resource_tables)(struct pandecode_context *ctx, mali_ptr addr,
+@@ -444,6 +446,7 @@ GENX(pandecode_resource_tables)(struct p
           pandecode_resources(ctx, entry.address, entry.size);
        ctx->indent -= 2;
     }
@@ -7919,11 +7356,10 @@ index b1344e04821..fea885a3e54 100644
  }
  
  void
-diff --git a/src/panfrost/lib/genxml/decode_csf.c b/src/panfrost/lib/genxml/decode_csf.c
-index 667b9a8763d..a51cfba5482 100644
---- a/src/panfrost/lib/genxml/decode_csf.c
-+++ b/src/panfrost/lib/genxml/decode_csf.c
-@@ -147,9 +147,14 @@ pandecode_run_idvs(struct pandecode_context *ctx, FILE *fp,
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode_csf.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode_csf.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode_csf.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/genxml/decode_csf.c	2023-11-24 23:33:24.963610835 +0100
+@@ -147,9 +147,14 @@ pandecode_run_idvs(struct pandecode_cont
     uint64_t vary_srt = cs_get_u64(qctx, reg_vary_srt);
     uint64_t frag_srt = cs_get_u64(qctx, reg_frag_srt);
  
@@ -7941,7 +7377,7 @@ index 667b9a8763d..a51cfba5482 100644
  
     mali_ptr position_fau = cs_get_u64(qctx, reg_position_fau);
     mali_ptr vary_fau = cs_get_u64(qctx, reg_vary_fau);
-@@ -176,8 +181,10 @@ pandecode_run_idvs(struct pandecode_context *ctx, FILE *fp,
+@@ -176,8 +181,10 @@ pandecode_run_idvs(struct pandecode_cont
        GENX(pandecode_fau)(ctx, lo, hi, "Fragment FAU");
     }
  
@@ -7954,7 +7390,7 @@ index 667b9a8763d..a51cfba5482 100644
  
     if (tiler_flags.secondary_shader) {
        uint64_t ptr = cs_get_u64(qctx, 18);
-@@ -185,8 +192,10 @@ pandecode_run_idvs(struct pandecode_context *ctx, FILE *fp,
+@@ -185,8 +192,10 @@ pandecode_run_idvs(struct pandecode_cont
        GENX(pandecode_shader)(ctx, ptr, "Varying shader", qctx->gpu_id);
     }
  
@@ -7967,7 +7403,7 @@ index 667b9a8763d..a51cfba5482 100644
  
     DUMP_ADDR(ctx, LOCAL_STORAGE, cs_get_u64(qctx, 24),
               "Position Local Storage @%" PRIx64 ":\n",
-@@ -247,7 +256,8 @@ pandecode_run_fragment(struct pandecode_context *ctx, struct queue_ctx *qctx,
+@@ -247,7 +256,8 @@ pandecode_run_fragment(struct pandecode_
     DUMP_CL(ctx, SCISSOR, &qctx->regs[42], "Scissor\n");
  
     /* TODO: Tile enable map */
@@ -7977,7 +7413,7 @@ index 667b9a8763d..a51cfba5482 100644
  
     ctx->indent--;
  }
-@@ -697,12 +707,7 @@ interpret_ceu_instr(struct pandecode_context *ctx, struct queue_ctx *qctx)
+@@ -697,12 +707,7 @@ interpret_ceu_instr(struct pandecode_con
     }
  
     case MALI_CEU_OPCODE_JUMP: {
@@ -7991,10 +7427,9 @@ index 667b9a8763d..a51cfba5482 100644
  
        return interpret_ceu_jump(ctx, qctx, I.address, I.length);
     }
-diff --git a/src/panfrost/lib/genxml/v10.xml b/src/panfrost/lib/genxml/v10.xml
-index 45d9199d53a..3d191c5ec95 100644
---- a/src/panfrost/lib/genxml/v10.xml
-+++ b/src/panfrost/lib/genxml/v10.xml
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/genxml/v10.xml.8~ mesa-23.3.0-rc5/src/panfrost/lib/genxml/v10.xml
+--- mesa-23.3.0-rc5/src/panfrost/lib/genxml/v10.xml.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/genxml/v10.xml	2023-11-24 23:33:24.963610835 +0100
 @@ -570,6 +570,7 @@
    <struct name="CEU RUN_COMPUTE" size="2">
      <field name="Task increment" size="14" start="0" type="uint"/>
@@ -8034,11 +7469,9 @@ index 45d9199d53a..3d191c5ec95 100644
      <field name="Scoreboard entry" size="4" start="48" type="hex"/>
      <field name="Opcode" size="8" start="56" type="CEU Opcode" default="FINISH_FRAGMENT"/>
    </struct>
-diff --git a/src/panfrost/lib/kmod/meson.build b/src/panfrost/lib/kmod/meson.build
-new file mode 100644
-index 00000000000..bc1962e10b0
---- /dev/null
-+++ b/src/panfrost/lib/kmod/meson.build
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/kmod/meson.build.8~ mesa-23.3.0-rc5/src/panfrost/lib/kmod/meson.build
+--- mesa-23.3.0-rc5/src/panfrost/lib/kmod/meson.build.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/kmod/meson.build	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,40 @@
 +# Copyright © 2023 Collabora
 +
@@ -8080,11 +7513,9 @@ index 00000000000..bc1962e10b0
 +  include_directories: [inc_include, inc_src],
 +  dependencies: [dep_libdrm],
 +)
-diff --git a/src/panfrost/lib/kmod/pan_kmod.c b/src/panfrost/lib/kmod/pan_kmod.c
-new file mode 100644
-index 00000000000..4d8b7011a06
---- /dev/null
-+++ b/src/panfrost/lib/kmod/pan_kmod.c
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.c.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.c	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,91 @@
 +/*
 + * Copyright © 2023 Collabora, Ltd.
@@ -8177,11 +7608,9 @@ index 00000000000..4d8b7011a06
 +   if (allocator->zalloc == default_zalloc)
 +      ralloc_free((void *)allocator);
 +}
-diff --git a/src/panfrost/lib/kmod/pan_kmod.h b/src/panfrost/lib/kmod/pan_kmod.h
-new file mode 100644
-index 00000000000..1936df2d322
---- /dev/null
-+++ b/src/panfrost/lib/kmod/pan_kmod.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.h.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod.h	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,223 @@
 +/*
 + * Copyright © 2023 Collabora, Ltd.
@@ -8406,11 +7835,9 @@ index 00000000000..1936df2d322
 +{
 +   return vm->handle;
 +}
-diff --git a/src/panfrost/lib/kmod/pan_kmod_backend.h b/src/panfrost/lib/kmod/pan_kmod_backend.h
-new file mode 100644
-index 00000000000..0148a672e62
---- /dev/null
-+++ b/src/panfrost/lib/kmod/pan_kmod_backend.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod_backend.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod_backend.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod_backend.h.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/kmod/pan_kmod_backend.h	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,72 @@
 +/*
 + * Copyright © 2023 Collabora, Ltd.
@@ -8484,11 +7911,9 @@ index 00000000000..0148a672e62
 +   vm->handle = handle;
 +   vm->flags = flags;
 +}
-diff --git a/src/panfrost/lib/kmod/panfrost_kmod.c b/src/panfrost/lib/kmod/panfrost_kmod.c
-new file mode 100644
-index 00000000000..6cddb406f90
---- /dev/null
-+++ b/src/panfrost/lib/kmod/panfrost_kmod.c
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/kmod/panfrost_kmod.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/kmod/panfrost_kmod.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/kmod/panfrost_kmod.c.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/kmod/panfrost_kmod.c	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,408 @@
 +/*
 + * Copyright © 2023 Collabora, Ltd.
@@ -8898,11 +8323,9 @@ index 00000000000..6cddb406f90
 +   .vm_map = panfrost_kmod_vm_map,
 +   .vm_unmap = panfrost_kmod_vm_unmap,
 +};
-diff --git a/src/panfrost/lib/kmod/panthor_kmod.c b/src/panfrost/lib/kmod/panthor_kmod.c
-new file mode 100644
-index 00000000000..2666e2dac06
---- /dev/null
-+++ b/src/panfrost/lib/kmod/panthor_kmod.c
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.c.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.c	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,654 @@
 +/*
 + * Copyright © 2023 Collabora, Ltd.
@@ -9558,11 +8981,9 @@ index 00000000000..2666e2dac06
 +   .vm_map = panthor_kmod_vm_map,
 +   .vm_unmap = panthor_kmod_vm_unmap,
 +};
-diff --git a/src/panfrost/lib/kmod/panthor_kmod.h b/src/panfrost/lib/kmod/panthor_kmod.h
-new file mode 100644
-index 00000000000..842737426ed
---- /dev/null
-+++ b/src/panfrost/lib/kmod/panthor_kmod.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.h.8~	2023-11-24 23:33:24.963610835 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/kmod/panthor_kmod.h	2023-11-24 23:33:24.963610835 +0100
 @@ -0,0 +1,25 @@
 +/*
 + * Copyright © 2023 Collabora, Ltd.
@@ -9589,10 +9010,9 @@ index 00000000000..842737426ed
 +                                    uint32_t *sync_handle,
 +                                    uint64_t *sync_point);
 +uint32_t panthor_kmod_get_flush_id(const struct pan_kmod_dev *dev);
-diff --git a/src/panfrost/lib/meson.build b/src/panfrost/lib/meson.build
-index 139f34b9afa..41a91b2445f 100644
---- a/src/panfrost/lib/meson.build
-+++ b/src/panfrost/lib/meson.build
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/meson.build.8~ mesa-23.3.0-rc5/src/panfrost/lib/meson.build
+--- mesa-23.3.0-rc5/src/panfrost/lib/meson.build.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/meson.build	2023-11-24 23:33:24.963610835 +0100
 @@ -20,6 +20,7 @@
  # SOFTWARE.
  
@@ -9626,11 +9046,10 @@ index 139f34b9afa..41a91b2445f 100644
  )
  
  if with_tests
-diff --git a/src/panfrost/lib/pan_afbc.c b/src/panfrost/lib/pan_afbc.c
-index f2b6f1482ea..fed4c54f8ef 100644
---- a/src/panfrost/lib/pan_afbc.c
-+++ b/src/panfrost/lib/pan_afbc.c
-@@ -187,20 +187,6 @@ panfrost_afbc_can_ytr(enum pipe_format format)
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_afbc.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_afbc.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_afbc.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_afbc.c	2023-11-24 23:33:24.963610835 +0100
+@@ -187,20 +187,6 @@ panfrost_afbc_can_ytr(enum pipe_format f
     return desc->colorspace == UTIL_FORMAT_COLORSPACE_RGB;
  }
  
@@ -9651,11 +9070,10 @@ index f2b6f1482ea..fed4c54f8ef 100644
  /*
   * Check if the device supports AFBC with tiled headers (and hence also solid
   * colour blocks).
-diff --git a/src/panfrost/lib/pan_blend.c b/src/panfrost/lib/pan_blend.c
-index 558ecb5e64c..3fb3c00663d 100644
---- a/src/panfrost/lib/pan_blend.c
-+++ b/src/panfrost/lib/pan_blend.c
-@@ -878,7 +878,7 @@ GENX(pan_blend_get_shader_locked)(const struct panfrost_device *dev,
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_blend.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_blend.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_blend.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_blend.c	2023-11-24 23:33:24.963610835 +0100
+@@ -878,7 +878,7 @@ GENX(pan_blend_get_shader_locked)(const
  
     /* Compile the NIR shader */
     struct panfrost_compile_inputs inputs = {
@@ -9664,7 +9082,7 @@ index 558ecb5e64c..3fb3c00663d 100644
        .is_blend = true,
        .blend.nr_samples = key.nr_samples,
     };
-@@ -899,7 +899,7 @@ GENX(pan_blend_get_shader_locked)(const struct panfrost_device *dev,
+@@ -899,7 +899,7 @@ GENX(pan_blend_get_shader_locked)(const
  #else
     NIR_PASS_V(nir, pan_lower_framebuffer, rt_formats,
                pan_raw_format_mask_midgard(rt_formats), MAX2(key.nr_samples, 1),
@@ -9673,11 +9091,10 @@ index 558ecb5e64c..3fb3c00663d 100644
  #endif
  
     GENX(pan_shader_compile)(nir, &inputs, &variant->binary, &info);
-diff --git a/src/panfrost/lib/pan_blitter.c b/src/panfrost/lib/pan_blitter.c
-index 6cc3bed84dd..71987a7989f 100644
---- a/src/panfrost/lib/pan_blitter.c
-+++ b/src/panfrost/lib/pan_blitter.c
-@@ -606,7 +606,7 @@ pan_blitter_get_blit_shader(struct panfrost_device *dev,
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_blitter.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_blitter.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_blitter.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_blitter.c	2023-11-24 23:33:24.964610841 +0100
+@@ -606,7 +606,7 @@ pan_blitter_get_blit_shader(struct panfr
     }
  
     struct panfrost_compile_inputs inputs = {
@@ -9686,10 +9103,9 @@ index 6cc3bed84dd..71987a7989f 100644
        .is_blit = true,
        .no_idvs = true,
     };
-diff --git a/src/panfrost/lib/pan_bo.c b/src/panfrost/lib/pan_bo.c
-index b884cff4488..9b5afa7b682 100644
---- a/src/panfrost/lib/pan_bo.c
-+++ b/src/panfrost/lib/pan_bo.c
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.c	2023-11-24 23:33:24.964610841 +0100
 @@ -28,7 +28,6 @@
  #include <pthread.h>
  #include <stdio.h>
@@ -9729,7 +9145,7 @@ index b884cff4488..9b5afa7b682 100644
 +   struct pan_kmod_bo *kmod_bo;
     struct panfrost_bo *bo;
 -   int ret;
--
+ 
 -   if (dev->kernel_version->version_major > 1 ||
 -       dev->kernel_version->version_minor >= 1) {
 -      if (flags & PAN_BO_GROWABLE)
@@ -9737,7 +9153,7 @@ index b884cff4488..9b5afa7b682 100644
 -      if (!(flags & PAN_BO_EXECUTE))
 -         create_bo.flags |= PANFROST_BO_NOEXEC;
 -   }
- 
+-
 -   ret = drmIoctl(dev->fd, DRM_IOCTL_PANFROST_CREATE_BO, &create_bo);
 -   if (ret) {
 -      fprintf(stderr, "DRM_IOCTL_PANFROST_CREATE_BO failed: %m\n");
@@ -9760,7 +9176,7 @@ index b884cff4488..9b5afa7b682 100644
     bo->flags = flags;
     bo->dev = dev;
     bo->label = label;
-@@ -92,18 +99,15 @@ panfrost_bo_alloc(struct panfrost_device *dev, size_t size, uint32_t flags,
+@@ -92,18 +99,15 @@ panfrost_bo_alloc(struct panfrost_device
  static void
  panfrost_bo_free(struct panfrost_bo *bo)
  {
@@ -9797,7 +9213,7 @@ index b884cff4488..9b5afa7b682 100644
     /* If the BO has been exported or imported we can't rely on the cached
      * state, we need to call the WAIT_BO ioctl.
      */
-@@ -135,11 +133,7 @@ panfrost_bo_wait(struct panfrost_bo *bo, int64_t timeout_ns, bool wait_readers)
+@@ -135,11 +133,7 @@ panfrost_bo_wait(struct panfrost_bo *bo,
           return true;
     }
  
@@ -9810,7 +9226,7 @@ index b884cff4488..9b5afa7b682 100644
        /* Set gpu_access to 0 so that the next call to bo_wait()
         * doesn't have to call the WAIT_BO ioctl.
         */
-@@ -147,10 +141,6 @@ panfrost_bo_wait(struct panfrost_bo *bo, int64_t timeout_ns, bool wait_readers)
+@@ -147,10 +141,6 @@ panfrost_bo_wait(struct panfrost_bo *bo,
        return true;
     }
  
@@ -9821,7 +9237,7 @@ index b884cff4488..9b5afa7b682 100644
     return false;
  }
  
-@@ -193,26 +183,19 @@ panfrost_bo_cache_fetch(struct panfrost_device *dev, size_t size,
+@@ -193,26 +183,19 @@ panfrost_bo_cache_fetch(struct panfrost_
  
     /* Iterate the bucket looking for something suitable */
     list_for_each_entry_safe(struct panfrost_bo, entry, bucket, bucket_link) {
@@ -9851,7 +9267,7 @@ index b884cff4488..9b5afa7b682 100644
           panfrost_bo_free(entry);
           continue;
        }
-@@ -265,15 +248,10 @@ panfrost_bo_cache_put(struct panfrost_bo *bo)
+@@ -265,15 +248,10 @@ panfrost_bo_cache_put(struct panfrost_bo
     /* Must be first */
     pthread_mutex_lock(&dev->bo_cache.lock);
  
@@ -9869,7 +9285,7 @@ index b884cff4488..9b5afa7b682 100644
  
     /* Add us to the bucket */
     list_addtail(&bo->bucket_link, bucket);
-@@ -321,26 +299,15 @@ panfrost_bo_cache_evict_all(struct panfrost_device *dev)
+@@ -321,26 +299,15 @@ panfrost_bo_cache_evict_all(struct panfr
  void
  panfrost_bo_mmap(struct panfrost_bo *bo)
  {
@@ -9900,7 +9316,7 @@ index b884cff4488..9b5afa7b682 100644
     }
  }
  
-@@ -350,7 +317,7 @@ panfrost_bo_munmap(struct panfrost_bo *bo)
+@@ -350,7 +317,7 @@ panfrost_bo_munmap(struct panfrost_bo *b
     if (!bo->ptr.cpu)
        return;
  
@@ -9909,7 +9325,7 @@ index b884cff4488..9b5afa7b682 100644
        perror("munmap");
        abort();
     }
-@@ -405,11 +372,11 @@ panfrost_bo_create(struct panfrost_device *dev, size_t size, uint32_t flags,
+@@ -405,11 +372,11 @@ panfrost_bo_create(struct panfrost_devic
  
     if (dev->debug & (PAN_DBG_TRACE | PAN_DBG_SYNC)) {
        if (flags & PAN_BO_INVISIBLE)
@@ -9924,7 +9340,7 @@ index b884cff4488..9b5afa7b682 100644
     }
  
     return bo;
-@@ -446,7 +413,8 @@ panfrost_bo_unreference(struct panfrost_bo *bo)
+@@ -446,7 +413,8 @@ panfrost_bo_unreference(struct panfrost_
        panfrost_bo_munmap(bo);
  
        if (dev->debug & (PAN_DBG_TRACE | PAN_DBG_SYNC))
@@ -9977,7 +9393,7 @@ index b884cff4488..9b5afa7b682 100644
        p_atomic_set(&bo->refcnt, 1);
     } else {
        /* bo->refcnt == 0 can happen if the BO
-@@ -517,15 +470,9 @@ panfrost_bo_import(struct panfrost_device *dev, int fd)
+@@ -517,15 +470,9 @@ panfrost_bo_import(struct panfrost_devic
  int
  panfrost_bo_export(struct panfrost_bo *bo)
  {
@@ -9997,10 +9413,9 @@ index b884cff4488..9b5afa7b682 100644
 -   return args.fd;
 +   return ret;
  }
-diff --git a/src/panfrost/lib/pan_bo.h b/src/panfrost/lib/pan_bo.h
-index 4742fec5bd1..8baa7b9be9c 100644
---- a/src/panfrost/lib/pan_bo.h
-+++ b/src/panfrost/lib/pan_bo.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_bo.h	2023-11-24 23:33:24.964610841 +0100
 @@ -30,6 +30,8 @@
  #include "util/list.h"
  #include "panfrost-job.h"
@@ -10063,11 +9478,10 @@ index 4742fec5bd1..8baa7b9be9c 100644
  bool panfrost_bo_wait(struct panfrost_bo *bo, int64_t timeout_ns,
                        bool wait_readers);
  void panfrost_bo_reference(struct panfrost_bo *bo);
-diff --git a/src/panfrost/lib/pan_cs.c b/src/panfrost/lib/pan_cs.c
-index c69b9f114dc..94f9245acd0 100644
---- a/src/panfrost/lib/pan_cs.c
-+++ b/src/panfrost/lib/pan_cs.c
-@@ -446,40 +446,6 @@ pan_rt_init_format(const struct pan_image_view *rt,
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.c	2023-11-24 23:33:24.964610841 +0100
+@@ -446,40 +446,6 @@ pan_rt_init_format(const struct pan_imag
     cfg->swizzle = panfrost_translate_swizzle_4(swizzle);
  }
  
@@ -10108,7 +9522,7 @@ index c69b9f114dc..94f9245acd0 100644
  static void
  pan_prepare_rt(const struct pan_fb_info *fb, unsigned idx, unsigned cbuf_offset,
                 struct MALI_RENDER_TARGET *cfg)
-@@ -540,7 +506,7 @@ pan_prepare_rt(const struct pan_fb_info *fb, unsigned idx, unsigned cbuf_offset,
+@@ -540,7 +506,7 @@ pan_prepare_rt(const struct pan_fb_info
        cfg->afbc.body_offset = surf.afbc.body - surf.afbc.header;
        assert(surf.afbc.body >= surf.afbc.header);
  
@@ -10117,7 +9531,7 @@ index c69b9f114dc..94f9245acd0 100644
        cfg->afbc.row_stride = row_stride;
  #else
        const struct pan_image_slice_layout *slice = &image->layout.slices[level];
-@@ -638,7 +604,8 @@ pan_emit_midgard_tiler(const struct panfrost_device *dev,
+@@ -638,7 +604,8 @@ pan_emit_midgard_tiler(const struct panf
           cfg.polygon_list_size = panfrost_tiler_full_size(
              fb->width, fb->height, cfg.hierarchy_mask, hierarchy);
           cfg.heap_start = dev->tiler_heap->ptr.gpu;
@@ -10127,7 +9541,7 @@ index c69b9f114dc..94f9245acd0 100644
        }
  
        cfg.polygon_list = tiler_ctx->midgard.polygon_list->ptr.gpu;
-@@ -754,6 +721,7 @@ GENX(pan_emit_fbd)(const struct panfrost_device *dev,
+@@ -754,6 +721,7 @@ GENX(pan_emit_fbd)(const struct panfrost
  
        cfg.sample_locations =
           panfrost_sample_positions(dev, pan_sample_pattern(fb->nr_samples));
@@ -10135,7 +9549,7 @@ index c69b9f114dc..94f9245acd0 100644
        cfg.pre_frame_0 = pan_fix_frame_shader_mode(fb->bifrost.pre_post.modes[0],
                                                    force_clean_write);
        cfg.pre_frame_1 = pan_fix_frame_shader_mode(fb->bifrost.pre_post.modes[1],
-@@ -761,7 +729,7 @@ GENX(pan_emit_fbd)(const struct panfrost_device *dev,
+@@ -761,7 +729,7 @@ GENX(pan_emit_fbd)(const struct panfrost
        cfg.post_frame = pan_fix_frame_shader_mode(fb->bifrost.pre_post.modes[2],
                                                   force_clean_write);
        cfg.frame_shader_dcds = fb->bifrost.pre_post.dcds.gpu;
@@ -10175,16 +9589,15 @@ index c69b9f114dc..94f9245acd0 100644
  
        /* For large framebuffers, disable the smallest bin size to
         * avoid pathological tiler memory usage. Required to avoid OOM
-@@ -998,11 +968,17 @@ GENX(pan_emit_tiler_ctx)(const struct panfrost_device *dev, unsigned fb_width,
-       tiler.sample_pattern = pan_sample_pattern(nr_samples);
+@@ -999,10 +969,16 @@ GENX(pan_emit_tiler_ctx)(const struct pa
  #if PAN_ARCH >= 9
        tiler.first_provoking_vertex = first_provoking_vertex;
-+#endif
+ #endif
 +#if PAN_ARCH >= 10
 +      /* Note: DDK assigns this pointer in the CS. */
 +      tiler.geometry_buffer = tmp_geom_buf;
 +      tiler.geometry_buffer_size = tmp_geom_buf_size;
- #endif
++#endif
     }
  }
  #endif
@@ -10193,15 +9606,14 @@ index c69b9f114dc..94f9245acd0 100644
  void
  GENX(pan_emit_fragment_job)(const struct pan_fb_info *fb, mali_ptr fbd,
                              void *out)
-@@ -1028,3 +1004,4 @@ GENX(pan_emit_fragment_job)(const struct pan_fb_info *fb, mali_ptr fbd,
+@@ -1028,3 +1004,4 @@ GENX(pan_emit_fragment_job)(const struct
  #endif
     }
  }
 +#endif
-diff --git a/src/panfrost/lib/pan_cs.h b/src/panfrost/lib/pan_cs.h
-index e2d343188f0..7f841dec36e 100644
---- a/src/panfrost/lib/pan_cs.h
-+++ b/src/panfrost/lib/pan_cs.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_cs.h	2023-11-24 23:33:24.964610841 +0100
 @@ -76,11 +76,14 @@ struct pan_tiler_context {
     uint32_t vertex_count;
  
@@ -10218,7 +9630,7 @@ index e2d343188f0..7f841dec36e 100644
     };
  };
  
-@@ -168,11 +171,15 @@ void GENX(pan_emit_tiler_heap)(const struct panfrost_device *dev, void *out);
+@@ -168,11 +171,15 @@ void GENX(pan_emit_tiler_heap)(const str
  void GENX(pan_emit_tiler_ctx)(const struct panfrost_device *dev,
                                unsigned fb_width, unsigned fb_height,
                                unsigned nr_samples, bool first_provoking_vertex,
@@ -10235,10 +9647,9 @@ index e2d343188f0..7f841dec36e 100644
  #endif /* ifdef PAN_ARCH */
  
  #endif
-diff --git a/src/panfrost/lib/pan_device.h b/src/panfrost/lib/pan_device.h
-index 8ad35a9d6b4..88f7869a0a1 100644
---- a/src/panfrost/lib/pan_device.h
-+++ b/src/panfrost/lib/pan_device.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_device.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_device.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_device.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_device.h	2023-11-24 23:33:24.964610841 +0100
 @@ -36,11 +36,14 @@
  #include "util/list.h"
  #include "util/sparse_array.h"
@@ -10321,11 +9732,10 @@ index 8ad35a9d6b4..88f7869a0a1 100644
  void panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev);
  
  void panfrost_close_device(struct panfrost_device *dev);
-diff --git a/src/panfrost/lib/pan_indirect_dispatch.c b/src/panfrost/lib/pan_indirect_dispatch.c
-index 2a0ed901f94..b5b82811dd5 100644
---- a/src/panfrost/lib/pan_indirect_dispatch.c
-+++ b/src/panfrost/lib/pan_indirect_dispatch.c
-@@ -121,7 +121,7 @@ pan_indirect_dispatch_init(struct panfrost_device *dev)
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_indirect_dispatch.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_indirect_dispatch.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_indirect_dispatch.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_indirect_dispatch.c	2023-11-24 23:33:24.964610841 +0100
+@@ -121,7 +121,7 @@ pan_indirect_dispatch_init(struct panfro
     nir_pop_if(&b, NULL);
  
     struct panfrost_compile_inputs inputs = {
@@ -10334,10 +9744,9 @@ index 2a0ed901f94..b5b82811dd5 100644
        .no_ubo_to_push = true,
     };
     struct pan_shader_info shader_info;
-diff --git a/src/panfrost/lib/pan_props.c b/src/panfrost/lib/pan_props.c
-index 890f97aee6d..748c01c1bfb 100644
---- a/src/panfrost/lib/pan_props.c
-+++ b/src/panfrost/lib/pan_props.c
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_props.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_props.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_props.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_props.c	2023-11-24 23:33:24.964610841 +0100
 @@ -27,8 +27,10 @@
  #include <xf86drm.h>
  
@@ -10349,7 +9758,7 @@ index 890f97aee6d..748c01c1bfb 100644
  #include "util/u_math.h"
  #include "util/u_thread.h"
  #include "pan_bo.h"
-@@ -71,6 +73,8 @@ const struct panfrost_model panfrost_model_list[] = {
+@@ -71,6 +73,8 @@ const struct panfrost_model panfrost_mod
          MODEL(0x7402, "G52 r1", "TGOx", HAS_ANISO,         16384, {}),
          MODEL(0x9091, "G57",    "TNAx", HAS_ANISO,         16384, {}),
          MODEL(0x9093, "G57",    "TNAx", HAS_ANISO,         16384, {}),
@@ -10436,7 +9845,7 @@ index 890f97aee6d..748c01c1bfb 100644
  
     /* Some cores might be absent. In some cases, we care
      * about the range of core IDs (that is, the greatest core ID + 1). If
-@@ -172,31 +136,18 @@ panfrost_query_core_count(int fd, unsigned *core_id_range)
+@@ -172,31 +136,18 @@ panfrost_query_core_count(int fd, unsign
  }
  
  static unsigned
@@ -10473,7 +9882,7 @@ index 890f97aee6d..748c01c1bfb 100644
  }
  
  /* DRM_PANFROST_PARAM_TEXTURE_FEATURES0 will return a bitmask of supported
-@@ -218,10 +169,9 @@ panfrost_supports_compressed_format(struct panfrost_device *dev, unsigned fmt)
+@@ -218,10 +169,9 @@ panfrost_supports_compressed_format(stru
   * may omit it, signaled as a nonzero value in the AFBC_FEATURES property. */
  
  static bool
@@ -10486,7 +9895,7 @@ index 890f97aee6d..748c01c1bfb 100644
  
     return (arch >= 5) && (reg == 0);
  }
-@@ -248,27 +198,33 @@ panfrost_query_optimal_tib_size(const struct panfrost_device *dev)
+@@ -248,27 +198,33 @@ panfrost_query_optimal_tib_size(const st
  void
  panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev)
  {
@@ -10534,7 +9943,7 @@ index 890f97aee6d..748c01c1bfb 100644
  
     if (dev->arch <= 6)
        dev->formats = panfrost_pipe_format_v6;
-@@ -293,13 +249,28 @@ panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev)
+@@ -293,13 +249,28 @@ panfrost_open_device(void *memctx, int f
      * active for a single job chain at once, so a single heap can be
      * shared across batches/contextes */
  
@@ -10565,7 +9974,7 @@ index 890f97aee6d..748c01c1bfb 100644
  }
  
  void
-@@ -310,13 +281,17 @@ panfrost_close_device(struct panfrost_device *dev)
+@@ -310,13 +281,17 @@ panfrost_close_device(struct panfrost_de
      */
     if (dev->model) {
        pthread_mutex_destroy(&dev->submit_lock);
@@ -10586,10 +9995,9 @@ index 890f97aee6d..748c01c1bfb 100644
 +   if (dev->kmod.dev)
 +      pan_kmod_dev_destroy(dev->kmod.dev);
  }
-diff --git a/src/panfrost/lib/pan_scoreboard.h b/src/panfrost/lib/pan_scoreboard.h
-index 4cd4c46fb48..4619c0c7d9f 100644
---- a/src/panfrost/lib/pan_scoreboard.h
-+++ b/src/panfrost/lib/pan_scoreboard.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_scoreboard.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_scoreboard.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_scoreboard.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_scoreboard.h	2023-11-24 23:33:24.964610841 +0100
 @@ -54,7 +54,7 @@ struct pan_scoreboard {
     unsigned write_value_index;
  };
@@ -10599,11 +10007,10 @@ index 4cd4c46fb48..4619c0c7d9f 100644
  /*
   * There are various types of Mali jobs:
   *
-diff --git a/src/panfrost/lib/pan_texture.c b/src/panfrost/lib/pan_texture.c
-index 31240832deb..f1ddf384fac 100644
---- a/src/panfrost/lib/pan_texture.c
-+++ b/src/panfrost/lib/pan_texture.c
-@@ -517,7 +517,7 @@ panfrost_emit_plane(const struct pan_image_layout *layout,
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.c.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.c
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.c	2023-11-24 23:33:24.964610841 +0100
+@@ -517,7 +517,7 @@ panfrost_emit_plane(const struct pan_ima
           cfg.afbc.ytr = (layout->modifier & AFBC_FORMAT_MOD_YTR);
           cfg.afbc.tiled_header = (layout->modifier & AFBC_FORMAT_MOD_TILED);
           cfg.afbc.prefetch = true;
@@ -10612,7 +10019,7 @@ index 31240832deb..f1ddf384fac 100644
           cfg.afbc.header_stride = layout->slices[level].afbc.header_size;
        } else {
           cfg.plane_type = is_3_planar_yuv ? MALI_PLANE_TYPE_CHROMA_2P
-@@ -786,3 +786,37 @@ GENX(panfrost_new_texture)(const struct panfrost_device *dev,
+@@ -786,3 +786,37 @@ GENX(panfrost_new_texture)(const struct
  #endif
     }
  }
@@ -10650,11 +10057,10 @@ index 31240832deb..f1ddf384fac 100644
 +   unreachable("all AFBC formats handled");
 +}
 +#endif
-diff --git a/src/panfrost/lib/pan_texture.h b/src/panfrost/lib/pan_texture.h
-index 4163cc48475..d85e0532aa6 100644
---- a/src/panfrost/lib/pan_texture.h
-+++ b/src/panfrost/lib/pan_texture.h
-@@ -233,8 +233,6 @@ enum pan_afbc_mode panfrost_afbc_format(unsigned arch, enum pipe_format format);
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_texture.h	2023-11-24 23:33:24.964610841 +0100
+@@ -233,8 +233,6 @@ enum pan_afbc_mode panfrost_afbc_format(
  
  bool panfrost_afbc_can_ytr(enum pipe_format format);
  
@@ -10663,7 +10069,7 @@ index 4163cc48475..d85e0532aa6 100644
  bool panfrost_afbc_can_tile(const struct panfrost_device *dev);
  
  /*
-@@ -328,7 +326,7 @@ void pan_iview_get_surface(const struct pan_image_view *iview, unsigned level,
+@@ -328,7 +326,7 @@ void pan_iview_get_surface(const struct
  
  #if PAN_ARCH >= 9
  enum mali_afbc_compression_mode
@@ -10672,10 +10078,9 @@ index 4163cc48475..d85e0532aa6 100644
  #endif
  
  #ifdef __cplusplus
-diff --git a/src/panfrost/lib/pan_util.h b/src/panfrost/lib/pan_util.h
-index 22f84d12b91..03ada217c30 100644
---- a/src/panfrost/lib/pan_util.h
-+++ b/src/panfrost/lib/pan_util.h
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/pan_util.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/pan_util.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/pan_util.h.8~	2023-11-24 23:33:24.937610687 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/pan_util.h	2023-11-24 23:33:24.964610841 +0100
 @@ -52,8 +52,7 @@
  #define PAN_DBG_OVERFLOW 0x8000
  #endif
@@ -10686,21 +10091,19 @@ index 22f84d12b91..03ada217c30 100644
  
  struct panfrost_device;
  
-diff --git a/src/panfrost/lib/wrap.h b/src/panfrost/lib/wrap.h
-index c1e61332203..57014ae9690 100644
---- a/src/panfrost/lib/wrap.h
-+++ b/src/panfrost/lib/wrap.h
-@@ -67,4 +67,6 @@ void pandecode_cs(struct pandecode_context *ctx, mali_ptr queue_gpu_va,
+diff -up mesa-23.3.0-rc5/src/panfrost/lib/wrap.h.8~ mesa-23.3.0-rc5/src/panfrost/lib/wrap.h
+--- mesa-23.3.0-rc5/src/panfrost/lib/wrap.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/lib/wrap.h	2023-11-24 23:33:24.964610841 +0100
+@@ -67,4 +67,6 @@ void pandecode_cs(struct pandecode_conte
  void pandecode_abort_on_fault(struct pandecode_context *ctx, uint64_t jc_gpu_va,
                                unsigned gpu_id);
  
 +void pandecode_dump_mappings(struct pandecode_context *ctx);
 +
  #endif /* __MMAP_TRACE_H__ */
-diff --git a/src/panfrost/perf/pan_perf.c b/src/panfrost/perf/pan_perf.c
-index c35d0f87c02..86b121ac3fd 100644
---- a/src/panfrost/perf/pan_perf.c
-+++ b/src/panfrost/perf/pan_perf.c
+diff -up mesa-23.3.0-rc5/src/panfrost/perf/pan_perf.c.8~ mesa-23.3.0-rc5/src/panfrost/perf/pan_perf.c
+--- mesa-23.3.0-rc5/src/panfrost/perf/pan_perf.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/perf/pan_perf.c	2023-11-24 23:33:24.964610841 +0100
 @@ -92,8 +92,8 @@ static int
  panfrost_perf_query(struct panfrost_perf *perf, uint32_t enable)
  {
@@ -10712,7 +10115,7 @@ index c35d0f87c02..86b121ac3fd 100644
  }
  
  int
-@@ -115,6 +115,6 @@ panfrost_perf_dump(struct panfrost_perf *perf)
+@@ -115,6 +115,6 @@ panfrost_perf_dump(struct panfrost_perf
     // counter_values
     struct drm_panfrost_perfcnt_dump perfcnt_dump = {
        (uint64_t)(uintptr_t)perf->counter_values};
@@ -10721,11 +10124,10 @@ index c35d0f87c02..86b121ac3fd 100644
 +   return drmIoctl(panfrost_device_fd(perf->dev),
 +                   DRM_IOCTL_PANFROST_PERFCNT_DUMP, &perfcnt_dump);
  }
-diff --git a/src/panfrost/util/pan_ir.h b/src/panfrost/util/pan_ir.h
-index 5551fc7526a..aa96781fa74 100644
---- a/src/panfrost/util/pan_ir.h
-+++ b/src/panfrost/util/pan_ir.h
-@@ -452,6 +452,9 @@ panfrost_max_thread_count(unsigned arch, unsigned work_reg_count)
+diff -up mesa-23.3.0-rc5/src/panfrost/util/pan_ir.h.8~ mesa-23.3.0-rc5/src/panfrost/util/pan_ir.h
+--- mesa-23.3.0-rc5/src/panfrost/util/pan_ir.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/util/pan_ir.h	2023-11-24 23:33:24.964610841 +0100
+@@ -452,6 +452,9 @@ panfrost_max_thread_count(unsigned arch,
        return work_reg_count > 32 ? 384 : 768;
  
     /* Valhall (for completeness) */
@@ -10735,10 +10137,9 @@ index 5551fc7526a..aa96781fa74 100644
     default:
        return work_reg_count > 32 ? 512 : 1024;
     }
-diff --git a/src/panfrost/vulkan/meson.build b/src/panfrost/vulkan/meson.build
-index 0bbc83a240c..5d3f53b3b86 100644
---- a/src/panfrost/vulkan/meson.build
-+++ b/src/panfrost/vulkan/meson.build
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/meson.build.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/meson.build
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/meson.build.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/meson.build	2023-11-24 23:33:24.964610841 +0100
 @@ -35,6 +35,7 @@ panvk_entrypoints = custom_target(
  )
  
@@ -10747,11 +10148,9 @@ index 0bbc83a240c..5d3f53b3b86 100644
    'panvk_cmd_buffer.c',
    'panvk_cs.c',
    'panvk_device.c',
-diff --git a/src/panfrost/vulkan/panvk_bo.c b/src/panfrost/vulkan/panvk_bo.c
-new file mode 100644
-index 00000000000..6a136e0bfba
---- /dev/null
-+++ b/src/panfrost/vulkan/panvk_bo.c
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_bo.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_bo.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_bo.c.8~	2023-11-24 23:33:24.964610841 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_bo.c	2023-11-24 23:33:24.964610841 +0100
 @@ -0,0 +1,49 @@
 +#include "panvk_private.h"
 +
@@ -10802,11 +10201,10 @@ index 00000000000..6a136e0bfba
 +      bo->host_ptr = NULL;
 +   }
 +}
-diff --git a/src/panfrost/vulkan/panvk_device.c b/src/panfrost/vulkan/panvk_device.c
-index f242e79facd..09025496a82 100644
---- a/src/panfrost/vulkan/panvk_device.c
-+++ b/src/panfrost/vulkan/panvk_device.c
-@@ -460,7 +460,8 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_device.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_device.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_device.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_device.c	2023-11-24 23:33:24.964610841 +0100
+@@ -460,7 +460,8 @@ panvk_physical_device_init(struct panvk_
     memset(device->name, 0, sizeof(device->name));
     sprintf(device->name, "%s", device->pdev.model->name);
  
@@ -10816,7 +10214,7 @@ index f242e79facd..09025496a82 100644
        result = vk_errorf(instance, VK_ERROR_INITIALIZATION_FAILED,
                           "cannot generate UUID");
        goto fail_close_device;
-@@ -471,7 +472,8 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+@@ -471,7 +472,8 @@ panvk_physical_device_init(struct panvk_
     panvk_get_driver_uuid(&device->device_uuid);
     panvk_get_device_uuid(&device->device_uuid);
  
@@ -10826,7 +10224,7 @@ index f242e79facd..09025496a82 100644
     /* We don't support timelines in the uAPI yet and we don't want it getting
      * suddenly turned on by vk_drm_syncobj_get_type() without us adding panvk
      * code for it first.
-@@ -800,7 +802,8 @@ panvk_queue_init(struct panvk_device *device, struct panvk_queue *queue,
+@@ -800,7 +802,8 @@ panvk_queue_init(struct panvk_device *de
        .flags = DRM_SYNCOBJ_CREATE_SIGNALED,
     };
  
@@ -10836,7 +10234,7 @@ index f242e79facd..09025496a82 100644
     if (ret) {
        vk_queue_finish(&queue->vk);
        return VK_ERROR_OUT_OF_HOST_MEMORY;
-@@ -897,7 +900,7 @@ panvk_CreateDevice(VkPhysicalDevice physicalDevice,
+@@ -897,7 +900,7 @@ panvk_CreateDevice(VkPhysicalDevice phys
     device->physical_device = physical_device;
  
     const struct panfrost_device *pdev = &physical_device->pdev;
@@ -10894,7 +10292,7 @@ index f242e79facd..09025496a82 100644
     }
  
     assert(mem->bo);
-@@ -1266,7 +1282,8 @@ panvk_CreateEvent(VkDevice _device, const VkEventCreateInfo *pCreateInfo,
+@@ -1266,7 +1282,8 @@ panvk_CreateEvent(VkDevice _device, cons
        .flags = 0,
     };
  
@@ -10904,7 +10302,7 @@ index f242e79facd..09025496a82 100644
     if (ret)
        return VK_ERROR_OUT_OF_HOST_MEMORY;
  
-@@ -1288,7 +1305,7 @@ panvk_DestroyEvent(VkDevice _device, VkEvent _event,
+@@ -1288,7 +1305,7 @@ panvk_DestroyEvent(VkDevice _device, VkE
        return;
  
     struct drm_syncobj_destroy destroy = {.handle = event->syncobj};
@@ -10913,7 +10311,7 @@ index f242e79facd..09025496a82 100644
  
     vk_object_free(&device->vk, pAllocator, event);
  }
-@@ -1308,7 +1325,7 @@ panvk_GetEventStatus(VkDevice _device, VkEvent _event)
+@@ -1308,7 +1325,7 @@ panvk_GetEventStatus(VkDevice _device, V
        .flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT,
     };
  
@@ -10922,7 +10320,7 @@ index f242e79facd..09025496a82 100644
     if (ret) {
        if (errno == ETIME)
           signaled = false;
-@@ -1339,7 +1356,7 @@ panvk_SetEvent(VkDevice _device, VkEvent _event)
+@@ -1339,7 +1356,7 @@ panvk_SetEvent(VkDevice _device, VkEvent
      * command executes.
      * https://www.khronos.org/registry/vulkan/specs/1.2/html/chap6.html#commandbuffers-submission-progress
      */
@@ -10931,7 +10329,7 @@ index f242e79facd..09025496a82 100644
        return VK_ERROR_DEVICE_LOST;
  
     return VK_SUCCESS;
-@@ -1356,7 +1373,7 @@ panvk_ResetEvent(VkDevice _device, VkEvent _event)
+@@ -1356,7 +1373,7 @@ panvk_ResetEvent(VkDevice _device, VkEve
        .handles = (uint64_t)(uintptr_t)&event->syncobj,
        .count_handles = 1};
  
@@ -10940,11 +10338,10 @@ index f242e79facd..09025496a82 100644
        return VK_ERROR_DEVICE_LOST;
  
     return VK_SUCCESS;
-diff --git a/src/panfrost/vulkan/panvk_mempool.c b/src/panfrost/vulkan/panvk_mempool.c
-index 30e6670feba..7e76b8dea2d 100644
---- a/src/panfrost/vulkan/panvk_mempool.c
-+++ b/src/panfrost/vulkan/panvk_mempool.c
-@@ -61,7 +61,7 @@ panvk_pool_alloc_backing(struct panvk_pool *pool, size_t bo_sz)
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_mempool.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_mempool.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_mempool.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_mempool.c	2023-11-24 23:33:24.964610841 +0100
+@@ -61,7 +61,7 @@ panvk_pool_alloc_backing(struct panvk_po
                                pool->base.label);
     }
  
@@ -10953,7 +10350,7 @@ index 30e6670feba..7e76b8dea2d 100644
        util_dynarray_append(&pool->bos, struct panfrost_bo *, bo);
     else
        util_dynarray_append(&pool->big_bos, struct panfrost_bo *, bo);
-@@ -149,7 +149,7 @@ panvk_pool_get_bo_handles(struct panvk_pool *pool, uint32_t *handles)
+@@ -149,7 +149,7 @@ panvk_pool_get_bo_handles(struct panvk_p
  {
     unsigned idx = 0;
     util_dynarray_foreach(&pool->bos, struct panfrost_bo *, bo) {
@@ -10963,11 +10360,10 @@ index 30e6670feba..7e76b8dea2d 100644
 +      handles[idx++] = panfrost_bo_handle(*bo);
     }
  }
-diff --git a/src/panfrost/vulkan/panvk_pipeline.c b/src/panfrost/vulkan/panvk_pipeline.c
-index 3e848fbdcb1..574cddcf519 100644
---- a/src/panfrost/vulkan/panvk_pipeline.c
-+++ b/src/panfrost/vulkan/panvk_pipeline.c
-@@ -47,7 +47,7 @@ panvk_DestroyPipeline(VkDevice _device, VkPipeline _pipeline,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_pipeline.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_pipeline.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_pipeline.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_pipeline.c	2023-11-24 23:33:24.964610841 +0100
+@@ -47,7 +47,7 @@ panvk_DestroyPipeline(VkDevice _device,
     VK_FROM_HANDLE(panvk_device, device, _device);
     VK_FROM_HANDLE(panvk_pipeline, pipeline, _pipeline);
  
@@ -10977,10 +10373,9 @@ index 3e848fbdcb1..574cddcf519 100644
 +   panvk_bo_free(device, pipeline->state_bo);
     vk_object_free(&device->vk, pAllocator, pipeline);
  }
-diff --git a/src/panfrost/vulkan/panvk_private.h b/src/panfrost/vulkan/panvk_private.h
-index 54431f4d1bc..74365c7d259 100644
---- a/src/panfrost/vulkan/panvk_private.h
-+++ b/src/panfrost/vulkan/panvk_private.h
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_private.h.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_private.h
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_private.h.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_private.h	2023-11-24 23:33:24.964610841 +0100
 @@ -114,6 +114,19 @@ typedef uint32_t xcb_window_t;
  
  #define panvk_stub() assert(!"stub")
@@ -11012,11 +10407,10 @@ index 54431f4d1bc..74365c7d259 100644
  
     mali_ptr vpd;
     mali_ptr rsds[MESA_SHADER_STAGES];
-diff --git a/src/panfrost/vulkan/panvk_vX_cmd_buffer.c b/src/panfrost/vulkan/panvk_vX_cmd_buffer.c
-index 297e4497c2d..146599e36dc 100644
---- a/src/panfrost/vulkan/panvk_vX_cmd_buffer.c
-+++ b/src/panfrost/vulkan/panvk_vX_cmd_buffer.c
-@@ -431,7 +431,7 @@ panvk_per_arch(cmd_get_tiler_context)(struct panvk_cmd_buffer *cmdbuf,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cmd_buffer.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cmd_buffer.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cmd_buffer.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cmd_buffer.c	2023-11-24 23:33:24.964610841 +0100
+@@ -431,7 +431,7 @@ panvk_per_arch(cmd_get_tiler_context)(st
     panvk_per_arch(emit_tiler_context)(cmdbuf->device, width, height, &desc);
     memcpy(batch->tiler.descs.cpu, batch->tiler.templ,
            pan_size(TILER_CONTEXT) + pan_size(TILER_HEAP));
@@ -11025,11 +10419,10 @@ index 297e4497c2d..146599e36dc 100644
  }
  
  void
-diff --git a/src/panfrost/vulkan/panvk_vX_cs.c b/src/panfrost/vulkan/panvk_vX_cs.c
-index a409700fb08..e37dd3d048e 100644
---- a/src/panfrost/vulkan/panvk_vX_cs.c
-+++ b/src/panfrost/vulkan/panvk_vX_cs.c
-@@ -540,7 +540,7 @@ panvk_per_arch(emit_tiler_job)(const struct panvk_pipeline *pipeline,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cs.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cs.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cs.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_cs.c	2023-11-24 23:33:24.965610847 +0100
+@@ -540,7 +540,7 @@ panvk_per_arch(emit_tiler_job)(const str
     panvk_emit_tiler_dcd(pipeline, draw, section);
  
     pan_section_pack(job, TILER_JOB, TILER, cfg) {
@@ -11038,7 +10431,7 @@ index a409700fb08..e37dd3d048e 100644
     }
     pan_section_pack(job, TILER_JOB, PADDING, padding)
        ;
-@@ -829,10 +829,10 @@ panvk_per_arch(emit_tiler_context)(const struct panvk_device *dev,
+@@ -829,10 +829,10 @@ panvk_per_arch(emit_tiler_context)(const
     const struct panfrost_device *pdev = &dev->physical_device->pdev;
  
     pan_pack(descs->cpu + pan_size(TILER_CONTEXT), TILER_HEAP, cfg) {
@@ -11051,11 +10444,10 @@ index a409700fb08..e37dd3d048e 100644
     }
  
     pan_pack(descs->cpu, TILER_CONTEXT, cfg) {
-diff --git a/src/panfrost/vulkan/panvk_vX_device.c b/src/panfrost/vulkan/panvk_vX_device.c
-index 433b7bae9fd..5bb0feb4471 100644
---- a/src/panfrost/vulkan/panvk_vX_device.c
-+++ b/src/panfrost/vulkan/panvk_vX_device.c
-@@ -67,18 +67,19 @@ panvk_queue_submit_batch(struct panvk_queue *queue, struct panvk_batch *batch,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_device.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_device.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_device.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_device.c	2023-11-24 23:33:24.965610847 +0100
+@@ -67,18 +67,19 @@ panvk_queue_submit_batch(struct panvk_qu
           .jc = batch->scoreboard.first_job,
        };
  
@@ -11079,7 +10471,7 @@ index 433b7bae9fd..5bb0feb4471 100644
  
        if (debug & PANVK_DEBUG_DUMP)
           pandecode_dump_mappings(pdev->decode_ctx);
-@@ -101,16 +102,18 @@ panvk_queue_submit_batch(struct panvk_queue *queue, struct panvk_batch *batch,
+@@ -101,16 +102,18 @@ panvk_queue_submit_batch(struct panvk_qu
           submit.in_sync_count = nr_in_fences;
        }
  
@@ -11102,7 +10494,7 @@ index 433b7bae9fd..5bb0feb4471 100644
  
        if (debug & PANVK_DEBUG_DUMP)
           pandecode_dump_mappings(pdev->decode_ctx);
-@@ -134,12 +137,14 @@ panvk_queue_transfer_sync(struct panvk_queue *queue, uint32_t syncobj)
+@@ -134,12 +137,14 @@ panvk_queue_transfer_sync(struct panvk_q
        .fd = -1,
     };
  
@@ -11119,7 +10511,7 @@ index 433b7bae9fd..5bb0feb4471 100644
     assert(!ret);
  
     close(handle.fd);
-@@ -185,7 +190,8 @@ panvk_signal_event_syncobjs(struct panvk_queue *queue,
+@@ -185,7 +190,8 @@ panvk_signal_event_syncobjs(struct panvk
              .handles = (uint64_t)(uintptr_t)&event->syncobj,
              .count_handles = 1};
  
@@ -11129,7 +10521,7 @@ index 433b7bae9fd..5bb0feb4471 100644
           assert(!ret);
           break;
        }
-@@ -246,20 +252,20 @@ panvk_per_arch(queue_submit)(struct vk_queue *vk_queue,
+@@ -246,20 +252,20 @@ panvk_per_arch(queue_submit)(struct vk_q
              for (unsigned i = 0; i < batch->fb.info->attachment_count; i++) {
                 const struct pan_image *image = pan_image_view_get_plane(
                    &batch->fb.info->attachments[i].iview->pview, 0);
@@ -11155,11 +10547,10 @@ index 433b7bae9fd..5bb0feb4471 100644
           assert(bo_idx == nr_bos);
  
           /* Merge identical BO entries. */
-diff --git a/src/panfrost/vulkan/panvk_vX_image.c b/src/panfrost/vulkan/panvk_vX_image.c
-index e4ad70cf0c6..0e75eb1e6b3 100644
---- a/src/panfrost/vulkan/panvk_vX_image.c
-+++ b/src/panfrost/vulkan/panvk_vX_image.c
-@@ -143,7 +143,7 @@ panvk_per_arch(CreateImageView)(VkDevice _device,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_image.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_image.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_image.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_image.c	2023-11-24 23:33:24.965610847 +0100
+@@ -143,7 +143,7 @@ panvk_per_arch(CreateImageView)(VkDevice
                         : MALI_ATTRIBUTE_TYPE_3D_INTERLEAVED;
           cfg.pointer = image->pimage.data.bo->ptr.gpu + offset;
           cfg.stride = util_format_get_blocksize(view->pview.format);
@@ -11168,11 +10559,10 @@ index e4ad70cf0c6..0e75eb1e6b3 100644
        }
  
        attrib_buf += pan_size(ATTRIBUTE_BUFFER);
-diff --git a/src/panfrost/vulkan/panvk_vX_meta_clear.c b/src/panfrost/vulkan/panvk_vX_meta_clear.c
-index b3a92a73de3..cd31ef1eab3 100644
---- a/src/panfrost/vulkan/panvk_vX_meta_clear.c
-+++ b/src/panfrost/vulkan/panvk_vX_meta_clear.c
-@@ -51,7 +51,7 @@ panvk_meta_clear_color_attachment_shader(struct panfrost_device *pdev,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_clear.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_clear.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_clear.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_clear.c	2023-11-24 23:33:24.965610847 +0100
+@@ -51,7 +51,7 @@ panvk_meta_clear_color_attachment_shader
     nir_store_var(&b, out, clear_values, 0xff);
  
     struct panfrost_compile_inputs inputs = {
@@ -11181,11 +10571,10 @@ index b3a92a73de3..cd31ef1eab3 100644
        .is_blit = true,
        .no_ubo_to_push = true,
     };
-diff --git a/src/panfrost/vulkan/panvk_vX_meta_copy.c b/src/panfrost/vulkan/panvk_vX_meta_copy.c
-index b2835393731..bed150efcb2 100644
---- a/src/panfrost/vulkan/panvk_vX_meta_copy.c
-+++ b/src/panfrost/vulkan/panvk_vX_meta_copy.c
-@@ -418,7 +418,7 @@ panvk_meta_copy_img2img_shader(struct panfrost_device *pdev,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_copy.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_copy.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_copy.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_meta_copy.c	2023-11-24 23:33:24.965610847 +0100
+@@ -418,7 +418,7 @@ panvk_meta_copy_img2img_shader(struct pa
     nir_store_var(&b, out, texel, 0xff);
  
     struct panfrost_compile_inputs inputs = {
@@ -11194,7 +10583,7 @@ index b2835393731..bed150efcb2 100644
        .is_blit = true,
        .no_ubo_to_push = true,
     };
-@@ -960,7 +960,7 @@ panvk_meta_copy_buf2img_shader(struct panfrost_device *pdev,
+@@ -960,7 +960,7 @@ panvk_meta_copy_buf2img_shader(struct pa
     nir_store_var(&b, out, texel, 0xff);
  
     struct panfrost_compile_inputs inputs = {
@@ -11203,7 +10592,7 @@ index b2835393731..bed150efcb2 100644
        .is_blit = true,
        .no_ubo_to_push = true,
     };
-@@ -1418,7 +1418,7 @@ panvk_meta_copy_img2buf_shader(struct panfrost_device *pdev,
+@@ -1418,7 +1418,7 @@ panvk_meta_copy_img2buf_shader(struct pa
     nir_pop_if(&b, NULL);
  
     struct panfrost_compile_inputs inputs = {
@@ -11212,7 +10601,7 @@ index b2835393731..bed150efcb2 100644
        .is_blit = true,
        .no_ubo_to_push = true,
     };
-@@ -1650,7 +1650,7 @@ panvk_meta_copy_buf2buf_shader(struct panfrost_device *pdev,
+@@ -1650,7 +1650,7 @@ panvk_meta_copy_buf2buf_shader(struct pa
                      (1 << ncomps) - 1);
  
     struct panfrost_compile_inputs inputs = {
@@ -11221,7 +10610,7 @@ index b2835393731..bed150efcb2 100644
        .is_blit = true,
        .no_ubo_to_push = true,
     };
-@@ -1776,7 +1776,7 @@ panvk_meta_fill_buf_shader(struct panfrost_device *pdev,
+@@ -1776,7 +1776,7 @@ panvk_meta_fill_buf_shader(struct panfro
     nir_store_global(&b, ptr, sizeof(uint32_t), val, 1);
  
     struct panfrost_compile_inputs inputs = {
@@ -11230,11 +10619,10 @@ index b2835393731..bed150efcb2 100644
        .is_blit = true,
        .no_ubo_to_push = true,
     };
-diff --git a/src/panfrost/vulkan/panvk_vX_pipeline.c b/src/panfrost/vulkan/panvk_vX_pipeline.c
-index 0459c5322e8..957bde8c56a 100644
---- a/src/panfrost/vulkan/panvk_vX_pipeline.c
-+++ b/src/panfrost/vulkan/panvk_vX_pipeline.c
-@@ -160,19 +160,19 @@ panvk_pipeline_builder_upload_shaders(struct panvk_pipeline_builder *builder,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_pipeline.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_pipeline.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_pipeline.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_pipeline.c	2023-11-24 23:33:24.965610847 +0100
+@@ -160,19 +160,19 @@ panvk_pipeline_builder_upload_shaders(st
     if (builder->shader_total_size == 0)
        return VK_SUCCESS;
  
@@ -11259,7 +10647,7 @@ index 0459c5322e8..957bde8c56a 100644
               util_dynarray_element(&shader->binary, uint8_t, 0),
               util_dynarray_num_elements(&shader->binary, uint8_t));
     }
-@@ -211,9 +211,8 @@ panvk_pipeline_builder_alloc_static_state_bo(
+@@ -211,9 +211,8 @@ panvk_pipeline_builder_alloc_static_stat
     }
  
     if (bo_size) {
@@ -11271,7 +10659,7 @@ index 0459c5322e8..957bde8c56a 100644
     }
  }
  
-@@ -259,14 +258,14 @@ panvk_pipeline_builder_init_shaders(struct panvk_pipeline_builder *builder,
+@@ -259,14 +258,14 @@ panvk_pipeline_builder_init_shaders(stru
        /* Handle empty shaders gracefully */
        if (util_dynarray_num_elements(&builder->shaders[i]->binary, uint8_t)) {
           shader_ptr =
@@ -11289,7 +10677,7 @@ index 0459c5322e8..957bde8c56a 100644
  
           panvk_per_arch(emit_non_fs_rsd)(builder->device, &shader->info,
                                           shader_ptr, rsd);
-@@ -280,9 +279,9 @@ panvk_pipeline_builder_init_shaders(struct panvk_pipeline_builder *builder,
+@@ -280,9 +279,9 @@ panvk_pipeline_builder_init_shaders(stru
     }
  
     if (builder->create_info.gfx && !pipeline->fs.dynamic_rsd) {
@@ -11301,7 +10689,7 @@ index 0459c5322e8..957bde8c56a 100644
                           builder->stages[MESA_SHADER_FRAGMENT].rsd_offset;
        void *bd = rsd + pan_size(RENDERER_STATE);
  
-@@ -320,11 +319,11 @@ panvk_pipeline_builder_parse_viewport(struct panvk_pipeline_builder *builder,
+@@ -320,11 +319,11 @@ panvk_pipeline_builder_parse_viewport(st
     if (!builder->rasterizer_discard &&
         panvk_pipeline_static_state(pipeline, VK_DYNAMIC_STATE_VIEWPORT) &&
         panvk_pipeline_static_state(pipeline, VK_DYNAMIC_STATE_SCISSOR)) {
@@ -11315,7 +10703,7 @@ index 0459c5322e8..957bde8c56a 100644
     }
     if (panvk_pipeline_static_state(pipeline, VK_DYNAMIC_STATE_VIEWPORT))
        pipeline->viewport =
-@@ -666,7 +665,7 @@ panvk_pipeline_builder_init_fs_state(struct panvk_pipeline_builder *builder,
+@@ -666,7 +665,7 @@ panvk_pipeline_builder_init_fs_state(str
  
     pipeline->fs.dynamic_rsd =
        pipeline->dynamic_state_mask & PANVK_DYNAMIC_FS_RSD_MASK;
@@ -11324,11 +10712,10 @@ index 0459c5322e8..957bde8c56a 100644
                            builder->stages[MESA_SHADER_FRAGMENT].shader_offset;
     pipeline->fs.info = builder->shaders[MESA_SHADER_FRAGMENT]->info;
     pipeline->fs.rt_mask = builder->active_color_attachments;
-diff --git a/src/panfrost/vulkan/panvk_vX_shader.c b/src/panfrost/vulkan/panvk_vX_shader.c
-index 38040d9e2ef..3e3f9e8f9bc 100644
---- a/src/panfrost/vulkan/panvk_vX_shader.c
-+++ b/src/panfrost/vulkan/panvk_vX_shader.c
-@@ -254,7 +254,7 @@ panvk_per_arch(shader_create)(struct panvk_device *dev, gl_shader_stage stage,
+diff -up mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_shader.c.8~ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_shader.c
+--- mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_shader.c.8~	2023-11-24 20:40:33.000000000 +0100
++++ mesa-23.3.0-rc5/src/panfrost/vulkan/panvk_vX_shader.c	2023-11-24 23:33:24.965610847 +0100
+@@ -254,7 +254,7 @@ panvk_per_arch(shader_create)(struct pan
                true, true);
  
     struct panfrost_compile_inputs inputs = {

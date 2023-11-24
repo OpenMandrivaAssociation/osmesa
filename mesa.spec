@@ -26,7 +26,7 @@
 #define git 20230824
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 
-%define relc 4
+%define relc 5
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -153,7 +153,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	23.3.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}3
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -191,8 +191,8 @@ Patch0:		mesa-20.1.1-fix-opencl.patch
 Patch1:		mesa-23.1-x86_32-llvm-detection.patch
 # Fix intel-vk build with clang 16 and gcc 13
 Patch2:		mesa-23.1-intel-vk-compile.patch
-# Fix intel_clc for LLVM 17
-#Patch3:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25536.patch
+# Make Chromium VAAPI great again
+Patch3:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26165.patch
 Patch4:		mesa-23.3.0-rc4-panfrost-enable-gl3-by-default.patch
 # Not used in the spec; this is a test case to verify patch0
 # is still needed. If this code works without the patch, the
@@ -208,7 +208,7 @@ Patch8:		mesa-buildsystem-improvements.patch
 
 # Make VirtualBox great again
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
-# This *should* also be fixed by patch 200
+# This *should* also be fixed by 23.3-rc5+
 #Patch10:	mesa-22.3-make-vbox-great-again.patch
 
 # Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfrost/mesa.git
@@ -232,9 +232,6 @@ Patch8:		mesa-buildsystem-improvements.patch
 #	git merge v10+panthor
 #	git diff mesa-23.3.0-rc3
 Patch100:	mesa-23.3-panthor.patch
-
-# Upstream fix for crashes in virtual machines.
-Patch200:	0001-zink-allow-software-rendering-only-if-selected.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
