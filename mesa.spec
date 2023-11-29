@@ -25,8 +25,7 @@
 
 #define git 20230824
 #define git_branch %(echo %{version} |cut -d. -f1-2)
-
-%define relc 5
+#define relc 5
 
 %ifarch %{riscv}
 %bcond_with gcc
