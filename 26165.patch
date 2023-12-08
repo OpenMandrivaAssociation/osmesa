@@ -1,6 +1,6 @@
-diff -up mesa-23.3.0-rc5/src/gallium/auxiliary/vl/vl_video_buffer.c.4~ mesa-23.3.0-rc5/src/gallium/auxiliary/vl/vl_video_buffer.c
---- mesa-23.3.0-rc5/src/gallium/auxiliary/vl/vl_video_buffer.c.4~	2023-11-24 20:40:33.000000000 +0100
-+++ mesa-23.3.0-rc5/src/gallium/auxiliary/vl/vl_video_buffer.c	2023-11-24 23:27:38.793074278 +0100
+diff -up mesa-main/src/gallium/auxiliary/vl/vl_video_buffer.c.4~ mesa-main/src/gallium/auxiliary/vl/vl_video_buffer.c
+--- mesa-main/src/gallium/auxiliary/vl/vl_video_buffer.c.4~	2023-12-05 12:48:25.000000000 +0100
++++ mesa-main/src/gallium/auxiliary/vl/vl_video_buffer.c	2023-12-05 14:05:46.743146864 +0100
 @@ -529,5 +529,6 @@ vl_video_buffer_create_as_resource(struc
     struct pipe_video_buffer vidtemplate = *tmpl;
     vidtemplate.width = templ.width0;
@@ -8,9 +8,9 @@ diff -up mesa-23.3.0-rc5/src/gallium/auxiliary/vl/vl_video_buffer.c.4~ mesa-23.3
 +   vidtemplate.contiguous_planes = true;
     return vl_video_buffer_create_ex2(pipe, &vidtemplate, resources);
  }
-diff -up mesa-23.3.0-rc5/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp.4~ mesa-23.3.0-rc5/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp
---- mesa-23.3.0-rc5/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp.4~	2023-11-24 20:40:33.000000000 +0100
-+++ mesa-23.3.0-rc5/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp	2023-11-24 23:27:38.793074278 +0100
+diff -up mesa-main/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp.4~ mesa-main/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp
+--- mesa-main/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp.4~	2023-12-05 12:48:25.000000000 +0100
++++ mesa-main/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp	2023-12-05 14:05:46.743146864 +0100
 @@ -57,6 +57,7 @@ d3d12_video_buffer_create_impl(struct pi
     pD3D12VideoBuffer->base.width         = tmpl->width;
     pD3D12VideoBuffer->base.height        = tmpl->height;
@@ -19,9 +19,9 @@ diff -up mesa-23.3.0-rc5/src/gallium/drivers/d3d12/d3d12_video_buffer.cpp.4~ mes
     pD3D12VideoBuffer->base.associated_data = nullptr;
     pD3D12VideoBuffer->base.bind = PIPE_BIND_SAMPLER_VIEW | PIPE_BIND_RENDER_TARGET | PIPE_BIND_DISPLAY_TARGET | PIPE_BIND_CUSTOM;
  
-diff -up mesa-23.3.0-rc5/src/gallium/drivers/r600/r600_uvd.c.4~ mesa-23.3.0-rc5/src/gallium/drivers/r600/r600_uvd.c
---- mesa-23.3.0-rc5/src/gallium/drivers/r600/r600_uvd.c.4~	2023-11-24 20:40:33.000000000 +0100
-+++ mesa-23.3.0-rc5/src/gallium/drivers/r600/r600_uvd.c	2023-11-24 23:27:38.793074278 +0100
+diff -up mesa-main/src/gallium/drivers/r600/r600_uvd.c.4~ mesa-main/src/gallium/drivers/r600/r600_uvd.c
+--- mesa-main/src/gallium/drivers/r600/r600_uvd.c.4~	2023-12-05 12:48:25.000000000 +0100
++++ mesa-main/src/gallium/drivers/r600/r600_uvd.c	2023-12-05 14:05:46.743146864 +0100
 @@ -78,6 +78,7 @@ struct pipe_video_buffer *r600_video_buf
  	template = *tmpl;
  	template.width = align(tmpl->width, VL_MACROBLOCK_WIDTH);
@@ -30,9 +30,9 @@ diff -up mesa-23.3.0-rc5/src/gallium/drivers/r600/r600_uvd.c.4~ mesa-23.3.0-rc5/
  
  	vl_video_buffer_template(&templ, &template, resource_formats[0], 1, array_size,
  									 PIPE_USAGE_DEFAULT, 0, chroma_format);
-diff -up mesa-23.3.0-rc5/src/gallium/frontends/va/image.c.4~ mesa-23.3.0-rc5/src/gallium/frontends/va/image.c
---- mesa-23.3.0-rc5/src/gallium/frontends/va/image.c.4~	2023-11-24 20:40:33.000000000 +0100
-+++ mesa-23.3.0-rc5/src/gallium/frontends/va/image.c	2023-11-24 23:27:38.793074278 +0100
+diff -up mesa-main/src/gallium/frontends/va/image.c.4~ mesa-main/src/gallium/frontends/va/image.c
+--- mesa-main/src/gallium/frontends/va/image.c.4~	2023-12-05 12:48:25.000000000 +0100
++++ mesa-main/src/gallium/frontends/va/image.c	2023-12-05 14:05:46.743146864 +0100
 @@ -277,9 +277,10 @@ vlVaDeriveImage(VADriverContextP ctx, VA
                                     PIPE_VIDEO_CAP_SUPPORTS_PROGRESSIVE))
           return VA_STATUS_ERROR_OPERATION_FAILED;
@@ -46,11 +46,11 @@ diff -up mesa-23.3.0-rc5/src/gallium/frontends/va/image.c.4~ mesa-23.3.0-rc5/src
        return VA_STATUS_ERROR_OPERATION_FAILED;
     }
  
-diff -up mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c.4~ mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c
---- mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c.4~	2023-11-24 20:40:33.000000000 +0100
-+++ mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c	2023-11-24 23:33:04.031490337 +0100
-@@ -1630,6 +1630,9 @@ vlVaExportSurfaceHandle(VADriverContextP
-    desc->fourcc = PipeFormatToVaFourcc(buffer->buffer_format);
+diff -up mesa-main/src/gallium/frontends/va/surface.c.4~ mesa-main/src/gallium/frontends/va/surface.c
+--- mesa-main/src/gallium/frontends/va/surface.c.4~	2023-12-05 12:48:25.000000000 +0100
++++ mesa-main/src/gallium/frontends/va/surface.c	2023-12-05 14:10:56.797983043 +0100
+@@ -1621,6 +1621,9 @@ vlVaExportSurfaceHandle(VADriverContextP
+    desc->fourcc = PipeFormatToVaFourcc(surf->buffer->buffer_format);
     desc->width  = surf->templat.width;
     desc->height = surf->templat.height;
 +   desc->num_objects = 0;
@@ -59,12 +59,17 @@ diff -up mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c.4~ mesa-23.3.0-rc5/s
  
     for (p = 0; p < ARRAY_SIZE(desc->objects); p++) {
        struct winsys_handle whandle;
-@@ -1647,37 +1650,52 @@ vlVaExportSurfaceHandle(VADriverContextP
+@@ -1638,37 +1641,51 @@ vlVaExportSurfaceHandle(VADriverContextP
           goto fail;
        }
  
 -      memset(&whandle, 0, sizeof(whandle));
 -      whandle.type = WINSYS_HANDLE_TYPE_FD;
+-
+-      if (!screen->resource_get_handle(screen, drv->pipe, resource,
+-                                       &whandle, usage)) {
+-         ret = VA_STATUS_ERROR_INVALID_SURFACE;
+-         goto fail;
 +      /* If the driver stores all planes contiguously in memory, only one
 +       * handle needs to be exported. resource_get_info is used to obtain
 +       * pitch and offset for each layer. */
@@ -84,11 +89,6 @@ diff -up mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c.4~ mesa-23.3.0-rc5/s
 +         * of the surface)."" */
 +        desc->objects[p].size = (uint32_t) whandle.size;
 +        desc->objects[p].drm_format_modifier = whandle.modifier;
- 
--      if (!screen->resource_get_handle(screen, drv->pipe, resource,
--                                       &whandle, usage)) {
--         ret = VA_STATUS_ERROR_INVALID_SURFACE;
--         goto fail;
 +        desc->num_objects++;
        }
  
@@ -131,9 +131,9 @@ diff -up mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c.4~ mesa-23.3.0-rc5/s
 -   desc->num_objects = p;
 -
     if (flags & VA_EXPORT_SURFACE_COMPOSED_LAYERS) {
-       uint32_t drm_format = pipe_format_to_drm_format(buffer->buffer_format);
+       uint32_t drm_format = pipe_format_to_drm_format(surf->buffer->buffer_format);
        if (drm_format == DRM_FORMAT_INVALID) {
-@@ -1699,7 +1717,7 @@ vlVaExportSurfaceHandle(VADriverContextP
+@@ -1690,7 +1707,7 @@ vlVaExportSurfaceHandle(VADriverContextP
  
  fail:
  #ifndef _WIN32
@@ -142,10 +142,10 @@ diff -up mesa-23.3.0-rc5/src/gallium/frontends/va/surface.c.4~ mesa-23.3.0-rc5/s
        close(desc->objects[i].fd);
  #else
     if(whandle.handle)
-diff -up mesa-23.3.0-rc5/src/gallium/include/pipe/p_video_codec.h.4~ mesa-23.3.0-rc5/src/gallium/include/pipe/p_video_codec.h
---- mesa-23.3.0-rc5/src/gallium/include/pipe/p_video_codec.h.4~	2023-11-24 20:40:33.000000000 +0100
-+++ mesa-23.3.0-rc5/src/gallium/include/pipe/p_video_codec.h	2023-11-24 23:27:38.793074278 +0100
-@@ -181,6 +181,7 @@ struct pipe_video_buffer
+diff -up mesa-main/src/gallium/include/pipe/p_video_codec.h.4~ mesa-main/src/gallium/include/pipe/p_video_codec.h
+--- mesa-main/src/gallium/include/pipe/p_video_codec.h.4~	2023-12-05 12:48:25.000000000 +0100
++++ mesa-main/src/gallium/include/pipe/p_video_codec.h	2023-12-05 14:05:46.743146864 +0100
+@@ -184,6 +184,7 @@ struct pipe_video_buffer
     unsigned height;
     bool interlaced;
     unsigned bind;

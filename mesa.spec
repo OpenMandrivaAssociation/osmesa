@@ -23,7 +23,8 @@
 %global optflags %{optflags} -O3 -fno-strict-aliasing -g1 -flto=thin
 %global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin -Wl,--undefined-version
 
-#define git 20230824
+%define git 20231208
+%define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 #define relc 5
 
@@ -36,6 +37,7 @@
 %endif
 
 %bcond_with bootstrap
+%bcond_without rust
 %bcond_without rusticl
 %bcond_without vdpau
 %bcond_without va
@@ -151,7 +153,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	23.3.0
+Version:	24.0.0
 Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
@@ -160,7 +162,7 @@ Url:		http://www.mesa3d.org
 %if "%{git_branch}" == "panthor" || "%{git_branch}" == "panfrost"
 Source0:	https://gitlab.freedesktop.org/panfrost/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
 %else
-Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/main/mesa-main.tar.bz2#/mesa-%{git }.tar.bz2
+Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/%{git_branch}/mesa-%{git_branch}.tar.bz2#/mesa-%{git }.tar.bz2
 %endif
 %else
 Source0:	https://mesa.freedesktop.org/archive/mesa-%{version}%{vsuffix}.tar.xz
@@ -203,6 +205,10 @@ Source50:	test.c
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
+# FIXME is there a better way to teach meson about
+# rust cruft?
+Patch6:		mesa-rustdeps.patch
+
 Patch8:		mesa-buildsystem-improvements.patch
 
 # Make VirtualBox great again
@@ -230,7 +236,6 @@ Patch8:		mesa-buildsystem-improvements.patch
 #	git revert 2be404f5571ada32d3b2e9cfe9b769846f27d68f
 #	git merge v10+panthor
 #	git diff mesa-23.3.0-rc3
-Patch100:	mesa-23.3-panthor.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -307,6 +312,13 @@ BuildRequires:	glslang
 %if %{with rusticl}
 BuildRequires:	rust
 BuildRequires:	bindgen
+%endif
+
+%if %{with rust}
+BuildRequires:	rust
+BuildRequires:	crate(proc-macro2)
+BuildRequires:	crate(quote)
+BuildRequires:	crate(syn)
 %endif
 
 # package mesa
@@ -950,13 +962,27 @@ Group:		Development/Tools
 Tools for debugging Mesa drivers.
 
 %prep
-%autosetup -p1 -n mesa-%{?git:%{git}}%{!?git:%{version}%{vsuffix}}
+%autosetup -p1 -n mesa-%{?git:%{git_branch}}%{!?git:%{version}%{vsuffix}}
 
 %build
 %if %{with gcc}
 export CC=gcc
 export CXX=g++
 %endif
+
+%if %{with rust}
+# Rust dependencies of Nouveau...
+# Nouveau doesn't use cargo, so we probably have to do this manually?
+mkdir rustdeps
+rustc --crate-name unicode_ident --edition=2021 /usr/share/cargo/registry/unicode-ident-*/src/lib.rs --crate-type lib --emit=dep-info,metadata,link --out-dir $(pwd)/rustdeps -Copt-level=3 -Cdebuginfo=2 -Ccodegen-units=1 -Cstrip=none -Clink-arg=-Wl,-z,relro -Clink-arg=-Wl,-z,now
+
+rustc --crate-name proc_macro2 --edition=2021 /usr/share/cargo/registry/proc-macro2-*/src/lib.rs --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debug-assertions=off --cfg 'feature="default"' --cfg 'feature="proc-macro"' --out-dir $(pwd)/rustdeps -L dependency=$(pwd)/rustdeps --extern unicode_ident=$(pwd)/rustdeps/libunicode_ident.rmeta --cap-lints warn -Copt-level=3 -Cdebuginfo=2 -Ccodegen-units=1 -Cstrip=none -Clink-arg=-Wl,-z,relro -Clink-arg=-Wl,-z,now --cap-lints=warn --cfg wrap_proc_macro
+
+rustc --crate-name quote --edition=2018 /usr/share/cargo/registry/quote-*/src/lib.rs --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debug-assertions=off --cfg 'feature="default"' --cfg 'feature="proc-macro"' --out-dir $(pwd)/rustdeps -L dependency=$(pwd)/rustdeps --extern proc_macro2=$(pwd)/rustdeps/libproc_macro2.rmeta --cap-lints warn -Copt-level=3 -Cdebuginfo=2 -Ccodegen-units=1 -Cstrip=none -Clink-arg=-Wl,-z,relro -Clink-arg=-Wl,-z,now --cap-lints=warn
+
+rustc --crate-name syn --edition=2021 /usr/share/cargo/registry/syn-*/src/lib.rs --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debug-assertions=off --cfg 'feature="default"' --cfg 'feature="proc-macro"' --cfg 'feature="parsing"' --cfg 'feature="full"' --cfg 'feature="derive"' --cfg 'feature="printing"' --out-dir $(pwd)/rustdeps -L dependency=$(pwd)/rustdeps --extern proc_macro2=$(pwd)/rustdeps/libproc_macro2.rmeta --extern unicode_ident=$(pwd)/rustdeps/libunicode_ident.rmeta --extern quote=$(pwd)/rustdeps/libquote.rmeta --cap-lints warn -Copt-level=3 -Cdebuginfo=2 -Ccodegen-units=1 -Cstrip=none -Clink-arg=-Wl,-z,relro -Clink-arg=-Wl,-z,now --cap-lints=warn
+%endif
+
 
 %if %{with compat32}
 cat >llvm-config <<EOF
@@ -1073,6 +1099,7 @@ if ! %meson \
 %if %{with rusticl}
 	-Dgallium-rusticl=true \
 %endif
+	-Dgallium-extra-hud=true \
 	-Dgallium-va=enabled \
 	-Dgallium-vdpau=enabled \
 	-Dgallium-xa=enabled \
@@ -1081,17 +1108,25 @@ if ! %meson \
 	-Dplatforms=wayland,x11 \
 	-Degl-native-platform=wayland \
 	-Dvulkan-layers=device-select,overlay \
+%if %{with rust}
 %ifarch %{armx}
 	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental,nouveau-experimental \
-%else
-%ifarch %{riscv}
+%elifarch %{riscv}
 	-Dvulkan-drivers=auto,virtio,imagination-experimental,nouveau-experimental \
 %else
 	-Dvulkan-drivers=auto,virtio,nouveau-experimental,intel,intel_hasvk \
 %endif
+%else
+%ifarch %{armx}
+	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental \
+%elifarch %{riscv}
+	-Dvulkan-drivers=auto,virtio,imagination-experimental \
+%else
+	-Dvulkan-drivers=auto,virtio,intel,intel_hasvk \
+%endif
 %endif
 	-Dvulkan-beta=true \
-	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
+	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
 	-Dglvnd=true \
@@ -1165,10 +1200,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_datadir}/drirc.d
 
 %files -n %{dridrivers}
-%ifarch %{armx}
-%{_bindir}/lima_compiler
-%{_bindir}/lima_disasm
-%endif
 %{_libdir}/dri/*.so
 %exclude %{_libdir}/dri/zink_dri.so
 %ifarch %{armx} %{riscv}
@@ -1270,7 +1301,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{devglapi}
 %{_libdir}/libglapi.so
 
-#vdpau enblaed
+#vdpau enabled
 %if %{with vdpau}
 %files -n %{vdpaudrivers}
 %dir %{_libdir}/vdpau
@@ -1312,6 +1343,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with aubinatorviewer}
 %{_bindir}/aubinator_viewer
 %endif
+%{_bindir}/intel_error2hangdump
+%{_bindir}/intel_hang_replay
 %{_bindir}/i965_asm
 %{_bindir}/i965_disasm
 %{_bindir}/intel_dev_info
@@ -1322,12 +1355,15 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
+%{_bindir}/nvfuzz
 %ifarch %{armx}
 %{_bindir}/etnaviv_compiler
 %{_bindir}/panfrostdump
 %{_bindir}/panfrost_texfeatures
 %{_bindir}/rddecompiler
 %{_bindir}/replay
+%{_bindir}/lima_compiler
+%{_bindir}/lima_disasm
 %endif
 %{_bindir}/glsl_compiler
 %{_bindir}/glsl_test
