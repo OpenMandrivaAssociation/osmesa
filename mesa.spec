@@ -236,6 +236,7 @@ Patch8:		mesa-buildsystem-improvements.patch
 #	git revert 2be404f5571ada32d3b2e9cfe9b769846f27d68f
 #	git merge v10+panthor
 #	git diff mesa-23.3.0-rc3
+Patch1001:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26358.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
