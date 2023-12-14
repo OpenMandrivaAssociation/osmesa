@@ -1,0 +1,1057 @@
+From 95a1715125cfc27b9e8488602f8cb4134a642c8b Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Mon, 3 Jul 2023 12:01:11 +0200
+Subject: [PATCH 01/29] panfrost: Abstract kernel driver operations
+
+We have generic BO management and device management layers that
+directly call kernel driver-specific ioctls. The introduction of
+Panthor (the new kernel driver supporting CSF hardware) forces us to
+abstract some low-level operations. This could be done directly in
+pan_{bo,device,props}.{c,h}, but having the abstraction clearly defined
+and separated from the rest of the code makes for a cleaner
+implementation.
+
+This is also a good way to get a low-level KMD abstraction that
+we can use without pulling all sort of gallium-related details in,
+which will be important for some refactoring we plan to do in panvk.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+---
+ src/panfrost/ci/gitlab-ci.yml            |   1 +
+ src/panfrost/lib/kmod/meson.build        |  38 ++
+ src/panfrost/lib/kmod/pan_kmod.c         | 217 +++++++++
+ src/panfrost/lib/kmod/pan_kmod.h         | 587 +++++++++++++++++++++++
+ src/panfrost/lib/kmod/pan_kmod_backend.h | 117 +++++
+ src/panfrost/lib/meson.build             |   5 +-
+ 6 files changed, 963 insertions(+), 2 deletions(-)
+ create mode 100644 src/panfrost/lib/kmod/meson.build
+ create mode 100644 src/panfrost/lib/kmod/pan_kmod.c
+ create mode 100644 src/panfrost/lib/kmod/pan_kmod.h
+ create mode 100644 src/panfrost/lib/kmod/pan_kmod_backend.h
+
+diff --git a/src/panfrost/ci/gitlab-ci.yml b/src/panfrost/ci/gitlab-ci.yml
+index cdde45c9cb2..a081f58f35f 100644
+--- a/src/panfrost/ci/gitlab-ci.yml
++++ b/src/panfrost/ci/gitlab-ci.yml
+@@ -17,6 +17,7 @@
+         - src/panfrost/ci/$PIGLIT_TRACES_FILE
+         - src/panfrost/include/*
+         - src/panfrost/lib/*
++        - src/panfrost/lib/kmod/*
+         - src/panfrost/shared/*
+         - src/panfrost/util/*
+       when: on_success
+diff --git a/src/panfrost/lib/kmod/meson.build b/src/panfrost/lib/kmod/meson.build
+new file mode 100644
+index 00000000000..8966d0a5c09
+--- /dev/null
++++ b/src/panfrost/lib/kmod/meson.build
+@@ -0,0 +1,38 @@
++# Copyright © 2023 Collabora
++
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++libpankmod_lib_files = files(
++  'pan_kmod.c',
++)
++
++libpankmod_lib = static_library(
++  'pankmod_lib',
++  [libpankmod_lib_files],
++  include_directories : [inc_include, inc_src, inc_panfrost],
++  c_args : [no_override_init_args],
++  gnu_symbol_visibility : 'hidden',
++  dependencies: [dep_libdrm, idep_mesautil],
++  build_by_default : false,
++)
++
++libpankmod_dep = declare_dependency(
++  include_directories: [inc_include, inc_src],
++  dependencies: [dep_libdrm],
++)
+diff --git a/src/panfrost/lib/kmod/pan_kmod.c b/src/panfrost/lib/kmod/pan_kmod.c
+new file mode 100644
+index 00000000000..3d689e7f94c
+--- /dev/null
++++ b/src/panfrost/lib/kmod/pan_kmod.c
+@@ -0,0 +1,217 @@
++/*
++ * Copyright © 2023 Collabora, Ltd.
++ *
++ * SPDX-License-Identifier: MIT
++ */
++
++#include <string.h>
++#include <xf86drm.h>
++
++#include "util/macros.h"
++#include "pan_kmod.h"
++
++static const struct {
++   const char *name;
++   const struct pan_kmod_ops *ops;
++} drivers[] = {
++};
++
++static void *
++default_zalloc(const struct pan_kmod_allocator *allocator, size_t size,
++               UNUSED bool transient)
++{
++   return rzalloc_size(allocator, size);
++}
++
++static void
++default_free(const struct pan_kmod_allocator *allocator, void *data)
++{
++   return ralloc_free(data);
++}
++
++static const struct pan_kmod_allocator *
++create_default_allocator(void)
++{
++   struct pan_kmod_allocator *allocator =
++      rzalloc(NULL, struct pan_kmod_allocator);
++
++   if (allocator) {
++      allocator->zalloc = default_zalloc;
++      allocator->free = default_free;
++   }
++
++   return allocator;
++}
++
++struct pan_kmod_dev *
++pan_kmod_dev_create(int fd, uint32_t flags,
++                    const struct pan_kmod_allocator *allocator)
++{
++   drmVersionPtr version = drmGetVersion(fd);
++   struct pan_kmod_dev *dev = NULL;
++
++   if (!version)
++      return NULL;
++
++   if (!allocator) {
++      allocator = create_default_allocator();
++      if (!allocator)
++         goto out_free_version;
++   }
++
++   for (unsigned i = 0; i < ARRAY_SIZE(drivers); i++) {
++      if (!strcmp(drivers[i].name, version->name)) {
++         const struct pan_kmod_ops *ops = drivers[i].ops;
++
++         dev = ops->dev_create(fd, flags, version, allocator);
++         if (dev)
++            goto out_free_version;
++
++         break;
++      }
++   }
++
++   if (allocator->zalloc == default_zalloc)
++      ralloc_free((void *)allocator);
++
++out_free_version:
++   drmFreeVersion(version);
++   return dev;
++}
++
++void
++pan_kmod_dev_destroy(struct pan_kmod_dev *dev)
++{
++   const struct pan_kmod_allocator *allocator = dev->allocator;
++
++   dev->ops->dev_destroy(dev);
++
++   if (allocator->zalloc == default_zalloc)
++      ralloc_free((void *)allocator);
++}
++
++struct pan_kmod_bo *
++pan_kmod_bo_alloc(struct pan_kmod_dev *dev, struct pan_kmod_vm *exclusive_vm,
++                  size_t size, uint32_t flags)
++{
++   struct pan_kmod_bo *bo;
++
++   bo = dev->ops->bo_alloc(dev, exclusive_vm, size, flags);
++   if (!bo)
++      return NULL;
++
++   /* We intentionally don't take the lock when filling the sparse array,
++    * because we just created the BO, and haven't exported it yet, so
++    * there's no risk of imports racing with our BO insertion.
++    */
++   struct pan_kmod_bo **slot =
++      util_sparse_array_get(&dev->handle_to_bo.array, bo->handle);
++
++   if (!slot) {
++      mesa_loge("failed to allocate slot in the handle_to_bo array");
++      bo->dev->ops->bo_free(bo);
++      return NULL;
++   }
++
++   assert(*slot == NULL);
++   *slot = bo;
++   return bo;
++}
++
++void
++pan_kmod_bo_put(struct pan_kmod_bo *bo)
++{
++   if (!bo)
++      return;
++
++   int32_t refcnt = p_atomic_dec_return(&bo->refcnt);
++
++   assert(refcnt >= 0);
++
++   if (refcnt)
++      return;
++
++   struct pan_kmod_dev *dev = bo->dev;
++
++   simple_mtx_lock(&dev->handle_to_bo.lock);
++
++   /* If some import took a ref on this BO while we were trying to acquire the
++    * lock, skip the destruction.
++    */
++   if (!p_atomic_read(&bo->refcnt)) {
++      struct pan_kmod_bo **slot = (struct pan_kmod_bo **)util_sparse_array_get(
++         &dev->handle_to_bo.array, bo->handle);
++
++      assert(slot);
++      *slot = NULL;
++      bo->dev->ops->bo_free(bo);
++   }
++
++   simple_mtx_unlock(&dev->handle_to_bo.lock);
++}
++
++static bool
++pan_kmod_bo_check_import_flags(struct pan_kmod_bo *bo, uint32_t flags)
++{
++   uint32_t mask = PAN_KMOD_BO_FLAG_EXECUTABLE |
++                   PAN_KMOD_BO_FLAG_ALLOC_ON_FAULT | PAN_KMOD_BO_FLAG_NO_MMAP |
++                   PAN_KMOD_BO_FLAG_GPU_UNCACHED;
++
++   return (bo->flags & mask) == (flags & mask);
++}
++
++struct pan_kmod_bo *
++pan_kmod_bo_import(struct pan_kmod_dev *dev, int fd, uint32_t flags)
++{
++   struct pan_kmod_bo *bo = NULL;
++   struct pan_kmod_bo **slot;
++
++   simple_mtx_lock(&dev->handle_to_bo.lock);
++
++   uint32_t handle;
++   int ret = drmPrimeFDToHandle(dev->fd, fd, &handle);
++   if (ret)
++      goto err_unlock;
++
++   slot = util_sparse_array_get(&dev->handle_to_bo.array, handle);
++   if (!slot)
++      goto err_close_handle;
++
++   if (*slot) {
++      if (!pan_kmod_bo_check_import_flags(*slot, flags)) {
++         mesa_loge("invalid import flags");
++         goto err_unlock;
++      }
++
++      bo = *slot;
++
++      p_atomic_inc(&bo->refcnt);
++   } else {
++      size_t size = lseek(fd, 0, SEEK_END);
++      if (size == 0 || size == (size_t)-1) {
++         mesa_loge("invalid dmabuf size");
++         goto err_close_handle;
++      }
++
++      bo = dev->ops->bo_import(dev, handle, size, flags);
++      if (!bo)
++         goto err_close_handle;
++
++      *slot = bo;
++   }
++
++   assert(p_atomic_read(&bo->refcnt) > 0);
++
++   simple_mtx_unlock(&dev->handle_to_bo.lock);
++
++   return bo;
++
++err_close_handle:
++   drmCloseBufferHandle(dev->fd, handle);
++
++err_unlock:
++   simple_mtx_unlock(&dev->handle_to_bo.lock);
++
++   return NULL;
++}
++
+diff --git a/src/panfrost/lib/kmod/pan_kmod.h b/src/panfrost/lib/kmod/pan_kmod.h
+new file mode 100644
+index 00000000000..ec067f441a7
+--- /dev/null
++++ b/src/panfrost/lib/kmod/pan_kmod.h
+@@ -0,0 +1,587 @@
++/*
++ * Copyright © 2023 Collabora, Ltd.
++ *
++ * SPDX-License-Identifier: MIT
++ *
++ * This file exposes some core KMD functionalities in a driver-agnostic way.
++ * The drivers are still assumed to be regular DRM drivers, such that some
++ * operations can be handled generically.
++ *
++ * Any operation that's too specific to be abstracted can either have a backend
++ * specific helper exposed through pan_kmod_<backend>.h, or no helper at all
++ * (in the latter case, users are expected to call the ioctl directly).
++ *
++ * If some operations are not natively supported by a KMD, the kmod backend
++ * should fail or emulate the functionality (if deemed necessary).
++ */
++
++#pragma once
++
++#include <fcntl.h>
++#include <unistd.h>
++#include <xf86drm.h>
++
++#include "drm-uapi/drm.h"
++
++#include "util/log.h"
++#include "util/macros.h"
++#include "util/os_file.h"
++#include "util/os_mman.h"
++#include "util/ralloc.h"
++#include "util/simple_mtx.h"
++#include "util/sparse_array.h"
++#include "util/u_atomic.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
++struct pan_kmod_dev;
++
++/* GPU VM creation flags. */
++enum pan_kmod_vm_flags {
++   /* Set if you want the VM to automatically assign virtual addresses when
++    * pan_kmod_vm_map(). If this flag is set, all pan_kmod_vm_map() calls
++    * must have va=PAN_KMOD_VM_MAP_AUTO_VA.
++    */
++   PAN_KMOD_VM_FLAG_AUTO_VA = BITFIELD_BIT(0),
++};
++
++/* Object representing a GPU VM. */
++struct pan_kmod_vm {
++   /* Combination of pan_kmod_vm_flags flags. */
++   uint32_t flags;
++
++   /* The VM handle returned by the KMD. If the KMD supports only one VM per
++    * context, this should be zero.
++    */
++   uint32_t handle;
++
++   /* Device this VM was created from. */
++   struct pan_kmod_dev *dev;
++};
++
++/* Buffer object flags. */
++enum pan_kmod_bo_flags {
++   /* Allow GPU execution on this buffer. */
++   PAN_KMOD_BO_FLAG_EXECUTABLE = BITFIELD_BIT(0),
++
++   /* Allocate memory when a GPU fault occurs instead of allocating
++    * up-front.
++    */
++   PAN_KMOD_BO_FLAG_ALLOC_ON_FAULT = BITFIELD_BIT(1),
++
++   /* If set, the buffer object will never be CPU-mapped in userspace. */
++   PAN_KMOD_BO_FLAG_NO_MMAP = BITFIELD_BIT(2),
++
++   /* Set when the buffer object has been exported. Users don't directly
++    * control this flag, it's set when pan_kmod_bo_export() is called.
++    */
++   PAN_KMOD_BO_FLAG_EXPORTED = BITFIELD_BIT(3),
++
++   /* Set when the buffer object has been impported. Users don't directly
++    * control this flag, it's set when pan_kmod_bo_import() is called.
++    */
++   PAN_KMOD_BO_FLAG_IMPORTED = BITFIELD_BIT(4),
++
++   /* If set, the buffer in mapped GPU-uncached when pan_kmod_vm_map()
++    * is called.
++    */
++   PAN_KMOD_BO_FLAG_GPU_UNCACHED = BITFIELD_BIT(5),
++};
++
++/* Buffer object. */
++struct pan_kmod_bo {
++   /* Atomic reference count. The only reason we need to refcnt BOs at this
++    * level is because of how DRM prime import works: the import logic
++    * returns the handle of an existing object if the object was previously
++    * imported or was created by the driver.
++    * In order to prevent call GEM_CLOSE on an object that's still supposed
++    * to be active, we need count the number of users left.
++    */
++   int32_t refcnt;
++
++   /* Size of the buffer object. */
++   size_t size;
++
++   /* Handle attached to the buffer object. */
++   uint32_t handle;
++
++   /* Combination of pan_kmod_bo_flags flags. */
++   uint32_t flags;
++
++   /* If non-NULL, the buffer object can only by mapped on this VM. Typical
++    * the case for all internal/non-shareable buffers. The backend can
++    * optimize things based on this information. Calling pan_kmod_bo_export()
++    * on such buffer objects is forbidden.
++    */
++   struct pan_kmod_vm *exclusive_vm;
++
++   /* The device this buffer object was created from. */
++   struct pan_kmod_dev *dev;
++
++   /* User private data. Use pan_kmod_bo_{set,get}_user_priv() to access it. */
++   void *user_priv;
++};
++
++/* List of GPU properties needed by the UMD. */
++struct pan_kmod_dev_props {
++   /* GPU product ID. */
++   uint32_t gpu_prod_id;
++
++   /* GPU revision. */
++   uint32_t gpu_revision;
++
++   /* Bitmask encoding the number of shader cores exposed by the GPU. */
++   uint64_t shader_present;
++
++   /* Tiler features bits. */
++   uint32_t tiler_features;
++
++   /* Memory related feature bits. */
++   uint32_t mem_features;
++
++   /* MMU feature bits. */
++   uint32_t mmu_features;
++
++   /* Texture feature bits. */
++   uint32_t texture_features[4];
++
++   /* Maximum number of threads per core. */
++   uint32_t thread_tls_alloc;
++
++   /* AFBC feature bits. */
++   uint32_t afbc_features;
++};
++
++/* Memory allocator for kmod internal allocations. */
++struct pan_kmod_allocator {
++   /* Allocate and set to zero. */
++   void *(*zalloc)(const struct pan_kmod_allocator *allocator, size_t size,
++                   bool transient);
++
++   /* Free. */
++   void (*free)(const struct pan_kmod_allocator *allocator, void *data);
++
++   /* Private data allocator data. Can be NULL if unused. */
++   void *priv;
++};
++
++/* Synchronization type. */
++enum pan_kmod_sync_type {
++   PAN_KMOD_SYNC_TYPE_WAIT = 0,
++   PAN_KMOD_SYNC_TYPE_SIGNAL,
++};
++
++/* Synchronization operation. */
++struct pan_kmod_sync_op {
++   /* Type of operation. */
++   enum pan_kmod_sync_type type;
++
++   /* Syncobj handle. */
++   uint32_t handle;
++
++   /* Syncobj point. Zero for binary syncobjs. */
++   uint64_t point;
++};
++
++/* Special value passed to pan_kmod_vm_map() to signify the VM it should
++ * automatically allocate a VA. Only valid if the VM was created with
++ * PAN_KMOD_VM_FLAG_AUTO_VA.
++ */
++#define PAN_KMOD_VM_MAP_AUTO_VA ~0ull
++
++/* Special value return when the vm_map() operation failed. */
++#define PAN_KMOD_VM_MAP_FAILED ~0ull
++
++/* VM operations can be executed in different modes. */
++enum pan_kmod_vm_op_mode {
++   /* The map/unmap operation is executed immediately, which might cause
++    * GPU faults if the GPU was still accessing buffers when we unmap or
++    * remap.
++    */
++   PAN_KMOD_VM_OP_MODE_IMMEDIATE,
++
++   /* The map/unmap operation is executed asynchronously, and the user
++    * provides explicit wait/signal sync operations.
++    */
++   PAN_KMOD_VM_OP_MODE_ASYNC,
++
++   /* The map/unmap operation is executed when the next GPU/VM idle-point
++    * is reached. This guarantees fault-free unmap/remap operations when the
++    * kmod user doesn't want to deal with synchronizations explicitly.
++    */
++   PAN_KMOD_VM_OP_MODE_DEFER_TO_NEXT_IDLE_POINT,
++};
++
++/* VM operation type. */
++enum pan_kmod_vm_op_type {
++   /* Map a buffer object. */
++   PAN_KMOD_VM_OP_TYPE_MAP,
++
++   /* Unmap a VA range. */
++   PAN_KMOD_VM_OP_TYPE_UNMAP,
++
++   /* Do nothing. Used as a way to execute sync operations on a VM queue,
++    * without touching the VM.
++    */
++   PAN_KMOD_VM_OP_TYPE_SYNC_ONLY,
++};
++
++/* VM operation data. */
++struct pan_kmod_vm_op {
++   /* The type of operation being requested. */
++   enum pan_kmod_vm_op_type type;
++
++   /* VA range. */
++   struct {
++      /* Start of the VA range.
++       * Must be PAN_KMOD_VM_MAP_AUTO_VA if PAN_KMOD_VM_FLAG_AUTO_VA was set
++       * at VM creation time. In that case, the allocated VA is returned
++       * in this field.
++       */
++      uint64_t start;
++
++      /* Size of the VA range */
++      size_t size;
++   } va;
++
++   union {
++      /* Arguments specific to map operations. */
++      struct {
++         /* Buffer object to map. */
++         struct pan_kmod_bo *bo;
++
++         /* Offset in the buffer object. */
++         off_t bo_offset;
++      } map;
++   };
++
++   /* Synchronization operations attached to the VM operation. */
++   struct {
++      /* Number of synchronization operations. Must be zero if mode is
++       * PAN_KMOD_VM_OP_MODE_IMMEDIATE or PAN_KMOD_VM_OP_MODE_WAIT_IDLE.
++       */
++      uint32_t count;
++
++      /* Array of synchronization operation descriptors. NULL if count is zero. */
++      const struct pan_kmod_sync_op *array;
++   } syncs;
++};
++
++/* VM state. */
++enum pan_kmod_vm_state {
++   PAN_KMOD_VM_USABLE,
++   PAN_KMOD_VM_FAULTY,
++};
++
++/* Device flags. */
++enum pan_kmod_dev_flags {
++   /* Set when the fd passed to pan_kmod_create() is expected to be
++    * owned by the device, iff the device creation succeeded.
++    */
++   PAN_KMOD_DEV_FLAG_OWNS_FD = (1 << 0),
++};
++
++/* KMD backend vtable.
++ *
++ * All methods described there are mandatory, unless explicitly flagged as
++ * optional.
++ */
++struct pan_kmod_ops {
++   /* Create a pan_kmod_dev object.
++    * Return NULL if the creation fails for any reason.
++    */
++   struct pan_kmod_dev *(*dev_create)(
++      int fd, uint32_t flags, const drmVersionPtr version,
++      const struct pan_kmod_allocator *allocator);
++
++   /* Destroy a pan_kmod_dev object. */
++   void (*dev_destroy)(struct pan_kmod_dev *dev);
++
++   /* Query device properties. */
++   void (*dev_query_props)(struct pan_kmod_dev *dev,
++                           struct pan_kmod_dev_props *props);
++
++   /* Allocate a buffer object.
++    * Return NULL if the creation fails for any reason.
++    */
++   struct pan_kmod_bo *(*bo_alloc)(struct pan_kmod_dev *dev,
++                                   struct pan_kmod_vm *exclusive_vm,
++                                   size_t size, uint32_t flags);
++
++   /* Free buffer object. */
++   void (*bo_free)(struct pan_kmod_bo *bo);
++
++   /* Import a buffer object.
++    * Return NULL if the import fails for any reason.
++    */
++   struct pan_kmod_bo *(*bo_import)(struct pan_kmod_dev *dev, uint32_t handle,
++                                    size_t size, uint32_t flags);
++
++   /* Post export operations.
++    * Return 0 on success, -1 otherwise.
++    * This method is optional.
++    */
++   int (*bo_export)(struct pan_kmod_bo *bo, int dmabuf_fd);
++
++   /* Get the file offset to use to mmap() a buffer object. */
++   off_t (*bo_get_mmap_offset)(struct pan_kmod_bo *bo);
++
++   /* Wait for a buffer object to be ready for read or read/write accesses. */
++   bool (*bo_wait)(struct pan_kmod_bo *bo, int64_t timeout_ns,
++                   bool for_read_only_access);
++
++   /* Make a buffer object evictable. This method is optional. */
++   void (*bo_make_evictable)(struct pan_kmod_bo *bo);
++
++   /* Make the buffer object unevictable. This method is optional. */
++   bool (*bo_make_unevictable)(struct pan_kmod_bo *bo);
++
++   /* Create a VM object. */
++   struct pan_kmod_vm *(*vm_create)(struct pan_kmod_dev *dev, uint32_t flags,
++                                    uint64_t va_start, uint64_t va_range);
++
++   /* Destroy a VM object. */
++   void (*vm_destroy)(struct pan_kmod_vm *vm);
++
++   /* Execute VM operations.
++    * Return 0 if the submission suceeds, -1 otherwise.
++    * For PAN_KMOD_VM_OP_MODE_IMMEDIATE submissions, the return value also
++    * reflects the successfulness of the VM operation, for other modes,
++    * if any of the VM operation fails, the VM might be flagged as unusable
++    * and users should create a new VM to recover.
++    */
++   int (*vm_bind)(struct pan_kmod_vm *vm, enum pan_kmod_vm_op_mode mode,
++                  struct pan_kmod_vm_op *ops, uint32_t op_count);
++
++   /* Query the VM state.
++    * This method is optional. When missing the VM is assumed to always be
++    * usable.
++    */
++   enum pan_kmod_vm_state (*vm_query_state)(struct pan_kmod_vm *vm);
++};
++
++/* KMD information. */
++struct pan_kmod_driver {
++   /* KMD version. */
++   struct {
++      uint32_t major;
++      uint32_t minor;
++   } version;
++};
++
++/* Device object. */
++struct pan_kmod_dev {
++   /* FD attached to the device. */
++   int fd;
++
++   /* Device flags. */
++   uint32_t flags;
++
++   /* KMD backing this device. */
++   struct pan_kmod_driver driver;
++
++   /* kmod backend ops assigned at device creation. */
++   const struct pan_kmod_ops *ops;
++
++   /* DRM prime import returns the handle of a pre-existing GEM if we are
++    * importing an object that was created by us or previously imported.
++    * We need to make sure we return the same pan_kmod_bo in that case,
++    * otherwise freeing one pan_kmod_bo will make all other BOs sharing
++    * the same handle invalid.
++    */
++   struct {
++      struct util_sparse_array array;
++      simple_mtx_t lock;
++   } handle_to_bo;
++
++   /* Allocator attached to the device. */
++   const struct pan_kmod_allocator *allocator;
++
++   /* User private data. Use pan_kmod_dev_{set,get}_user_priv() to access it. */
++   void *user_priv;
++};
++
++struct pan_kmod_dev *
++pan_kmod_dev_create(int fd, uint32_t flags,
++                    const struct pan_kmod_allocator *allocator);
++
++void pan_kmod_dev_destroy(struct pan_kmod_dev *dev);
++
++static inline void
++pan_kmod_dev_query_props(struct pan_kmod_dev *dev,
++                         struct pan_kmod_dev_props *props)
++{
++   dev->ops->dev_query_props(dev, props);
++}
++
++static inline void
++pan_kmod_dev_set_user_priv(struct pan_kmod_dev *dev, void *data)
++{
++   dev->user_priv = data;
++}
++
++static inline void *
++pan_kmod_dev_get_user_priv(struct pan_kmod_dev *dev)
++{
++   return dev->user_priv;
++}
++
++struct pan_kmod_bo *pan_kmod_bo_alloc(struct pan_kmod_dev *dev,
++                                      struct pan_kmod_vm *exclusive_vm,
++                                      size_t size, uint32_t flags);
++
++static inline struct pan_kmod_bo *
++pan_kmod_bo_get(struct pan_kmod_bo *bo)
++{
++   if (!bo)
++      return NULL;
++
++   ASSERTED int32_t refcnt = p_atomic_inc_return(&bo->refcnt);
++
++   /* If refcnt was zero before our increment, we're in trouble. */
++   assert(refcnt > 1);
++
++   return bo;
++}
++
++void pan_kmod_bo_put(struct pan_kmod_bo *bo);
++
++static inline void *
++pan_kmod_bo_cmdxchg_user_priv(struct pan_kmod_bo *bo, void *old_data,
++                              void *new_data)
++{
++   return (void *)p_atomic_cmpxchg((uintptr_t *)&bo->user_priv,
++                                   (uintptr_t)old_data, (uintptr_t)new_data);
++}
++
++static inline void
++pan_kmod_bo_set_user_priv(struct pan_kmod_bo *bo, void *data)
++{
++   bo->user_priv = data;
++}
++
++static inline void *
++pan_kmod_bo_get_user_priv(const struct pan_kmod_bo *bo)
++{
++   return bo->user_priv;
++}
++
++struct pan_kmod_bo *
++pan_kmod_bo_import(struct pan_kmod_dev *dev, int fd, uint32_t flags);
++
++static inline int
++pan_kmod_bo_export(struct pan_kmod_bo *bo)
++{
++   int fd;
++
++   if (drmPrimeHandleToFD(bo->dev->fd, bo->handle, DRM_CLOEXEC, &fd)) {
++      mesa_loge("drmPrimeHandleToFD() failed (err=%d)", errno);
++      return -1;
++   }
++
++   if (bo->dev->ops->bo_export && bo->dev->ops->bo_export(bo, fd)) {
++      close(fd);
++      return -1;
++   }
++
++   bo->flags |= PAN_KMOD_BO_FLAG_EXPORTED;
++   return fd;
++}
++
++static inline bool
++pan_kmod_bo_wait(struct pan_kmod_bo *bo, int64_t timeout_ns,
++                 bool for_read_only_access)
++{
++   return bo->dev->ops->bo_wait(bo, timeout_ns, for_read_only_access);
++}
++
++static inline void
++pan_kmod_bo_make_evictable(struct pan_kmod_bo *bo)
++{
++   if (bo->dev->ops->bo_make_evictable)
++      bo->dev->ops->bo_make_evictable(bo);
++}
++
++static inline bool
++pan_kmod_bo_make_unevictable(struct pan_kmod_bo *bo)
++{
++   if (bo->dev->ops->bo_make_unevictable)
++      return bo->dev->ops->bo_make_unevictable(bo);
++
++   return true;
++}
++
++static inline void *
++pan_kmod_bo_mmap(struct pan_kmod_bo *bo, off_t bo_offset, size_t size, int prot,
++                 int flags)
++{
++   off_t mmap_offset;
++   void *cpu_addr;
++
++   if (bo_offset + size > bo->size)
++      return MAP_FAILED;
++
++   mmap_offset = bo->dev->ops->bo_get_mmap_offset(bo);
++   if (mmap_offset < 0)
++      return MAP_FAILED;
++
++   cpu_addr =
++      os_mmap(NULL, size, prot, flags, bo->dev->fd, mmap_offset + bo_offset);
++   if (cpu_addr == MAP_FAILED)
++      mesa_loge("mmap() failed (err=%d)", errno);
++
++   return cpu_addr;
++}
++
++static inline size_t
++pan_kmod_bo_size(struct pan_kmod_bo *bo)
++{
++   return bo->size;
++}
++
++static inline uint32_t
++pan_kmod_bo_handle(struct pan_kmod_bo *bo)
++{
++   return bo->handle;
++}
++
++static inline struct pan_kmod_vm *
++pan_kmod_vm_create(struct pan_kmod_dev *dev, uint32_t flags, uint64_t va_start,
++                   uint64_t va_range)
++{
++   return dev->ops->vm_create(dev, flags, va_start, va_range);
++}
++
++static inline void
++pan_kmod_vm_destroy(struct pan_kmod_vm *vm)
++{
++   vm->dev->ops->vm_destroy(vm);
++}
++
++static inline int
++pan_kmod_vm_bind(struct pan_kmod_vm *vm, enum pan_kmod_vm_op_mode mode,
++                 struct pan_kmod_vm_op *ops, uint32_t op_count)
++{
++   return vm->dev->ops->vm_bind(vm, mode, ops, op_count);
++}
++
++static inline enum pan_kmod_vm_state
++pan_kmod_vm_query_state(struct pan_kmod_vm *vm)
++{
++   if (vm->dev->ops->vm_query_state)
++      return vm->dev->ops->vm_query_state(vm);
++
++   return PAN_KMOD_VM_USABLE;
++}
++
++static inline uint32_t
++pan_kmod_vm_handle(struct pan_kmod_vm *vm)
++{
++   return vm->handle;
++}
++
++#if defined(__cplusplus)
++} // extern "C"
++#endif
+diff --git a/src/panfrost/lib/kmod/pan_kmod_backend.h b/src/panfrost/lib/kmod/pan_kmod_backend.h
+new file mode 100644
+index 00000000000..f64e4a0c1c3
+--- /dev/null
++++ b/src/panfrost/lib/kmod/pan_kmod_backend.h
+@@ -0,0 +1,117 @@
++/*
++ * Copyright © 2023 Collabora, Ltd.
++ *
++ * SPDX-License-Identifier: MIT
++ */
++
++#pragma once
++
++#include "util/log.h"
++
++#include "pan_kmod.h"
++
++static inline void
++pan_kmod_dev_init(struct pan_kmod_dev *dev, int fd, uint32_t flags,
++                  drmVersionPtr version, const struct pan_kmod_ops *ops,
++                  const struct pan_kmod_allocator *allocator)
++{
++   simple_mtx_init(&dev->handle_to_bo.lock, mtx_plain);
++   util_sparse_array_init(&dev->handle_to_bo.array,
++                          sizeof(struct pan_kmod_bo *), 512);
++   dev->driver.version.major = version->version_major;
++   dev->driver.version.minor = version->version_minor;
++   dev->fd = fd;
++   dev->flags = flags;
++   dev->ops = ops;
++   dev->allocator = allocator;
++}
++
++static inline void
++pan_kmod_dev_cleanup(struct pan_kmod_dev *dev)
++{
++   if (dev->flags & PAN_KMOD_DEV_FLAG_OWNS_FD)
++      close(dev->fd);
++
++   util_sparse_array_finish(&dev->handle_to_bo.array);
++   simple_mtx_destroy(&dev->handle_to_bo.lock);
++}
++
++static inline void *
++pan_kmod_alloc(const struct pan_kmod_allocator *allocator, size_t size)
++{
++   return allocator->zalloc(allocator, size, false);
++}
++
++static inline void *
++pan_kmod_alloc_transient(const struct pan_kmod_allocator *allocator,
++                         size_t size)
++{
++   return allocator->zalloc(allocator, size, true);
++}
++
++static inline void
++pan_kmod_free(const struct pan_kmod_allocator *allocator, void *data)
++{
++   return allocator->free(allocator, data);
++}
++
++static inline void *
++pan_kmod_dev_alloc(struct pan_kmod_dev *dev, size_t size)
++{
++   return pan_kmod_alloc(dev->allocator, size);
++}
++
++static inline void *
++pan_kmod_dev_alloc_transient(struct pan_kmod_dev *dev, size_t size)
++{
++   return pan_kmod_alloc_transient(dev->allocator, size);
++}
++
++static inline void
++pan_kmod_dev_free(const struct pan_kmod_dev *dev, void *data)
++{
++   return pan_kmod_free(dev->allocator, data);
++}
++
++static inline void
++pan_kmod_bo_init(struct pan_kmod_bo *bo, struct pan_kmod_dev *dev,
++                 struct pan_kmod_vm *exclusive_vm, size_t size, uint32_t flags,
++                 uint32_t handle)
++{
++   bo->dev = dev;
++   bo->exclusive_vm = exclusive_vm;
++   bo->size = size;
++   bo->flags = flags;
++   bo->handle = handle;
++   p_atomic_set(&bo->refcnt, 1);
++}
++
++static inline void
++pan_kmod_vm_init(struct pan_kmod_vm *vm, struct pan_kmod_dev *dev,
++                 uint32_t handle, uint32_t flags)
++{
++   vm->dev = dev;
++   vm->handle = handle;
++   vm->flags = flags;
++}
++
++static inline int
++pank_kmod_vm_op_check(struct pan_kmod_vm *vm, enum pan_kmod_vm_op_mode mode,
++                      struct pan_kmod_vm_op *op)
++{
++   /* We should only have sync operations on an async VM bind request. */
++   if (mode != PAN_KMOD_VM_OP_MODE_ASYNC && op->syncs.count) {
++      mesa_loge("only PAN_KMOD_VM_OP_MODE_ASYNC can be passed sync operations");
++      return -1;
++   }
++
++   /* Make sure the PAN_KMOD_VM_FLAG_AUTO_VA and VA passed to the op match. */
++   if (op->type == PAN_KMOD_VM_OP_TYPE_MAP &&
++       !!(vm->flags & PAN_KMOD_VM_FLAG_AUTO_VA) !=
++          (op->va.start == PAN_KMOD_VM_MAP_AUTO_VA)) {
++      mesa_loge("op->va.start and vm->flags don't match");
++      return -1;
++   }
++
++   return 0;
++}
+diff --git a/src/panfrost/lib/meson.build b/src/panfrost/lib/meson.build
+index e27483e1280..12b927a2973 100644
+--- a/src/panfrost/lib/meson.build
++++ b/src/panfrost/lib/meson.build
+@@ -20,6 +20,7 @@
+ # SOFTWARE.
+ 
+ subdir('genxml')
++subdir('kmod')
+ 
+ pixel_format_versions = ['6', '7', '9']
+ libpanfrost_pixel_format = []
+@@ -92,13 +93,13 @@ libpanfrost_lib = static_library(
+   gnu_symbol_visibility : 'hidden',
+   dependencies: [dep_libdrm, idep_nir, idep_mesautil],
+   build_by_default : false,
+-  link_with: [libpanfrost_pixel_format, libpanfrost_per_arch],
++  link_with: [libpanfrost_pixel_format, libpanfrost_per_arch, libpankmod_lib],
+ )
+ 
+ libpanfrost_dep = declare_dependency(
+   link_with: [libpanfrost_lib, libpanfrost_decode, libpanfrost_midgard, libpanfrost_bifrost, libpanfrost_pixel_format, libpanfrost_per_arch],
+   include_directories: [inc_include, inc_src, inc_mapi, inc_mesa, inc_gallium, inc_gallium_aux, inc_panfrost_hw, inc_panfrost],
+-  dependencies: [dep_libdrm, idep_nir, idep_pan_packers],
++  dependencies: [dep_libdrm, libpankmod_dep, idep_nir, idep_pan_packers],
+ )
+ 
+ if with_tests
+-- 
+2.43.0
+

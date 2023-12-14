@@ -1,0 +1,786 @@
+From 8ac54d29b233b74325f979984a7e4ce97833f4e0 Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Mon, 20 Nov 2023 14:28:48 +0100
+Subject: [PATCH 03/29] panfrost: Avoid direct accesses to some panfrost_device
+ fields
+
+We are about to delegate some device-related operations to the pan_kmod
+layer, but before we can do that, we need to hide panfrost_device
+internals so we can redirect such accesses to pan_kmod.
+
+Provide a few panfrost_device_xxx() accessors and start using them.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+---
+ src/gallium/drivers/panfrost/pan_context.c | 11 ++++----
+ src/gallium/drivers/panfrost/pan_fence.c   | 18 ++++++------
+ src/gallium/drivers/panfrost/pan_jm.c      | 12 ++++----
+ src/gallium/drivers/panfrost/pan_screen.c  | 11 ++++----
+ src/gallium/drivers/panfrost/pan_shader.c  |  8 +++---
+ src/panfrost/lib/pan_blend.c               |  4 +--
+ src/panfrost/lib/pan_blitter.c             |  2 +-
+ src/panfrost/lib/pan_bo.c                  | 32 +++++++++++++---------
+ src/panfrost/lib/pan_device.h              | 30 ++++++++++++++++++++
+ src/panfrost/lib/pan_indirect_dispatch.c   |  2 +-
+ src/panfrost/lib/pan_props.c               |  8 +++---
+ src/panfrost/perf/pan_perf.c               |  8 +++---
+ src/panfrost/vulkan/panvk_device.c         | 24 +++++++++-------
+ src/panfrost/vulkan/panvk_vX_device.c      | 32 ++++++++++++++--------
+ src/panfrost/vulkan/panvk_vX_meta_clear.c  |  2 +-
+ src/panfrost/vulkan/panvk_vX_meta_copy.c   | 10 +++----
+ src/panfrost/vulkan/panvk_vX_shader.c      |  2 +-
+ 17 files changed, 133 insertions(+), 83 deletions(-)
+
+diff --git a/src/gallium/drivers/panfrost/pan_context.c b/src/gallium/drivers/panfrost/pan_context.c
+index 3c564ad54ce..e1fed545c4b 100644
+--- a/src/gallium/drivers/panfrost/pan_context.c
++++ b/src/gallium/drivers/panfrost/pan_context.c
+@@ -562,11 +562,11 @@ panfrost_destroy(struct pipe_context *pipe)
+    panfrost_pool_cleanup(&panfrost->shaders);
+    panfrost_afbc_context_destroy(panfrost);
+ 
+-   drmSyncobjDestroy(dev->fd, panfrost->in_sync_obj);
++   drmSyncobjDestroy(panfrost_device_fd(dev), panfrost->in_sync_obj);
+    if (panfrost->in_sync_fd != -1)
+       close(panfrost->in_sync_fd);
+ 
+-   drmSyncobjDestroy(dev->fd, panfrost->syncobj);
++   drmSyncobjDestroy(panfrost_device_fd(dev), panfrost->syncobj);
+    ralloc_free(pipe);
+ }
+ 
+@@ -860,7 +860,7 @@ panfrost_fence_server_sync(struct pipe_context *pctx,
+    struct panfrost_context *ctx = pan_context(pctx);
+    int fd = -1, ret;
+ 
+-   ret = drmSyncobjExportSyncFile(dev->fd, f->syncobj, &fd);
++   ret = drmSyncobjExportSyncFile(panfrost_device_fd(dev), f->syncobj, &fd);
+    assert(!ret);
+ 
+    sync_accumulate("panfrost", &ctx->in_sync_fd, fd);
+@@ -973,12 +973,13 @@ panfrost_create_context(struct pipe_screen *screen, void *priv, unsigned flags)
+    /* Create a syncobj in a signaled state. Will be updated to point to the
+     * last queued job out_sync every time we submit a new job.
+     */
+-   ret = drmSyncobjCreate(dev->fd, DRM_SYNCOBJ_CREATE_SIGNALED, &ctx->syncobj);
++   ret = drmSyncobjCreate(panfrost_device_fd(dev), DRM_SYNCOBJ_CREATE_SIGNALED,
++                          &ctx->syncobj);
+    assert(!ret && ctx->syncobj);
+ 
+    /* Sync object/FD used for NATIVE_FENCE_FD. */
+    ctx->in_sync_fd = -1;
+-   ret = drmSyncobjCreate(dev->fd, 0, &ctx->in_sync_obj);
++   ret = drmSyncobjCreate(panfrost_device_fd(dev), 0, &ctx->in_sync_obj);
+    assert(!ret);
+ 
+    return gallium;
+diff --git a/src/gallium/drivers/panfrost/pan_fence.c b/src/gallium/drivers/panfrost/pan_fence.c
+index 792550371f8..1390ddfe400 100644
+--- a/src/gallium/drivers/panfrost/pan_fence.c
++++ b/src/gallium/drivers/panfrost/pan_fence.c
+@@ -42,7 +42,7 @@ panfrost_fence_reference(struct pipe_screen *pscreen,
+    struct pipe_fence_handle *old = *ptr;
+ 
+    if (pipe_reference(&old->reference, &fence->reference)) {
+-      drmSyncobjDestroy(dev->fd, old->syncobj);
++      drmSyncobjDestroy(panfrost_device_fd(dev), old->syncobj);
+       free(old);
+    }
+ 
+@@ -63,8 +63,8 @@ panfrost_fence_finish(struct pipe_screen *pscreen, struct pipe_context *ctx,
+    if (abs_timeout == OS_TIMEOUT_INFINITE)
+       abs_timeout = INT64_MAX;
+ 
+-   ret = drmSyncobjWait(dev->fd, &fence->syncobj, 1, abs_timeout,
+-                        DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
++   ret = drmSyncobjWait(panfrost_device_fd(dev), &fence->syncobj, 1,
++                        abs_timeout, DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
+ 
+    fence->signaled = (ret >= 0);
+    return fence->signaled;
+@@ -76,7 +76,7 @@ panfrost_fence_get_fd(struct pipe_screen *screen, struct pipe_fence_handle *f)
+    struct panfrost_device *dev = pan_device(screen);
+    int fd = -1;
+ 
+-   drmSyncobjExportSyncFile(dev->fd, f->syncobj, &fd);
++   drmSyncobjExportSyncFile(panfrost_device_fd(dev), f->syncobj, &fd);
+    return fd;
+ }
+ 
+@@ -92,20 +92,20 @@ panfrost_fence_from_fd(struct panfrost_context *ctx, int fd,
+       return NULL;
+ 
+    if (type == PIPE_FD_TYPE_NATIVE_SYNC) {
+-      ret = drmSyncobjCreate(dev->fd, 0, &f->syncobj);
++      ret = drmSyncobjCreate(panfrost_device_fd(dev), 0, &f->syncobj);
+       if (ret) {
+          fprintf(stderr, "create syncobj failed\n");
+          goto err_free_fence;
+       }
+ 
+-      ret = drmSyncobjImportSyncFile(dev->fd, f->syncobj, fd);
++      ret = drmSyncobjImportSyncFile(panfrost_device_fd(dev), f->syncobj, fd);
+       if (ret) {
+          fprintf(stderr, "import syncfile failed\n");
+          goto err_destroy_syncobj;
+       }
+    } else {
+       assert(type == PIPE_FD_TYPE_SYNCOBJ);
+-      ret = drmSyncobjFDToHandle(dev->fd, fd, &f->syncobj);
++      ret = drmSyncobjFDToHandle(panfrost_device_fd(dev), fd, &f->syncobj);
+       if (ret) {
+          fprintf(stderr, "import syncobj FD failed\n");
+          goto err_free_fence;
+@@ -117,7 +117,7 @@ panfrost_fence_from_fd(struct panfrost_context *ctx, int fd,
+    return f;
+ 
+ err_destroy_syncobj:
+-   drmSyncobjDestroy(dev->fd, f->syncobj);
++   drmSyncobjDestroy(panfrost_device_fd(dev), f->syncobj);
+ err_free_fence:
+    free(f);
+    return NULL;
+@@ -134,7 +134,7 @@ panfrost_fence_create(struct panfrost_context *ctx)
+     * (HandleToFD/FDToHandle just gives you another syncobj ID for the
+     * same syncobj).
+     */
+-   ret = drmSyncobjExportSyncFile(dev->fd, ctx->syncobj, &fd);
++   ret = drmSyncobjExportSyncFile(panfrost_device_fd(dev), ctx->syncobj, &fd);
+    if (ret || fd == -1) {
+       fprintf(stderr, "export failed\n");
+       return NULL;
+diff --git a/src/gallium/drivers/panfrost/pan_jm.c b/src/gallium/drivers/panfrost/pan_jm.c
+index a2270f55beb..518203dcbca 100644
+--- a/src/gallium/drivers/panfrost/pan_jm.c
++++ b/src/gallium/drivers/panfrost/pan_jm.c
+@@ -97,8 +97,8 @@ jm_submit_jc(struct panfrost_batch *batch, mali_ptr first_job_desc,
+    submit.requirements = reqs;
+ 
+    if (ctx->in_sync_fd >= 0) {
+-      ret =
+-         drmSyncobjImportSyncFile(dev->fd, ctx->in_sync_obj, ctx->in_sync_fd);
++      ret = drmSyncobjImportSyncFile(panfrost_device_fd(dev), ctx->in_sync_obj,
++                                     ctx->in_sync_fd);
+       assert(!ret);
+ 
+       in_syncs[submit.in_sync_count++] = ctx->in_sync_obj;
+@@ -158,7 +158,7 @@ jm_submit_jc(struct panfrost_batch *batch, mali_ptr first_job_desc,
+    if (ctx->is_noop)
+       ret = 0;
+    else
+-      ret = drmIoctl(dev->fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
++      ret = drmIoctl(panfrost_device_fd(dev), DRM_IOCTL_PANFROST_SUBMIT, &submit);
+    free(bo_handles);
+ 
+    if (ret)
+@@ -167,17 +167,17 @@ jm_submit_jc(struct panfrost_batch *batch, mali_ptr first_job_desc,
+    /* Trace the job if we're doing that */
+    if (dev->debug & (PAN_DBG_TRACE | PAN_DBG_SYNC)) {
+       /* Wait so we can get errors reported back */
+-      drmSyncobjWait(dev->fd, &out_sync, 1, INT64_MAX, 0, NULL);
++      drmSyncobjWait(panfrost_device_fd(dev), &out_sync, 1, INT64_MAX, 0, NULL);
+ 
+       if (dev->debug & PAN_DBG_TRACE)
+-         pandecode_jc(dev->decode_ctx, submit.jc, dev->gpu_id);
++         pandecode_jc(dev->decode_ctx, submit.jc, panfrost_device_gpu_id(dev));
+ 
+       if (dev->debug & PAN_DBG_DUMP)
+          pandecode_dump_mappings(dev->decode_ctx);
+ 
+       /* Jobs won't be complete if blackhole rendering, that's ok */
+       if (!ctx->is_noop && dev->debug & PAN_DBG_SYNC)
+-         pandecode_abort_on_fault(dev->decode_ctx, submit.jc, dev->gpu_id);
++         pandecode_abort_on_fault(dev->decode_ctx, submit.jc, panfrost_device_gpu_id(dev));
+    }
+ 
+    return 0;
+diff --git a/src/gallium/drivers/panfrost/pan_screen.c b/src/gallium/drivers/panfrost/pan_screen.c
+index 2b12dfa8a69..876833e7991 100644
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -109,8 +109,8 @@ panfrost_get_param(struct pipe_screen *screen, enum pipe_cap param)
+    bool has_mrt = (dev->arch >= 5);
+ 
+    /* Only kernel drivers >= 1.1 can allocate HEAP BOs */
+-   bool has_heap = dev->kernel_version->version_major > 1 ||
+-                   dev->kernel_version->version_minor >= 1;
++   bool has_heap = panfrost_device_kmod_version_major(dev) > 1 ||
++                   panfrost_device_kmod_version_minor(dev) >= 1;
+ 
+    switch (param) {
+    case PIPE_CAP_NPOT_TEXTURES:
+@@ -143,7 +143,7 @@ panfrost_get_param(struct pipe_screen *screen, enum pipe_cap param)
+       return true;
+ 
+    case PIPE_CAP_ANISOTROPIC_FILTER:
+-      return dev->revision >= dev->model->min_rev_anisotropic;
++      return panfrost_device_gpu_rev(dev) >= dev->model->min_rev_anisotropic;
+ 
+    /* Compile side is done for Bifrost, Midgard TODO. Needs some kernel
+     * work to turn on, since CYCLE_COUNT_START needs to be issued. In
+@@ -807,7 +807,7 @@ panfrost_get_disk_shader_cache(struct pipe_screen *pscreen)
+ static int
+ panfrost_get_screen_fd(struct pipe_screen *pscreen)
+ {
+-   return pan_device(pscreen)->fd;
++   return panfrost_device_fd(pan_device(pscreen));
+ }
+ 
+ int
+@@ -851,7 +851,8 @@ panfrost_create_screen(int fd, const struct pipe_screen_config *config,
+ 
+    /* Bail early on unsupported hardware */
+    if (dev->model == NULL) {
+-      debug_printf("panfrost: Unsupported model %X", dev->gpu_id);
++      debug_printf("panfrost: Unsupported model %X",
++                   panfrost_device_gpu_id(dev));
+       panfrost_destroy_screen(&(screen->base));
+       return NULL;
+    }
+diff --git a/src/gallium/drivers/panfrost/pan_shader.c b/src/gallium/drivers/panfrost/pan_shader.c
+index 546910f8e66..f0d46d32629 100644
+--- a/src/gallium/drivers/panfrost/pan_shader.c
++++ b/src/gallium/drivers/panfrost/pan_shader.c
+@@ -84,11 +84,11 @@ panfrost_shader_compile(struct panfrost_screen *screen, const nir_shader *ir,
+     * happens at CSO create time regardless.
+     */
+    if (gl_shader_stage_is_compute(s->info.stage))
+-      pan_shader_preprocess(s, dev->gpu_id);
++      pan_shader_preprocess(s, panfrost_device_gpu_id(dev));
+ 
+    struct panfrost_compile_inputs inputs = {
+       .debug = dbg,
+-      .gpu_id = dev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(dev),
+    };
+ 
+    /* Lower this early so the backends don't have to worry about it */
+@@ -130,7 +130,7 @@ panfrost_shader_compile(struct panfrost_screen *screen, const nir_shader *ir,
+    if (dev->arch <= 5 && s->info.stage == MESA_SHADER_FRAGMENT) {
+       NIR_PASS_V(s, pan_lower_framebuffer, key->fs.rt_formats,
+                  pan_raw_format_mask_midgard(key->fs.rt_formats), 0,
+-                 dev->gpu_id < 0x700);
++                 panfrost_device_gpu_id(dev) < 0x700);
+    }
+ 
+    NIR_PASS_V(s, panfrost_nir_lower_sysvals, &out->sysvals);
+@@ -375,7 +375,7 @@ panfrost_create_shader_state(struct pipe_context *pctx,
+ 
+    /* Then run the suite of lowering and optimization, including I/O lowering */
+    struct panfrost_device *dev = pan_device(pctx->screen);
+-   pan_shader_preprocess(nir, dev->gpu_id);
++   pan_shader_preprocess(nir, panfrost_device_gpu_id(dev));
+ 
+    /* If this shader uses transform feedback, compile the transform
+     * feedback program. This is a special shader variant.
+diff --git a/src/panfrost/lib/pan_blend.c b/src/panfrost/lib/pan_blend.c
+index 558ecb5e64c..3fb3c00663d 100644
+--- a/src/panfrost/lib/pan_blend.c
++++ b/src/panfrost/lib/pan_blend.c
+@@ -878,7 +878,7 @@ GENX(pan_blend_get_shader_locked)(const struct panfrost_device *dev,
+ 
+    /* Compile the NIR shader */
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = dev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(dev),
+       .is_blend = true,
+       .blend.nr_samples = key.nr_samples,
+    };
+@@ -899,7 +899,7 @@ GENX(pan_blend_get_shader_locked)(const struct panfrost_device *dev,
+ #else
+    NIR_PASS_V(nir, pan_lower_framebuffer, rt_formats,
+               pan_raw_format_mask_midgard(rt_formats), MAX2(key.nr_samples, 1),
+-              dev->gpu_id < 0x700);
++              panfrost_device_gpu_id(dev) < 0x700);
+ #endif
+ 
+    GENX(pan_shader_compile)(nir, &inputs, &variant->binary, &info);
+diff --git a/src/panfrost/lib/pan_blitter.c b/src/panfrost/lib/pan_blitter.c
+index c195763d337..84bcba6361f 100644
+--- a/src/panfrost/lib/pan_blitter.c
++++ b/src/panfrost/lib/pan_blitter.c
+@@ -606,7 +606,7 @@ pan_blitter_get_blit_shader(struct panfrost_device *dev,
+    }
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = dev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(dev),
+       .is_blit = true,
+       .no_idvs = true,
+    };
+diff --git a/src/panfrost/lib/pan_bo.c b/src/panfrost/lib/pan_bo.c
+index b84eeeef1b5..9018b6ac9f5 100644
+--- a/src/panfrost/lib/pan_bo.c
++++ b/src/panfrost/lib/pan_bo.c
+@@ -63,15 +63,16 @@ panfrost_bo_alloc(struct panfrost_device *dev, size_t size, uint32_t flags,
+    struct panfrost_bo *bo;
+    int ret;
+ 
+-   if (dev->kernel_version->version_major > 1 ||
+-       dev->kernel_version->version_minor >= 1) {
++   if (panfrost_device_kmod_version_major(dev) > 1 ||
++       panfrost_device_kmod_version_minor(dev) >= 1) {
+       if (flags & PAN_BO_GROWABLE)
+          create_bo.flags |= PANFROST_BO_HEAP;
+       if (!(flags & PAN_BO_EXECUTE))
+          create_bo.flags |= PANFROST_BO_NOEXEC;
+    }
+ 
+-   ret = drmIoctl(dev->fd, DRM_IOCTL_PANFROST_CREATE_BO, &create_bo);
++   ret = drmIoctl(panfrost_device_fd(dev), DRM_IOCTL_PANFROST_CREATE_BO,
++                  &create_bo);
+    if (ret) {
+       fprintf(stderr, "DRM_IOCTL_PANFROST_CREATE_BO failed: %m\n");
+       return NULL;
+@@ -93,7 +94,7 @@ static void
+ panfrost_bo_free(struct panfrost_bo *bo)
+ {
+    struct drm_gem_close gem_close = {.handle = bo->gem_handle};
+-   int fd = bo->dev->fd;
++   int fd = panfrost_device_fd(bo->dev);
+    int ret;
+ 
+    /* BO will be freed with the sparse array, but zero to indicate free */
+@@ -138,7 +139,8 @@ panfrost_bo_wait(struct panfrost_bo *bo, int64_t timeout_ns, bool wait_readers)
+    /* The ioctl returns >= 0 value when the BO we are waiting for is ready
+     * -1 otherwise.
+     */
+-   ret = drmIoctl(bo->dev->fd, DRM_IOCTL_PANFROST_WAIT_BO, &req);
++   ret =
++      drmIoctl(panfrost_device_fd(bo->dev), DRM_IOCTL_PANFROST_WAIT_BO, &req);
+    if (ret != -1) {
+       /* Set gpu_access to 0 so that the next call to bo_wait()
+        * doesn't have to call the WAIT_BO ioctl.
+@@ -211,7 +213,8 @@ panfrost_bo_cache_fetch(struct panfrost_device *dev, size_t size,
+       list_del(&entry->bucket_link);
+       list_del(&entry->lru_link);
+ 
+-      ret = drmIoctl(dev->fd, DRM_IOCTL_PANFROST_MADVISE, &madv);
++      ret =
++         drmIoctl(panfrost_device_fd(dev), DRM_IOCTL_PANFROST_MADVISE, &madv);
+       if (!ret && !madv.retained) {
+          panfrost_bo_free(entry);
+          continue;
+@@ -273,7 +276,7 @@ panfrost_bo_cache_put(struct panfrost_bo *bo)
+    madv.madv = PANFROST_MADV_DONTNEED;
+    madv.retained = 0;
+ 
+-   drmIoctl(dev->fd, DRM_IOCTL_PANFROST_MADVISE, &madv);
++   drmIoctl(panfrost_device_fd(dev), DRM_IOCTL_PANFROST_MADVISE, &madv);
+ 
+    /* Add us to the bucket */
+    list_addtail(&bo->bucket_link, bucket);
+@@ -327,19 +330,20 @@ panfrost_bo_mmap(struct panfrost_bo *bo)
+    if (bo->ptr.cpu)
+       return;
+ 
+-   ret = drmIoctl(bo->dev->fd, DRM_IOCTL_PANFROST_MMAP_BO, &mmap_bo);
++   ret = drmIoctl(panfrost_device_fd(bo->dev), DRM_IOCTL_PANFROST_MMAP_BO,
++                  &mmap_bo);
+    if (ret) {
+       fprintf(stderr, "DRM_IOCTL_PANFROST_MMAP_BO failed: %m\n");
+       assert(0);
+    }
+ 
+    bo->ptr.cpu = os_mmap(NULL, bo->size, PROT_READ | PROT_WRITE, MAP_SHARED,
+-                         bo->dev->fd, mmap_bo.offset);
++                         panfrost_device_fd(bo->dev), mmap_bo.offset);
+    if (bo->ptr.cpu == MAP_FAILED) {
+       bo->ptr.cpu = NULL;
+       fprintf(stderr,
+               "mmap failed: result=%p size=0x%llx fd=%i offset=0x%llx %m\n",
+-              bo->ptr.cpu, (long long)bo->size, bo->dev->fd,
++              bo->ptr.cpu, (long long)bo->size, panfrost_device_fd(bo->dev),
+               (long long)mmap_bo.offset);
+    }
+ }
+@@ -470,14 +474,15 @@ panfrost_bo_import(struct panfrost_device *dev, int fd)
+ 
+    pthread_mutex_lock(&dev->bo_map_lock);
+ 
+-   ret = drmPrimeFDToHandle(dev->fd, fd, &gem_handle);
++   ret = drmPrimeFDToHandle(panfrost_device_fd(dev), fd, &gem_handle);
+    assert(!ret);
+ 
+    bo = pan_lookup_bo(dev, gem_handle);
+ 
+    if (!bo->dev) {
+       get_bo_offset.handle = gem_handle;
+-      ret = drmIoctl(dev->fd, DRM_IOCTL_PANFROST_GET_BO_OFFSET, &get_bo_offset);
++      ret = drmIoctl(panfrost_device_fd(dev), DRM_IOCTL_PANFROST_GET_BO_OFFSET,
++                     &get_bo_offset);
+       assert(!ret);
+ 
+       bo->dev = dev;
+@@ -523,7 +528,8 @@ panfrost_bo_export(struct panfrost_bo *bo)
+       .flags = DRM_CLOEXEC,
+    };
+ 
+-   int ret = drmIoctl(bo->dev->fd, DRM_IOCTL_PRIME_HANDLE_TO_FD, &args);
++   int ret = drmIoctl(panfrost_device_fd(bo->dev), DRM_IOCTL_PRIME_HANDLE_TO_FD,
++                      &args);
+    if (ret == -1)
+       return -1;
+ 
+diff --git a/src/panfrost/lib/pan_device.h b/src/panfrost/lib/pan_device.h
+index f21361aefdc..d185439fb5f 100644
+--- a/src/panfrost/lib/pan_device.h
++++ b/src/panfrost/lib/pan_device.h
+@@ -215,6 +215,36 @@ struct panfrost_device {
+    struct panfrost_bo *sample_positions;
+ };
+ 
++static inline int
++panfrost_device_fd(const struct panfrost_device *dev)
++{
++   return dev->fd;
++}
++
++static inline uint32_t
++panfrost_device_gpu_id(const struct panfrost_device *dev)
++{
++   return dev->gpu_id;
++}
++
++static inline uint32_t
++panfrost_device_gpu_rev(const struct panfrost_device *dev)
++{
++   return dev->revision;
++}
++
++static inline int
++panfrost_device_kmod_version_major(const struct panfrost_device *dev)
++{
++   return dev->kernel_version->version_major;
++}
++
++static inline int
++panfrost_device_kmod_version_minor(const struct panfrost_device *dev)
++{
++   return dev->kernel_version->version_minor;
++}
++
+ void panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev);
+ 
+ void panfrost_close_device(struct panfrost_device *dev);
+diff --git a/src/panfrost/lib/pan_indirect_dispatch.c b/src/panfrost/lib/pan_indirect_dispatch.c
+index 3fa8e95e07f..82ddaa4cee3 100644
+--- a/src/panfrost/lib/pan_indirect_dispatch.c
++++ b/src/panfrost/lib/pan_indirect_dispatch.c
+@@ -121,7 +121,7 @@ pan_indirect_dispatch_init(struct panfrost_device *dev)
+    nir_pop_if(&b, NULL);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = dev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(dev),
+       .no_ubo_to_push = true,
+    };
+    struct pan_shader_info shader_info;
+diff --git a/src/panfrost/lib/pan_props.c b/src/panfrost/lib/pan_props.c
+index f63f320eadf..b0b60db9fa7 100644
+--- a/src/panfrost/lib/pan_props.c
++++ b/src/panfrost/lib/pan_props.c
+@@ -132,8 +132,8 @@ unsigned
+ panfrost_query_l2_slices(const struct panfrost_device *dev)
+ {
+    /* Query MEM_FEATURES register */
+-   uint32_t mem_features =
+-      panfrost_query_raw(dev->fd, DRM_PANFROST_PARAM_MEM_FEATURES, true, 0);
++   uint32_t mem_features = panfrost_query_raw(
++      panfrost_device_fd(dev), DRM_PANFROST_PARAM_MEM_FEATURES, true, 0);
+ 
+    /* L2_SLICES is MEM_FEATURES[11:8] minus(1) */
+    return ((mem_features >> 8) & 0xF) + 1;
+@@ -251,10 +251,10 @@ panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev)
+    dev->fd = fd;
+    dev->memctx = memctx;
+    dev->gpu_id = panfrost_query_gpu_version(fd);
+-   dev->arch = pan_arch(dev->gpu_id);
++   dev->arch = pan_arch(panfrost_device_gpu_id(dev));
+    dev->kernel_version = drmGetVersion(fd);
+    dev->revision = panfrost_query_gpu_revision(fd);
+-   dev->model = panfrost_get_model(dev->gpu_id);
++   dev->model = panfrost_get_model(panfrost_device_gpu_id(dev));
+ 
+    if (!dev->kernel_version)
+       return;
+diff --git a/src/panfrost/perf/pan_perf.c b/src/panfrost/perf/pan_perf.c
+index c35d0f87c02..86b121ac3fd 100644
+--- a/src/panfrost/perf/pan_perf.c
++++ b/src/panfrost/perf/pan_perf.c
+@@ -92,8 +92,8 @@ static int
+ panfrost_perf_query(struct panfrost_perf *perf, uint32_t enable)
+ {
+    struct drm_panfrost_perfcnt_enable perfcnt_enable = {enable, 0};
+-   return drmIoctl(perf->dev->fd, DRM_IOCTL_PANFROST_PERFCNT_ENABLE,
+-                   &perfcnt_enable);
++   return drmIoctl(panfrost_device_fd(perf->dev),
++                   DRM_IOCTL_PANFROST_PERFCNT_ENABLE, &perfcnt_enable);
+ }
+ 
+ int
+@@ -115,6 +115,6 @@ panfrost_perf_dump(struct panfrost_perf *perf)
+    // counter_values
+    struct drm_panfrost_perfcnt_dump perfcnt_dump = {
+       (uint64_t)(uintptr_t)perf->counter_values};
+-   return drmIoctl(perf->dev->fd, DRM_IOCTL_PANFROST_PERFCNT_DUMP,
+-                   &perfcnt_dump);
++   return drmIoctl(panfrost_device_fd(perf->dev),
++                   DRM_IOCTL_PANFROST_PERFCNT_DUMP, &perfcnt_dump);
+ }
+diff --git a/src/panfrost/vulkan/panvk_device.c b/src/panfrost/vulkan/panvk_device.c
+index 1db43d95b98..88f2c58d170 100644
+--- a/src/panfrost/vulkan/panvk_device.c
++++ b/src/panfrost/vulkan/panvk_device.c
+@@ -460,7 +460,8 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+    memset(device->name, 0, sizeof(device->name));
+    sprintf(device->name, "%s", device->pdev.model->name);
+ 
+-   if (panvk_device_get_cache_uuid(device->pdev.gpu_id, device->cache_uuid)) {
++   if (panvk_device_get_cache_uuid(panfrost_device_gpu_id(&device->pdev),
++                                   device->cache_uuid)) {
+       result = vk_errorf(instance, VK_ERROR_INITIALIZATION_FAILED,
+                          "cannot generate UUID");
+       goto fail_close_device;
+@@ -471,7 +472,8 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+    panvk_get_driver_uuid(&device->device_uuid);
+    panvk_get_device_uuid(&device->device_uuid);
+ 
+-   device->drm_syncobj_type = vk_drm_syncobj_get_type(device->pdev.fd);
++   device->drm_syncobj_type =
++      vk_drm_syncobj_get_type(panfrost_device_fd(&device->pdev));
+    /* We don't support timelines in the uAPI yet and we don't want it getting
+     * suddenly turned on by vk_drm_syncobj_get_type() without us adding panvk
+     * code for it first.
+@@ -800,7 +802,8 @@ panvk_queue_init(struct panvk_device *device, struct panvk_queue *queue,
+       .flags = DRM_SYNCOBJ_CREATE_SIGNALED,
+    };
+ 
+-   int ret = drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_CREATE, &create);
++   int ret =
++      drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_CREATE, &create);
+    if (ret) {
+       vk_queue_finish(&queue->vk);
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+@@ -897,7 +900,7 @@ panvk_CreateDevice(VkPhysicalDevice physicalDevice,
+    device->physical_device = physical_device;
+ 
+    const struct panfrost_device *pdev = &physical_device->pdev;
+-   vk_device_set_drm_fd(&device->vk, pdev->fd);
++   vk_device_set_drm_fd(&device->vk, panfrost_device_fd(pdev));
+ 
+    for (unsigned i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
+       const VkDeviceQueueCreateInfo *queue_create =
+@@ -983,7 +986,7 @@ panvk_QueueWaitIdle(VkQueue _queue)
+    };
+    int ret;
+ 
+-   ret = drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_WAIT, &wait);
++   ret = drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_WAIT, &wait);
+    assert(!ret);
+ 
+    return VK_SUCCESS;
+@@ -1247,7 +1250,8 @@ panvk_CreateEvent(VkDevice _device, const VkEventCreateInfo *pCreateInfo,
+       .flags = 0,
+    };
+ 
+-   int ret = drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_CREATE, &create);
++   int ret =
++      drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_CREATE, &create);
+    if (ret)
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+ 
+@@ -1269,7 +1273,7 @@ panvk_DestroyEvent(VkDevice _device, VkEvent _event,
+       return;
+ 
+    struct drm_syncobj_destroy destroy = {.handle = event->syncobj};
+-   drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
++   drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_DESTROY, &destroy);
+ 
+    vk_object_free(&device->vk, pAllocator, event);
+ }
+@@ -1289,7 +1293,7 @@ panvk_GetEventStatus(VkDevice _device, VkEvent _event)
+       .flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT,
+    };
+ 
+-   int ret = drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_WAIT, &wait);
++   int ret = drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_WAIT, &wait);
+    if (ret) {
+       if (errno == ETIME)
+          signaled = false;
+@@ -1320,7 +1324,7 @@ panvk_SetEvent(VkDevice _device, VkEvent _event)
+     * command executes.
+     * https://www.khronos.org/registry/vulkan/specs/1.2/html/chap6.html#commandbuffers-submission-progress
+     */
+-   if (drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_SIGNAL, &objs))
++   if (drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_SIGNAL, &objs))
+       return VK_ERROR_DEVICE_LOST;
+ 
+    return VK_SUCCESS;
+@@ -1337,7 +1341,7 @@ panvk_ResetEvent(VkDevice _device, VkEvent _event)
+       .handles = (uint64_t)(uintptr_t)&event->syncobj,
+       .count_handles = 1};
+ 
+-   if (drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_RESET, &objs))
++   if (drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_RESET, &objs))
+       return VK_ERROR_DEVICE_LOST;
+ 
+    return VK_SUCCESS;
+diff --git a/src/panfrost/vulkan/panvk_vX_device.c b/src/panfrost/vulkan/panvk_vX_device.c
+index e10e21d9ecc..8467b86b021 100644
+--- a/src/panfrost/vulkan/panvk_vX_device.c
++++ b/src/panfrost/vulkan/panvk_vX_device.c
+@@ -67,17 +67,20 @@ panvk_queue_submit_batch(struct panvk_queue *queue, struct panvk_batch *batch,
+          .jc = batch->jc.first_job,
+       };
+ 
+-      ret = drmIoctl(pdev->fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
++      ret =
++         drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_PANFROST_SUBMIT, &submit);
+       assert(!ret);
+ 
+       if (debug & (PANVK_DEBUG_TRACE | PANVK_DEBUG_SYNC)) {
+-         ret =
+-            drmSyncobjWait(pdev->fd, &submit.out_sync, 1, INT64_MAX, 0, NULL);
++         ret = drmSyncobjWait(panfrost_device_fd(pdev), &submit.out_sync, 1,
++                              INT64_MAX, 0, NULL);
+          assert(!ret);
+       }
+ 
+-      if (debug & PANVK_DEBUG_TRACE)
+-         pandecode_jc(pdev->decode_ctx, batch->jc.first_job, pdev->gpu_id);
++      if (debug & PANVK_DEBUG_TRACE) {
++         pandecode_jc(pdev->decode_ctx, batch->jc.first_job,
++                      panfrost_device_gpu_id(pdev));
++      }
+ 
+       if (debug & PANVK_DEBUG_DUMP)
+          pandecode_dump_mappings(pdev->decode_ctx);
+@@ -100,16 +103,18 @@ panvk_queue_submit_batch(struct panvk_queue *queue, struct panvk_batch *batch,
+          submit.in_sync_count = nr_in_fences;
+       }
+ 
+-      ret = drmIoctl(pdev->fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
++      ret =
++         drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_PANFROST_SUBMIT, &submit);
+       assert(!ret);
+       if (debug & (PANVK_DEBUG_TRACE | PANVK_DEBUG_SYNC)) {
+-         ret =
+-            drmSyncobjWait(pdev->fd, &submit.out_sync, 1, INT64_MAX, 0, NULL);
++         ret = drmSyncobjWait(panfrost_device_fd(pdev), &submit.out_sync, 1,
++                              INT64_MAX, 0, NULL);
+          assert(!ret);
+       }
+ 
+       if (debug & PANVK_DEBUG_TRACE)
+-         pandecode_jc(pdev->decode_ctx, batch->fragment_job, pdev->gpu_id);
++         pandecode_jc(pdev->decode_ctx, batch->fragment_job,
++                      panfrost_device_gpu_id(pdev));
+ 
+       if (debug & PANVK_DEBUG_DUMP)
+          pandecode_dump_mappings(pdev->decode_ctx);
+@@ -133,12 +138,14 @@ panvk_queue_transfer_sync(struct panvk_queue *queue, uint32_t syncobj)
+       .fd = -1,
+    };
+ 
+-   ret = drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD, &handle);
++   ret = drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD,
++                  &handle);
+    assert(!ret);
+    assert(handle.fd >= 0);
+ 
+    handle.handle = syncobj;
+-   ret = drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE, &handle);
++   ret = drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE,
++                  &handle);
+    assert(!ret);
+ 
+    close(handle.fd);
+@@ -184,7 +191,8 @@ panvk_signal_event_syncobjs(struct panvk_queue *queue,
+             .handles = (uint64_t)(uintptr_t)&event->syncobj,
+             .count_handles = 1};
+ 
+-         int ret = drmIoctl(pdev->fd, DRM_IOCTL_SYNCOBJ_RESET, &objs);
++         int ret =
++            drmIoctl(panfrost_device_fd(pdev), DRM_IOCTL_SYNCOBJ_RESET, &objs);
+          assert(!ret);
+          break;
+       }
+diff --git a/src/panfrost/vulkan/panvk_vX_meta_clear.c b/src/panfrost/vulkan/panvk_vX_meta_clear.c
+index 4238c8352af..3e92ccb4823 100644
+--- a/src/panfrost/vulkan/panvk_vX_meta_clear.c
++++ b/src/panfrost/vulkan/panvk_vX_meta_clear.c
+@@ -51,7 +51,7 @@ panvk_meta_clear_color_attachment_shader(struct panfrost_device *pdev,
+    nir_store_var(&b, out, clear_values, 0xff);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = pdev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(pdev),
+       .is_blit = true,
+       .no_ubo_to_push = true,
+    };
+diff --git a/src/panfrost/vulkan/panvk_vX_meta_copy.c b/src/panfrost/vulkan/panvk_vX_meta_copy.c
+index fe21fcb4127..6abb644e76c 100644
+--- a/src/panfrost/vulkan/panvk_vX_meta_copy.c
++++ b/src/panfrost/vulkan/panvk_vX_meta_copy.c
+@@ -416,7 +416,7 @@ panvk_meta_copy_img2img_shader(struct panfrost_device *pdev,
+    nir_store_var(&b, out, texel, 0xff);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = pdev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(pdev),
+       .is_blit = true,
+       .no_ubo_to_push = true,
+    };
+@@ -958,7 +958,7 @@ panvk_meta_copy_buf2img_shader(struct panfrost_device *pdev,
+    nir_store_var(&b, out, texel, 0xff);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = pdev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(pdev),
+       .is_blit = true,
+       .no_ubo_to_push = true,
+    };
+@@ -1416,7 +1416,7 @@ panvk_meta_copy_img2buf_shader(struct panfrost_device *pdev,
+    nir_pop_if(&b, NULL);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = pdev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(pdev),
+       .is_blit = true,
+       .no_ubo_to_push = true,
+    };
+@@ -1648,7 +1648,7 @@ panvk_meta_copy_buf2buf_shader(struct panfrost_device *pdev,
+                     (1 << ncomps) - 1);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = pdev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(pdev),
+       .is_blit = true,
+       .no_ubo_to_push = true,
+    };
+@@ -1774,7 +1774,7 @@ panvk_meta_fill_buf_shader(struct panfrost_device *pdev,
+    nir_store_global(&b, ptr, sizeof(uint32_t), val, 1);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = pdev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(pdev),
+       .is_blit = true,
+       .no_ubo_to_push = true,
+    };
+diff --git a/src/panfrost/vulkan/panvk_vX_shader.c b/src/panfrost/vulkan/panvk_vX_shader.c
+index 38040d9e2ef..3e3f9e8f9bc 100644
+--- a/src/panfrost/vulkan/panvk_vX_shader.c
++++ b/src/panfrost/vulkan/panvk_vX_shader.c
+@@ -254,7 +254,7 @@ panvk_per_arch(shader_create)(struct panvk_device *dev, gl_shader_stage stage,
+               true, true);
+ 
+    struct panfrost_compile_inputs inputs = {
+-      .gpu_id = pdev->gpu_id,
++      .gpu_id = panfrost_device_gpu_id(pdev),
+       .no_ubo_to_push = true,
+       .no_idvs = true, /* TODO */
+    };
+-- 
+2.43.0
+

@@ -1,0 +1,25 @@
+From 35507c27238efc513bc261957aa7cdaa2f5cd825 Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Tue, 5 Sep 2023 12:35:55 +0200
+Subject: [PATCH 27/29] panfrost: Add G310 to the list of supported GPUs
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+---
+ src/panfrost/lib/pan_props.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/panfrost/lib/pan_props.c b/src/panfrost/lib/pan_props.c
+index 3739322e5ca..81ccd120ff8 100644
+--- a/src/panfrost/lib/pan_props.c
++++ b/src/panfrost/lib/pan_props.c
+@@ -73,6 +73,7 @@ const struct panfrost_model panfrost_model_list[] = {
+         MODEL(0x9093, "G57",    "TNAx", HAS_ANISO,         16384, {}),
+ 
+         MODEL(0xa867, "G610",   "TNAx", HAS_ANISO,         16384, {}), // TODO
++        MODEL(0xac74, "G310",   "TNAx", HAS_ANISO,         16384, {}), // TODO
+ };
+ /* clang-format on */
+ 
+-- 
+2.43.0
+

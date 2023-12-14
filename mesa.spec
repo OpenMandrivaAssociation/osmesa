@@ -23,7 +23,7 @@
 %global optflags %{optflags} -O3 -fno-strict-aliasing -g1 -flto=thin
 %global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin -Wl,--undefined-version
 
-%define git 20231208
+%define git 20231214
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 #define relc 5
@@ -216,27 +216,36 @@ Patch8:		mesa-buildsystem-improvements.patch
 # This *should* also be fixed by 23.3-rc5+
 #Patch10:	mesa-22.3-make-vbox-great-again.patch
 
-# Panthor -- based on v10+panthor branch of https://gitlab.freedesktop.org/panfrost/mesa.git
-# Generated using:
-#	git checkout -b panthor-23.3 mesa-23.3.0-rc3
-#	# (Revert a few changes that are good, but conflict with Panthor for now)
-#	git revert 9ec9849c85e8202cb894736d0411f9b2409ab6e8
-#	git revert 43540839e7b47e2a0c14aaf1d6ab287d7d13e669
-#	git revert 5a928f7563af8ed18617210b95208ea63c157e2f
-#	git revert 888d7c8ee6ad59aed2b86ba6f32542976b671dd0
-#	git revert 33b48a55857b15f7e7b892a89cad2f0ad2399ba6
-#	git revert e9d523bb92a59336f69e92e51e8fe004f04cd629
-#	git revert bc55d150a915d5b2e91cd6ee11af4992d18fcf4f
-#	git revert 32fbd388895e4590488a63417c36dc342d1737a7
-#	git revert ae3fb3089f50a5f7bc42f209656b783ac98ec509
-#	git revert c1429a3120037a1599b4187eaca31fec413b2579
-#	# (These changes are good too, but they prevent Panthor from loading)
-#	git revert 88c03ddd345fe6b0cd16c11cb5c5309f8d7d16ff
-#	git revert c7e522a9f3e86f16877a9a09d9b273e945247650
-#	git revert 2be404f5571ada32d3b2e9cfe9b769846f27d68f
-#	git merge v10+panthor
-#	git diff mesa-23.3.0-rc3
-Patch1001:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26358.patch
+# Panthor -- based on panthor-v10 branch of https://gitlab.freedesktop.org/bbrezillon/mesa.git
+Patch1000:	0001-panfrost-Abstract-kernel-driver-operations.patch
+Patch1001:	0002-pan-kmod-Add-a-backend-for-the-panfrost-kernel-drive.patch
+Patch1002:	0003-panfrost-Avoid-direct-accesses-to-some-panfrost_devi.patch
+Patch1003:	0004-panfrost-Avoid-direct-accesses-to-some-panfrost_bo-f.patch
+Patch1004:	0005-panfrost-Back-panfrost_device-with-pan_kmod_dev-obje.patch
+Patch1005:	0006-panfrost-Add-a-VM-to-panfrost_device.patch
+Patch1006:	0007-panfrost-Back-panfrost_bo-with-pan_kmod_bo-object.patch
+Patch1007:	0008-panfrost-Introduce-a-PAN_BO_SHAREABLE-flag.patch
+Patch1008:	0009-panvk-Pass-PAN_BO_SHAREABLE-when-relevant.patch
+Patch1009:	0010-panfrost-Flag-BO-shareable-when-appropriate.patch
+Patch1010:	0011-drm-uapi-Add-panthor-uAPI.patch
+Patch1011:	0012-pan-kmod-Add-a-backend-for-panthor.patch
+Patch1012:	0013-panfrost-Restrict-GPU-VA-space-on-panthor-32bit-buil.patch
+Patch1013:	0014-panfrost-Patch-panfrost_max_thread_count-for-v10.patch
+Patch1014:	0015-panfrost-Add-v10-support-to-libpanfrost.patch
+Patch1015:	0016-panfrost-genxml-Add-missing-Progress-increment-field.patch
+Patch1016:	0017-pandecode-csf-Introduce-the-concept-of-usermode-queu.patch
+Patch1017:	0018-panfrost-Don-t-allocate-a-tiler-heap-buffer-on-v10.patch
+Patch1018:	0019-panfrost-Add-a-library-to-build-CSF-command-streams.patch
+Patch1019:	0020-panfrost-Relax-position-result-alignment-constraint-.patch
+Patch1020:	0021-panfrost-Add-arch-specific-context-init-cleanup-hook.patch
+Patch1021:	0022-panfrost-Add-a-panfrost_context_reinit-helper.patch
+Patch1022:	0023-panfrost-Add-a-cleanup_batch-method-to-panfrost_vtab.patch
+Patch1023:	0024-panfrost-Add-support-for-the-CSF-job-frontend.patch
+Patch1024:	0025-panfrost-Enable-v10-in-the-gallium-driver.patch
+Patch1025:	0026-panfrost-Add-a-panfrost_model-entry-for-G610.patch
+Patch1026:	0027-panfrost-Add-G310-to-the-list-of-supported-GPUs.patch
+Patch1027:	0028-panfrost-Add-an-entry-for-panthor-in-the-renderonly_.patch
+Patch1028:	0029-panfrost-Add-the-gallium-glue-to-get-panfrost-loaded.patch
 
 BuildRequires:	flex
 BuildRequires:	bison

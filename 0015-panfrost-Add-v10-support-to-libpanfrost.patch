@@ -1,0 +1,27 @@
+From 33bc79c1955c11b50a1b35c415116608d06b5ffd Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Wed, 15 Nov 2023 12:55:56 +0100
+Subject: [PATCH 15/29] panfrost: Add v10 support to libpanfrost
+
+The code has already been patched to support v10, we just need to add
+v10 to the version array when compiling per-arch files.
+---
+ src/panfrost/lib/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/panfrost/lib/meson.build b/src/panfrost/lib/meson.build
+index 12b927a2973..344d5299deb 100644
+--- a/src/panfrost/lib/meson.build
++++ b/src/panfrost/lib/meson.build
+@@ -40,7 +40,7 @@ endforeach
+ 
+ libpanfrost_per_arch = []
+ 
+-foreach ver : ['4', '5', '6', '7', '9']
++foreach ver : ['4', '5', '6', '7', '9', '10']
+   libpanfrost_per_arch += static_library(
+     'pan-arch-v' + ver,
+     [
+-- 
+2.43.0
+
