@@ -1,7 +1,7 @@
-From d00060ec11ceebda7b7352e1e8a09390247353ca Mon Sep 17 00:00:00 2001
+From df96d245c174596259d44b840710279b59942f2a Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Thu, 23 Nov 2023 11:04:17 +0100
-Subject: [PATCH 21/29] panfrost: Add arch-specific context init/cleanup hooks
+Subject: [PATCH 20/28] panfrost: Add arch-specific context init/cleanup hooks
 
 This will allow us to defer some CSF-specific initialization to
 pan_csf.c, keeping pan_context.c job-frontend agnostic.

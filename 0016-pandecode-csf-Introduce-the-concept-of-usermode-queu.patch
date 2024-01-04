@@ -1,7 +1,7 @@
-From 915b7f6a09b4aadbdfa6de9db733154ab4cfee40 Mon Sep 17 00:00:00 2001
+From 553e71fd4cfa89d71967bf75dba7bab855b46a6f Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Wed, 15 Nov 2023 12:08:24 +0100
-Subject: [PATCH 17/29] pandecode/csf: Introduce the concept of usermode queue
+Subject: [PATCH 16/28] pandecode/csf: Introduce the concept of usermode queue
 
 This way we allow JUMPs to be decoded when the decode function is
 passed an indirect CS buffer that called from a kernel mode queue.

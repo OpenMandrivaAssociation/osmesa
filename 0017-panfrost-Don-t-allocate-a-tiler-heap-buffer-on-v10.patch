@@ -1,7 +1,7 @@
-From f5901bf50fe564f4a142c1faa0181a80d5626378 Mon Sep 17 00:00:00 2001
+From eed7d9a45396f30af5434895f99d583cbfc6af0d Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Wed, 15 Nov 2023 11:48:36 +0100
-Subject: [PATCH 18/29] panfrost: Don't allocate a tiler heap buffer on v10+
+Subject: [PATCH 17/28] panfrost: Don't allocate a tiler heap buffer on v10+
 
 Heap management is completely different on CSF hardware, and the heap
 buffer remain unused in that case. Make the tiler heap BO creation
@@ -11,10 +11,10 @@ conditional to reflect that.
  1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/src/panfrost/lib/pan_props.c b/src/panfrost/lib/pan_props.c
-index aebe8b4614d..5e37cdc06f5 100644
+index b3fcf606d3b..6e4f58b6e4b 100644
 --- a/src/panfrost/lib/pan_props.c
 +++ b/src/panfrost/lib/pan_props.c
-@@ -281,8 +281,11 @@ panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev)
+@@ -277,8 +277,11 @@ panfrost_open_device(void *memctx, int fd, struct panfrost_device *dev)
      * active for a single job chain at once, so a single heap can be
      * shared across batches/contextes */
  
@@ -28,7 +28,7 @@ index aebe8b4614d..5e37cdc06f5 100644
  
     pthread_mutex_init(&dev->submit_lock, NULL);
  
-@@ -303,7 +306,8 @@ panfrost_close_device(struct panfrost_device *dev)
+@@ -299,7 +302,8 @@ panfrost_close_device(struct panfrost_device *dev)
      */
     if (dev->model) {
        pthread_mutex_destroy(&dev->submit_lock);

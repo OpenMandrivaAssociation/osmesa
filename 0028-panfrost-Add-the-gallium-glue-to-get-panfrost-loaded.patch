@@ -1,7 +1,7 @@
-From 8fd0699827a6881b08165575753a766ae635407e Mon Sep 17 00:00:00 2001
+From 533b451c838c24c95e9f048eb4deac21a9647c6e Mon Sep 17 00:00:00 2001
 From: Bob Beckett <bob.beckett@collabora.com>
 Date: Tue, 14 Nov 2023 11:18:23 +0100
-Subject: [PATCH 29/29] panfrost: Add the gallium glue to get panfrost loaded
+Subject: [PATCH 28/28] panfrost: Add the gallium glue to get panfrost loaded
  when panthor is detected
 
 Needed if we don't want to force users to pass GALLIUM_DRIVER=panfrost.

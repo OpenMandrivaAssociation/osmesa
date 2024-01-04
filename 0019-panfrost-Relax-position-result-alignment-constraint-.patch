@@ -1,7 +1,7 @@
-From 40cdf1761386991b74187a4e3beca17a73023635 Mon Sep 17 00:00:00 2001
+From 512bee20862d98018fa17f0940bb3df3d5a68a1d Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Wed, 15 Nov 2023 18:03:17 +0100
-Subject: [PATCH 20/29] panfrost: Relax position result alignment constraint on
+Subject: [PATCH 19/28] panfrost: Relax position result alignment constraint on
  v10+
 
 Looks like the alignment constraint is gone on v10...

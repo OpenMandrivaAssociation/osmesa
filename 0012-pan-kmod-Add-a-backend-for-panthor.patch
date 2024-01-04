@@ -1,7 +1,7 @@
-From b354124ef6cc9e781b219c22384e1f62ed46d080 Mon Sep 17 00:00:00 2001
+From 92f284c04d1a2cc252ff2c2d5b334e4c43bb7ca4 Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Tue, 21 Nov 2023 10:06:04 +0100
-Subject: [PATCH 12/29] pan/kmod: Add a backend for panthor
+Subject: [PATCH 12/28] pan/kmod: Add a backend for panthor
 
 Panthor is a new kernel driver handling CSF-based GPUs. It's designed
 around the new VM model where:
@@ -25,9 +25,9 @@ Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
  src/panfrost/lib/kmod/meson.build    |   1 +
  src/panfrost/lib/kmod/pan_kmod.c     |   5 +
  src/panfrost/lib/kmod/pan_kmod.h     |   2 +
- src/panfrost/lib/kmod/panthor_kmod.c | 949 +++++++++++++++++++++++++++
- src/panfrost/lib/kmod/panthor_kmod.h |  37 ++
- 5 files changed, 994 insertions(+)
+ src/panfrost/lib/kmod/panthor_kmod.c | 972 +++++++++++++++++++++++++++
+ src/panfrost/lib/kmod/panthor_kmod.h |  37 +
+ 5 files changed, 1017 insertions(+)
  create mode 100644 src/panfrost/lib/kmod/panthor_kmod.c
  create mode 100644 src/panfrost/lib/kmod/panthor_kmod.h
 
@@ -44,7 +44,7 @@ index 1278dc6f394..bc1962e10b0 100644
  
  libpankmod_lib = static_library(
 diff --git a/src/panfrost/lib/kmod/pan_kmod.c b/src/panfrost/lib/kmod/pan_kmod.c
-index a82e7fcb48a..ad94aa38ed8 100644
+index 395bc378f31..df376a136c4 100644
 --- a/src/panfrost/lib/kmod/pan_kmod.c
 +++ b/src/panfrost/lib/kmod/pan_kmod.c
 @@ -11,6 +11,7 @@
@@ -67,7 +67,7 @@ index a82e7fcb48a..ad94aa38ed8 100644
  
  static void *
 diff --git a/src/panfrost/lib/kmod/pan_kmod.h b/src/panfrost/lib/kmod/pan_kmod.h
-index ec067f441a7..1810ad5fa1d 100644
+index 7b991c90cab..b8361358140 100644
 --- a/src/panfrost/lib/kmod/pan_kmod.h
 +++ b/src/panfrost/lib/kmod/pan_kmod.h
 @@ -32,6 +32,8 @@
@@ -81,10 +81,10 @@ index ec067f441a7..1810ad5fa1d 100644
  #endif
 diff --git a/src/panfrost/lib/kmod/panthor_kmod.c b/src/panfrost/lib/kmod/panthor_kmod.c
 new file mode 100644
-index 00000000000..212c7bc7412
+index 00000000000..3e7c5a784bc
 --- /dev/null
 +++ b/src/panfrost/lib/kmod/panthor_kmod.c
-@@ -0,0 +1,949 @@
+@@ -0,0 +1,972 @@
 +/*
 + * Copyright © 2023 Collabora, Ltd.
 + *
@@ -243,7 +243,7 @@ index 00000000000..212c7bc7412
 +}
 +
 +static void
-+panthor_dev_query_props(struct pan_kmod_dev *dev,
++panthor_dev_query_props(const struct pan_kmod_dev *dev,
 +                        struct pan_kmod_dev_props *props)
 +{
 +   struct panthor_kmod_dev *panthor_dev =
@@ -267,25 +267,47 @@ index 00000000000..212c7bc7412
 +      .afbc_features = 0,
 +   };
 +
-+   /* 32bit kernels are restricted to the 32bit VA space.
-+    * FIXME: Find a way to query the kernel arch se we don't have to
-+    * restrict the GPU VA to 32-bit if the kernel is 64-bit.
-+    */
-+   if (sizeof(long) == 4) {
-+      uint32_t va_bits = props->mmu_features & 0xff;
-+
-+      if (va_bits > 32) {
-+         props->mmu_features &= 0xff;
-+         props->mmu_features |= 32;
-+      }
-+   }
-+
 +   static_assert(sizeof(props->texture_features) ==
 +                    sizeof(panthor_dev->props.gpu.texture_features),
 +                 "Mismatch in texture_features array size");
 +
 +   memcpy(props->texture_features, panthor_dev->props.gpu.texture_features,
 +          sizeof(props->texture_features));
++}
++
++static struct pan_kmod_va_range
++panthor_kmod_dev_query_user_va_range(const struct pan_kmod_dev *dev)
++{
++   struct panthor_kmod_dev *panthor_dev =
++      container_of(dev, struct panthor_kmod_dev, base);
++   uint8_t va_bits = MMU_FEATURES_VA_BITS(panthor_dev->props.gpu.mmu_features);
++
++   if (sizeof(long) == 4) {
++      FILE *archf = fopen("/proc/sys/kernel/arch", "r");
++      char arch[32] = {0};
++
++      if (archf)
++         fread(arch, sizeof(arch) - 1, 1, archf);
++
++      /* 32bit kernels are restricted to a 32bit VA space. */
++      if (strcmp(arch, "aarch64") != 0)
++         va_bits = MIN2(32, va_bits);
++   }
++
++   /* If we have less than 32-bit VA space it starts to be tricky, so let's
++    * assume we always have at least that.
++    */
++   assert(va_bits >= 32);
++
++   return (struct pan_kmod_va_range){
++      .start = 0,
++
++      /* 3G/1G user/kernel VA split for 32-bit VA space. Otherwise, we reserve
++       * half of the VA space for kernel objects.
++       */
++      .size =
++         va_bits == 32 ? (1ull << (va_bits - 2)) * 3 : 1ull << (va_bits - 1),
++   };
 +}
 +
 +static uint32_t
@@ -1024,6 +1046,7 @@ index 00000000000..212c7bc7412
 +   .dev_create = panthor_kmod_dev_create,
 +   .dev_destroy = panthor_kmod_dev_destroy,
 +   .dev_query_props = panthor_dev_query_props,
++   .dev_query_user_va_range = panthor_kmod_dev_query_user_va_range,
 +   .bo_alloc = panthor_kmod_bo_alloc,
 +   .bo_free = panthor_kmod_bo_free,
 +   .bo_import = panthor_kmod_bo_import,

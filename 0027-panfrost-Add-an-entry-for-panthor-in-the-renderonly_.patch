@@ -1,7 +1,7 @@
-From 7645dd9cc0f047e6e41256401ae26ecc2a00b373 Mon Sep 17 00:00:00 2001
+From 10e9cec96de3b95391b76fabf18e80a5c83d7746 Mon Sep 17 00:00:00 2001
 From: Bob Beckett <bob.beckett@collabora.com>
 Date: Tue, 14 Nov 2023 11:22:47 +0100
-Subject: [PATCH 28/29] panfrost: Add an entry for panthor in the
+Subject: [PATCH 27/28] panfrost: Add an entry for panthor in the
  renderonly_drivers[] array
 
 Same as panfrost, but the kernel driver has a different name.

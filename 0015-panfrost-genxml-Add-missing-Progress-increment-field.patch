@@ -1,7 +1,7 @@
-From 19a7fbc849af168784e6629db170189a896a3d66 Mon Sep 17 00:00:00 2001
+From 9eeedcf04729737bce0de6cde22b6903b51bcc19 Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Wed, 5 Jul 2023 11:10:11 +0200
-Subject: [PATCH 16/29] panfrost/genxml: Add missing 'Progress increment'
+Subject: [PATCH 15/28] panfrost/genxml: Add missing 'Progress increment'
  fields
 
 Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>

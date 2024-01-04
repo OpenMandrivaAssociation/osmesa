@@ -1,7 +1,7 @@
-From 6cddfc71292b41efe05e4429e9d751bca646224a Mon Sep 17 00:00:00 2001
+From 28f64628273d17fc3fbfa6f4031a988e8a81a8ca Mon Sep 17 00:00:00 2001
 From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 Date: Wed, 15 Nov 2023 17:58:54 +0100
-Subject: [PATCH 24/29] panfrost: Add support for the CSF job frontend
+Subject: [PATCH 23/28] panfrost: Add support for the CSF job frontend
 
 CSF-specific implementation of the job-frontend helpers.
 

@@ -1,7 +1,7 @@
-From 474c213274e1ffd2f38da4c3ad3a73524da23030 Mon Sep 17 00:00:00 2001
+From b393fc5d578269de66380ada9c4acdca1d98f8c2 Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Wed, 15 Nov 2023 12:58:50 +0100
-Subject: [PATCH 25/29] panfrost: Enable v10 in the gallium driver
+Subject: [PATCH 24/28] panfrost: Enable v10 in the gallium driver
 
 Now that everything is in place to support v10, add it to the
 panfrost_versions array in meson.build and patch panfrost_create_screen()

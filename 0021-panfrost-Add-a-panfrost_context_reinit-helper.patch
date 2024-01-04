@@ -1,7 +1,7 @@
-From d0a0edd4a6bf5d9f7d54ba477d9a7ff30522d2c3 Mon Sep 17 00:00:00 2001
+From dbef70dc0148d0000b75df05d327557ed404e2ef Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Mon, 13 Nov 2023 15:39:50 +0100
-Subject: [PATCH 22/29] panfrost: Add a panfrost_context_reinit() helper
+Subject: [PATCH 21/28] panfrost: Add a panfrost_context_reinit() helper
 
 Will be needed for v10, so we can re-instantiate a context when an
 unrecoverable error is reported on a group or VM.

@@ -1,7 +1,7 @@
-From 877b6afbd14b05d8f84e18cc18a333d0c63df3e2 Mon Sep 17 00:00:00 2001
+From dd017c51d9f91051af639772a852f234653b9ae4 Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Wed, 4 Oct 2023 10:49:40 +0200
-Subject: [PATCH 23/29] panfrost: Add a cleanup_batch() method to
+Subject: [PATCH 22/28] panfrost: Add a cleanup_batch() method to
  panfrost_vtable
 
 We have to do some cleanup on v10+. Let's add a new hook to allow

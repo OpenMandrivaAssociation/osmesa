@@ -1,7 +1,7 @@
-From 19b92458aff10cc527648c71ec7e131a0e84c232 Mon Sep 17 00:00:00 2001
+From fec735ef2ee220900f3e82d8058a012bacb60ec7 Mon Sep 17 00:00:00 2001
 From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 Date: Tue, 14 Nov 2023 13:11:49 +0100
-Subject: [PATCH 14/29] panfrost: Patch panfrost_max_thread_count() for v10
+Subject: [PATCH 13/28] panfrost: Patch panfrost_max_thread_count() for v10
 
 Not sure that's correct because some v10 GPUs have less 2k threads
 allowed per core. We should probably use THREADS_MAX register value,

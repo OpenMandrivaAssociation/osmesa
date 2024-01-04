@@ -1,14 +1,14 @@
-From 34d08e9e8e957a24895c3f1dcbba717b5f539674 Mon Sep 17 00:00:00 2001
+From f9d8177f22baa1f218caafaf69b0af848d5cc03b Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Wed, 15 Nov 2023 11:50:22 +0100
-Subject: [PATCH 26/29] panfrost: Add a panfrost_model entry for G610
+Subject: [PATCH 25/28] panfrost: Add a panfrost_model entry for G610
 
 ---
  src/panfrost/lib/pan_props.c | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/src/panfrost/lib/pan_props.c b/src/panfrost/lib/pan_props.c
-index 5e37cdc06f5..3739322e5ca 100644
+index 6e4f58b6e4b..2bac6294a8c 100644
 --- a/src/panfrost/lib/pan_props.c
 +++ b/src/panfrost/lib/pan_props.c
 @@ -71,6 +71,8 @@ const struct panfrost_model panfrost_model_list[] = {

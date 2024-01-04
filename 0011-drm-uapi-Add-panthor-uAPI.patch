@@ -1,7 +1,7 @@
-From 9017d8b77fa2870945c991470e3d43538d439463 Mon Sep 17 00:00:00 2001
+From b2aa038f15c40a9684a17c25a283a08ccc79cd24 Mon Sep 17 00:00:00 2001
 From: Boris Brezillon <boris.brezillon@collabora.com>
 Date: Tue, 21 Nov 2023 09:56:15 +0100
-Subject: [PATCH 11/29] drm-uapi: Add panthor uAPI
+Subject: [PATCH 11/28] drm-uapi: Add panthor uAPI
 
 Latest version of panthor uAPI. Make sure it gets updated before merging
 mesa v10/panthor MR.
