@@ -1070,7 +1070,17 @@ TOOLS="$TOOLS,intel-ui"
 %endif
 %endif
 
+%if %{cross_compiling}
+# We need to use HOST llvm-config... While technically wrong-ish,
+# target llvm-config is for the target architecture...
+cp %{_datadir}/meson/toolchains/%{_target_platform}.cross cross.cross
+sed -i -e "/binaries/allvm-config = '%{_bindir}/llvm-config'" cross.cross
+%endif
+
 if ! %meson \
+%if %{cross_compiling}
+	--cross-file=cross.cross \
+%endif
 	-Dmicrosoft-clc=disabled \
 	-Dshared-llvm=enabled \
 	-Db_ndebug=true \
