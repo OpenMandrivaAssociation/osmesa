@@ -1217,7 +1217,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{dridrivers}
 %{_libdir}/dri/*.so
 %exclude %{_libdir}/dri/zink_dri.so
-%ifarch %{armx} %{riscv}
+%ifarch %{armx}
 %{_libdir}/libpowervr_rogue.so
 %endif
 %if %{with opencl}
