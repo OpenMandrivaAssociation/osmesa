@@ -1071,10 +1071,15 @@ TOOLS="$TOOLS,intel-ui"
 %endif
 
 %if %{cross_compiling}
-# We need to use HOST llvm-config... While technically wrong-ish,
+# We need to use a HOST compatible llvm-config... While technically wrong-ish,
 # target llvm-config is for the target architecture...
+cat >llvm-config <<EOF
+#!/bin/sh
+%{_bindir}/llvm-config "\$@" |sed -e 's,-I/usr/include ,,;s,-isystem/usr/include ,,;s,-L/usr/lib64 ,,'
+EOF
+chmod +x llvm-config
 cp %{_datadir}/meson/toolchains/%{_target_platform}.cross cross.cross
-sed -i -e "/binaries/allvm-config = '%{_bindir}/llvm-config'" cross.cross
+sed -i -e "/binaries/allvm-config = '$(pwd)/llvm-config'" cross.cross
 %endif
 
 if ! %meson \
