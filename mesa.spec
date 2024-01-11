@@ -1370,7 +1370,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
+%ifnarch %{riscv}
 %{_bindir}/nvfuzz
+%endif
 %ifarch %{armx}
 %{_bindir}/etnaviv_compiler
 %{_bindir}/panfrostdump
