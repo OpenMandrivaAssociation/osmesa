@@ -1080,6 +1080,7 @@ sed -i -e "/binaries/allvm-config = '%{_bindir}/llvm-config'" cross.cross
 if ! %meson \
 %if %{cross_compiling}
 	--cross-file=cross.cross \
+	-Dvalgrind=disabled \
 %endif
 	-Dmicrosoft-clc=disabled \
 	-Dshared-llvm=enabled \
