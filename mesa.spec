@@ -23,7 +23,7 @@
 %global optflags %{optflags} -O3 -fno-strict-aliasing -g1 -flto=thin
 %global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin -Wl,--undefined-version
 
-%define git 20240104
+%define git 20240114
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
 #define relc 5
@@ -235,6 +235,9 @@ Patch1025:	0025-panfrost-Add-a-panfrost_model-entry-for-G610.patch
 Patch1026:	0026-panfrost-Add-G310-to-the-list-of-supported-GPUs.patch
 Patch1027:	0027-panfrost-Add-an-entry-for-panthor-in-the-renderonly_.patch
 Patch1028:	0028-panfrost-Add-the-gallium-glue-to-get-panfrost-loaded.patch
+
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26358#note_2233350
+Patch1050:	panthor-fix-panthor_kmod_bo_export-return.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
