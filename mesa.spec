@@ -20,7 +20,12 @@
 # aliasing might generate broken code.
 # (tpg) imho -g3 here is for someone who is developing graphics drivers
 # or trying to pin point a specific issue. Nobody install debug symbols by default
+%ifarch %{aarch64}
+# In LLVM 18.0.0-rc1, O3 on aarch64 results in a build failure
+%global optflags %{optflags} -O2 -fno-strict-aliasing -g1 -flto=thin
+%else
 %global optflags %{optflags} -O3 -fno-strict-aliasing -g1 -flto=thin
+%endif
 %global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin -Wl,--undefined-version
 
 #define git 20240114
