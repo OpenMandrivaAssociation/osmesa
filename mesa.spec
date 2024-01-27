@@ -23,10 +23,10 @@
 %global optflags %{optflags} -O3 -fno-strict-aliasing -g1 -flto=thin
 %global build_ldflags %{build_ldflags} -fno-strict-aliasing -flto=thin -Wl,--undefined-version
 
-%define git 20240114
+#define git 20240114
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
-#define relc 5
+%define relc 3
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -209,6 +209,7 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 # rust cruft?
 Patch6:		mesa-rustdeps.patch
 
+Patch7:		mesa-24-llvmspirv-detection.patch
 Patch8:		mesa-buildsystem-improvements.patch
 
 # Make VirtualBox great again
@@ -346,7 +347,7 @@ BuildRequires:	devel(libXau)
 BuildRequires:	devel(libXdmcp)
 BuildRequires:	devel(libsensors)
 BuildRequires:	libsensors.so.5
-BuildRequires:	(devel(libLLVM-17) or devel(libLLVM-16))
+BuildRequires:	(devel(libLLVM-18) or devel(libLLVM-17) or devel(libLLVM-16))
 BuildRequires:	devel(libclang)
 BuildRequires:	devel(libzstd)
 BuildRequires:	devel(libwayland-client)
