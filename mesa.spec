@@ -159,7 +159,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	24.0.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -1290,12 +1290,13 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %if %{with opencl}
 %files -n %{libcl}
-%{_sysconfdir}/OpenCL
+%{_sysconfdir}/OpenCL/vendors/mesa.icd
 %{_libdir}/libMesaOpenCL.so.%{clmajor}*
 %endif
 
 %if %{with rusticl}
 %files -n %{librusticl}
+%{_sysconfdir}/OpenCL/vendors/rusticl.icd
 %{_libdir}/libRusticlOpenCL.so*
 %endif
 
