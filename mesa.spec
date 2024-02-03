@@ -159,7 +159,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	24.0.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}3
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -891,6 +891,7 @@ Development files for the OpenCL library
 Summary:	Mesa Rusticl OpenCL libs
 Group:		System/Libraries
 Provides:	mesa-rusticl = %{EVRD}
+Requires:	libclc-spirv
 Recommends:	%{_lib}OpenCL
 
 %description -n %{librusticl}
