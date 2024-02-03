@@ -216,6 +216,7 @@ Patch6:		mesa-rustdeps.patch
 
 Patch7:		mesa-24-llvmspirv-detection.patch
 Patch8:		mesa-buildsystem-improvements.patch
+Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
 
 # Make VirtualBox great again
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
