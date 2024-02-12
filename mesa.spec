@@ -159,7 +159,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	24.0.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}3
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}4
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -222,6 +222,13 @@ Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
 # This *should* also be fixed by 23.3-rc5+
 #Patch10:	mesa-22.3-make-vbox-great-again.patch
+
+# Fix https://bugs.winehq.org/show_bug.cgi?id=41930
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/5094
+# Ported from https://gitlab.freedesktop.org/bvarner/mesa/-/tree/feature/osmesa-preserve-buffer
+Patch500:	mesa-24.0-osmesa-fix-civ3.patch
+# Related to the above, we should also fix
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/5095
 
 # Panthor -- based on panthor-v10 branch of https://gitlab.freedesktop.org/bbrezillon/mesa.git
 Patch1010:	0011-drm-uapi-Add-panthor-uAPI.patch
