@@ -11,13 +11,13 @@ diff -up mesa-24.0.0/src/gallium/frontends/osmesa/osmesa.c.11~ mesa-24.0.0/src/g
 +osmesa_write_buffer(OSMesaContext osmesa, void *src, struct osmesa_buffer *osbuffer)
 +{
 +   struct pipe_resource *res = osbuffer->textures[ST_ATTACHMENT_FRONT_LEFT];
-+   struct pipe_context *pipe = osmesa->stctx->pipe;
++   struct pipe_context *pipe = osmesa->st->pipe;
 +
 +   struct pipe_box box;
 +   u_box_2d(0, 0, res->width0, res->height0, &box);
 +
 +   struct pipe_transfer *transfer = NULL;
-+   ubyte *dst = pipe->texture_map(pipe, res, 0, PIPE_MAP_WRITE, &box, &transfer);
++   uint8_t *dst = pipe->texture_map(pipe, res, 0, PIPE_MAP_WRITE, &box, &transfer);
 +
 +   unsigned bpp = util_format_get_blocksize(res->format);
 +   int stride = bpp * osbuffer->width;
@@ -26,13 +26,13 @@ diff -up mesa-24.0.0/src/gallium/frontends/osmesa/osmesa.c.11~ mesa-24.0.0/src/g
 +   }
 +
 +   if (osmesa->y_up) {
-+      dst = (ubyte *)dst + (res->height0 - 1) * stride;
++      dst = (uint8_t *)dst + (res->height0 - 1) * stride;
 +      stride = -stride;
 +   }
 +
 +   for (unsigned y = 0; y < res->height0; y++) {
 +      memcpy(dst, src, bpp * res->width0);
-+      src = (ubyte *)src + transfer->stride;
++      src = (uint8_t *)src + transfer->stride;
 +      dst += stride;
 +   }
 +
