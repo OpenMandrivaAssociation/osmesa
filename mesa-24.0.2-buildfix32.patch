@@ -1,0 +1,27 @@
+diff -up mesa-24.0.2/meson.build.omv~ mesa-24.0.2/meson.build
+--- mesa-24.0.2/meson.build.omv~	2024-02-29 18:12:00.550666184 +0100
++++ mesa-24.0.2/meson.build	2024-02-29 18:13:49.708315646 +0100
+@@ -344,7 +344,7 @@ if with_aco_tests and not with_amd_vk
+ endif
+ 
+ with_microsoft_clc = get_option('microsoft-clc').enabled()
+-with_clc = with_microsoft_clc or with_intel_clc or with_gallium_asahi
++with_clc = true #with_microsoft_clc or with_intel_clc or with_gallium_asahi
+ with_spirv_to_dxil = get_option('spirv-to-dxil')
+ 
+ if host_machine.system() == 'darwin'
+diff -up mesa-24.0.2/src/compiler/meson.build.omv~ mesa-24.0.2/src/compiler/meson.build
+--- mesa-24.0.2/src/compiler/meson.build.omv~	2024-02-29 18:11:17.673995427 +0100
++++ mesa-24.0.2/src/compiler/meson.build	2024-02-29 18:11:23.738091153 +0100
+@@ -79,9 +79,9 @@ subdir('nir')
+ 
+ subdir('spirv')
+ 
+-if with_clc
++#if with_clc
+   subdir('clc')
+-endif
++#endif
+ if with_gallium
+   subdir('glsl')
+ endif

@@ -158,7 +158,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	24.0.1
+Version:	24.0.2
 Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
@@ -217,11 +217,7 @@ Patch6:		mesa-rustdeps.patch
 Patch7:		mesa-24-llvmspirv-detection.patch
 Patch8:		mesa-buildsystem-improvements.patch
 Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
-
-# Make VirtualBox great again
-# Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
-# This *should* also be fixed by 23.3-rc5+
-#Patch10:	mesa-22.3-make-vbox-great-again.patch
+Patch10:	mesa-24.0.2-buildfix32.patch
 
 # Fix https://bugs.winehq.org/show_bug.cgi?id=41930
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/5094
