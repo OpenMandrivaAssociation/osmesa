@@ -159,7 +159,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	24.0.2
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -356,7 +356,7 @@ BuildRequires:	devel(libXau)
 BuildRequires:	devel(libXdmcp)
 BuildRequires:	devel(libsensors)
 BuildRequires:	libsensors.so.5
-BuildRequires:	(devel(libLLVM-18) or devel(libLLVM-17) or devel(libLLVM-16))
+BuildRequires:	devel(libLLVM)
 BuildRequires:	devel(libclang)
 BuildRequires:	devel(libzstd)
 BuildRequires:	devel(libwayland-client)
