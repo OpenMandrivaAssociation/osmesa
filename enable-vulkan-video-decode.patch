@@ -1,0 +1,93 @@
+diff -up mesa-24.0.3/src/amd/vulkan/radv_debug.h.omv~ mesa-24.0.3/src/amd/vulkan/radv_debug.h
+--- mesa-24.0.3/src/amd/vulkan/radv_debug.h.omv~	2024-03-17 17:30:15.631516322 +0100
++++ mesa-24.0.3/src/amd/vulkan/radv_debug.h	2024-03-17 17:30:25.951675167 +0100
+@@ -86,7 +86,7 @@ enum {
+    RADV_PERFTEST_NGGC = 1u << 8,
+    RADV_PERFTEST_EMULATE_RT = 1u << 9,
+    RADV_PERFTEST_RT_WAVE_64 = 1u << 10,
+-   RADV_PERFTEST_VIDEO_DECODE = 1u << 11,
++   RADV_PERFTEST_NO_VIDEO_DECODE = 1u << 11,
+    RADV_PERFTEST_DMA_SHADERS = 1u << 12,
+    RADV_PERFTEST_GS_FAST_LAUNCH_2 = 1u << 13,
+    RADV_PERFTEST_TRANSFER_QUEUE = 1u << 14,
+diff -up mesa-24.0.3/src/amd/vulkan/radv_formats.c.omv~ mesa-24.0.3/src/amd/vulkan/radv_formats.c
+--- mesa-24.0.3/src/amd/vulkan/radv_formats.c.omv~	2024-03-17 17:30:34.551806849 +0100
++++ mesa-24.0.3/src/amd/vulkan/radv_formats.c	2024-03-17 17:30:54.936116522 +0100
+@@ -679,7 +679,7 @@ radv_physical_device_get_format_properti
+             tiling |= VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT;
+       }
+ 
+-      if (physical_device->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE) {
++      if (!(physical_device->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE)) {
+          if (format == VK_FORMAT_G8_B8R8_2PLANE_420_UNORM ||
+              format == VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16)
+             tiling |= VK_FORMAT_FEATURE_2_VIDEO_DECODE_OUTPUT_BIT_KHR | VK_FORMAT_FEATURE_2_VIDEO_DECODE_DPB_BIT_KHR;
+diff -up mesa-24.0.3/src/amd/vulkan/radv_instance.c.omv~ mesa-24.0.3/src/amd/vulkan/radv_instance.c
+--- mesa-24.0.3/src/amd/vulkan/radv_instance.c.omv~	2024-03-17 17:32:18.461352036 +0100
++++ mesa-24.0.3/src/amd/vulkan/radv_instance.c	2024-03-17 17:32:30.829530762 +0100
+@@ -97,7 +97,7 @@ static const struct debug_control radv_p
+                                                              {"nggc", RADV_PERFTEST_NGGC},
+                                                              {"emulate_rt", RADV_PERFTEST_EMULATE_RT},
+                                                              {"rtwave64", RADV_PERFTEST_RT_WAVE_64},
+-                                                             {"video_decode", RADV_PERFTEST_VIDEO_DECODE},
++                                                             {"novideo_decode", RADV_PERFTEST_NO_VIDEO_DECODE},
+                                                              {"dmashaders", RADV_PERFTEST_DMA_SHADERS},
+                                                              {"gsfastlaunch2", RADV_PERFTEST_GS_FAST_LAUNCH_2},
+                                                              {"transfer_queue", RADV_PERFTEST_TRANSFER_QUEUE},
+diff -up mesa-24.0.3/src/amd/vulkan/radv_physical_device.c.omv~ mesa-24.0.3/src/amd/vulkan/radv_physical_device.c
+--- mesa-24.0.3/src/amd/vulkan/radv_physical_device.c.omv~	2024-03-17 17:31:02.776234732 +0100
++++ mesa-24.0.3/src/amd/vulkan/radv_physical_device.c	2024-03-17 17:32:09.745225462 +0100
+@@ -197,7 +197,7 @@ radv_physical_device_init_queue_table(st
+       idx++;
+    }
+ 
+-   if (pdevice->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE) {
++   if (!(pdevice->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE)) {
+       if (pdevice->rad_info.ip[pdevice->vid_decode_ip].num_queues > 0) {
+          pdevice->vk_queue_to_radv[idx] = RADV_QUEUE_VIDEO_DEC;
+          idx++;
+@@ -509,10 +509,10 @@ radv_physical_device_get_supported_exten
+       .KHR_uniform_buffer_standard_layout = true,
+       .KHR_variable_pointers = true,
+       .KHR_vertex_attribute_divisor = true,
+-      .KHR_video_queue = !!(device->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE),
+-      .KHR_video_decode_queue = !!(device->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE),
+-      .KHR_video_decode_h264 = VIDEO_CODEC_H264DEC && !!(device->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE),
+-      .KHR_video_decode_h265 = VIDEO_CODEC_H265DEC && !!(device->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE),
++      .KHR_video_queue = !(device->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE),
++      .KHR_video_decode_queue = !(device->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE),
++      .KHR_video_decode_h264 = VIDEO_CODEC_H264DEC && !(device->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE),
++      .KHR_video_decode_h265 = VIDEO_CODEC_H265DEC && !(device->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE),
+       .KHR_vulkan_memory_model = true,
+       .KHR_workgroup_memory_explicit_layout = true,
+       .KHR_zero_initialize_workgroup_memory = true,
+@@ -2122,7 +2122,7 @@ radv_get_physical_device_queue_family_pr
+        !(pdevice->instance->debug_flags & RADV_DEBUG_NO_COMPUTE_QUEUE))
+       num_queue_families++;
+ 
+-   if (pdevice->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE) {
++   if (!(pdevice->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE)) {
+       if (pdevice->rad_info.ip[pdevice->vid_decode_ip].num_queues > 0)
+          num_queue_families++;
+    }
+@@ -2169,7 +2169,7 @@ radv_get_physical_device_queue_family_pr
+       }
+    }
+ 
+-   if (pdevice->instance->perftest_flags & RADV_PERFTEST_VIDEO_DECODE) {
++   if (!(pdevice->instance->perftest_flags & RADV_PERFTEST_NO_VIDEO_DECODE)) {
+       if (pdevice->rad_info.ip[pdevice->vid_decode_ip].num_queues > 0) {
+          if (*pCount > idx) {
+             *pQueueFamilyProperties[idx] = (VkQueueFamilyProperties){
+diff -up mesa-24.0.3/src/intel/vulkan/anv_device.c.omv~ mesa-24.0.3/src/intel/vulkan/anv_device.c
+--- mesa-24.0.3/src/intel/vulkan/anv_device.c.omv~	2024-03-17 17:35:36.896109644 +0100
++++ mesa-24.0.3/src/intel/vulkan/anv_device.c	2024-03-17 17:39:10.882879117 +0100
+@@ -2285,7 +2285,7 @@ anv_physical_device_try_create(struct vk
+    device->use_call_secondary =
+       !debug_get_bool_option("ANV_DISABLE_SECONDARY_CMD_BUFFER_CALLS", false);
+ 
+-   device->video_decode_enabled = debug_get_bool_option("ANV_VIDEO_DECODE", false);
++   device->video_decode_enabled = debug_get_bool_option("ANV_VIDEO_DECODE", true);
+ 
+    device->uses_ex_bso = device->info.verx10 >= 125;
+ 
