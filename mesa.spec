@@ -245,6 +245,10 @@ BuildRequires:	libatomic-devel
 BuildRequires:	python
 BuildRequires:	python%{pyver}dist(ply)
 BuildRequires:	python%{pyver}dist(mako) >= 0.8.0
+%ifarch %{arm} %{armx} %{riscv}
+# For etnaviv
+BuildRequires:	python%{pyver}dist(pycparser)
+%endif
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
 BuildRequires:	pkgconfig(libglvnd)
@@ -1379,6 +1383,12 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/intel_error2aub
 %{_bindir}/intel_sanitize_gpu
 %{_bindir}/intel_stub_gpu
+%{_bindir}/brw_asm
+%{_bindir}/brw_disasm
+%{_bindir}/elk_asm
+%{_bindir}/elk_disasm
+%{_bindir}/nv_mme_dump
+%{_bindir}/nv_push_dump
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
