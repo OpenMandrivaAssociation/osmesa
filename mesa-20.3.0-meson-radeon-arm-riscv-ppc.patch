@@ -1,23 +1,22 @@
-diff -up mesa-23.2.0-rc1/meson.build.4~ mesa-23.2.0-rc1/meson.build
---- mesa-23.2.0-rc1/meson.build.4~	2023-07-13 17:04:51.847962343 +0200
-+++ mesa-23.2.0-rc1/meson.build	2023-07-13 17:10:01.900604262 +0200
-@@ -135,9 +135,10 @@ if gallium_drivers.contains('auto')
-     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+diff -up mesa-24.1.0-rc1/meson.build.4~ mesa-24.1.0-rc1/meson.build
+--- mesa-24.1.0-rc1/meson.build.4~	2024-04-26 04:19:17.527914094 +0200
++++ mesa-24.1.0-rc1/meson.build	2024-04-26 04:22:16.081486445 +0200
+@@ -150,9 +150,9 @@ if gallium_drivers.contains('auto')
        gallium_drivers = [
          'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
--        'tegra', 'virgl', 'lima', 'panfrost', 'swrast', 'iris'
-+        'tegra', 'virgl', 'lima', 'panfrost', 'swrast', 'iris',
-+        'r300', 'r600', 'radeonsi'
+         'tegra', 'virgl', 'lima', 'panfrost', 'swrast', 'iris',
+-        'zink'
++        'zink', 'r300', 'r600', 'radeonsi'
        ]
 -    elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
 +    elif ['mips', 'mips64', 'riscv32', 'riscv64', 'ppc64', 'ppc64le'].contains(host_machine.cpu_family())
        gallium_drivers = [
-         'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'swrast'
+         'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'swrast', 'zink'
        ]
-@@ -212,12 +213,8 @@ if _vulkan_drivers.contains('auto')
+@@ -222,12 +222,8 @@ if _vulkan_drivers.contains('auto')
    if system_has_kms_drm
      if host_machine.cpu_family().startswith('x86')
-       _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'swrast']
+       _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'nouveau', 'swrast']
 -    elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
 -      _vulkan_drivers = ['swrast', 'intel']
 -    elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())

@@ -1,0 +1,11 @@
+diff -up mesa-24.1.0-rc1/src/intel/shaders/meson.build.omv~ mesa-24.1.0-rc1/src/intel/shaders/meson.build
+--- mesa-24.1.0-rc1/src/intel/shaders/meson.build.omv~	2024-04-26 06:31:25.951601137 +0200
++++ mesa-24.1.0-rc1/src/intel/shaders/meson.build	2024-04-26 06:31:45.319852869 +0200
+@@ -65,6 +65,7 @@ foreach gen : intel_shaders_gens
+       '-I' + join_paths(dir_source_root, 'src/intel'),
+       '-I' + join_paths(meson.project_build_root(), 'src/intel'),
+       '-I' + join_paths(dir_source_root, 'src/intel/genxml'),
++      '-I/usr/lib64/clang/18/include',
+     ],
+     env: ['MESA_SHADER_CACHE_DISABLE=true'],
+     depends : [dep_prog_intel_clc, gen_cl_xml_pack],

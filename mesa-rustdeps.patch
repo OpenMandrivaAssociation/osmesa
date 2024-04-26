@@ -1,9 +1,9 @@
-diff -up mesa-main/src/nouveau/compiler/meson.build.omv~ mesa-main/src/nouveau/compiler/meson.build
---- mesa-main/src/nouveau/compiler/meson.build.omv~	2023-12-08 19:52:31.704320186 +0100
-+++ mesa-main/src/nouveau/compiler/meson.build	2023-12-08 20:09:50.063230857 +0100
-@@ -12,11 +12,11 @@ if rc.version().version_compare('< 1.73.
-   error('NAK requires Rust 1.73.0')
- endif
+diff -up mesa-24.1.0-rc1/src/nouveau/compiler/meson.build.5~ mesa-24.1.0-rc1/src/nouveau/compiler/meson.build
+--- mesa-24.1.0-rc1/src/nouveau/compiler/meson.build.5~	2024-04-24 22:28:09.000000000 +0200
++++ mesa-24.1.0-rc1/src/nouveau/compiler/meson.build	2024-04-26 04:26:38.283796090 +0200
+@@ -25,11 +25,11 @@ nak_rust_args = [
+   '-Anon_snake_case',
+ ]
  
 -dep_syn = dependency('syn',
 -  version : '>= 2.0.15',
@@ -16,9 +16,9 @@ diff -up mesa-main/src/nouveau/compiler/meson.build.omv~ mesa-main/src/nouveau/c
 +#  required : true,
 +#)
  
- libnak_c_files = files(
-   'nak.h',
-@@ -98,7 +98,13 @@ libnak_bindings_gen = static_library(
+ dep_paste = dependency('paste',
+   version : '>= 1.0.14',
+@@ -113,7 +113,13 @@ libnak_bindings_gen = static_library(
  _libnak_ir_proc_rs = rust.proc_macro(
    'nak_ir_proc',
    files('nak/ir_proc.rs'),
@@ -33,4 +33,3 @@ diff -up mesa-main/src/nouveau/compiler/meson.build.omv~ mesa-main/src/nouveau/c
  )
  
  _libnak_rs = static_library(
-diff -up mesa-main/src/nouveau/meson.build.omv~ mesa-main/src/nouveau/meson.build
