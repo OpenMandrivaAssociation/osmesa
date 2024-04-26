@@ -309,6 +309,7 @@ BuildRequires:	glslang
 %if %{with rusticl}
 BuildRequires:	rust
 BuildRequires:	bindgen
+BuildRequires:	cbindgen
 %endif
 
 %if %{with rust}
@@ -1041,7 +1042,7 @@ if ! %meson32 \
 	-Dosmesa=true \
 	-Dandroid-libbacktrace=disabled \
 	-Dvalgrind=disabled \
-	-Dglvnd=true \
+	-Dglvnd=enabled \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 	-Dopencl-spirv=true \
@@ -1156,7 +1157,7 @@ if ! %meson \
 	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
-	-Dglvnd=true \
+	-Dglvnd=enabled \
 	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
