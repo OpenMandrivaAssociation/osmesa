@@ -1397,6 +1397,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/nvfuzz
 %endif
 %ifarch %{armx}
+%{_bindir}/generate_rd
+%{_bindir}/nv_push_dump
 %{_bindir}/panfrostdump
 %{_bindir}/panfrost_texfeatures
 %{_bindir}/rddecompiler
