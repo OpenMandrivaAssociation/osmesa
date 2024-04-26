@@ -31,7 +31,7 @@
 #define git 20240114
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
-#define relc 3
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -158,7 +158,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	24.0.4
+Version:	24.1.0
 Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
@@ -196,9 +196,9 @@ Patch0:		mesa-20.1.1-fix-opencl.patch
 # finds /usr/lib64/libLLVM-17.so even for 32-bit builds
 Patch1:		mesa-23.1-x86_32-llvm-detection.patch
 # Fix intel-vk build with clang 16 and gcc 13
-Patch2:		mesa-23.1-intel-vk-compile.patch
-# Make Chromium VAAPI great again
-Patch3:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26165.patch
+#Patch2:		mesa-23.1-intel-vk-compile.patch
+# find opencl-c-base.h even when crosscompiling
+Patch3:		mesa-24.1-find-opencl-c-base.h.patch
 Patch4:		mesa-23.3.0-rc4-panfrost-enable-gl3-by-default.patch
 # Not used in the spec; this is a test case to verify patch0
 # is still needed. If this code works without the patch, the
@@ -227,28 +227,8 @@ Patch500:	mesa-24.0-osmesa-fix-civ3.patch
 # Related to the above, we should also fix
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/5095
 
-# Panthor -- based on panthor-v10 branch of https://gitlab.freedesktop.org/bbrezillon/mesa.git
-Patch1010:	0011-drm-uapi-Add-panthor-uAPI.patch
-Patch1011:	0012-pan-kmod-Add-a-backend-for-panthor.patch
-Patch1013:	0013-panfrost-Patch-panfrost_max_thread_count-for-v10.patch
-Patch1014:	0014-panfrost-Add-v10-support-to-libpanfrost.patch
-Patch1015:	0015-panfrost-genxml-Add-missing-Progress-increment-field.patch
-Patch1016:	0016-pandecode-csf-Introduce-the-concept-of-usermode-queu.patch
-Patch1017:	0017-panfrost-Don-t-allocate-a-tiler-heap-buffer-on-v10.patch
-Patch1018:	0018-panfrost-Add-a-library-to-build-CSF-command-streams.patch
-Patch1019:	0019-panfrost-Relax-position-result-alignment-constraint-.patch
-Patch1020:	0020-panfrost-Add-arch-specific-context-init-cleanup-hook.patch
-Patch1021:	0021-panfrost-Add-a-panfrost_context_reinit-helper.patch
-Patch1022:	0022-panfrost-Add-a-cleanup_batch-method-to-panfrost_vtab.patch
-Patch1023:	0023-panfrost-Add-support-for-the-CSF-job-frontend.patch
-Patch1024:	0024-panfrost-Enable-v10-in-the-gallium-driver.patch
-Patch1025:	0025-panfrost-Add-a-panfrost_model-entry-for-G610.patch
-Patch1026:	0026-panfrost-Add-G310-to-the-list-of-supported-GPUs.patch
-Patch1027:	0027-panfrost-Add-an-entry-for-panthor-in-the-renderonly_.patch
-Patch1028:	0028-panfrost-Add-the-gallium-glue-to-get-panfrost-loaded.patch
-
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26358#note_2233350
-Patch1050:	panthor-fix-panthor_kmod_bo_export-return.patch
+# Panthor -- https://gitlab.freedesktop.org/bbrezillon/mesa.git
+# Currently no patches required
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -332,6 +312,8 @@ BuildRequires:	rust
 BuildRequires:	crate(proc-macro2)
 BuildRequires:	crate(quote)
 BuildRequires:	crate(syn)
+BuildRequires:	crate(unicode-ident)
+BuildRequires:	crate(paste)
 %endif
 
 # package mesa
@@ -985,9 +967,22 @@ export CXX=g++
 %endif
 
 %if %{with rust}
+%define cargo_registry /usr/share/cargo/registry
+export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
+# So... Meson can't actually find them without tweaks
+%define inst_crate_nameversion() %(basename %{cargo_registry}/%{1}-*)
+%define rewrite_wrap_file() sed -e "/source.*/d" -e "s/%{1}-.*/%{inst_crate_nameversion %{1}}/" -i subprojects/%{1}.wrap
+ 
+%rewrite_wrap_file proc-macro2
+%rewrite_wrap_file quote
+%rewrite_wrap_file syn
+%rewrite_wrap_file unicode-ident
+%rewrite_wrap_file paste
 # Rust dependencies of Nouveau...
 # Nouveau doesn't use cargo, so we probably have to do this manually?
 mkdir rustdeps
+rustc --crate-name paste --edition=2021 /usr/share/cargo/registry/unicode-ident-*/src/lib.rs --crate-type lib --emit=dep-info,metadata,link --out-dir $(pwd)/rustdeps -Copt-level=3 -Cdebuginfo=2 -Ccodegen-units=1 -Cstrip=none -Clink-arg=-Wl,-z,relro -Clink-arg=-Wl,-z,now
+
 rustc --crate-name unicode_ident --edition=2021 /usr/share/cargo/registry/unicode-ident-*/src/lib.rs --crate-type lib --emit=dep-info,metadata,link --out-dir $(pwd)/rustdeps -Copt-level=3 -Cdebuginfo=2 -Ccodegen-units=1 -Cstrip=none -Clink-arg=-Wl,-z,relro -Clink-arg=-Wl,-z,now
 
 rustc --crate-name proc_macro2 --edition=2021 /usr/share/cargo/registry/proc-macro2-*/src/lib.rs --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debug-assertions=off --cfg 'feature="default"' --cfg 'feature="proc-macro"' --out-dir $(pwd)/rustdeps -L dependency=$(pwd)/rustdeps --extern unicode_ident=$(pwd)/rustdeps/libunicode_ident.rmeta --cap-lints warn -Copt-level=3 -Cdebuginfo=2 -Ccodegen-units=1 -Cstrip=none -Clink-arg=-Wl,-z,relro -Clink-arg=-Wl,-z,now --cap-lints=warn --cfg wrap_proc_macro
@@ -1019,6 +1014,12 @@ cpu = 'i686'
 endian = 'little'
 EOF
 
+# vulkan-drivers intentionally doesn't include nouveau for now, since
+# that would require a 32-bit rust crosscompiler.
+# Let's just hope anything that is old enough to be 32-bit also
+# predates vulkan!
+# for opencl-c-base.h
+export CC="%{__cc} -I%{_libdir}/clang/$(clang --version |head -n1 |cut -d' ' -f2 |cut -d. -f1)/include"
 if ! %meson32 \
 	-Dmicrosoft-clc=disabled \
 	-Dshared-llvm=enabled \
@@ -1029,7 +1030,7 @@ if ! %meson32 \
 	-Dglx=auto \
 	-Dplatforms=wayland,x11 \
 	-Dvulkan-layers=device-select,overlay \
-	-Dvulkan-drivers=auto \
+	-Dvulkan-drivers=amd,intel,intel_hasvk,swrast \
 	-Dvulkan-beta=true \
 	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
 	-Dxlib-lease=auto \
@@ -1062,10 +1063,12 @@ if ! %meson32 \
 	-Dshared-llvm=enabled \
 	-Dselinux=false \
 	-Dbuild-tests=false \
+	-Dintel-rt=disabled \
 	-Dtools=""; then
 
 	cat build32/meson-logs/meson-log.txt >/dev/stderr
 fi
+unset CC
 
 %ninja_build -C build32/
 rm llvm-config
@@ -1138,22 +1141,12 @@ if ! %meson \
 	-Dplatforms=wayland,x11 \
 	-Degl-native-platform=wayland \
 	-Dvulkan-layers=device-select,overlay \
-%if %{with rust}
-%ifarch %{armx}
-	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental,nouveau-experimental \
-%elifarch %{riscv}
-	-Dvulkan-drivers=auto,virtio,imagination-experimental,nouveau-experimental \
-%else
-	-Dvulkan-drivers=auto,virtio,nouveau-experimental,intel,intel_hasvk \
-%endif
-%else
 %ifarch %{armx}
 	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental \
 %elifarch %{riscv}
 	-Dvulkan-drivers=auto,virtio,imagination-experimental \
 %else
 	-Dvulkan-drivers=auto,virtio,intel,intel_hasvk \
-%endif
 %endif
 	-Dvulkan-beta=true \
 	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
@@ -1174,6 +1167,11 @@ if ! %meson \
 	-Dshared-llvm=enabled \
 	-Dselinux=false \
 	-Dbuild-tests=false \
+%ifarch %{x86_64}
+	-Dintel-rt=enabled \
+%else
+	-Dintel-rt=disabled \
+%endif
 	-Dtools="$TOOLS"; then
 
 	cat build/meson-logs/meson-log.txt >/dev/stderr
@@ -1376,8 +1374,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 %{_bindir}/intel_error2hangdump
 %{_bindir}/intel_hang_replay
-%{_bindir}/i965_asm
-%{_bindir}/i965_disasm
 %{_bindir}/intel_dev_info
 %{_bindir}/intel_dump_gpu
 %{_bindir}/intel_error2aub
