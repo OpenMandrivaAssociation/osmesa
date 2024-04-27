@@ -1116,13 +1116,21 @@ if ! %meson \
 	-Dc_std=c11 \
 	-Dcpp_std=c++17 \
 	-Dandroid-libbacktrace=disabled \
+%if %{cross_compiling}
+	-Dgallium-drivers=swrast,r300,r600,svga,radeonsi,nouveau,zink \
+	-Dvulkan-drivers=swrast,virtio \
+%else
 %ifarch %{armx}
 	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink \
+	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental \
 %else
 %ifarch %{riscv}
 	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,etnaviv,kmsro,zink \
+	-Dvulkan-drivers=auto,virtio,imagination-experimental \
 %else
 	-Dgallium-drivers=auto,crocus,zink \
+	-Dvulkan-drivers=auto,virtio,intel,intel_hasvk \
+%endif
 %endif
 %endif
 %ifarch %{x86_64}
@@ -1146,13 +1154,6 @@ if ! %meson \
 	-Dplatforms=wayland,x11 \
 	-Degl-native-platform=wayland \
 	-Dvulkan-layers=device-select,overlay \
-%ifarch %{armx}
-	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental \
-%elifarch %{riscv}
-	-Dvulkan-drivers=auto,virtio,imagination-experimental \
-%else
-	-Dvulkan-drivers=auto,virtio,intel,intel_hasvk \
-%endif
 	-Dvulkan-beta=true \
 	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
 	-Dxlib-lease=auto \
@@ -1389,16 +1390,15 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/elk_asm
 %{_bindir}/elk_disasm
 %{_bindir}/nv_mme_dump
-%{_bindir}/nv_push_dump
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
+%{_bindir}/nv_push_dump
 %ifarch %{x86_64}
 %{_bindir}/nvfuzz
 %endif
 %ifarch %{armx}
 %{_bindir}/generate_rd
-%{_bindir}/nv_push_dump
 %{_bindir}/panfrostdump
 %{_bindir}/panfrost_texfeatures
 %{_bindir}/rddecompiler
