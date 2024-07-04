@@ -217,7 +217,7 @@ Patch6:		mesa-rustdeps.patch
 #Patch7:		mesa-24-llvmspirv-detection.patch
 Patch8:		mesa-buildsystem-improvements.patch
 Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
-Patch10:	mesa-24.0.2-buildfix32.patch
+#Patch10:	mesa-24.0.2-buildfix32.patch
 Patch11:	enable-vulkan-video-decode.patch
 
 # Fix https://bugs.winehq.org/show_bug.cgi?id=41930
