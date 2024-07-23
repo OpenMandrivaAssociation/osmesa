@@ -31,7 +31,7 @@
 #define git 20240114
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
-#define relc 4
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -158,7 +158,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	24.1.4
+Version:	24.2.0
 Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
@@ -308,7 +308,7 @@ BuildRequires:	glslang
 
 %if %{with rusticl}
 BuildRequires:	rust
-BuildRequires:	bindgen
+BuildRequires:	rust-bindgen-cli
 BuildRequires:	cbindgen
 %endif
 
@@ -425,18 +425,6 @@ Obsoletes:	%{_lib}XvMCgallium1 <= 22.0.0-0.rc2.1
 
 %description -n %{dridrivers}
 DRI and Vulkan drivers.
-
-# This is intentionally packaged separately and not installed by default
-# until https://gitlab.freedesktop.org/mesa/mesa/-/issues/8106 gets fixed.
-%package -n %{dridrivers}-zink
-Summary:	OpenGL driver that emits Vulkan calls
-Requires:	%{dridrivers} = %{EVRD}
-
-%description -n %{dridrivers}-zink
-OpenGL driver that emits Vulkan calls
-
-This allows OpenGL applictions to run on hardware that
-has only a Vulkan driver.
 
 %ifarch %{armx} %{riscv}
 %package -n freedreno-tools
@@ -1235,7 +1223,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dridrivers}
 %{_libdir}/dri/*.so
-%exclude %{_libdir}/dri/zink_dri.so
 %ifarch %{armx}
 %{_libdir}/libpowervr_rogue.so
 %endif
@@ -1250,9 +1237,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_datadir}/vulkan/explicit_layer.d/*.json
 %{_libdir}/libvulkan_*.so
 %{_datadir}/vulkan/icd.d/*_icd.*.json
-
-%files -n %{dridrivers}-zink
-%{_libdir}/dri/zink_dri.so
 
 %ifarch %{armx}
 %files -n freedreno-tools
