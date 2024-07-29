@@ -31,7 +31,7 @@
 #define git 20240114
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
-%define relc 1
+%define relc 2
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -1222,6 +1222,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_datadir}/drirc.d
 
 %files -n %{dridrivers}
+%{_libdir}/libgallium-*.so
 %{_libdir}/dri/*.so
 %ifarch %{armx}
 %{_libdir}/libpowervr_rogue.so
@@ -1453,6 +1454,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/libglapi.so
 
 %files -n %{dridrivers32}
+%{_prefix}/lib/libgallium-*.so
 %{_prefix}/lib/dri/*.so
 %{_prefix}/lib/gallium-pipe/*.so
 %{_prefix}/lib/libVkLayer_*.so
