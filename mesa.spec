@@ -244,6 +244,7 @@ BuildRequires:	libatomic-devel
 %endif
 BuildRequires:	python
 BuildRequires:	python%{pyver}dist(ply)
+BuildRequires:	python%{pyver}dist(pyyaml)
 BuildRequires:	python%{pyver}dist(mako) >= 0.8.0
 %ifarch %{arm} %{armx} %{riscv}
 # For etnaviv
