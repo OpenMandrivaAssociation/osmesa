@@ -1,10 +1,10 @@
-diff -up mesa-24.2.0-rc1/meson.build.5~ mesa-24.2.0-rc1/meson.build
---- mesa-24.2.0-rc1/meson.build.5~	2024-07-22 17:24:49.465213396 +0200
-+++ mesa-24.2.0-rc1/meson.build	2024-07-22 17:30:20.805256531 +0200
+diff -up mesa-24.2.0-rc3/meson.build.5~ mesa-24.2.0-rc3/meson.build
+--- mesa-24.2.0-rc3/meson.build.5~	2024-08-03 19:44:57.861646896 +0200
++++ mesa-24.2.0-rc3/meson.build	2024-08-03 19:45:43.477052715 +0200
 @@ -133,7 +133,7 @@ if gallium_drivers.contains('auto')
        gallium_drivers = [
          'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
-         'tegra', 'virgl', 'lima', 'panfrost', 'swrast', 'iris',
+         'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
 -        'zink'
 +        'zink', 'r300', 'r600', 'radeonsi'
        ]
