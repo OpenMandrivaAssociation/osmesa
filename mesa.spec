@@ -320,6 +320,8 @@ BuildRequires:	crate(quote)
 BuildRequires:	crate(syn)
 BuildRequires:	crate(unicode-ident)
 BuildRequires:	crate(paste)
+# For etnaviv
+BuildRequires:	crate(indexmap)
 %endif
 
 # package mesa
@@ -1071,7 +1073,11 @@ rm llvm-config
 # FIXME keep in sync with with_tools=all definition from meson.build
 TOOLS="drm-shim,dlclose-skip,glsl,nir,nouveau"
 %ifarch %{armx}
-TOOLS="$TOOLS,etnaviv,freedreno,lima,panfrost,imagination"
+# FIXME add etnaviv again once the rust dependencies of etnaviv's
+# tools can be sorted out -- currently we package them, but the meson
+# files can't find them
+# Fortunately the driver itself hasn't been infested with rust yet
+TOOLS="$TOOLS,freedreno,lima,panfrost,imagination"
 %endif
 %ifarch %{ix86} %{x86_64}
 %if %{with intel}
@@ -1110,11 +1116,11 @@ if ! %meson \
 	-Dvulkan-drivers=swrast,virtio \
 %else
 %ifarch %{armx}
-	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,kmsro,lima,panfrost,zink \
+	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,freedreno,etnaviv,tegra,vc4,v3d,lima,panfrost,zink \
 	-Dvulkan-drivers=auto,broadcom,freedreno,panfrost,virtio,imagination-experimental \
 %else
 %ifarch %{riscv}
-	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,etnaviv,kmsro,zink \
+	-Dgallium-drivers=auto,r300,r600,svga,radeonsi,etnaviv,zink \
 	-Dvulkan-drivers=auto,virtio,imagination-experimental \
 %else
 	-Dgallium-drivers=auto,crocus,zink \
@@ -1389,7 +1395,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/panfrost_texfeatures
 %{_bindir}/rddecompiler
 %{_bindir}/replay
-%{_bindir}/lima_compiler
 %{_bindir}/lima_disasm
 %endif
 %{_bindir}/glsl_compiler
