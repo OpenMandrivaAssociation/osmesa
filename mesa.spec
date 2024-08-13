@@ -1319,7 +1319,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{devgl}
+%if ! %{with bootstrap}
 %{_libdir}/libGLX_mesa.so
+%endif
 %{_libdir}/pkgconfig/dri.pc
 
 #FIXME: check those headers
