@@ -1286,9 +1286,11 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %dir %{_libdir}/gallium-pipe
 %endif
 
+%if ! %{with bootstrap}
 %if %{with egl}
 %files -n %{libegl}
 %{_libdir}/libEGL_mesa.so.%{eglmajor}*
+%endif
 %endif
 
 %files -n %{libglapi}
@@ -1335,7 +1337,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{devegl}
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglext_angle.h
+%if ! %{with bootstrap}
 %{_libdir}/libEGL_mesa.so
+%endif
 %endif
 
 %files -n %{devglapi}
@@ -1422,11 +1426,13 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/d3d/d3dadapter9.so
 %{_prefix}/lib/pkgconfig/d3d.pc
 
+%if ! %{with bootstrap}
 %files -n %{lib32egl}
 %{_prefix}/lib/libEGL_mesa.so.%{eglmajor}*
 
 %files -n %{dev32egl}
 %{_prefix}/lib/libEGL_mesa.so
+%endif
 
 %files -n %{lib32gl}
 %{_prefix}/lib/libGLX_mesa.so.0*
