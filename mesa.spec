@@ -362,8 +362,10 @@ BuildRequires:	devel(libva)
 BuildRequires:	devel(libz)
 BuildRequires:	devel(libexpat)
 BuildRequires:	devel(libvdpau)
+%if ! %{with bootstrap}
 BuildRequires:	devel(libOpenGL)
 BuildRequires:	devel(libGLdispatch)
+%endif
 BuildRequires:	devel(libXrandr)
 BuildRequires:	devel(libXrender)
 BuildRequires:	devel(libatomic)
