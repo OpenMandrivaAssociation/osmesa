@@ -41,7 +41,7 @@
 %bcond_without opencl
 %endif
 
-%bcond_with bootstrap
+%bcond_without bootstrap
 %bcond_without rust
 %bcond_without rusticl
 %bcond_without vdpau
