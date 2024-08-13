@@ -1038,6 +1038,8 @@ if ! %meson32 \
 	-Dvalgrind=disabled \
 %if ! %{with bootstrap}
 	-Dglvnd=enabled \
+%else
+	-Dglvnd=disabled \
 %endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
@@ -1160,6 +1162,8 @@ if ! %meson \
 	-Dosmesa=true \
 %if ! %{with bootstrap}
 	-Dglvnd=enabled \
+%else
+	-Dglvnd=disabled \
 %endif
 	-Ddri3=enabled \
 	-Degl=enabled \
