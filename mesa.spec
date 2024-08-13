@@ -551,7 +551,6 @@ Obsoletes:	%{_lib}glapi0-devel < %{EVRD}
 This package contains the headers needed to compile programs against
 the glapi shared library.
 
-%if ! %{with bootstrap}
 %package -n %{libxatracker}
 Summary:	Files for mesa (xatracker libs)
 Group:		System/Libraries
@@ -567,7 +566,6 @@ Requires:	%{libxatracker} = %{EVRD}
 %description -n %{devxatracker}
 This package contains the headers needed to compile programs against
 the xatracker shared library.
-%endif
 
 %package -n %{libswravx}
 Summary:	AVX Software rendering library for Mesa
@@ -1282,10 +1280,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{libglapi}
 %{_libdir}/libglapi.so.%{glapimajor}*
 
-%if ! %{with bootstrap}
 %files -n %{libxatracker}
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
-%endif
 
 %files -n %{libd3d}
 %dir %{_libdir}/d3d
@@ -1336,12 +1332,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/vdpau/libvdpau*.so.*
 %endif
 
-%if ! %{with bootstrap}
 %files -n %{devxatracker}
 %{_libdir}/libxatracker.so
 %{_includedir}/xa_*.h
 %{_libdir}/pkgconfig/xatracker.pc
-%endif
 
 %files -n %{devd3d}
 %{_includedir}/d3dadapter
