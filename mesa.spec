@@ -1279,8 +1279,8 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{libgl}
 %if ! %{with bootstrap}
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
-%endif
 %{_libdir}/libGLX_mesa.so.0*
+%endif
 %dir %{_libdir}/dri
 %if %{with opencl}
 %dir %{_libdir}/gallium-pipe
