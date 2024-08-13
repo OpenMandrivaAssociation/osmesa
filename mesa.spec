@@ -253,7 +253,9 @@ BuildRequires:	python%{pyver}dist(pycparser)
 %endif
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
+%if ! %{with bootstrap}
 BuildRequires:	pkgconfig(libglvnd)
+%endif
 %ifnarch %{armx} %{riscv}
 %if %{with aubinatorviewer}
 # needed only for intel binaries
