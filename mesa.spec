@@ -1235,6 +1235,24 @@ find %{buildroot} -name '*.la' |xargs rm -f
 rm -rf %{buildroot}%{_libdir}/libwayland-egl.so*
 rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
+%if %{with bootstrap}
+# Move some stuff around for a glvnd compatible install even
+# if we had to build without glvnd support in the first step
+for i in %{buildroot}%{_libdir}/libEGL.so.1*; do
+	mv $i ${i/libEGL.so.1/libEGL_mesa.so.0}
+done
+for i in %{buildroot}%{_libdir}/libEGL.so*; do
+	mv $i ${i/libEGL.so/libEGL_mesa.so}
+done
+for i in %{buildroot}%{_libdir}/libGL.so.1*; do
+	mv $i ${i/libGL.so.1/libGLX_mesa.so.0}
+done
+for i in %{buildroot}%{_libdir}/libGL.so*; do
+	mv $i ${i/libGL./libGLX_mesa.}
+done
+rm %{buildroot}%{_libdir}/pkgconfig/glesv2.pc
+%endif
+
 %files
 %doc docs/README.*
 %{_datadir}/drirc.d
@@ -1279,18 +1297,16 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{libgl}
 %if ! %{with bootstrap}
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
-%{_libdir}/libGLX_mesa.so.0*
 %endif
+%{_libdir}/libGLX_mesa.so.0*
 %dir %{_libdir}/dri
 %if %{with opencl}
 %dir %{_libdir}/gallium-pipe
 %endif
 
-%if ! %{with bootstrap}
 %if %{with egl}
 %files -n %{libegl}
 %{_libdir}/libEGL_mesa.so.%{eglmajor}*
-%endif
 %endif
 
 %files -n %{libglapi}
@@ -1321,9 +1337,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %files -n %{devgl}
-%if ! %{with bootstrap}
 %{_libdir}/libGLX_mesa.so
-%endif
 %{_libdir}/pkgconfig/dri.pc
 
 #FIXME: check those headers
@@ -1337,9 +1351,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %files -n %{devegl}
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglext_angle.h
-%if ! %{with bootstrap}
 %{_libdir}/libEGL_mesa.so
-%endif
 %endif
 
 %files -n %{devglapi}
@@ -1426,13 +1438,11 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/d3d/d3dadapter9.so
 %{_prefix}/lib/pkgconfig/d3d.pc
 
-%if ! %{with bootstrap}
 %files -n %{lib32egl}
 %{_prefix}/lib/libEGL_mesa.so.%{eglmajor}*
 
 %files -n %{dev32egl}
 %{_prefix}/lib/libEGL_mesa.so
-%endif
 
 %files -n %{lib32gl}
 %{_prefix}/lib/libGLX_mesa.so.0*
