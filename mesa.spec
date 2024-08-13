@@ -1036,7 +1036,9 @@ if ! %meson32 \
 	-Dosmesa=true \
 	-Dandroid-libbacktrace=disabled \
 	-Dvalgrind=disabled \
+%if ! %{with bootstrap}
 	-Dglvnd=enabled \
+%endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 	-Dopencl-spirv=true \
@@ -1156,7 +1158,9 @@ if ! %meson \
 	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
+%if ! %{with bootstrap}
 	-Dglvnd=enabled \
+%endif
 	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
@@ -1269,7 +1273,9 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/pkgconfig/osmesa.pc
 
 %files -n %{libgl}
+%if ! %{with bootstrap}
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
+%endif
 %{_libdir}/libGLX_mesa.so.0*
 %dir %{_libdir}/dri
 %if %{with opencl}
