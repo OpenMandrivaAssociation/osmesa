@@ -41,7 +41,6 @@
 %bcond_without opencl
 %endif
 
-%bcond_without bootstrap
 %bcond_without rust
 %bcond_without rusticl
 %bcond_without vdpau
@@ -159,7 +158,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	24.2.0
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
