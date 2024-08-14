@@ -253,9 +253,7 @@ BuildRequires:	python%{pyver}dist(pycparser)
 %endif
 BuildRequires:	pkgconfig(libdrm) >= 2.4.56
 BuildRequires:	pkgconfig(libudev) >= 186
-%if ! %{with bootstrap}
 BuildRequires:	pkgconfig(libglvnd)
-%endif
 %ifnarch %{armx} %{riscv}
 %if %{with aubinatorviewer}
 # needed only for intel binaries
@@ -362,10 +360,8 @@ BuildRequires:	devel(libva)
 BuildRequires:	devel(libz)
 BuildRequires:	devel(libexpat)
 BuildRequires:	devel(libvdpau)
-%if ! %{with bootstrap}
 BuildRequires:	devel(libOpenGL)
 BuildRequires:	devel(libGLdispatch)
-%endif
 BuildRequires:	devel(libXrandr)
 BuildRequires:	devel(libXrender)
 BuildRequires:	devel(libatomic)
@@ -1036,11 +1032,7 @@ if ! %meson32 \
 	-Dosmesa=true \
 	-Dandroid-libbacktrace=disabled \
 	-Dvalgrind=disabled \
-%if ! %{with bootstrap}
 	-Dglvnd=enabled \
-%else
-	-Dglvnd=disabled \
-%endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
 	-Dopencl-spirv=true \
@@ -1160,11 +1152,7 @@ if ! %meson \
 	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
-%if ! %{with bootstrap}
 	-Dglvnd=enabled \
-%else
-	-Dglvnd=disabled \
-%endif
 	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
@@ -1235,24 +1223,6 @@ find %{buildroot} -name '*.la' |xargs rm -f
 rm -rf %{buildroot}%{_libdir}/libwayland-egl.so*
 rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
-%if %{with bootstrap}
-# Move some stuff around for a glvnd compatible install even
-# if we had to build without glvnd support in the first step
-for i in %{buildroot}%{_libdir}/libEGL.so.1*; do
-	mv $i ${i/libEGL.so.1/libEGL_mesa.so.0}
-done
-for i in %{buildroot}%{_libdir}/libEGL.so*; do
-	mv $i ${i/libEGL.so/libEGL_mesa.so}
-done
-for i in %{buildroot}%{_libdir}/libGL.so.1*; do
-	mv $i ${i/libGL.so.1/libGLX_mesa.so.0}
-done
-for i in %{buildroot}%{_libdir}/libGL.so*; do
-	mv $i ${i/libGL./libGLX_mesa.}
-done
-rm %{buildroot}%{_libdir}/pkgconfig/glesv2.pc
-%endif
-
 %files
 %doc docs/README.*
 %{_datadir}/drirc.d
@@ -1295,9 +1265,7 @@ rm %{buildroot}%{_libdir}/pkgconfig/glesv2.pc
 %{_libdir}/pkgconfig/osmesa.pc
 
 %files -n %{libgl}
-%if ! %{with bootstrap}
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
-%endif
 %{_libdir}/libGLX_mesa.so.0*
 %dir %{_libdir}/dri
 %if %{with opencl}
