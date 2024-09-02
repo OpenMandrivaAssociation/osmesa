@@ -158,7 +158,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	24.2.1
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}3
 Group:		System/Libraries
 License:	MIT
 Url:		http://www.mesa3d.org
@@ -219,6 +219,9 @@ Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
 Patch10:	mesa-24.2-llvm-19.0.patch
 #Patch10:	mesa-24.0.2-buildfix32.patch
 Patch11:	enable-vulkan-video-decode.patch
+# Without this, llvmpipe can't create a context
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/11818
+Patch12:	revert-06020b2ad8c9f1a07cee3e0cd453db09bad19277.patch
 
 # Fix https://bugs.winehq.org/show_bug.cgi?id=41930
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/5094

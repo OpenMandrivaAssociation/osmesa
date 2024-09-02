@@ -1,0 +1,86 @@
+commit 06020b2ad8c9f1a07cee3e0cd453db09bad19277
+Author: Mike Blumenkrantz <michael.blumenkrantz@gmail.com>
+Date:   Tue Jul 30 12:38:24 2024 -0400
+
+    dril: always take the egl init path
+    
+    using EGL_DEFAULT_DISPLAY will cover the swrast case, which
+    fixes generating all the correct configs
+    
+    Fixes: ec7afd2c24c ("dril: rework config creation")
+    
+    Reviewed-by: Eric Engestrom <eric@igalia.com>
+    Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/30426>
+    (cherry picked from commit ef88af846761ca9e642f7ed46011db7d3d6b61fd)
+
+diff --git a/.pick_status.json b/.pick_status.json
+index 98f6e0d7ea2..c8a37dfd64b 100644
+--- a/.pick_status.json
++++ b/.pick_status.json
+@@ -4,7 +4,7 @@
+         "description": "dril: always take the egl init path",
+         "nominated": true,
+         "nomination_type": 1,
++        "resolution": 0,
+-        "resolution": 1,
+         "main_sha": null,
+         "because_sha": "ec7afd2c24c6afa6a5c80da4f80e0b799580e12a",
+         "notes": null
+diff --git a/src/gallium/targets/dril/dril_target.c b/src/gallium/targets/dril/dril_target.c
+index 98306c7665d..593a07ef92b 100644
+--- a/src/gallium/targets/dril/dril_target.c
++++ b/src/gallium/targets/dril/dril_target.c
+@@ -343,15 +343,12 @@ init_dri2_configs(int fd)
+    EGLBoolean (*peglGetConfigAttrib)(EGLDisplay, EGLConfig, EGLint, EGLint *) = peglGetProcAddress("eglGetConfigAttrib");
+    const char *(*peglQueryString)(EGLDisplay, EGLint) = peglGetProcAddress("eglQueryString");
+ 
++   /* try opening GBM for hardware driver info */
++   struct gbm_device *gbm = gbm_create_device(fd);
++   if (!gbm)
++      goto out;
+-   struct gbm_device *gbm = NULL;
+-   if (fd != -1) {
+-      /* try opening GBM for hardware driver info */
+-      gbm = gbm_create_device(fd);
+-      if (!gbm)
+-         goto out;
+-   }
+ 
++   EGLDisplay dpy = peglGetPlatformDisplayEXT(EGL_PLATFORM_GBM_MESA, gbm, NULL);
+-   EGLDisplay dpy = peglGetPlatformDisplayEXT(EGL_PLATFORM_GBM_MESA, gbm ? gbm : EGL_DEFAULT_DISPLAY, NULL);
+    if (!dpy)
+       goto out_gbm;
+    int maj, min;
+@@ -418,8 +415,7 @@ out_egl:
+    peglTerminate(dpy);
+ 
+ out_gbm:
++   gbm_device_destroy(gbm);
+-   if (gbm)
+-      gbm_device_destroy(gbm);
+ out:
+    dlclose(egl);
+    if (c)
+@@ -434,9 +430,19 @@ drilCreateNewScreen(int scrn, int fd,
+                     const __DRIextension **driver_extensions,
+                     const __DRIconfig ***driver_configs, void *data)
+ {
++   /* multiply for possible 1/2/4/8/16/32 MSAA configs */
++   // allocate an array of pointers
++   const __DRIconfig **configs = NULL;
++   /* try dri2 if fd is valid */
++   if (fd >= 0)
++      configs = init_dri2_configs(fd);
++   if (!configs) {
++      configs = calloc(ARRAY_SIZE(drilConfigs) + 1, sizeof(void *));
++      // otherwise set configs to point to our config list
++      for (int i = 0; i < ARRAY_SIZE(drilConfigs); i++) {
++         configs[i] = mem_dup(&drilConfigs[i], sizeof(drilConfigs[i]));
++      }
++   }
+-   const __DRIconfig **configs = init_dri2_configs(fd);
+-   if (!configs)
+-      return NULL;
+ 
+    // outpointer it
+    *driver_configs = configs;
