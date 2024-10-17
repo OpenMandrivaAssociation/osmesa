@@ -161,7 +161,7 @@ Version:	24.2.4
 Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
-Url:		http://www.mesa3d.org
+Url:		https://www.mesa3d.org
 %if 0%{?git:1}
 %if "%{git_branch}" == "panthor" || "%{git_branch}" == "panfrost"
 Source0:	https://gitlab.freedesktop.org/panfrost/mesa/-/archive/%{git}/mesa-%{git}.tar.bz2
