@@ -31,7 +31,7 @@
 #define git 20240114
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
-#define relc 4
+%define relc 1
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -157,8 +157,8 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	24.2.6
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
+Version:	24.3.0
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
 Url:		https://www.mesa3d.org
@@ -211,15 +211,15 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
 # FIXME is there a better way to teach meson about
 # rust cruft?
-Patch6:		mesa-rustdeps.patch
+#Patch6:		mesa-rustdeps.patch
 
 Patch7:		mesa-24-llvmspirv-detection.patch
 Patch8:		mesa-buildsystem-improvements.patch
 Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
 Patch10:	mesa-24.2-llvm-19.0.patch
 #Patch10:	mesa-24.0.2-buildfix32.patch
-Patch11:	enable-vulkan-video-decode.patch
-Patch12:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/31950.patch
+###FIXME Patch11:	enable-vulkan-video-decode.patch
+#Patch12:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/31950.patch
 
 # Fix https://bugs.winehq.org/show_bug.cgi?id=41930
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/5094
@@ -1044,7 +1044,6 @@ if ! %meson32 \
 	-Dgallium-xa=enabled \
 	-Dgallium-nine=true \
 	-Dgallium-drivers=auto,crocus \
-	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
 	-Dgles1=disabled \
@@ -1153,7 +1152,6 @@ if ! %meson \
 	-Dxlib-lease=auto \
 	-Dosmesa=true \
 	-Dglvnd=enabled \
-	-Ddri3=enabled \
 	-Degl=enabled \
 	-Dgbm=enabled \
 	-Dgles1=disabled \
@@ -1302,6 +1300,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with egl}
 %files -n %{libgbm}
 %{_libdir}/libgbm.so.%{gbmmajor}*
+%{_libdir}/gbm
 %endif
 
 %files -n %{devgl}
@@ -1365,6 +1364,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %if %{with aubinatorviewer}
 %{_bindir}/aubinator_viewer
 %endif
+%{_bindir}/executor
 %{_bindir}/intel_error2hangdump
 %{_bindir}/intel_hang_replay
 %{_bindir}/intel_dev_info
@@ -1381,9 +1381,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
 %{_bindir}/nv_push_dump
-%ifarch %{x86_64}
-%{_bindir}/nvfuzz
-%endif
 %ifarch %{armx}
 %{_bindir}/generate_rd
 %{_bindir}/panfrostdump
@@ -1446,6 +1443,7 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 
 %files -n %{dev32gbm}
 %{_prefix}/lib/libgbm.so
+%{_prefix}/lib/gbm
 %{_prefix}/lib/pkgconfig/gbm.pc
 
 %files -n %{lib32glapi}
