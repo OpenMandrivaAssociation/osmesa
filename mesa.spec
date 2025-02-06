@@ -31,7 +31,7 @@
 #define git 20240114
 %define git_branch main
 #define git_branch %(echo %{version} |cut -d. -f1-2)
-#define relc 2
+%define relc 2
 
 %ifarch %{riscv}
 %bcond_with gcc
@@ -107,13 +107,6 @@
 %define lib32d3d lib%{d3dname}%{d3dmajor}
 %define dev32d3d lib%{d3dname}-devel
 
-%define glapimajor 0
-%define glapiname glapi
-%define libglapi %mklibname %{glapiname} %{glapimajor}
-%define devglapi %mklibname %{glapiname} -d
-%define lib32glapi lib%{glapiname}%{glapimajor}
-%define dev32glapi lib%{glapiname}-devel
-
 %define dridrivers %mklibname dri-drivers
 %define vdpaudrivers %mklibname vdpau-drivers
 %define dridrivers32 libdri-drivers
@@ -150,6 +143,15 @@
 %define dev32cl lib%{clname}-devel
 %define librusticl %mklibname RusticlOpenCL
 
+# This has been removed in 25.0, but we still need to
+# do the macro definitions so we can obsolete the packages
+%define glapimajor 0
+%define glapiname glapi
+%define libglapi %mklibname %{glapiname} %{glapimajor}
+%define devglapi %mklibname %{glapiname} -d
+%define lib32glapi lib%{glapiname}%{glapimajor}
+%define dev32glapi lib%{glapiname}-devel
+
 %define mesasrcdir %{_prefix}/src/Mesa/
 %define driver_dir %{_libdir}/dri
 
@@ -157,7 +159,7 @@
 
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
-Version:	24.3.4
+Version:	25.0.0
 Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
 Group:		System/Libraries
 License:	MIT
@@ -216,7 +218,6 @@ Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 Patch7:		mesa-24-llvmspirv-detection.patch
 Patch8:		mesa-buildsystem-improvements.patch
 Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
-Patch10:	mesa-24.2-llvm-19.0.patch
 #Patch10:	mesa-24.0.2-buildfix32.patch
 ###FIXME Patch11:	enable-vulkan-video-decode.patch
 #Patch12:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/31950.patch
@@ -230,6 +231,10 @@ Patch500:	mesa-24.0-osmesa-fix-civ3.patch
 
 # Panthor -- https://gitlab.freedesktop.org/bbrezillon/mesa.git
 # Currently no patches required
+
+# From upstream, addressing release blockers
+# https://gitlab.freedesktop.org/mesa/mesa/-/milestones/49
+# [currently none required]
 
 BuildRequires:	flex
 BuildRequires:	bison
@@ -468,6 +473,7 @@ Requires:	%mklibname GL 1
 Requires:	libglvnd-GL%{?_isa}
 %define oldglname %mklibname gl 1
 %rename %oldglname
+Obsoletes:	%{libglapi} < %{EVRD}
 
 %description -n %{libgl}
 Mesa is an OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library.
@@ -489,6 +495,7 @@ Requires:	pkgconfig(libglvnd)
 Requires:	%{devegl}  = %{EVRD}
 Obsoletes:	%{_lib}mesagl1-devel < 8.0
 Obsoletes:	%{_lib}gl1-devel < %{EVRD}
+Obsoletes:	%{devglapi} < %{EVRD}
 %define oldlibgl %mklibname gl -d
 %rename %oldlibgl
 
@@ -533,23 +540,6 @@ Obsoletes:	%{_lib}egl1-devel < %{EVRD}
 Mesa is an OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library.
 EGL development parts.
 %endif
-
-%package -n %{libglapi}
-Summary:	Files for mesa (glapi libs)
-Group:		System/Libraries
-
-%description -n %{libglapi}
-This package provides the glapi shared library used by gallium.
-
-%package -n %{devglapi}
-Summary:	Development files for glapi libs
-Group:		Development/C
-Requires:	%{libglapi} = %{EVRD}
-Obsoletes:	%{_lib}glapi0-devel < %{EVRD}
-
-%description -n %{devglapi}
-This package contains the headers needed to compile programs against
-the glapi shared library.
 
 %package -n %{libxatracker}
 Summary:	Files for mesa (xatracker libs)
@@ -683,6 +673,7 @@ DRI and Vulkan drivers.
 Summary:	Files for Mesa (GL and GLX libs) (32-bit)
 Group:		System/Libraries
 Suggests:	%{dridrivers32} >= %{EVRD}
+Obsoletes:	%{lib32glapi} < %{EVRD}
 
 %description -n %{lib32gl}
 Mesa is an OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library.
@@ -694,26 +685,10 @@ Group:		Development/C
 Requires:	devel(libGL)
 Requires:	%{dev32egl} = %{EVRD}
 Requires:	%{devgl} = %{EVRD}
+Obsoletes:	%{dev32glapi} < %{EVRD}
 
 %description -n %{dev32gl}
 This package contains the headers needed to compile Mesa programs.
-
-%package -n %{lib32glapi}
-Summary:	Files for mesa (glapi libs) (32-bit)
-Group:		System/Libraries
-
-%description -n %{lib32glapi}
-This package provides the glapi shared library used by gallium.
-
-%package -n %{dev32glapi}
-Summary:	Development files for glapi libs (32-bit)
-Group:		Development/C
-Requires:	%{devglapi} = %{EVRD}
-Requires:	%{lib32glapi} = %{EVRD}
-
-%description -n %{dev32glapi}
-This package contains the headers needed to compile programs against
-the glapi shared library.
 
 %package -n %{lib32gbm}
 Summary:	Files for Mesa (gbm libs) (32-bit)
@@ -936,7 +911,6 @@ Requires:	pkgconfig(glu)
 Requires:	pkgconfig(glut)
 Requires:	%{devgl} = %{EVRD}
 Requires:	%{devegl} = %{EVRD}
-Requires:	%{devglapi} = %{EVRD}
 Suggests:	%{devd3d} = %{EVRD}
 Requires:	pkgconfig(libglvnd)
 Requires:	pkgconfig(glesv1_cm)
@@ -1035,7 +1009,6 @@ if ! %meson32 \
 	-Dglvnd=enabled \
 %if %{with opencl}
 	-Dgallium-opencl=icd \
-	-Dopencl-spirv=true \
 %else
 	-Dgallium-opencl=disabled \
 %endif
@@ -1131,7 +1104,6 @@ if ! %meson \
 %endif
 %if %{with opencl}
 	-Dgallium-opencl=icd \
-	-Dopencl-spirv=true \
 %else
 	-Dgallium-opencl=disabled \
 %endif
@@ -1275,9 +1247,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_libdir}/libEGL_mesa.so.%{eglmajor}*
 %endif
 
-%files -n %{libglapi}
-%{_libdir}/libglapi.so.%{glapimajor}*
-
 %files -n %{libxatracker}
 %{_libdir}/libxatracker.so.%{xatrackermajor}*
 
@@ -1320,9 +1289,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_includedir}/EGL/eglext_angle.h
 %{_libdir}/libEGL_mesa.so
 %endif
-
-%files -n %{devglapi}
-%{_libdir}/libglapi.so
 
 #vdpau enabled
 %if %{with vdpau}
@@ -1390,7 +1356,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/lima_disasm
 %endif
 %{_bindir}/glsl_compiler
-%{_bindir}/glsl_test
 %{_bindir}/spirv2nir
 %{_libdir}/libdlclose-skip.so
 
@@ -1445,12 +1410,6 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_prefix}/lib/libgbm.so
 %{_prefix}/lib/gbm
 %{_prefix}/lib/pkgconfig/gbm.pc
-
-%files -n %{lib32glapi}
-%{_prefix}/lib/libglapi.so.*
-
-%files -n %{dev32glapi}
-%{_prefix}/lib/libglapi.so
 
 %files -n %{dridrivers32}
 %{_prefix}/lib/libgallium-*.so

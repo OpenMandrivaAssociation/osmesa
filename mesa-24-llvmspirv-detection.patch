@@ -1,11 +1,12 @@
-diff -up mesa-24.2.0-rc4/meson.build.7~ mesa-24.2.0-rc4/meson.build
---- mesa-24.2.0-rc4/meson.build.7~	2024-08-13 18:10:51.288632808 +0200
-+++ mesa-24.2.0-rc4/meson.build	2024-08-13 18:11:19.492935005 +0200
-@@ -1853,7 +1853,7 @@ pre_args += '-DGALLIVM_USE_ORCJIT=@0@'.f
- if with_clover_spirv or with_clc
+diff -up mesa-25.0.0-rc2/meson.build.6~ mesa-25.0.0-rc2/meson.build
+--- mesa-25.0.0-rc2/meson.build.6~	2025-02-05 22:21:04.522649744 +0100
++++ mesa-25.0.0-rc2/meson.build	2025-02-05 22:21:34.301575614 +0100
+@@ -1856,7 +1856,8 @@ pre_args += '-DGALLIVM_USE_ORCJIT=@0@'.f
+ if with_clc
    chosen_llvm_version_array = dep_llvm.version().split('.')
    chosen_llvm_version_major = chosen_llvm_version_array[0].to_int()
 -  chosen_llvm_version_minor = chosen_llvm_version_array[1].to_int()
++  #chosen_llvm_version_minor = chosen_llvm_version_array[1].to_int()
 +  chosen_llvm_version_minor = 0
  
    # Require an SPIRV-LLVM-Translator version compatible with the chosen LLVM
