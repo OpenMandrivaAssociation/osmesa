@@ -1342,10 +1342,10 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig/wayland-egl.pc
 %{_bindir}/brw_disasm
 %{_bindir}/elk_asm
 %{_bindir}/elk_disasm
-%{_bindir}/nv_mme_dump
 %{_libexecdir}/libintel_dump_gpu.so
 %{_libexecdir}/libintel_sanitize_gpu.so
 %endif
+%{_bindir}/nv_mme_dump
 %{_bindir}/nv_push_dump
 %ifarch %{armx}
 %{_bindir}/generate_rd
