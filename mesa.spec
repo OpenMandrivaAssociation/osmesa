@@ -160,7 +160,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		mesa
 Version:	25.0.1
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}1
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}2
 Group:		System/Libraries
 License:	MIT
 Url:		https://www.mesa3d.org
@@ -232,9 +232,8 @@ Patch500:	mesa-24.0-osmesa-fix-civ3.patch
 # Panthor -- https://gitlab.freedesktop.org/bbrezillon/mesa.git
 # Currently no patches required
 
-# From upstream, addressing release blockers
-# https://gitlab.freedesktop.org/mesa/mesa/-/milestones/49
-# [currently none required]
+# From upstream
+Patch1000:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/34001.patch
 
 BuildRequires:	flex
 BuildRequires:	bison
