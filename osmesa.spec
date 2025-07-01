@@ -99,7 +99,6 @@ Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/%{git_branch}/mesa-%
 %else
 Source0:	https://mesa.freedesktop.org/archive/mesa-%{version}%{vsuffix}.tar.xz
 %endif
-Source100:	%{name}.rpmlintrc
 
 %define dricoremajor 1
 %define dricorename dricore
