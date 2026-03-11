@@ -136,10 +136,12 @@ Source50:	test.c
 #Patch2:		mesa-20.3.4-glibc-2.33.patch
 Patch5:		mesa-20.3.0-meson-radeon-arm-riscv-ppc.patch
 
+Patch6:		https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/38298.patch
 Patch7:		mesa-24-llvmspirv-detection.patch
 Patch8:		mesa-buildsystem-improvements.patch
 Patch9:		mesa-24.0-llvmspirvlib-version-check.patch
 #Patch10:	mesa-24.0.2-buildfix32.patch
+Patch11:	osmesa-25.0.7-compile.patch
 ###FIXME Patch11:	enable-vulkan-video-decode.patch
 #Patch12:	https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/31950.patch
 

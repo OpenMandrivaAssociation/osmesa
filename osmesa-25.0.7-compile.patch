@@ -1,0 +1,36 @@
+diff -up mesa-25.0.7/src/mapi/glapi/gen/gl_enums.py.omv~ mesa-25.0.7/src/mapi/glapi/gen/gl_enums.py
+--- mesa-25.0.7/src/mapi/glapi/gen/gl_enums.py.omv~	2026-03-11 15:45:46.037435930 +0100
++++ mesa-25.0.7/src/mapi/glapi/gen/gl_enums.py	2026-03-11 15:45:53.164722789 +0100
+@@ -89,7 +89,7 @@ static char token_tmp[20];
+ const char *
+ _mesa_enum_to_string(int nr)
+ {
+-   enum_elt *elt;
++   const enum_elt *elt;
+ 
+    elt = bsearch(& nr, enum_string_table_offsets,
+                  ARRAY_SIZE(enum_string_table_offsets),
+diff -up mesa-25.0.7/src/util/blob.c.omv~ mesa-25.0.7/src/util/blob.c
+--- mesa-25.0.7/src/util/blob.c.omv~	2026-03-11 15:44:11.860975211 +0100
++++ mesa-25.0.7/src/util/blob.c	2026-03-11 15:44:18.444990575 +0100
+@@ -330,7 +330,7 @@ blob_read_string(struct blob_reader *blo
+ {
+    int size;
+    char *ret;
+-   uint8_t *nul;
++   const uint8_t *nul;
+ 
+    /* If we're already at the end, then this is an overrun. */
+    if (blob->current >= blob->end) {
+diff -up mesa-25.0.7/src/util/u_printf.c.omv~ mesa-25.0.7/src/util/u_printf.c
+--- mesa-25.0.7/src/util/u_printf.c.omv~	2026-03-11 15:44:28.217023148 +0100
++++ mesa-25.0.7/src/util/u_printf.c	2026-03-11 15:44:33.221348067 +0100
+@@ -70,7 +70,7 @@ size_t util_printf_next_spec_pos(const c
+          continue;
+       }
+ 
+-      char *spec_pos = strpbrk(str_found, "cdieEfFgGaAosuxXp%");
++      const char *spec_pos = strpbrk(str_found, "cdieEfFgGaAosuxXp%");
+       if (spec_pos == NULL) {
+          return -1;
+       } else if (*spec_pos == '%') {
