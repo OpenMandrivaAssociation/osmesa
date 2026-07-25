@@ -86,7 +86,7 @@
 Summary:	OpenGL 4.6+ and ES 3.1+ compatible 3D graphics library
 Name:		osmesa
 Version:	25.0.7
-Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}3
+Release:	%{?relc:0.rc%{relc}.}%{?git:0.%{git}.}4
 Group:		System/Libraries
 License:	MIT
 Url:		https://www.mesa3d.org
@@ -385,7 +385,11 @@ cpu = 'i686'
 endian = 'little'
 EOF
 
-export CC="%{__cc} -I%{_libdir}/clang/$(clang --version |head -n1 |cut -d' ' -f2 |cut -d. -f1)/include"
+# for opencl-c-base.h; clang 23 -m32 uses a sysroot that does not
+# search /usr/lib for multilib libraries, so add -L explicitly
+export CC="%{__cc} -m32 -I%{_libdir}/clang/$(clang --version |head -n1 |cut -d' ' -f2 |cut -d. -f1)/include -isystem %{_includedir}"
+export CXX="%{__cxx} -m32 -I%{_libdir}/clang/$(clang --version |head -n1 |cut -d' ' -f2 |cut -d. -f1)/include -isystem %{_includedir}"
+export LDFLAGS="-m32 -L%{_prefix}/lib"
 if ! %meson32 \
 	-Dmicrosoft-clc=disabled \
 	-Dshared-llvm=enabled \
@@ -428,6 +432,8 @@ if ! %meson32 \
 	cat build32/meson-logs/meson-log.txt >/dev/stderr
 fi
 unset CC
+unset CXX
+unset LDFLAGS
 
 %ninja_build -C build32/
 rm llvm-config
