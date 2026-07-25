@@ -217,6 +217,12 @@ BuildRequires:	glslang
 Requires:	libGL.so.1%{_arch_tag_suffix}
 
 %if %{with compat32}
+# clang 23 -m32 uses --sysroot=/usr/i686-openmandriva-linux-gnu; without
+# the cross libc headers, C++ <cstdlib> fails on #include_next <stdlib.h>
+BuildRequires:	cross-i686-openmandriva-linux-gnu-binutils
+BuildRequires:	cross-i686-openmandriva-linux-gnu-clang
+BuildRequires:	cross-i686-openmandriva-linux-gnu-gcc
+BuildRequires:	cross-i686-openmandriva-linux-gnu-libc
 BuildRequires:	devel(libdrm)
 BuildRequires:	devel(libX11)
 BuildRequires:	devel(libXdamage)
